@@ -82,7 +82,140 @@
       "record": "D-0003"
     }
   ],
-  "evaluation": null,
+  "evaluation": {
+    "evaluation": "suite-v1",
+    "rows": [
+      {
+        "applied": [],
+        "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-9d6e-77b1-b555-ea7b859f5daa",
+        "error": null,
+        "result": "ok",
+        "shell_calls": 0,
+        "suite_hash": "88a1955cc744",
+        "task": "status_ok",
+        "tool_calls": 1,
+        "tool_errors": []
+      },
+      {
+        "applied": [],
+        "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-9d75-79ea-a739-60ce7025ce00",
+        "error": null,
+        "result": {
+          "answer": 42,
+          "unit": "n"
+        },
+        "shell_calls": 0,
+        "suite_hash": "88a1955cc744",
+        "task": "schema_answer",
+        "tool_calls": 0,
+        "tool_errors": []
+      },
+      {
+        "applied": [
+          "D-0003"
+        ],
+        "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-9d6b-72aa-afbf-9aeb50047dae",
+        "error": null,
+        "result": "Ada",
+        "shell_calls": 0,
+        "suite_hash": "88a1955cc744",
+        "task": "fetch_user_name",
+        "tool_calls": 2,
+        "tool_errors": [
+          {
+            "cause": "HTTP 502 Bad Gateway from /users/7 (transient)",
+            "message": "GET /users/7 failed",
+            "transient": true
+          }
+        ]
+      },
+      {
+        "applied": [],
+        "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-9d71-7fc6-aa26-82f933b22846",
+        "error": null,
+        "result": {
+          "count": 3,
+          "title": "Q3"
+        },
+        "shell_calls": 0,
+        "suite_hash": "88a1955cc744",
+        "task": "write_report",
+        "tool_calls": 2,
+        "tool_errors": []
+      },
+      {
+        "applied": [
+          "D-0003"
+        ],
+        "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-9d6a-72eb-848e-aba3e372d70e",
+        "error": null,
+        "result": 50,
+        "shell_calls": 0,
+        "suite_hash": "88a1955cc744",
+        "task": "sum_numbers",
+        "tool_calls": 2,
+        "tool_errors": [
+          {
+            "cause": "HTTP 502 Bad Gateway from /numbers (transient)",
+            "message": "GET /numbers failed",
+            "transient": true
+          }
+        ]
+      },
+      {
+        "applied": [
+          "D-0002"
+        ],
+        "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-9d6f-7cc8-8aaa-97dd60fa4f61",
+        "error": null,
+        "result": 18,
+        "shell_calls": 1,
+        "suite_hash": "88a1955cc744",
+        "task": "count_lines",
+        "tool_calls": 1,
+        "tool_errors": []
+      }
+    ],
+    "run": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-9d67-7423-8212-8b8918e6f380",
+    "scores": {
+      "error_cause_present": {
+        "as_of": "2026-09-12T15:19:51.579373-07:00",
+        "series": "suite-v1/error_cause_present",
+        "source": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-9d67-7423-8212-8b8918e6f380",
+        "unevaluable": "no row was evaluable on this series",
+        "value": null
+      },
+      "output_schema_valid": {
+        "as_of": "2026-09-12T15:19:51.579373-07:00",
+        "series": "suite-v1/output_schema_valid",
+        "source": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-9d67-7423-8212-8b8918e6f380",
+        "unevaluable": null,
+        "value": 1.0
+      },
+      "suite_hash": {
+        "as_of": "2026-09-12T15:19:51.579373-07:00",
+        "series": "suite-v1/suite_hash",
+        "source": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-9d67-7423-8212-8b8918e6f380",
+        "unevaluable": null,
+        "value": 1.0
+      },
+      "task_pass_rate": {
+        "as_of": "2026-09-12T15:19:51.579373-07:00",
+        "series": "suite-v1/task_pass_rate",
+        "source": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-9d67-7423-8212-8b8918e6f380",
+        "unevaluable": null,
+        "value": 1.0
+      },
+      "tool_budget_respected": {
+        "as_of": "2026-09-12T15:19:51.579373-07:00",
+        "series": "suite-v1/tool_budget_respected",
+        "source": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-9d67-7423-8212-8b8918e6f380",
+        "unevaluable": null,
+        "value": 1.0
+      }
+    },
+    "suite_hash": "88a1955cc744"
+  },
   "fires_seen": [],
   "id": "S-0005",
   "kind": "session",
@@ -107,7 +240,7 @@
   "proposals": [],
   "started_at": "2026-09-12T15:19:49.237221-07:00",
   "steers_filed": [],
-  "trace_root": null,
+  "trace_root": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-9d67-7423-8212-8b8918e6f380",
   "work_shape": {
     "escapes": [],
     "terms": [
