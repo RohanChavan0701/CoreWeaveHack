@@ -92,9 +92,8 @@ def undischarged_fires(store: Store) -> list[dict[str, Any]]:
 def competence(store: Store) -> list[dict[str, Any]]:
     """applied ÷ considered per record over the review window — the demotion nominator, never a verdict."""
     window = store.registry.bars["retirement"]["window_passes"]
-    sessions: list[Session] = sorted(store.all("session"), key=lambda s: s.pass_)  # type: ignore[assignment]
-    recent = {s.id for s in sessions if s.closed_at is not None}
-    recent = set(sorted(recent)[-window:]) if recent else set()
+    sessions: list[Session] = sorted((s for s in store.all("session") if s.attached and s.closed_at is not None), key=lambda s: s.pass_)  # type: ignore[misc]
+    recent = {s.id for s in sessions[-window:]}
     tally: dict[str, dict[str, int]] = defaultdict(lambda: {"considered": 0, "applied": 0, "guard_failed": 0, "off_map": 0})
     for u in store.all("disposition"):
         u: Disposition
