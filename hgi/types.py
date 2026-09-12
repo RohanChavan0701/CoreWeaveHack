@@ -148,6 +148,8 @@ class Edge(Strict):
 class Guard(Strict):
     terms: list[Term("work-shape")] = Field(default_factory=list)
     not_this: list[str] = Field(default_factory=list)
+    records: list[str] = Field(default_factory=list)
+    """For the ``neighbor`` key-space: the record ids whose status change is the edge."""
     applied_over_considered_below: float | None = None
     over_passes: int | None = None
 
@@ -185,6 +187,8 @@ class Latch(Strict):
             raise ValueError("a world-state latch names a watch predicate")
         if self.key_space == "work-shape" and not self.guard.terms:
             raise ValueError("a work-shape latch names at least one registered term")
+        if self.key_space == "neighbor" and not self.guard.records:
+            raise ValueError("a neighbor latch names at least one record id")
         return self
 
 
