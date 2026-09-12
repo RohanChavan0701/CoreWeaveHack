@@ -1,0 +1,110 @@
+{
+  "admitted": [],
+  "after_pass": 6,
+  "analyst_report": null,
+  "brief": {
+    "accepted": [
+      {
+        "decision": "Under a call budget, independent calls over known inputs are issued as one batched call.",
+        "id": "D-0002",
+        "terms": [
+          "shell-tool",
+          "tool-budget"
+        ]
+      },
+      {
+        "decision": "A transient tool failure is retried once before it is reported, and the report carries the cause.",
+        "id": "D-0003",
+        "terms": [
+          "error-wrapping",
+          "http-tool",
+          "tool-call-retry"
+        ]
+      }
+    ],
+    "after_pass": 6,
+    "competence": [
+      {
+        "applied": 4,
+        "applied_over_considered": 1.0,
+        "considered": 4,
+        "guard_failed": 0,
+        "off_map": 0,
+        "passes_in_window": 6,
+        "record": "D-0002",
+        "window_passes": 6
+      },
+      {
+        "applied": 2,
+        "applied_over_considered": 1.0,
+        "considered": 2,
+        "guard_failed": 0,
+        "off_map": 0,
+        "passes_in_window": 6,
+        "record": "D-0003",
+        "window_passes": 6
+      }
+    ],
+    "consolidator_call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-eaa4-7005-966d-e07a353ea213",
+    "credit": [
+      {
+        "after": 1.0,
+        "applied_count": 4,
+        "before": 0.0,
+        "record": "D-0003",
+        "scorer": "task_pass_rate",
+        "tasks": [
+          "fetch_user_name",
+          "sum_numbers"
+        ]
+      },
+      {
+        "after": 1.0,
+        "applied_count": 2,
+        "before": 0.5,
+        "record": "D-0002",
+        "scorer": "task_pass_rate",
+        "tasks": [
+          "count_lines"
+        ]
+      }
+    ],
+    "escapes": [],
+    "fires_owed": [],
+    "groups": [],
+    "scores": {
+      "S-0005": {
+        "error_cause_present": null,
+        "output_schema_valid": 1.0,
+        "suite_hash": 1.0,
+        "task_pass_rate": 1.0,
+        "tool_budget_respected": 1.0
+      },
+      "S-0006": {
+        "error_cause_present": null,
+        "output_schema_valid": 1.0,
+        "suite_hash": 1.0,
+        "task_pass_rate": 1.0,
+        "tool_budget_respected": 1.0
+      }
+    },
+    "sessions": [
+      "S-0005",
+      "S-0006"
+    ],
+    "steers": [
+      "T-0001"
+    ]
+  },
+  "closed_at": "2026-09-12T15:20:11.307592-07:00",
+  "fires_discharged": [],
+  "flipped": [],
+  "id": "K-0003",
+  "kind": "consolidation",
+  "nominations": [],
+  "sessions_read": [
+    "S-0005",
+    "S-0006"
+  ],
+  "started_at": "2026-09-12T15:20:11.287989-07:00"
+}
