@@ -1,0 +1,21 @@
+{
+  "anchor": {
+    "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-07d6-7085-a051-7eda0016a4f8",
+    "commit": null,
+    "path": "suite/tools.py:54",
+    "record": null
+  },
+  "disposition": {
+    "at": null,
+    "pointer": null,
+    "state": "open"
+  },
+  "kind": "observation",
+  "name": "O-0005",
+  "noticed": "task sum_numbers failed on a transient fault (HTTP 502 Bad Gateway from /numbers (transient)) and the reported error named no cause",
+  "noticed_at": "2026-09-12T15:19:18.808332-07:00",
+  "recheck_when": "any tool call that can fail transiently",
+  "session": "S-0002",
+  "shape": [],
+  "uid": "01a097b4-1d98-7431-ba7d-72df19be838f"
+}

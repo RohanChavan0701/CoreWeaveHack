@@ -1,0 +1,21 @@
+{
+  "anchor": {
+    "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-07da-795d-819e-31431a04216f",
+    "commit": null,
+    "path": "suite/tools.py:54",
+    "record": null
+  },
+  "disposition": {
+    "at": null,
+    "pointer": null,
+    "state": "open"
+  },
+  "kind": "observation",
+  "name": "O-0006",
+  "noticed": "task count_lines exceeded its shell budget: independent calls were issued one per input instead of batched",
+  "noticed_at": "2026-09-12T15:19:18.808597-07:00",
+  "recheck_when": "a budgeted tool over several independent inputs",
+  "session": "S-0002",
+  "shape": [],
+  "uid": "01a097b4-1d98-7431-ba7d-72e095669a76"
+}

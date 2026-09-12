@@ -1,0 +1,21 @@
+{
+  "anchor": {
+    "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-07d7-7e17-aa11-37b092e0823e",
+    "commit": null,
+    "path": "suite/tools.py:54",
+    "record": null
+  },
+  "disposition": {
+    "at": null,
+    "pointer": null,
+    "state": "open"
+  },
+  "kind": "observation",
+  "name": "O-0004",
+  "noticed": "task fetch_user_name failed on a transient fault (HTTP 502 Bad Gateway from /users/7 (transient)) and the reported error named no cause",
+  "noticed_at": "2026-09-12T15:19:18.807933-07:00",
+  "recheck_when": "any tool call that can fail transiently",
+  "session": "S-0002",
+  "shape": [],
+  "uid": "01a097b4-1d97-7596-86c2-915785669dfa"
+}
