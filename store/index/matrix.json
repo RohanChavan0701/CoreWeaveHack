@@ -1,0 +1,4 @@
+{
+  "note": "system-misses/none-catches is detection-limited; its count is a floor of zero",
+  "system-misses/none-catches": []
+}
