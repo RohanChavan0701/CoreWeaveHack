@@ -437,6 +437,8 @@ class EvaluationResult(Strict):
     run: str | None = None
     suite_hash: str | None = None
     scores: dict[str, Fact] = Field(default_factory=dict)
+    rows: list[dict[str, Any]] = Field(default_factory=list)
+    """Per-task outcomes as the trace store holds them — result, error, tool errors, applied records, call URI."""
 
 
 # --- session ------------------------------------------------------------------

@@ -1,0 +1,306 @@
+"""The deterministic stand-in for the frozen model.
+
+Every role request is a JSON object with a ``request`` field; the handler for
+that field answers by fixed rules stated here. The stub exists so the loop's
+mechanics — boot, evaluate, close, consolidate, the four-role adjudication —
+run and are testable without an inference endpoint. Its answers are keyword
+rules over the same inputs the model would read; they are not evidence that
+anything learned.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from typing import Any, Callable
+
+HANDLERS: dict[str, Callable[[dict[str, Any]], Any]] = {}
+
+
+def handles(name: str):
+    def deco(fn):
+        HANDLERS[name] = fn
+        return fn
+    return deco
+
+
+def answer(messages: list[dict[str, Any]], tools: list[dict] | None = None) -> str:
+    user = messages[-1]["content"]
+    try:
+        req = json.loads(user)
+    except (json.JSONDecodeError, TypeError):
+        req = {"request": "free"}
+    handler = HANDLERS.get(req.get("request"), HANDLERS["free"])
+    return json.dumps(handler(req))
+
+
+@handles("free")
+def _free(req):
+    return {}
+
+
+# --- the pass ---------------------------------------------------------------------
+
+KEYWORDS: dict[str, tuple[str, ...]] = {
+    "http-tool": ("get /", "http", "api", "502"),
+    "shell-tool": ("shell", "wc -l"),
+    "tool-budget": ("budget",),
+    "file-tool": ("read config", "write report", "file"),
+    "output-schema": ("schema", "exactly", "object"),
+    "error-wrapping": ("error", "fail", "cause"),
+    "tool-call-retry": ("retr", "transient"),
+    "test-failure-triage": ("failing test",),
+    "task-planning": ("plan",),
+}
+
+
+def terms_for(text: str, allowed: list[str]) -> list[str]:
+    text = text.lower()
+    return [t for t in allowed if any(k in text for k in KEYWORDS.get(t, ()))]
+
+
+@handles("classify")
+def _classify(req):
+    text = " ".join(p["prompt"] for p in req["presentations"])
+    return {"terms": terms_for(text, req["terms"]), "escapes": []}
+
+
+@handles("guard")
+def _guard(req):
+    hook, shape = req["hook"], req["work_shape"]
+    text = " ".join(p["prompt"] for p in req.get("presentations", [])).lower()
+    overlap = sorted(set(hook["terms"]) & set(shape["terms"]))
+    excluded = [n for n in hook.get("not_this", []) if n.lower() in text]
+    passed = bool(overlap) and not excluded
+    return {"passed": passed, "why": f"terms {overlap} matched" + (f"; excluded by {excluded}" if excluded else "")}
+
+
+@handles("lens")
+def _lens(req):
+    lens, subject = req["lens"], req["subject"]
+    if lens["id"] == "L-0004":
+        return {"answer": "read from the rows' tool errors", "findings": _noticings(subject.get("rows", []))}
+    return {"answer": "nothing found on this reading", "findings": []}
+
+
+def _noticings(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    out = []
+    for row in rows:
+        err = row.get("error")
+        if not err:
+            continue
+        tool_errors = row.get("tool_errors", [])
+        transient = next((e for e in tool_errors if e.get("transient")), None)
+        anchor = {"call": row.get("call"), "path": "suite/tools.py:54"}
+        if transient and not err.get("cause"):
+            out.append({"noticed": f"task {row['task']} failed on a transient fault ({transient['cause']}) and the reported error named no cause",
+                        "anchor": anchor, "recheck_when": "any tool call that can fail transiently"})
+        elif transient and err.get("cause"):
+            out.append({"noticed": f"task {row['task']} named the transient cause ({transient['cause']}) and still failed: the call was not retried",
+                        "anchor": anchor, "recheck_when": "a transient fault reported without a retry"})
+        elif any("budget" in (e.get("cause") or "") for e in tool_errors):
+            out.append({"noticed": f"task {row['task']} exceeded its shell budget: independent calls were issued one per input instead of batched",
+                        "anchor": anchor, "recheck_when": "a budgeted tool over several independent inputs"})
+    return out
+
+
+@handles("dispose")
+def _dispose(req):
+    applied_in = {rid for row in req["rows"] for rid in row.get("applied", [])}
+    return {"dispositions": [
+        {"record": c["record"], "disposition": "applied" if c["record"] in applied_in else "considered-not-applicable",
+         "note": "applied on " + ", ".join(r["task"] for r in req["rows"] if c["record"] in r.get("applied", [])) if c["record"] in applied_in else "hook matched the pass's presentation; no task bore on it"}
+        for c in req["consulted"]
+    ]}
+
+
+@handles("propose")
+def _propose(req):
+    return {"drafts": []}
+
+
+# --- the coder --------------------------------------------------------------------------
+
+@handles("coding")
+def _coding(req):
+    return {o["name"]: terms_for(o["noticed"], req["terms"]) or ["other(unclassified)"] for o in req["observations"]}
+
+
+# --- the consolidator ---------------------------------------------------------------------
+
+LESSONS: dict[str, dict[str, Any]] = {
+    "cause": {
+        "decision": "Errors that wrap a failed tool call carry the underlying cause.",
+        "latch": "a tool call that fails; an error reported from a tool failure; a wrapper that rethrows",
+        "not_this": ["a failure inside the model's own reasoning, with no tool call behind it"],
+        "stakes": "a silent failure hides the cause the oracle scores on; passes score green while the fault persists",
+        "options": [("A — report the cause on every error", "chosen", "the scorer reads the final error's cause"),
+                    ("B — report only the message", "rejected", "the cause is lost at the first rethrow")],
+        "premises": [("p1", "the oracle's error_cause_present scorer reads the final error's cause", "a scorer change that grades on exit code only"),
+                     ("p2", "tool failures recur across the suite", "two consecutive consolidation passes with no tool failure in the trace store")],
+        "counterfactual": "The overshoot is a wrapper that reports the cause but never recovers — observed in {anchors}, where the task still failed.",
+        "watch": ("error_cause_present", "<", 0.5),
+        "residue": ["whether the cause named is the right one is judgment; the floor checks shape only"],
+        "moot_when": "no tool in the layer can fail",
+    },
+    "retry": {
+        "decision": "A transient tool failure is retried once before it is reported, and the report carries the cause.",
+        "latch": "a tool call that can fail transiently; a 5xx from the HTTP tool; a wrapper around a flaky call",
+        "not_this": ["a non-transient failure such as a 404, which a retry cannot repair"],
+        "stakes": "a task that fails on a transient fault scores zero while one retry would pass",
+        "options": [("A — retry once, cause preserved", "chosen", "clears the transient fault and keeps the scorer's signal"),
+                    ("B — report the cause without retrying", "rejected", "the cause was named and the task still failed")],
+        "premises": [("p1", "a transient fault clears on the next call", "a second consecutive 5xx on the same path in the trace store"),
+                     ("p2", "task_pass_rate on faulted tasks is bounded by whether the call is retried", "faulted tasks failing after a retry")],
+        "counterfactual": "The overshoot is retrying every failure including the non-transient — a retry storm — bounded by {anchors}.",
+        "watch": ("task_pass_rate", "<", 0.7),
+        "residue": ["whether one retry is the right number is judgment"],
+        "moot_when": "the tool layer stops exposing transient failures",
+    },
+    "batch": {
+        "decision": "Under a call budget, independent calls over known inputs are issued as one batched call.",
+        "latch": "a shell tool under a call budget; several files or inputs to inspect",
+        "not_this": ["calls whose inputs depend on a previous call's output"],
+        "stakes": "a budget exceeded fails the task outright",
+        "options": [("A — one batched call", "chosen", "fits any budget of one or more"),
+                    ("B — one call per input", "rejected", "exceeds the budget whenever inputs outnumber it")],
+        "premises": [("p1", "the budget is smaller than the number of independent inputs", "a budget at or above the input count")],
+        "counterfactual": "The overshoot is batching dependent calls whose later inputs are unknown — bounded by {anchors}.",
+        "watch": ("tool_budget_respected", "<", 0.5),
+        "residue": ["whether the inputs are truly independent is judgment"],
+        "moot_when": "no tool runs under a budget",
+    },
+}
+
+
+def lesson_key(texts: list[str]) -> str | None:
+    joined = " ".join(texts).lower()
+    if "named no cause" in joined:
+        return "cause"
+    if "not retried" in joined:
+        return "retry"
+    if "budget" in joined:
+        return "batch"
+    return None
+
+
+def decision_body(key: str, terms: list[str], not_this_extra: list[str], anchors: list[str], bars: dict[str, Any], model_id: str) -> dict[str, Any]:
+    L = LESSONS[key]
+    scorer, cmp, value = L["watch"]
+    retirement = bars["retirement"]
+    return {
+        "scopes": ["suite/tools"],
+        "summary": {"latch": L["latch"], "not_this": L["not_this"], "stakes": L["stakes"]},
+        "context": "the same fork was observed in independent passes: " + ", ".join(anchors),
+        "options": [{"name": n, "judged": j, "why": w} for n, j, w in L["options"]],
+        "decision": L["decision"],
+        "counterfactual": L["counterfactual"].format(anchors=", ".join(anchors)),
+        "warrant": {"anchors": anchors, "premises": [{"id": i, "statement": s, "falsifier": f, "status": "supported"} for i, s, f in L["premises"]],
+                    "adjudication": {"ledger_entry": None, "species": "attack", "verdict": "pending"}},
+        "latches": [
+            {"type": "consultation", "slot": "payload", "key_space": "work-shape", "edge": {"kind": "level", "at": "boot"},
+             "guard": {"terms": terms, "not_this": L["not_this"] + not_this_extra}, "consumer": "the working pass",
+             "owed_act": {"class": "apply", "role": "dispositive"}, "lifecycle": {"status": "live"}},
+            {"type": "revisit", "slot": "warrant", "key_space": "world-state",
+             "edge": {"kind": "edge", "predicate": {"evaluation": "suite-v1", "scorer": scorer, "comparator": cmp, "value": value, "persistence": 2}},
+             "guard": {}, "consumer": "the backward pass", "owed_act": {"class": "re-adjudicate", "role": "dispositive"}, "lifecycle": {"status": "live"}},
+        ],
+        "enforcement": {"floor": ["schema", "complement-law", "ports"], "residue": L["residue"]},
+        "lifecycle": {"consumer": "the working pass, at boot, on a matching work-shape", "moot_when": L["moot_when"],
+                      "retirement": {"type": "retirement", "slot": "lifecycle", "key_space": "competence",
+                                     "edge": {"kind": "schedule", "at": "consolidation"},
+                                     "guard": {"applied_over_considered_below": retirement["applied_over_considered_below"], "over_passes": retirement["window_passes"]},
+                                     "consumer": "the lifecycle review", "owed_act": {"class": "retire", "role": "corroborating"}, "lifecycle": {"status": "live"}}},
+        "priced_for": {"model_id": model_id},
+    }
+
+
+@handles("nominate")
+def _nominate(req):
+    brief, bars = req["brief"], req["bars"]
+    accepted = brief.get("accepted", [])
+    nominations = []
+    for group in brief.get("groups", []):
+        obs = group["observations"]
+        sessions = {o["session"] for o in obs}
+        if len(sessions) < bars["decision"]["independent_observations"]:
+            continue
+        key = lesson_key([o["noticed"] for o in obs])
+        if key is None:
+            continue
+        covered = [d for d in accepted if key in d["decision"].lower() or (key == "batch" and "batched" in d["decision"].lower())]
+        if covered:
+            continue
+        terms = [t for t in group["shape"] if not t.startswith("other(")] or ["error-wrapping"]
+        names = [o["name"] for o in obs]
+        supersedes = [d["id"] for d in accepted if key == "retry" and "cause" in d["decision"].lower()]
+        nominations.append({
+            "rung": "new-decision",
+            "rung_why": ("payload indicted: the superseded record was recalled and applied and the oracle still regressed on task_pass_rate; a re-derived payload supersedes it"
+                         if supersedes else "no existing record's counterfactual, hook or register absorbs this fork; the fork is undecided"),
+            "subject": key, "evidence": names, "supersedes": supersedes,
+            "body": decision_body(key, terms, [], names, bars, req.get("model_id", "stub")),
+        })
+    return {"nominations": nominations}
+
+
+# --- the examiner ---------------------------------------------------------------------------
+
+@handles("attack")
+def _attack(req):
+    draft, ev = req["draft"], req["evidence"]
+    claims = []
+    sessions = ev.get("observation_sessions", [])
+    independent = len(set(sessions)) >= ev.get("bar_independent", 2)
+    claims.append({"target": "warrant:independence", "refutation": "the anchored observations come from one pass, which is one datum",
+                   "reading_taken": True, "landed": not independent, "evidence": [f"sessions {sorted(set(sessions))}"]})
+    for p in draft["body"]["warrant"]["premises"]:
+        landed = ("transient" in p["statement"] or "fault" in p["statement"]) and ev.get("fault_rate") == 0
+        claims.append({"target": f"premise:{p['id']}", "refutation": p["falsifier"], "reading_taken": True, "landed": landed,
+                       "evidence": [f"fault_rate={ev.get('fault_rate')}"]})
+    decision = draft["body"]["decision"].lower()
+    copied = any(t in decision for t in ev.get("task_ids", []))
+    claims.append({"target": "payload:abstraction", "refutation": "the payload names a task instead of the transferable shape",
+                   "reading_taken": True, "landed": copied, "evidence": ["the payload text"]})
+    return {"claims": claims}
+
+
+# --- the adjudicator ----------------------------------------------------------------------------
+
+@handles("verdict")
+def _verdict(req):
+    attack, oracle = req["attack"], req.get("oracle", {})
+    for c in attack["claims"]:
+        if c["landed"] and c["target"].startswith("premise:"):
+            return {"verdict": f"decline(premise killed: {c['target']})", "amendment": None}
+        if c["landed"] and c["target"] == "warrant:independence":
+            return {"verdict": "decline(bar unmet: observations are not independent)", "amendment": None}
+        if c["landed"] and c["target"] == "payload:abstraction":
+            return {"verdict": "decline(payload is a copied instance; promotion raises abstraction)", "amendment": None}
+    scorer = req.get("watch_scorer")
+    series = oracle.get("series", {}).get(scorer, [])
+    if scorer and series and all(v is None for v in series):
+        return {"verdict": f"escalate(oracle evidence unevaluable for {scorer})", "amendment": None}
+    return {"verdict": "admit", "amendment": None}
+
+
+@handles("credit")
+def _credit(req):
+    steers = []
+    for a in req["applied"]:
+        before, after = a.get("before"), a.get("after")
+        if a["applied_count"] > 0 and before is not None and after is not None and after <= before:
+            steers.append({"record": a["record"], "slot": "payload", "signature": "recalled-applied-still-corrected",
+                           "correction": f"{a['record']} was applied in {a['applied_count']} dispositions and {a['scorer']} did not improve ({before} → {after})",
+                           "why_not_caught": "no floor reads the payload's content; residue as disclosed"})
+    return {"steers": steers}
+
+
+@handles("currency")
+def _currency(req):
+    if req.get("successor"):
+        return {"verdict": "reversed", "why": f"the premise is superseded by {req['successor']}"}
+    ratio = req.get("applied_over_considered")
+    if ratio is not None and ratio < req.get("threshold", 0.1) and req.get("moot_evidence"):
+        return {"verdict": "moot", "why": "the domain is no longer entered"}
+    return {"verdict": "still-holds", "why": "the premise stands; the fire is corroborating evidence against the payload, not the warrant"}
