@@ -1,0 +1,121 @@
+{
+  "attached": true,
+  "carry_forward": "",
+  "closed_at": null,
+  "considered": [
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0001",
+      "terms_matched": [],
+      "via": "constitution"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0002",
+      "terms_matched": [],
+      "via": "constitution"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0003",
+      "terms_matched": [],
+      "via": "constitution"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0004",
+      "terms_matched": [],
+      "via": "constitution"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0005",
+      "terms_matched": [],
+      "via": "constitution"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0006",
+      "terms_matched": [],
+      "via": "constitution"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0007",
+      "terms_matched": [],
+      "via": "constitution"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "D-0001",
+      "terms_matched": [
+        "http-tool"
+      ],
+      "via": "index"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "D-0002",
+      "terms_matched": [
+        "shell-tool",
+        "tool-budget"
+      ],
+      "via": "index"
+    }
+  ],
+  "consulted": [
+    {
+      "disposition": null,
+      "record": "D-0001"
+    },
+    {
+      "disposition": null,
+      "record": "D-0002"
+    }
+  ],
+  "evaluation": null,
+  "fires_seen": [],
+  "id": "S-0004",
+  "kind": "session",
+  "ledger_entries": [],
+  "lens_answers": [
+    {
+      "answer": "nothing found on this reading",
+      "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-60c7-7c9e-b7ce-b2d86b67dfba",
+      "findings": [],
+      "lens": "L-0001"
+    },
+    {
+      "answer": "nothing found on this reading",
+      "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-60c8-7d20-9200-628a02674c60",
+      "findings": [],
+      "lens": "L-0002"
+    }
+  ],
+  "model_id": "stub",
+  "observations_filed": [],
+  "pass": 4,
+  "proposals": [],
+  "started_at": "2026-09-12T15:19:35.986090-07:00",
+  "steers_filed": [],
+  "trace_root": null,
+  "work_shape": {
+    "escapes": [],
+    "terms": [
+      "file-tool",
+      "http-tool",
+      "output-schema",
+      "shell-tool",
+      "tool-budget"
+    ]
+  }
+}
