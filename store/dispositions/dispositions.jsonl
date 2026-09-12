@@ -4,3 +4,5 @@
 {"considered": true, "disposition": "applied", "guard_passed": true, "id": "U-0004", "kind": "disposition", "note": "applied on count_lines", "record": "D-0002", "session": "S-0003"}
 {"considered": true, "disposition": "applied", "guard_passed": true, "id": "U-0005", "kind": "disposition", "note": "applied on fetch_user_name, sum_numbers", "record": "D-0001", "session": "S-0004"}
 {"considered": true, "disposition": "applied", "guard_passed": true, "id": "U-0006", "kind": "disposition", "note": "applied on count_lines", "record": "D-0002", "session": "S-0004"}
+{"considered": true, "disposition": "applied", "guard_passed": true, "id": "U-0007", "kind": "disposition", "note": "applied on count_lines", "record": "D-0002", "session": "S-0005"}
+{"considered": true, "disposition": "applied", "guard_passed": true, "id": "U-0008", "kind": "disposition", "note": "applied on fetch_user_name, sum_numbers", "record": "D-0003", "session": "S-0005"}
