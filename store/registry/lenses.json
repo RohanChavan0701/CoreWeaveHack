@@ -11,7 +11,7 @@
     "id": "L-0001",
     "kind": "lens",
     "priced_for": {
-      "model_id": null
+      "model_id": "stub"
     },
     "product": "a list of {record, disposition, why}; empty is a legal answer",
     "purpose": "adjudicative",
@@ -33,7 +33,7 @@
     "id": "L-0002",
     "kind": "lens",
     "priced_for": {
-      "model_id": null
+      "model_id": "stub"
     },
     "product": "a list of {record, why}; empty is a legal answer",
     "purpose": "generative",
@@ -55,7 +55,7 @@
     "id": "L-0003",
     "kind": "lens",
     "priced_for": {
-      "model_id": null
+      "model_id": "stub"
     },
     "product": "a list of {record, slot, what-changed, anchor}; empty is a legal answer",
     "purpose": "adjudicative",
@@ -77,7 +77,7 @@
     "id": "L-0004",
     "kind": "lens",
     "priced_for": {
-      "model_id": null
+      "model_id": "stub"
     },
     "product": "a list of {noticed, anchor}; each becomes an observation",
     "purpose": "generative",

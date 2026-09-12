@@ -1,14 +1,14 @@
 {
   "admission": {
     "adjudicator": null,
-    "committed_at": "2026-09-12T21:52:27.229458Z",
+    "committed_at": "2026-09-12T22:18:42.504877Z",
     "ledger_entry": null,
     "proposed_by": "genesis",
     "verdict": "admit"
   },
   "article": "The pass proposes; the backward pass admits. No pass writes to an eternal store.",
   "counterfactual": "The overshoot: a pass that files nothing because it cannot admit — proposals are the pass's product, not a courtesy.",
-  "created_at": "2026-09-12T21:52:27.229458Z",
+  "created_at": "2026-09-12T22:18:42.504877Z",
   "id": "C-0001",
   "kind": "constitution",
   "lineage": {
@@ -18,7 +18,7 @@
     "supersedes": []
   },
   "priced_for": {
-    "model_id": null
+    "model_id": "stub"
   },
   "status": "live",
   "warrant": {

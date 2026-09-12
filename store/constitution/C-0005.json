@@ -1,14 +1,14 @@
 {
   "admission": {
     "adjudicator": null,
-    "committed_at": "2026-09-12T21:52:27.229458Z",
+    "committed_at": "2026-09-12T22:18:42.504877Z",
     "ledger_entry": null,
     "proposed_by": "genesis",
     "verdict": "admit"
   },
   "article": "Promotion raises abstraction; a copied instance is refused.",
   "counterfactual": "The overshoot: an abstraction the anchors no longer instantiate — a floating entry.",
-  "created_at": "2026-09-12T21:52:27.229458Z",
+  "created_at": "2026-09-12T22:18:42.504877Z",
   "id": "C-0005",
   "kind": "constitution",
   "lineage": {
@@ -18,7 +18,7 @@
     "supersedes": []
   },
   "priced_for": {
-    "model_id": null
+    "model_id": "stub"
   },
   "status": "live",
   "warrant": {
