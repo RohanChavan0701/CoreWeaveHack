@@ -221,12 +221,14 @@ class Store:
         stamp = now()
         decision = self.parse_as(Decision, {
             "id": id, "kind": "decision", "status": "accepted", "created_at": draft.drafted_at.isoformat(),
-            "lineage": {"supersedes": [], "superseded_by": None, "split_from": None, "folded_from": []},
+            "lineage": {"supersedes": list(draft.supersedes), "superseded_by": None, "split_from": None, "folded_from": []},
             "admission": {"proposed_by": draft.proposed_by, "ledger_entry": entry.id, "verdict": entry.verdict,
                           "adjudicator": adjudicator.model_dump(), "committed_at": stamp.isoformat()},
             **body,
         })
         self.write(decision)
+        for pred in draft.supersedes:
+            self.flip_status(self.read("decision", pred), "superseded", successor=id)  # type: ignore[arg-type]
         for ev in draft.evidence:
             obs = self._observation_by_uid_or_name(ev)
             if obs is not None and obs.disposition.state == "open":
@@ -237,12 +239,29 @@ class Store:
         self.drop_draft(draft.uid)
         return decision
 
-    def flip_status(self, record: Decision, status: str, successor: str | None = None) -> Decision:
-        """The only in-place change a frozen record receives. A supersedure names its successor."""
+    def flip_status(self, record: Decision, status: str, successor: str | None = None, by: str | None = None) -> Decision:
+        """The only in-place change a frozen record receives.
+
+        A retiring flip (``superseded`` | ``moot``) settles every live latch in
+        the same write — a settled latch is kept as evidence, never removed —
+        and a supersedure names its successor and wires the record to it so
+        propagation can re-derive what referenced the retiree.
+        """
         data = dump(record)
         data["status"] = status
+        stamp = now().isoformat()
         if successor:
             data["lineage"]["superseded_by"] = successor
+        if status in ("superseded", "moot"):
+            for latch in [*data["latches"], data["lifecycle"]["retirement"]]:
+                if latch["lifecycle"]["status"] == "live":
+                    latch["lifecycle"] = {"status": "settled", "settled_at": stamp, "settled_by": successor or by}
+            if successor:
+                data["latches"].append({
+                    "type": "wiring", "slot": "lifecycle", "key_space": "neighbor", "edge": {"kind": "edge"},
+                    "guard": {"records": [successor]}, "consumer": "propagation",
+                    "owed_act": {"class": "check", "role": "corroborating"}, "lifecycle": {"status": "live"},
+                })
         flipped = self.parse_as(Decision, data)
         self.write(flipped)
         return flipped

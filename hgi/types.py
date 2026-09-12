@@ -565,6 +565,8 @@ class Draft(Strict):
     body: DecisionBody
     evidence: list[str] = Field(default_factory=list)
     """The observation uids, steer ids and Weave URIs the draft rests on."""
+    supersedes: list[str] = Field(default_factory=list)
+    """Decisions this draft retires on admission; the committer writes the reciprocal lineage pointers."""
 
 
 class QueueEntry(Strict):

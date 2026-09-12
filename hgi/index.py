@@ -143,6 +143,23 @@ def lineage(store: Store) -> dict[str, Any]:
     return {"nodes": nodes, "edges": edges}
 
 
+def matrix(store: Store) -> dict[str, Any]:
+    """The detection matrix of § 10.1: steers × fires × applied dispositions. Every count is a floor."""
+    cells: dict[str, list[str]] = defaultdict(list)
+    for t in store.all("steer"):
+        cells[t.matrix_cell].append(t.id)  # type: ignore[attr-defined]
+    indicted = {t.indicts.record for t in store.all("steer") if t.indicts}  # type: ignore[attr-defined]
+    for f in store.all("fire"):
+        f: Fire
+        cells["system-catches/oracle-catches" if f.latch.record in indicted else "system-catches/none-catches"].append(f.id)
+    for u in store.all("disposition"):
+        u: Disposition
+        if u.disposition == "applied" and u.record not in indicted:
+            cells["system-catches/none-catches"].append(u.id)
+    cells.setdefault("system-misses/none-catches", [])
+    return {cell: sorted(ids) for cell, ids in sorted(cells.items())} | {"note": "system-misses/none-catches is detection-limited; its count is a floor of zero"}
+
+
 PROJECTIONS: dict[str, Callable[[Store], Any]] = {
     "hooks": hooks,
     "summaries": summaries,
@@ -151,6 +168,7 @@ PROJECTIONS: dict[str, Callable[[Store], Any]] = {
     "competence": competence,
     "structural_zero": structural_zero,
     "lineage": lineage,
+    "matrix": matrix,
 }
 
 

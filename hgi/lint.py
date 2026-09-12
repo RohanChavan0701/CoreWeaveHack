@@ -221,14 +221,15 @@ def check_complement_law(store: Store) -> list[Finding]:
 def check_ports(store: Store) -> list[Finding]:
     out = []
     for d in store.decisions():
-        present = {l.type for l in d.all_latches()}
+        live = [l for l in d.all_latches() if l.lifecycle.status == "live"]
+        present = {l.type for l in live}
         declared = store.registry.ports.get("decision", {}).get(d.status, {})
         for latch_type, mark in declared.items():
             if mark == "required" and latch_type not in present:
-                out.append(fail("ports", d.id, f"a {d.status} decision requires a {latch_type} latch"))
-        for l in d.all_latches():
+                out.append(fail("ports", d.id, f"a {d.status} decision requires a live {latch_type} latch"))
+        for l in live:
             if store.registry.port("decision", d.status, l.type) == "forbidden" and not l.warrant:
-                out.append(fail("ports", d.id, f"a {l.type} latch is forbidden on a {d.status} decision without a warrant on the latch"))
+                out.append(fail("ports", d.id, f"a live {l.type} latch is forbidden on a {d.status} decision without a warrant on the latch"))
     return out
 
 
