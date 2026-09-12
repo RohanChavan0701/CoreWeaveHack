@@ -1,0 +1,28 @@
+{
+  "admission": {
+    "adjudicator": null,
+    "committed_at": "2026-09-12T21:52:27.229458Z",
+    "ledger_entry": null,
+    "proposed_by": "genesis",
+    "verdict": "admit"
+  },
+  "article": "Every claim is a hypothesis with an anchor; suspected and verified never share a register.",
+  "counterfactual": "The overshoot: refusing to file a suspicion until it is verified — the observation ledger exists for the unverified.",
+  "created_at": "2026-09-12T21:52:27.229458Z",
+  "id": "C-0003",
+  "kind": "constitution",
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": null,
+    "supersedes": []
+  },
+  "priced_for": {
+    "model_id": null
+  },
+  "status": "live",
+  "warrant": {
+    "anchors": [],
+    "evidence": "genesis"
+  }
+}

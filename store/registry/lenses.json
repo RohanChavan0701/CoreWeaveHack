@@ -1,0 +1,90 @@
+[
+  {
+    "angle": "Which consulted record's hook fired on presentation alone and does not bear on this task? Name it and dispose it considered-not-applicable.",
+    "consumer": "the working pass",
+    "counterfactual": "The overshoot: disposing every record not-applicable to shorten the read — a record applied nowhere in the pass is a demotion datum, and the trace will show it.",
+    "externality": {
+      "contact": "record",
+      "terminates_in": "the index and the consulted records, cited by id"
+    },
+    "host": "boot",
+    "id": "L-0001",
+    "kind": "lens",
+    "priced_for": {
+      "model_id": null
+    },
+    "product": "a list of {record, disposition, why}; empty is a legal answer",
+    "purpose": "adjudicative",
+    "telemetry": {
+      "answer_variance": "design-stage",
+      "decoy_rejection": "design-stage",
+      "miss_stream": "steers/ citing this lens"
+    }
+  },
+  {
+    "angle": "The store holds a record this task needs and no hook reached it — which?",
+    "consumer": "the working pass; the structural-zero audit",
+    "counterfactual": "The overshoot: inventing a need to have a finding; an answer with no record id is not filed.",
+    "externality": {
+      "contact": "record",
+      "terminates_in": "the decision store's summary lines"
+    },
+    "host": "boot",
+    "id": "L-0002",
+    "kind": "lens",
+    "priced_for": {
+      "model_id": null
+    },
+    "product": "a list of {record, why}; empty is a legal answer",
+    "purpose": "generative",
+    "telemetry": {
+      "answer_variance": "design-stage",
+      "decoy_rejection": "design-stage",
+      "miss_stream": "steers/ citing this lens"
+    }
+  },
+  {
+    "angle": "What did this pass make false in the store — which premise, which hook?",
+    "consumer": "the backward pass",
+    "counterfactual": "The overshoot: manufacturing a falsification; empty is a legal answer.",
+    "externality": {
+      "contact": "record",
+      "terminates_in": "the store's premises and hooks, cited by id"
+    },
+    "host": "close",
+    "id": "L-0003",
+    "kind": "lens",
+    "priced_for": {
+      "model_id": null
+    },
+    "product": "a list of {record, slot, what-changed, anchor}; empty is a legal answer",
+    "purpose": "adjudicative",
+    "telemetry": {
+      "answer_variance": "design-stage",
+      "decoy_rejection": "design-stage",
+      "miss_stream": "steers/ citing this lens"
+    }
+  },
+  {
+    "angle": "The first attempt in this pass was wrong somewhere — where, and which record should have fired?",
+    "consumer": "the observation ledger; the backward pass",
+    "counterfactual": "The overshoot: grading the pass's own lesson as settled — the answer is an observation at the floor, never a rule.",
+    "externality": {
+      "contact": "artifact",
+      "terminates_in": "the trace: a call URI per finding"
+    },
+    "host": "close",
+    "id": "L-0004",
+    "kind": "lens",
+    "priced_for": {
+      "model_id": null
+    },
+    "product": "a list of {noticed, anchor}; each becomes an observation",
+    "purpose": "generative",
+    "telemetry": {
+      "answer_variance": "design-stage",
+      "decoy_rejection": "design-stage",
+      "miss_stream": "steers/ citing this lens"
+    }
+  }
+]

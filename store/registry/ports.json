@@ -1,0 +1,32 @@
+{
+  "decision": {
+    "accepted": {
+      "consultation": "required",
+      "floor": "forbidden",
+      "retirement": "required",
+      "revisit": "optional",
+      "wiring": "optional"
+    },
+    "moot": {
+      "consultation": "forbidden",
+      "floor": "forbidden",
+      "retirement": "forbidden",
+      "revisit": "forbidden",
+      "wiring": "optional"
+    },
+    "proposed": {
+      "consultation": "required",
+      "floor": "forbidden",
+      "retirement": "forbidden",
+      "revisit": "optional",
+      "wiring": "optional"
+    },
+    "superseded": {
+      "consultation": "forbidden",
+      "floor": "forbidden",
+      "retirement": "forbidden",
+      "revisit": "forbidden",
+      "wiring": "required"
+    }
+  }
+}

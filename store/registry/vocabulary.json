@@ -1,0 +1,622 @@
+{
+  "act-class": {
+    "means": "the closed set an owed act opens with",
+    "terms": {
+      "apply": {
+        "means": "apply the payload to the work in hand",
+        "since": "2026-09-12"
+      },
+      "check": {
+        "means": "run a check",
+        "since": "2026-09-12"
+      },
+      "re-adjudicate": {
+        "means": "re-open the warrant for a verdict",
+        "since": "2026-09-12"
+      },
+      "re-derive": {
+        "means": "recompute a derived field",
+        "since": "2026-09-12"
+      },
+      "retire": {
+        "means": "retire or demote the record",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "adjudicator-verdict": {
+    "means": "the one token the adjudicator returns",
+    "terms": {
+      "admit": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "admit-amended(<amendment>)": {
+        "means": "amends only the slot the attack indicted",
+        "since": "2026-09-12"
+      },
+      "decline(<why>)": {
+        "means": "drops the draft",
+        "since": "2026-09-12"
+      },
+      "defer(<until>)": {
+        "means": "re-queues with the condition as a latch",
+        "since": "2026-09-12"
+      },
+      "escalate(<why>)": {
+        "means": "routes to the human queue",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "attack-verdict": {
+    "means": "",
+    "terms": {
+      "attack-landed": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "pending": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "premise-killed": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "survived-with-attack-named": {
+        "means": "",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "coding-verdict": {
+    "means": "",
+    "terms": {
+      "agree": {
+        "means": "ratifies the class",
+        "since": "2026-09-12"
+      },
+      "disagree": {
+        "means": "keeps the boundary open",
+        "since": "2026-09-12"
+      },
+      "pending": {
+        "means": "",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "collision-verdict": {
+    "means": "",
+    "terms": {
+      "contract-open": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "derivation-wrong": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "implementation-wrong": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "pending": {
+        "means": "",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "constitution-status": {
+    "means": "",
+    "terms": {
+      "evicted": {
+        "means": "displaced under the cap; superseded, never deleted",
+        "since": "2026-09-12"
+      },
+      "live": {
+        "means": "loaded every pass",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "currency-verdict": {
+    "means": "",
+    "terms": {
+      "moot": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "pending": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "reversed": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "still-holds": {
+        "means": "",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "decision-status": {
+    "means": "",
+    "terms": {
+      "accepted": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "moot": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "proposed": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "superseded": {
+        "means": "",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "edge-kind": {
+    "means": "how a latch becomes considered",
+    "terms": {
+      "edge": {
+        "means": "fires on a transition",
+        "since": "2026-09-12"
+      },
+      "level": {
+        "means": "polled while the condition holds",
+        "since": "2026-09-12"
+      },
+      "schedule": {
+        "means": "fires at a scheduled point",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "forecast-verdict": {
+    "means": "",
+    "terms": {
+      "false": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "pending": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "true": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "unevaluable": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "void": {
+        "means": "",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "key-space": {
+    "means": "what a latch's guard is matched against",
+    "terms": {
+      "competence": {
+        "means": "derived telemetry ratios",
+        "since": "2026-09-12"
+      },
+      "diff": {
+        "means": "the proposal or diff under commit",
+        "since": "2026-09-12"
+      },
+      "neighbor": {
+        "means": "record ids",
+        "since": "2026-09-12"
+      },
+      "work-shape": {
+        "means": "registered work-shape terms",
+        "since": "2026-09-12"
+      },
+      "world-state": {
+        "means": "a Weave evaluation, scorer and comparator",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "ladder-rung": {
+    "means": "the cheapest sufficient home for a ratified recurrence, in order",
+    "terms": {
+      "adoption-row": {
+        "means": "2. a row in an existing rule's adoption register",
+        "since": "2026-09-12"
+      },
+      "article": {
+        "means": "7. a constitution article, only with a forced eviction",
+        "since": "2026-09-12"
+      },
+      "counterfactual-edit": {
+        "means": "1. an edit to an existing record's counterfactual or not_this",
+        "since": "2026-09-12"
+      },
+      "floor": {
+        "means": "6. a mechanical floor, only where the check is fully mechanical",
+        "since": "2026-09-12"
+      },
+      "hook-edit": {
+        "means": "4. a hook edit on an existing latch",
+        "since": "2026-09-12"
+      },
+      "new-decision": {
+        "means": "5. a new decision, only on a genuinely undecided fork",
+        "since": "2026-09-12"
+      },
+      "rule-enrollment": {
+        "means": "3. a new rule enrolled under an existing decision",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "latch-lifecycle": {
+    "means": "the state of a latch",
+    "terms": {
+      "live": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "moot": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "settled": {
+        "means": "",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "latch-type": {
+    "means": "the typed activation units of § 6.2",
+    "terms": {
+      "consultation": {
+        "means": "keyed on work-shape; polled at boot; the working pass applies the payload",
+        "since": "2026-09-12"
+      },
+      "floor": {
+        "means": "keyed on the diff or the proposal at commit; the committer's lint checks",
+        "since": "2026-09-12"
+      },
+      "retirement": {
+        "means": "keyed on competence signals at consolidation; the lifecycle review retires or demotes",
+        "since": "2026-09-12"
+      },
+      "revisit": {
+        "means": "keyed on world-state; the oracle moving; the backward pass re-adjudicates the warrant",
+        "since": "2026-09-12"
+      },
+      "wiring": {
+        "means": "keyed on a neighbour record changing status; propagation re-derives or checks",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "lens-contact": {
+    "means": "the strongest contact outside the answerer the lens forces",
+    "terms": {
+      "artifact": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "none": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "oracle": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "record": {
+        "means": "",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "lens-host": {
+    "means": "the step that walks the lens",
+    "terms": {
+      "boot": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "close": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "examiner": {
+        "means": "",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "lens-purpose": {
+    "means": "",
+    "terms": {
+      "adjudicative": {
+        "means": "terminates in an authority, never in the answerer",
+        "since": "2026-09-12"
+      },
+      "generative": {
+        "means": "touches the item; is never handed an answer",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "matrix-cell": {
+    "means": "the detection matrix of § 10.1: did the store catch it, did the world or a human",
+    "terms": {
+      "system-catches/human-catches": {
+        "means": "redundant catch; demotion-side evidence",
+        "since": "2026-09-12"
+      },
+      "system-catches/none-catches": {
+        "means": "the amortization working",
+        "since": "2026-09-12"
+      },
+      "system-catches/oracle-catches": {
+        "means": "redundant catch; demotion-side evidence",
+        "since": "2026-09-12"
+      },
+      "system-misses/human-catches": {
+        "means": "the steer: credit assignment plus a free miss report",
+        "since": "2026-09-12"
+      },
+      "system-misses/none-catches": {
+        "means": "the true miss, repaired backwards from the manifested defect",
+        "since": "2026-09-12"
+      },
+      "system-misses/oracle-catches": {
+        "means": "the steer: credit assignment plus a free miss report",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "observation-state": {
+    "means": "",
+    "terms": {
+      "dismissed": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "expired": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "open": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "promoted": {
+        "means": "delete-with-pointer",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "owed-act-role": {
+    "means": "whether a fire can settle the record",
+    "terms": {
+      "corroborating": {
+        "means": "a fire bears, never settles",
+        "since": "2026-09-12"
+      },
+      "dispositive": {
+        "means": "a disposed fire can settle the record",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "premise-status": {
+    "means": "the one in-place flip a warrant takes; only a disposed fire may flip it",
+    "terms": {
+      "disputed": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "reversed": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "supported": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "unevaluated": {
+        "means": "",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "reality-verdict": {
+    "means": "",
+    "terms": {
+      "irreducible": {
+        "means": "no authoring duty could have prevented it",
+        "since": "2026-09-12"
+      },
+      "pending": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "reducible": {
+        "means": "a duty was missed; route it",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "role": {
+    "means": "the four contexts of the separation of powers, plus the pass and the coder",
+    "terms": {
+      "adjudicator": {
+        "means": "verdicts",
+        "since": "2026-09-12"
+      },
+      "coder": {
+        "means": "the blind second coder",
+        "since": "2026-09-12"
+      },
+      "committer": {
+        "means": "admits mechanically",
+        "since": "2026-09-12"
+      },
+      "consolidator": {
+        "means": "nominates",
+        "since": "2026-09-12"
+      },
+      "examiner": {
+        "means": "contradicts",
+        "since": "2026-09-12"
+      },
+      "human": {
+        "means": "the escalation queue",
+        "since": "2026-09-12"
+      },
+      "pass": {
+        "means": "the working pass — the agent under test and its boot and close steps",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "slot": {
+    "means": "the five slots of the entry contract",
+    "terms": {
+      "activation": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "enforcement": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "lifecycle": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "payload": {
+        "means": "",
+        "since": "2026-09-12"
+      },
+      "warrant": {
+        "means": "",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "species": {
+    "means": "the kinds of hypothesis-ledger entry",
+    "terms": {
+      "attack": {
+        "means": "the examiner's refute-phrased attack on a draft",
+        "since": "2026-09-12"
+      },
+      "coding": {
+        "means": "a blind second coding of observations",
+        "since": "2026-09-12"
+      },
+      "collision": {
+        "means": "a derivation disagreeing with an implementation",
+        "since": "2026-09-12"
+      },
+      "currency": {
+        "means": "a premise re-checked for currency",
+        "since": "2026-09-12"
+      },
+      "forecast": {
+        "means": "a settled prediction",
+        "since": "2026-09-12"
+      },
+      "reality": {
+        "means": "a design premise contradicted by the world",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "steer-source": {
+    "means": "",
+    "terms": {
+      "human": {
+        "means": "a note on a call",
+        "since": "2026-09-12"
+      },
+      "oracle": {
+        "means": "an evaluation regression attributed by the adjudicator",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "use-time-disposition": {
+    "means": "the verdict a consulted record receives from the pass that consulted it",
+    "terms": {
+      "applied": {
+        "means": "the payload bore on the work and was applied",
+        "since": "2026-09-12"
+      },
+      "considered-not-applicable": {
+        "means": "the hook fired on presentation alone; routing working as designed",
+        "since": "2026-09-12"
+      },
+      "fired-off-map": {
+        "means": "applied outside the declared hook, or the work matched no hook at all",
+        "since": "2026-09-12"
+      },
+      "guard-failed": {
+        "means": "considered but the guard did not pass",
+        "since": "2026-09-12"
+      }
+    }
+  },
+  "work-shape": {
+    "means": "the closed vocabulary of task presentations a consultation hook keys on; minted from the task suite's known presentations",
+    "terms": {
+      "error-wrapping": {
+        "means": "the task wraps, rethrows or reports an error",
+        "since": "2026-09-12"
+      },
+      "file-tool": {
+        "means": "the task reads or writes through the file tool",
+        "since": "2026-09-12"
+      },
+      "http-tool": {
+        "means": "the task calls the HTTP tool",
+        "since": "2026-09-12"
+      },
+      "output-schema": {
+        "means": "the task's output must conform to a declared schema",
+        "since": "2026-09-12"
+      },
+      "shell-tool": {
+        "means": "the task calls the shell tool",
+        "since": "2026-09-12"
+      },
+      "task-planning": {
+        "means": "the task requires a plan before action",
+        "since": "2026-09-12"
+      },
+      "test-failure-triage": {
+        "means": "the task diagnoses a failing test",
+        "since": "2026-09-12"
+      },
+      "tool-budget": {
+        "means": "the task runs under a call budget",
+        "since": "2026-09-12"
+      },
+      "tool-call-retry": {
+        "means": "the task involves retrying a tool call that failed transiently",
+        "since": "2026-09-12"
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "as_of": "2026-09-12",
+  "consolidation_every_passes": 2,
+  "decision": {
+    "independence": "observations from distinct sessions",
+    "independent_observations": 2,
+    "or_steer_attributed_regressions": 1
+  },
+  "genesis_anchor_deadline_consolidations": 3,
+  "observation": {
+    "anchors": 1,
+    "noticings": 1
+  },
+  "retirement": {
+    "applied_over_considered_below": 0.1,
+    "window_passes": 6
+  }
+}
