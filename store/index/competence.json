@@ -1,8 +1,8 @@
 [
   {
-    "applied": 3,
+    "applied": 2,
     "applied_over_considered": 1.0,
-    "considered": 3,
+    "considered": 2,
     "guard_failed": 0,
     "off_map": 0,
     "passes_in_window": 6,
