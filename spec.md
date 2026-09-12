@@ -997,9 +997,9 @@ version at slice 0 (§ 13); a rename changes this table, not the design.
 | Need | Weave surface | HGI binding |
 |---|---|---|
 | trace store | `weave.init(project)`; `@weave.op` on every model and tool call; `weave.attributes({...})` | each call carries `hgi.session`, `hgi.pass`, `hgi.records_in_context`; the session's `trace_root` is the root call's URI |
-| the world | `weave.Evaluation(dataset=…, scorers=[…])`, `weave.Scorer` subclasses, `weave.Dataset`; `evaluation.evaluate(model)` | the task suite is a `Dataset`; each scorer is a fact series named `<evaluation>/<scorer>`; results land in the fact floor with `as_of` and the evaluation-run URI as `source` |
+| the world | `weave.Evaluation(dataset=…, scorers=[…])`, `weave.Scorer` subclasses, `weave.Dataset`; `await evaluation.evaluate(model)` (a coroutine as of weave 0.53.9; the op's `.call` form returns the summary and the root call) | the task suite is a `Dataset`; each scorer is a fact series named `<evaluation>/<scorer>`; results land in the fact floor with `as_of` and the evaluation-run URI as `source` |
 | watch predicates | scorer outputs per evaluation run, read back through the Weave client (`weave.init(...).get_calls` / evaluation result objects) | `{evaluation, scorer, comparator, value, persistence}` evaluates against the last *persistence* runs |
-| steer channel | feedback on calls: `call.feedback.add_note(...)`, `call.feedback.add_reaction(...)`, `call.feedback.add("hgi.steer", {...})` | a human note on a call becomes a steer with `source.kind = human`; an adjudicator-attributed regression becomes a steer with `source.kind = oracle` |
+| steer channel | feedback on calls: `call.feedback.add_note(...)`, `call.feedback.add_reaction(...)`, `call.feedback.add("hgi.steer", {...})`; read back with `client.get_calls(query=…, include_feedback=True)` — attributes must be a nested `hgi` object for `attributes.hgi.session` to resolve | a human note on a call becomes a steer with `source.kind = human`; an adjudicator-attributed regression becomes a steer with `source.kind = oracle` |
 | fact anchors | call and object URIs (`weave:///…`) | every `anchor.call` and `reference_at_entry.source` is a Weave URI |
 | model pricing | the model id on each call | `priced_for.model_id` on lenses and rules |
 

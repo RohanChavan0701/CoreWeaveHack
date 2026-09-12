@@ -49,6 +49,55 @@ coordinate (spec § 9).
 | projections and the escalation surface | **marimo** | `dashboard.py` renders the index, the lineage DAG, the detection matrix and the escalation queue live from the store, and writes only through `hgi` commands |
 | the blind second coder, the guard evaluator | **TypeSafe AI System1** | classifies observations against the registry's shape terms without the consolidator's candidate labels; falls back to a second, separately prompted frozen-model context when the vendor is not configured |
 
+## The demonstration and its acceptance bar
+
+The run of spec § 14 is in the store and in the Weave project
+[`slavazinevich-worldvue/hgi`](https://wandb.ai/slavazinevich-worldvue/hgi/weave):
+six passes with the store attached, six detached (same agent, same suite
+hash, no boot or close), consolidation every two passes. The frozen model
+for this run is the deterministic stub (no inference endpoint was
+configured), so the curve shows the loop's mechanics closing, not a model
+learning; the stub applies a record only by keyword, exactly as documented
+in `suite/agent.py`.
+
+### The curve — `task_pass_rate` over the same suite hash
+
+| pass | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|
+| memory attached | 0.50 | 0.50 | 0.67 | 0.67 | 1.00 | 1.00 |
+| detached (ablation) | 0.50 | 0.50 | 0.50 | 0.50 | 0.50 | 0.50 |
+
+What moved it: the first consolidation (after pass 2) admitted D-0001
+(*errors that wrap a failed tool call carry the underlying cause*) and
+D-0002 (*under a call budget, independent calls are issued as one batched
+call*) from two independent observations each. Passes 3–4 applied both;
+the budget task passed, the faulted HTTP tasks named their cause and still
+failed. The second consolidation read that as a payload fault — D-0001
+recalled, applied, and the oracle still flat — and admitted D-0003 (*a
+transient tool failure is retried once before it is reported, and the report
+carries the cause*), superseding D-0001. Passes 5–6 pass every task.
+
+### Acceptance, row by row
+
+| Row | Holds | Evidence |
+|---|---|---|
+| 1. Curve, both runs, same suite hash | yes | the table above; `store/sessions/S-0001…S-0012.json`, each with its Weave evaluation URI |
+| 2. One full chain observation → decision → rule | partly | observation → decision → successor decision exists (`hgi lineage D-0003`: `O-0001 → D-0001 → D-0003`), each admission's ledger entry, attack and verdict joinable to Weave call URIs; the rule tier is not instantiated in this roster |
+| 3. One retirement on telemetry | yes | D-0001 superseded by D-0003; the nominating evidence is the credit table on K-0002 (applied ÷ considered 1.0, `task_pass_rate` on its applied tasks 0.0 → 0.0) and steer T-0001 |
+| 4. Dispositions complete; no fire owed to the working pass undischarged | yes | every consulted record in every attached pass has a `U-` record; `store/index/fires.json` is empty |
+| 5. Calibration over four settled beliefs | no | the belief store is not instantiated in this roster |
+| 6. Floor green; projections equal regeneration | yes | `hgi lint` is green with seven warnings, all `genesis-anchor`: the seven genesis articles passed three consolidation passes without earning an anchor and are due for eviction or anchoring |
+| 7. Matrix populated: a steer cell and a system-catches cell | yes | `store/index/matrix.json`: one event in `system-misses/oracle-catches` (T-0001), six in `system-catches/none-catches` (applied dispositions on passing tasks) |
+| 8. Roles separate on every ledger entry | yes | H-0001…H-0003 carry a consolidator, an examiner and an adjudicator call, three distinct Weave calls with distinct `hgi.role` attributes |
+
+### What the demonstration does not show
+
+Transfer to a second task family; behaviour under a model swap; the lens
+telemetry; a rule enrolling or a floor growing; a belief settling; anything
+about rates — every count is a floor from one run. And, because the frozen
+model was the stub, nothing about whether a model conditioned on these
+records would apply them.
+
 ## Running
 
 ```bash
@@ -74,4 +123,19 @@ hgi lineage     D-0007                      # the path query over the lineage DA
 ```
 
 Every command that writes ends in a commit whose message names the record
-ids it admitted, flipped or retired.
+ids it admitted, flipped or retired. `./demo.sh` runs the whole
+demonstration; `uv run marimo run dashboard.py` opens the projection surface
+and the escalation queue; `uv run hgi mirror` publishes the ledgers to Weave
+for the analyst.
+
+## Tests
+
+```bash
+uv run pytest
+```
+
+The tests are the slice acceptance bars of spec § 13: the floor's named
+refusals and the committer (slice 0), facts, watches and fires (slice 1),
+two passes chained through the store (slice 2), admit, decline, escalate,
+the human queue, verdict authority and role separation on the ledger
+(slice 3), and the retirement leg.
