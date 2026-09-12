@@ -1,0 +1,93 @@
+{
+  "attached": true,
+  "carry_forward": "",
+  "closed_at": null,
+  "considered": [
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0001",
+      "terms_matched": [],
+      "via": "constitution"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0002",
+      "terms_matched": [],
+      "via": "constitution"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0003",
+      "terms_matched": [],
+      "via": "constitution"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0004",
+      "terms_matched": [],
+      "via": "constitution"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0005",
+      "terms_matched": [],
+      "via": "constitution"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0006",
+      "terms_matched": [],
+      "via": "constitution"
+    },
+    {
+      "guard_passed": true,
+      "owed_act": "apply",
+      "record": "C-0007",
+      "terms_matched": [],
+      "via": "constitution"
+    }
+  ],
+  "consulted": [],
+  "evaluation": null,
+  "fires_seen": [],
+  "id": "S-0001",
+  "kind": "session",
+  "ledger_entries": [],
+  "lens_answers": [
+    {
+      "answer": "nothing found on this reading",
+      "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b3-c12f-7624-8cea-ad96fa46e806",
+      "findings": [],
+      "lens": "L-0001"
+    },
+    {
+      "answer": "nothing found on this reading",
+      "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b3-c130-7aa2-90e5-4d2f51574280",
+      "findings": [],
+      "lens": "L-0002"
+    }
+  ],
+  "model_id": "stub",
+  "observations_filed": [],
+  "pass": 1,
+  "proposals": [],
+  "started_at": "2026-09-12T15:18:55.132647-07:00",
+  "steers_filed": [],
+  "trace_root": null,
+  "work_shape": {
+    "escapes": [],
+    "terms": [
+      "file-tool",
+      "http-tool",
+      "output-schema",
+      "shell-tool",
+      "tool-budget"
+    ]
+  }
+}
