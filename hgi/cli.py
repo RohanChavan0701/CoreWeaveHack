@@ -12,6 +12,15 @@
 Every command that writes ends in a commit whose message names the record
 ids it admitted, flipped or retired. ``--store`` (or ``$HGI_STORE``) names
 the store root; ``--no-commit`` leaves the tree for the caller to commit.
+
+Every surface the environment configures — the inference endpoint
+(``$HGI_INFERENCE_BASE_URL``, ``$HGI_INFERENCE_API_KEY``, ``$HGI_MODEL_ID``),
+the trace store (``$HGI_WEAVE_PROJECT``, ``$WANDB_ENTITY``), the coder
+(``$TYPESAFE_*``) and the store root — is read from the process environment.
+:func:`load_env` fills it from an env file first, so that configuring a run
+is editing ``.env`` and not exporting by hand; an endpoint that goes
+unconfigured is not an error but a silent fall back to the deterministic
+stub (:mod:`hgi.model`), so the file is read before any command runs.
 """
 
 from __future__ import annotations
@@ -25,6 +34,42 @@ from hgi import index as _index
 from hgi import lint as _lint
 from hgi import registry as _registry
 from hgi.store import Store, commit
+
+
+ENV_FILE = ".env"
+
+
+def load_env(path: Path | None = None) -> dict[str, str]:
+    """Fill the process environment from an env file; return what it set.
+
+    The file is ``$HGI_ENV_FILE`` or ``./.env``, and an absent one is the
+    normal case, not an error. The format is the one ``.env.example`` is
+    written in: ``KEY=value`` a line, an optional ``export`` prefix, a
+    comment or a blank line ignored, and a value's surrounding quotes
+    stripped. A value is the rest of its line — a trailing ``#`` is part of
+    it, so a comment belongs on a line of its own. A blank value reads as
+    unset and is not exported, which is what ``.env.example`` means by
+    leaving a variable empty: the surface stays off and the default behind
+    it — the stub model, an untraced run — stands. The process environment
+    wins: a variable already set is never overwritten, so a flag exported
+    for one run outranks the file, and the loader is idempotent.
+    """
+    path = path or Path(os.environ.get("HGI_ENV_FILE", ENV_FILE))
+    if not path.is_file():
+        return {}
+    loaded = {}
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.removeprefix("export ").partition("=")
+        key, value = key.strip(), value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+            value = value[1:-1]
+        if key and value and key not in os.environ:
+            os.environ[key] = value
+            loaded[key] = value
+    return loaded
 
 
 def _store(args) -> Store:
@@ -123,6 +168,7 @@ def _register_pass_commands(add) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    load_env()
     args = build_parser().parse_args(argv)
     return args.fn(args)
 

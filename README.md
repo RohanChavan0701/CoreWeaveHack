@@ -106,6 +106,12 @@ cp .env.example .env   # fill in the inference endpoint; leave HGI_WEAVE_PROJECT
 uv run hgi --help
 ```
 
+Every `hgi` command reads `./.env` into its environment before it runs, and
+so does the dashboard; `$HGI_ENV_FILE` names another file. A variable
+already exported wins over the file, and a variable left blank in the file
+reads as unset — which is how a surface is turned off: no inference endpoint
+is the stub model, no `HGI_WEAVE_PROJECT` is an untraced run.
+
 Without an inference endpoint the frozen model is replaced by a
 deterministic stub, so the whole loop — boot, evaluate, close, consolidate —
 runs offline and the acceptance tests run under `uv run pytest`.

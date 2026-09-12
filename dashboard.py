@@ -27,8 +27,10 @@ def _():
     import marimo as mo
 
     from hgi import index as hindex
+    from hgi.cli import load_env
     from hgi.store import Store
 
+    load_env()
     root = Path(os.environ.get("HGI_STORE", "store"))
     refresh = mo.ui.refresh(options=["5s", "30s"], default_interval=None)
     return Path, Store, hindex, json, mo, os, refresh, root, subprocess
