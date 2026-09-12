@@ -4,7 +4,9 @@
     "U-0004",
     "U-0006",
     "U-0007",
-    "U-0008"
+    "U-0008",
+    "U-0009",
+    "U-0010"
   ],
   "system-misses/none-catches": [],
   "system-misses/oracle-catches": [

@@ -1,7 +1,7 @@
 {
   "attached": true,
-  "carry_forward": "",
-  "closed_at": null,
+  "carry_forward": "pass 6 scored {'error_cause_present': 'unevaluable', 'output_schema_valid': 1.0, 'suite_hash': 1.0, 'task_pass_rate': 1.0, 'tool_budget_respected': 1.0}; consulted D-0002 applied, D-0003 applied; filed 0 observations (none); open fires: none",
+  "closed_at": "2026-09-12T15:20:08.151327-07:00",
   "considered": [
     {
       "guard_passed": true,
@@ -74,11 +74,11 @@
   ],
   "consulted": [
     {
-      "disposition": null,
+      "disposition": "U-0009",
       "record": "D-0002"
     },
     {
-      "disposition": null,
+      "disposition": "U-0010",
       "record": "D-0003"
     }
   ],
@@ -232,6 +232,18 @@
       "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-bf05-72b5-9cd0-8a747cfb4d32",
       "findings": [],
       "lens": "L-0002"
+    },
+    {
+      "answer": "nothing found on this reading",
+      "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-dc93-7628-9ae4-85bbe7f44f57",
+      "findings": [],
+      "lens": "L-0003"
+    },
+    {
+      "answer": "read from the rows' tool errors",
+      "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-dc98-7caf-be6c-c9a3106f6abc",
+      "findings": [],
+      "lens": "L-0004"
     }
   ],
   "model_id": "stub",
