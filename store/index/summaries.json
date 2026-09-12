@@ -9,7 +9,7 @@
       "suite/tools"
     ],
     "stakes": "a silent failure hides the cause the oracle scores on; passes score green while the fault persists",
-    "status": "accepted"
+    "status": "superseded"
   },
   {
     "latch": "a shell tool under a call budget; several files or inputs to inspect",
@@ -21,6 +21,18 @@
       "suite/tools"
     ],
     "stakes": "a budget exceeded fails the task outright",
+    "status": "accepted"
+  },
+  {
+    "latch": "a tool call that can fail transiently; a 5xx from the HTTP tool; a wrapper around a flaky call",
+    "not_this": [
+      "a non-transient failure such as a 404, which a retry cannot repair"
+    ],
+    "record": "D-0003",
+    "scopes": [
+      "suite/tools"
+    ],
+    "stakes": "a task that fails on a transient fault scores zero while one retry would pass",
     "status": "accepted"
   }
 ]

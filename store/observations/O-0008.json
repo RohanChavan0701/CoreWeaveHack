@@ -6,9 +6,9 @@
     "record": null
   },
   "disposition": {
-    "at": null,
-    "pointer": null,
-    "state": "open"
+    "at": "2026-09-12T15:19:47.125650-07:00",
+    "pointer": "D-0003",
+    "state": "promoted"
   },
   "kind": "observation",
   "name": "O-0008",
@@ -16,6 +16,10 @@
   "noticed_at": "2026-09-12T15:19:32.333138-07:00",
   "recheck_when": "a transient fault reported without a retry",
   "session": "S-0003",
-  "shape": [],
+  "shape": [
+    "error-wrapping",
+    "http-tool",
+    "tool-call-retry"
+  ],
   "uid": "01a097b4-526d-71cd-954b-779bef7c5f64"
 }

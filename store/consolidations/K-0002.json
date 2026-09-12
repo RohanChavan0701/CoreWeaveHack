@@ -1,0 +1,146 @@
+{
+  "admitted": [
+    "D-0003"
+  ],
+  "after_pass": 4,
+  "analyst_report": null,
+  "brief": {
+    "accepted": [
+      {
+        "decision": "Errors that wrap a failed tool call carry the underlying cause.",
+        "id": "D-0001",
+        "terms": [
+          "error-wrapping",
+          "http-tool",
+          "tool-call-retry"
+        ]
+      },
+      {
+        "decision": "Under a call budget, independent calls over known inputs are issued as one batched call.",
+        "id": "D-0002",
+        "terms": [
+          "shell-tool",
+          "tool-budget"
+        ]
+      }
+    ],
+    "after_pass": 4,
+    "competence": [
+      {
+        "applied": 2,
+        "applied_over_considered": 1.0,
+        "considered": 2,
+        "guard_failed": 0,
+        "off_map": 0,
+        "passes_in_window": 4,
+        "record": "D-0001",
+        "window_passes": 6
+      },
+      {
+        "applied": 2,
+        "applied_over_considered": 1.0,
+        "considered": 2,
+        "guard_failed": 0,
+        "off_map": 0,
+        "passes_in_window": 4,
+        "record": "D-0002",
+        "window_passes": 6
+      }
+    ],
+    "consolidator_call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-8c2f-78c3-b187-ec5367fbde30",
+    "credit": [
+      {
+        "after": 0.0,
+        "applied_count": 4,
+        "before": 0.0,
+        "record": "D-0001",
+        "scorer": "task_pass_rate",
+        "tasks": [
+          "fetch_user_name",
+          "sum_numbers"
+        ]
+      },
+      {
+        "after": 1.0,
+        "applied_count": 2,
+        "before": 0.0,
+        "record": "D-0002",
+        "scorer": "task_pass_rate",
+        "tasks": [
+          "count_lines"
+        ]
+      }
+    ],
+    "escapes": [],
+    "fires_owed": [],
+    "groups": [
+      {
+        "coder_call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-8c28-7b9f-b3df-f1bcc2381af0",
+        "observations": [
+          "O-0007",
+          "O-0008",
+          "O-0009",
+          "O-0010"
+        ],
+        "sessions": [
+          "S-0003",
+          "S-0004"
+        ],
+        "shape": [
+          "error-wrapping",
+          "http-tool",
+          "tool-call-retry"
+        ]
+      }
+    ],
+    "scores": {
+      "S-0003": {
+        "error_cause_present": 1.0,
+        "output_schema_valid": 1.0,
+        "suite_hash": 1.0,
+        "task_pass_rate": 0.6666666666666666,
+        "tool_budget_respected": 1.0
+      },
+      "S-0004": {
+        "error_cause_present": 1.0,
+        "output_schema_valid": 1.0,
+        "suite_hash": 1.0,
+        "task_pass_rate": 0.6666666666666666,
+        "tool_budget_respected": 1.0
+      }
+    },
+    "sessions": [
+      "S-0003",
+      "S-0004"
+    ],
+    "steers": []
+  },
+  "closed_at": "2026-09-12T15:19:47.131195-07:00",
+  "fires_discharged": [],
+  "flipped": [
+    "D-0001"
+  ],
+  "id": "K-0002",
+  "kind": "consolidation",
+  "nominations": [
+    {
+      "draft": "01a097b4-8c30-7044-a95c-9d67cceb529e",
+      "evidence": [
+        "O-0007",
+        "O-0008",
+        "O-0009",
+        "O-0010"
+      ],
+      "ledger_entry": "H-0003",
+      "outcome": "admitted D-0003",
+      "rung": "new-decision",
+      "rung_why": "payload indicted: the superseded record was recalled and applied and the oracle still regressed on task_pass_rate; a re-derived payload supersedes it",
+      "subject": "retry"
+    }
+  ],
+  "sessions_read": [
+    "S-0003",
+    "S-0004"
+  ],
+  "started_at": "2026-09-12T15:19:47.100824-07:00"
+}

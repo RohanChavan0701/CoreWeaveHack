@@ -1,0 +1,192 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-8c34-7ed9-a179-1f696d2a756e",
+      "model_id": "stub",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-12T15:19:47.125650-07:00",
+    "ledger_entry": "H-0003",
+    "proposed_by": "K-0002",
+    "verdict": "admit"
+  },
+  "context": "the same fork was observed in independent passes: O-0007, O-0008, O-0009, O-0010",
+  "counterfactual": "The overshoot is retrying every failure including the non-transient — a retry storm — bounded by O-0007, O-0008, O-0009, O-0010.",
+  "created_at": "2026-09-12T15:19:47.120752-07:00",
+  "decision": "A transient tool failure is retried once before it is reported, and the report carries the cause.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether one retry is the right number is judgment"
+    ]
+  },
+  "id": "D-0003",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a non-transient failure such as a 404, which a retry cannot repair"
+        ],
+        "over_passes": null,
+        "records": [],
+        "terms": [
+          "error-wrapping",
+          "http-tool",
+          "tool-call-retry"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.7
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the tool layer stops exposing transient failures",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": null,
+    "supersedes": [
+      "D-0001"
+    ]
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — retry once, cause preserved",
+      "why": "clears the transient fault and keeps the scorer's signal"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — report the cause without retrying",
+      "why": "the cause was named and the task still failed"
+    }
+  ],
+  "priced_for": {
+    "model_id": "stub"
+  },
+  "scopes": [
+    "suite/tools"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a tool call that can fail transiently; a 5xx from the HTTP tool; a wrapper around a flaky call",
+    "not_this": [
+      "a non-transient failure such as a 404, which a retry cannot repair"
+    ],
+    "stakes": "a task that fails on a transient fault scores zero while one retry would pass"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "O-0007",
+      "O-0008",
+      "O-0009",
+      "O-0010"
+    ],
+    "premises": [
+      {
+        "falsifier": "a second consecutive 5xx on the same path in the trace store",
+        "id": "p1",
+        "statement": "a transient fault clears on the next call",
+        "status": "supported"
+      },
+      {
+        "falsifier": "faulted tasks failing after a retry",
+        "id": "p2",
+        "statement": "task_pass_rate on faulted tasks is bounded by whether the call is retried",
+        "status": "supported"
+      }
+    ]
+  }
+}

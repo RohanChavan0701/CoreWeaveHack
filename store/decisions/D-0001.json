@@ -49,9 +49,9 @@
       },
       "key_space": "work-shape",
       "lifecycle": {
-        "settled_at": null,
-        "settled_by": null,
-        "status": "live"
+        "settled_at": "2026-09-12T15:19:47.126289-07:00",
+        "settled_by": "D-0003",
+        "status": "settled"
       },
       "owed_act": {
         "class": "apply",
@@ -83,9 +83,9 @@
       },
       "key_space": "world-state",
       "lifecycle": {
-        "settled_at": null,
-        "settled_by": null,
-        "status": "live"
+        "settled_at": "2026-09-12T15:19:47.126289-07:00",
+        "settled_by": "D-0003",
+        "status": "settled"
       },
       "owed_act": {
         "class": "re-adjudicate",
@@ -93,6 +93,36 @@
       },
       "slot": "warrant",
       "type": "revisit",
+      "warrant": null
+    },
+    {
+      "consumer": "propagation",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [
+          "D-0003"
+        ],
+        "terms": []
+      },
+      "key_space": "neighbor",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "check",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "wiring",
       "warrant": null
     }
   ],
@@ -115,9 +145,9 @@
       },
       "key_space": "competence",
       "lifecycle": {
-        "settled_at": null,
-        "settled_by": null,
-        "status": "live"
+        "settled_at": "2026-09-12T15:19:47.126289-07:00",
+        "settled_by": "D-0003",
+        "status": "settled"
       },
       "owed_act": {
         "class": "retire",
@@ -131,7 +161,7 @@
   "lineage": {
     "folded_from": [],
     "split_from": null,
-    "superseded_by": null,
+    "superseded_by": "D-0003",
     "supersedes": []
   },
   "options": [
@@ -152,7 +182,7 @@
   "scopes": [
     "suite/tools"
   ],
-  "status": "accepted",
+  "status": "superseded",
   "summary": {
     "latch": "a tool call that fails; an error reported from a tool failure; a wrapper that rethrows",
     "not_this": [

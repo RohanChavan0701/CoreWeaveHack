@@ -1,26 +1,26 @@
 {
   "error-wrapping": [
     {
-      "latch": "a tool call that fails; an error reported from a tool failure; a wrapper that rethrows",
+      "latch": "a tool call that can fail transiently; a 5xx from the HTTP tool; a wrapper around a flaky call",
       "latch_index": 0,
       "not_this": [
-        "a failure inside the model's own reasoning, with no tool call behind it"
+        "a non-transient failure such as a 404, which a retry cannot repair"
       ],
       "owed_act": "apply",
-      "record": "D-0001",
-      "stakes": "a silent failure hides the cause the oracle scores on; passes score green while the fault persists"
+      "record": "D-0003",
+      "stakes": "a task that fails on a transient fault scores zero while one retry would pass"
     }
   ],
   "http-tool": [
     {
-      "latch": "a tool call that fails; an error reported from a tool failure; a wrapper that rethrows",
+      "latch": "a tool call that can fail transiently; a 5xx from the HTTP tool; a wrapper around a flaky call",
       "latch_index": 0,
       "not_this": [
-        "a failure inside the model's own reasoning, with no tool call behind it"
+        "a non-transient failure such as a 404, which a retry cannot repair"
       ],
       "owed_act": "apply",
-      "record": "D-0001",
-      "stakes": "a silent failure hides the cause the oracle scores on; passes score green while the fault persists"
+      "record": "D-0003",
+      "stakes": "a task that fails on a transient fault scores zero while one retry would pass"
     }
   ],
   "shell-tool": [
@@ -49,14 +49,14 @@
   ],
   "tool-call-retry": [
     {
-      "latch": "a tool call that fails; an error reported from a tool failure; a wrapper that rethrows",
+      "latch": "a tool call that can fail transiently; a 5xx from the HTTP tool; a wrapper around a flaky call",
       "latch_index": 0,
       "not_this": [
-        "a failure inside the model's own reasoning, with no tool call behind it"
+        "a non-transient failure such as a 404, which a retry cannot repair"
       ],
       "owed_act": "apply",
-      "record": "D-0001",
-      "stakes": "a silent failure hides the cause the oracle scores on; passes score green while the fault persists"
+      "record": "D-0003",
+      "stakes": "a task that fails on a transient fault scores zero while one retry would pass"
     }
   ]
 }

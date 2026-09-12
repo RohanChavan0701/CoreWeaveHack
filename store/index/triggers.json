@@ -7,10 +7,10 @@
       "comparator": "<",
       "evaluation": "suite-v1",
       "persistence": 2,
-      "scorer": "error_cause_present",
+      "scorer": "tool_budget_respected",
       "value": 0.5
     },
-    "record": "D-0001"
+    "record": "D-0002"
   },
   {
     "disposer": "the backward pass",
@@ -20,9 +20,9 @@
       "comparator": "<",
       "evaluation": "suite-v1",
       "persistence": 2,
-      "scorer": "tool_budget_respected",
-      "value": 0.5
+      "scorer": "task_pass_rate",
+      "value": 0.7
     },
-    "record": "D-0002"
+    "record": "D-0003"
   }
 ]
