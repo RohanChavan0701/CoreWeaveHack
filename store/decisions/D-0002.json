@@ -1,0 +1,181 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-2c62-7c5c-b790-e2e7ad5223ff",
+      "model_id": "stub",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-12T15:19:22.595589-07:00",
+    "ledger_entry": "H-0002",
+    "proposed_by": "K-0001",
+    "verdict": "admit"
+  },
+  "context": "the same fork was observed in independent passes: O-0003, O-0006",
+  "counterfactual": "The overshoot is batching dependent calls whose later inputs are unknown — bounded by O-0003, O-0006.",
+  "created_at": "2026-09-12T15:19:22.592892-07:00",
+  "decision": "Under a call budget, independent calls over known inputs are issued as one batched call.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether the inputs are truly independent is judgment"
+    ]
+  },
+  "id": "D-0002",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "calls whose inputs depend on a previous call's output"
+        ],
+        "over_passes": null,
+        "records": [],
+        "terms": [
+          "shell-tool",
+          "tool-budget"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "tool_budget_respected",
+          "value": 0.5
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "no tool runs under a budget",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": null,
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — one batched call",
+      "why": "fits any budget of one or more"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — one call per input",
+      "why": "exceeds the budget whenever inputs outnumber it"
+    }
+  ],
+  "priced_for": {
+    "model_id": "stub"
+  },
+  "scopes": [
+    "suite/tools"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a shell tool under a call budget; several files or inputs to inspect",
+    "not_this": [
+      "calls whose inputs depend on a previous call's output"
+    ],
+    "stakes": "a budget exceeded fails the task outright"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "O-0003",
+      "O-0006"
+    ],
+    "premises": [
+      {
+        "falsifier": "a budget at or above the input count",
+        "id": "p1",
+        "statement": "the budget is smaller than the number of independent inputs",
+        "status": "supported"
+      }
+    ]
+  }
+}

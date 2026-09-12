@@ -1,4 +1,56 @@
 {
-  "edges": [],
-  "nodes": []
+  "edges": [
+    {
+      "from": "H-0001",
+      "kind": "admission",
+      "to": "D-0001"
+    },
+    {
+      "from": "H-0002",
+      "kind": "admission",
+      "to": "D-0002"
+    },
+    {
+      "from": "O-0001",
+      "kind": "promotion",
+      "to": "D-0001"
+    },
+    {
+      "from": "O-0002",
+      "kind": "promotion",
+      "to": "D-0001"
+    },
+    {
+      "from": "O-0003",
+      "kind": "promotion",
+      "to": "D-0002"
+    },
+    {
+      "from": "O-0004",
+      "kind": "promotion",
+      "to": "D-0001"
+    },
+    {
+      "from": "O-0005",
+      "kind": "promotion",
+      "to": "D-0001"
+    },
+    {
+      "from": "O-0006",
+      "kind": "promotion",
+      "to": "D-0002"
+    }
+  ],
+  "nodes": [
+    "D-0001",
+    "D-0002",
+    "H-0001",
+    "H-0002",
+    "O-0001",
+    "O-0002",
+    "O-0003",
+    "O-0004",
+    "O-0005",
+    "O-0006"
+  ]
 }

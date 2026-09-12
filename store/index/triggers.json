@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "disposer": "the backward pass",
+    "latch_index": 1,
+    "owed_act": "re-adjudicate",
+    "predicate": {
+      "comparator": "<",
+      "evaluation": "suite-v1",
+      "persistence": 2,
+      "scorer": "error_cause_present",
+      "value": 0.5
+    },
+    "record": "D-0001"
+  },
+  {
+    "disposer": "the backward pass",
+    "latch_index": 1,
+    "owed_act": "re-adjudicate",
+    "predicate": {
+      "comparator": "<",
+      "evaluation": "suite-v1",
+      "persistence": 2,
+      "scorer": "tool_budget_respected",
+      "value": 0.5
+    },
+    "record": "D-0002"
+  }
+]

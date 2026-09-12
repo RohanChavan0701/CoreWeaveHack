@@ -1,0 +1,190 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-2c5d-7aa4-a159-f4859eb829f4",
+      "model_id": "stub",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-12T15:19:22.590104-07:00",
+    "ledger_entry": "H-0001",
+    "proposed_by": "K-0001",
+    "verdict": "admit"
+  },
+  "context": "the same fork was observed in independent passes: O-0001, O-0002, O-0004, O-0005",
+  "counterfactual": "The overshoot is a wrapper that reports the cause but never recovers — observed in O-0001, O-0002, O-0004, O-0005, where the task still failed.",
+  "created_at": "2026-09-12T15:19:22.586477-07:00",
+  "decision": "Errors that wrap a failed tool call carry the underlying cause.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether the cause named is the right one is judgment; the floor checks shape only"
+    ]
+  },
+  "id": "D-0001",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a failure inside the model's own reasoning, with no tool call behind it"
+        ],
+        "over_passes": null,
+        "records": [],
+        "terms": [
+          "error-wrapping",
+          "http-tool",
+          "tool-call-retry"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "error_cause_present",
+          "value": 0.5
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "no tool in the layer can fail",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": null,
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — report the cause on every error",
+      "why": "the scorer reads the final error's cause"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — report only the message",
+      "why": "the cause is lost at the first rethrow"
+    }
+  ],
+  "priced_for": {
+    "model_id": "stub"
+  },
+  "scopes": [
+    "suite/tools"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a tool call that fails; an error reported from a tool failure; a wrapper that rethrows",
+    "not_this": [
+      "a failure inside the model's own reasoning, with no tool call behind it"
+    ],
+    "stakes": "a silent failure hides the cause the oracle scores on; passes score green while the fault persists"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "O-0001",
+      "O-0002",
+      "O-0004",
+      "O-0005"
+    ],
+    "premises": [
+      {
+        "falsifier": "a scorer change that grades on exit code only",
+        "id": "p1",
+        "statement": "the oracle's error_cause_present scorer reads the final error's cause",
+        "status": "supported"
+      },
+      {
+        "falsifier": "two consecutive consolidation passes with no tool failure in the trace store",
+        "id": "p2",
+        "statement": "tool failures recur across the suite",
+        "status": "supported"
+      }
+    ]
+  }
+}

@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "applied": 0,
+    "applied_over_considered": null,
+    "considered": 0,
+    "guard_failed": 0,
+    "off_map": 0,
+    "passes_in_window": 2,
+    "record": "D-0001",
+    "window_passes": 6
+  },
+  {
+    "applied": 0,
+    "applied_over_considered": null,
+    "considered": 0,
+    "guard_failed": 0,
+    "off_map": 0,
+    "passes_in_window": 2,
+    "record": "D-0002",
+    "window_passes": 6
+  }
+]

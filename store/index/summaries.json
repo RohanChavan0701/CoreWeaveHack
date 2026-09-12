@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "latch": "a tool call that fails; an error reported from a tool failure; a wrapper that rethrows",
+    "not_this": [
+      "a failure inside the model's own reasoning, with no tool call behind it"
+    ],
+    "record": "D-0001",
+    "scopes": [
+      "suite/tools"
+    ],
+    "stakes": "a silent failure hides the cause the oracle scores on; passes score green while the fault persists",
+    "status": "accepted"
+  },
+  {
+    "latch": "a shell tool under a call budget; several files or inputs to inspect",
+    "not_this": [
+      "calls whose inputs depend on a previous call's output"
+    ],
+    "record": "D-0002",
+    "scopes": [
+      "suite/tools"
+    ],
+    "stakes": "a budget exceeded fails the task outright",
+    "status": "accepted"
+  }
+]

@@ -1,0 +1,111 @@
+{
+  "admitted": [
+    "D-0001",
+    "D-0002"
+  ],
+  "after_pass": 2,
+  "analyst_report": null,
+  "brief": {
+    "accepted": [],
+    "after_pass": 2,
+    "competence": [],
+    "consolidator_call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-2c59-78a6-81ca-8e6e6ee9c205",
+    "credit": [],
+    "escapes": [],
+    "fires_owed": [],
+    "groups": [
+      {
+        "coder_call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-2c52-7560-8349-cc2e24ce0e25",
+        "observations": [
+          "O-0001",
+          "O-0002",
+          "O-0004",
+          "O-0005"
+        ],
+        "sessions": [
+          "S-0001",
+          "S-0002"
+        ],
+        "shape": [
+          "error-wrapping",
+          "http-tool",
+          "tool-call-retry"
+        ]
+      },
+      {
+        "coder_call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-2c52-7560-8349-cc2e24ce0e25",
+        "observations": [
+          "O-0003",
+          "O-0006"
+        ],
+        "sessions": [
+          "S-0001",
+          "S-0002"
+        ],
+        "shape": [
+          "shell-tool",
+          "tool-budget"
+        ]
+      }
+    ],
+    "scores": {
+      "S-0001": {
+        "error_cause_present": 0.0,
+        "output_schema_valid": 1.0,
+        "suite_hash": 1.0,
+        "task_pass_rate": 0.5,
+        "tool_budget_respected": 0.0
+      },
+      "S-0002": {
+        "error_cause_present": 0.0,
+        "output_schema_valid": 1.0,
+        "suite_hash": 1.0,
+        "task_pass_rate": 0.5,
+        "tool_budget_respected": 0.0
+      }
+    },
+    "sessions": [
+      "S-0001",
+      "S-0002"
+    ],
+    "steers": []
+  },
+  "closed_at": "2026-09-12T15:19:22.597659-07:00",
+  "fires_discharged": [],
+  "flipped": [],
+  "id": "K-0001",
+  "kind": "consolidation",
+  "nominations": [
+    {
+      "draft": "01a097b4-2c5a-7379-ae51-f52c75fbd0a3",
+      "evidence": [
+        "O-0001",
+        "O-0002",
+        "O-0004",
+        "O-0005"
+      ],
+      "ledger_entry": "H-0001",
+      "outcome": "admitted D-0001",
+      "rung": "new-decision",
+      "rung_why": "no existing record's counterfactual, hook or register absorbs this fork; the fork is undecided",
+      "subject": "cause"
+    },
+    {
+      "draft": "01a097b4-2c60-734f-b006-8c09dab2c315",
+      "evidence": [
+        "O-0003",
+        "O-0006"
+      ],
+      "ledger_entry": "H-0002",
+      "outcome": "admitted D-0002",
+      "rung": "new-decision",
+      "rung_why": "no existing record's counterfactual, hook or register absorbs this fork; the fork is undecided",
+      "subject": "batch"
+    }
+  ],
+  "sessions_read": [
+    "S-0001",
+    "S-0002"
+  ],
+  "started_at": "2026-09-12T15:19:22.566846-07:00"
+}

@@ -6,9 +6,9 @@
     "record": null
   },
   "disposition": {
-    "at": null,
-    "pointer": null,
-    "state": "open"
+    "at": "2026-09-12T15:19:22.590104-07:00",
+    "pointer": "D-0001",
+    "state": "promoted"
   },
   "kind": "observation",
   "name": "O-0001",
@@ -16,6 +16,10 @@
   "noticed_at": "2026-09-12T15:19:07.099501-07:00",
   "recheck_when": "any tool call that can fail transiently",
   "session": "S-0001",
-  "shape": [],
+  "shape": [
+    "error-wrapping",
+    "http-tool",
+    "tool-call-retry"
+  ],
   "uid": "01a097b3-efdb-71d2-ae7f-6e1d21a50011"
 }

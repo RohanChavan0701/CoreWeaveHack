@@ -1,1 +1,62 @@
-{}
+{
+  "error-wrapping": [
+    {
+      "latch": "a tool call that fails; an error reported from a tool failure; a wrapper that rethrows",
+      "latch_index": 0,
+      "not_this": [
+        "a failure inside the model's own reasoning, with no tool call behind it"
+      ],
+      "owed_act": "apply",
+      "record": "D-0001",
+      "stakes": "a silent failure hides the cause the oracle scores on; passes score green while the fault persists"
+    }
+  ],
+  "http-tool": [
+    {
+      "latch": "a tool call that fails; an error reported from a tool failure; a wrapper that rethrows",
+      "latch_index": 0,
+      "not_this": [
+        "a failure inside the model's own reasoning, with no tool call behind it"
+      ],
+      "owed_act": "apply",
+      "record": "D-0001",
+      "stakes": "a silent failure hides the cause the oracle scores on; passes score green while the fault persists"
+    }
+  ],
+  "shell-tool": [
+    {
+      "latch": "a shell tool under a call budget; several files or inputs to inspect",
+      "latch_index": 0,
+      "not_this": [
+        "calls whose inputs depend on a previous call's output"
+      ],
+      "owed_act": "apply",
+      "record": "D-0002",
+      "stakes": "a budget exceeded fails the task outright"
+    }
+  ],
+  "tool-budget": [
+    {
+      "latch": "a shell tool under a call budget; several files or inputs to inspect",
+      "latch_index": 0,
+      "not_this": [
+        "calls whose inputs depend on a previous call's output"
+      ],
+      "owed_act": "apply",
+      "record": "D-0002",
+      "stakes": "a budget exceeded fails the task outright"
+    }
+  ],
+  "tool-call-retry": [
+    {
+      "latch": "a tool call that fails; an error reported from a tool failure; a wrapper that rethrows",
+      "latch_index": 0,
+      "not_this": [
+        "a failure inside the model's own reasoning, with no tool call behind it"
+      ],
+      "owed_act": "apply",
+      "record": "D-0001",
+      "stakes": "a silent failure hides the cause the oracle scores on; passes score green while the fault persists"
+    }
+  ]
+}

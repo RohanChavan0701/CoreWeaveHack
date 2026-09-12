@@ -6,9 +6,9 @@
     "record": null
   },
   "disposition": {
-    "at": null,
-    "pointer": null,
-    "state": "open"
+    "at": "2026-09-12T15:19:22.595589-07:00",
+    "pointer": "D-0002",
+    "state": "promoted"
   },
   "kind": "observation",
   "name": "O-0006",
@@ -16,6 +16,9 @@
   "noticed_at": "2026-09-12T15:19:18.808597-07:00",
   "recheck_when": "a budgeted tool over several independent inputs",
   "session": "S-0002",
-  "shape": [],
+  "shape": [
+    "shell-tool",
+    "tool-budget"
+  ],
   "uid": "01a097b4-1d98-7431-ba7d-72e095669a76"
 }
