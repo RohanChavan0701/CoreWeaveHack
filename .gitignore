@@ -1,4 +1,51 @@
+# --- OS / editor ---
 .DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# --- Environment / secrets ---
 .env
 .env.*
 !.env.example
+
+# --- Python bytecode & caches ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# --- Virtual environments (uv creates .venv) ---
+.venv/
+venv/
+env/
+
+# --- uv ---
+# Note: uv.lock and pyproject.toml SHOULD be committed.
+.uv/
+
+# --- Packaging / build artifacts ---
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
+*.egg
+
+# --- Testing / coverage / type checkers ---
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- Weights & Biases / Weave ---
+wandb/
+.wandb/
