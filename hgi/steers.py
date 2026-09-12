@@ -22,10 +22,14 @@ def notes_for(session: Session) -> list[dict[str, Any]]:
     if client is None:
         return []
     try:
-        calls = client.get_calls(
+        calls = list(client.get_calls(
             query={"$expr": {"$eq": [{"$getField": "attributes.hgi.session"}, {"$literal": session.id}]}},
             include_feedback=True,
-        )
+        ))
+        if not calls:  # the attribute index can lag the write; fall back to every call in the session's traces
+            roots = [tracing.call_id(u) for u in [session.trace_root, *(a.call for a in session.lens_answers)] if u]
+            trace_ids = {client.get_call(r).trace_id for r in roots}
+            calls = list(client.get_calls(filter={"trace_ids": sorted(trace_ids)}, include_feedback=True)) if trace_ids else []
         out = []
         for call in calls:
             for fb in ((call.summary or {}).get("weave", {}).get("feedback") or []):

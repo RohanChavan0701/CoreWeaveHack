@@ -3,9 +3,11 @@
 ``init`` opens the project named by ``$HGI_WEAVE_PROJECT`` (under
 ``$WANDB_ENTITY`` when set) and returns the client, or ``None`` when no
 project is configured — every ``@weave.op`` then runs untraced and every call
-URI reads ``None``. ``attributes`` puts the session, pass, role and the ids of
-the records in context on every call made inside it, so any trace call can be
-joined back to what the pass was conditioned on.
+URI reads ``None``. ``attributes`` puts ``hgi.session``, ``hgi.pass``,
+``hgi.role`` and ``hgi.records_in_context`` on every call made inside it (as a
+nested ``hgi`` attribute, so the trace store can be queried by
+``attributes.hgi.session``), so any trace call can be joined back to what the
+pass was conditioned on.
 """
 
 from __future__ import annotations
@@ -51,11 +53,10 @@ def enabled() -> bool:
 @contextmanager
 def attributes(session: str | None = None, pass_: int | None = None, role: str | None = None,
                records_in_context: list[str] | None = None, **extra: Any) -> Iterator[None]:
-    attrs: dict[str, Any] = {k: v for k, v in {
-        "hgi.session": session, "hgi.pass": pass_, "hgi.role": role,
-        "hgi.records_in_context": records_in_context, **extra,
+    hgi: dict[str, Any] = {k: v for k, v in {
+        "session": session, "pass": pass_, "role": role, "records_in_context": records_in_context, **extra,
     }.items() if v is not None}
-    with weave.attributes(attrs):
+    with weave.attributes({"hgi": hgi}):
         yield
 
 
@@ -75,3 +76,8 @@ def call_uri(call: Any) -> str | None:
         return call.ref.uri()
     except Exception:
         return None
+
+
+def call_id(uri: str | None) -> str | None:
+    """``weave:///entity/project/call/<id>`` → ``<id>``."""
+    return uri.rsplit("/", 1)[1] if uri and "/call/" in uri else None

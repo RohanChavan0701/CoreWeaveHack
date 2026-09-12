@@ -115,10 +115,10 @@ def build_parser() -> argparse.ArgumentParser:
 def _register_pass_commands(add) -> None:
     """The forward- and backward-pass commands register themselves as their modules land."""
     try:
-        from hgi import boot, close, consolidate, evaluate  # noqa: F401
+        from hgi import boot, close, consolidate, evaluate, mirror  # noqa: F401
     except ImportError:
         return
-    for module in (boot, evaluate, close, consolidate):
+    for module in (boot, evaluate, close, consolidate, mirror):
         module.register(add, _store, _finish)
 
 

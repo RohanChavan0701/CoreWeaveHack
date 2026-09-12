@@ -85,7 +85,8 @@ def run(store: Store, session: Session) -> Session:
     dataset = weave.Dataset(name=dataset_name(), rows=[t.row() for t in TASKS])
     evaluation = Evaluation(name=EVALUATION, dataset=dataset, scorers=[s() for s in SCORERS],
                                   evaluation_name=f"{EVALUATION} pass {session.pass_} {'attached' if session.attached else 'detached'}")
-    with tracing.attributes(session=session.id, pass_=session.pass_, role="pass", attached=session.attached):
+    with tracing.attributes(session=session.id, pass_=session.pass_, role="pass", attached=session.attached,
+                            records_in_context=[r["id"] for r in agent.records]):
         summary, call = asyncio.run(_evaluate(evaluation, agent))
     stamp = now()
     session.model_id = _model.model_id()
