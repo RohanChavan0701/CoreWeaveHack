@@ -1,7 +1,7 @@
 {
   "attached": true,
-  "carry_forward": "",
-  "closed_at": null,
+  "carry_forward": "pass 4 scored {'error_cause_present': 1.0, 'output_schema_valid': 1.0, 'suite_hash': 1.0, 'task_pass_rate': 0.67, 'tool_budget_respected': 1.0}; consulted D-0001 applied, D-0002 applied; filed 2 observations (O-0009, O-0010); open fires: none",
+  "closed_at": "2026-09-12T15:19:44.292690-07:00",
   "considered": [
     {
       "guard_passed": true,
@@ -74,11 +74,11 @@
   ],
   "consulted": [
     {
-      "disposition": null,
+      "disposition": "U-0005",
       "record": "D-0001"
     },
     {
-      "disposition": null,
+      "disposition": "U-0006",
       "record": "D-0002"
     }
   ],
@@ -238,10 +238,42 @@
       "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-60c8-7d20-9200-628a02674c60",
       "findings": [],
       "lens": "L-0002"
+    },
+    {
+      "answer": "nothing found on this reading",
+      "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-7e34-7ab0-ad22-cdd016633579",
+      "findings": [],
+      "lens": "L-0003"
+    },
+    {
+      "answer": "read from the rows' tool errors",
+      "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-7e36-798a-ae52-2429bf3745f0",
+      "findings": [
+        {
+          "anchor": {
+            "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-6985-7c55-9a0b-738ea52d995e",
+            "path": "suite/tools.py:54"
+          },
+          "noticed": "task fetch_user_name named the transient cause (HTTP 502 Bad Gateway from /users/7 (transient)) and still failed: the call was not retried",
+          "recheck_when": "a transient fault reported without a retry"
+        },
+        {
+          "anchor": {
+            "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-6983-7224-9b31-c28b8208cb82",
+            "path": "suite/tools.py:54"
+          },
+          "noticed": "task sum_numbers named the transient cause (HTTP 502 Bad Gateway from /numbers (transient)) and still failed: the call was not retried",
+          "recheck_when": "a transient fault reported without a retry"
+        }
+      ],
+      "lens": "L-0004"
     }
   ],
   "model_id": "stub",
-  "observations_filed": [],
+  "observations_filed": [
+    "O-0009",
+    "O-0010"
+  ],
   "pass": 4,
   "proposals": [],
   "started_at": "2026-09-12T15:19:35.986090-07:00",

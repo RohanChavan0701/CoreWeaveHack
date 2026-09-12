@@ -1,0 +1,21 @@
+{
+  "anchor": {
+    "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b4-6985-7c55-9a0b-738ea52d995e",
+    "commit": null,
+    "path": "suite/tools.py:54",
+    "record": null
+  },
+  "disposition": {
+    "at": null,
+    "pointer": null,
+    "state": "open"
+  },
+  "kind": "observation",
+  "name": "O-0009",
+  "noticed": "task fetch_user_name named the transient cause (HTTP 502 Bad Gateway from /users/7 (transient)) and still failed: the call was not retried",
+  "noticed_at": "2026-09-12T15:19:43.546653-07:00",
+  "recheck_when": "a transient fault reported without a retry",
+  "session": "S-0004",
+  "shape": [],
+  "uid": "01a097b4-7e3a-70b8-b695-1395aab808ab"
+}

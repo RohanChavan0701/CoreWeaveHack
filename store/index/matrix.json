@@ -2,7 +2,9 @@
   "note": "system-misses/none-catches is detection-limited; its count is a floor of zero",
   "system-catches/none-catches": [
     "U-0003",
-    "U-0004"
+    "U-0004",
+    "U-0005",
+    "U-0006"
   ],
   "system-misses/none-catches": []
 }

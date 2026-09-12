@@ -2,3 +2,5 @@
 {"considered": false, "disposition": "fired-off-map", "guard_passed": false, "id": "U-0002", "kind": "disposition", "note": "work failed and matched no hook", "record": "none", "session": "S-0002"}
 {"considered": true, "disposition": "applied", "guard_passed": true, "id": "U-0003", "kind": "disposition", "note": "applied on fetch_user_name, sum_numbers", "record": "D-0001", "session": "S-0003"}
 {"considered": true, "disposition": "applied", "guard_passed": true, "id": "U-0004", "kind": "disposition", "note": "applied on count_lines", "record": "D-0002", "session": "S-0003"}
+{"considered": true, "disposition": "applied", "guard_passed": true, "id": "U-0005", "kind": "disposition", "note": "applied on fetch_user_name, sum_numbers", "record": "D-0001", "session": "S-0004"}
+{"considered": true, "disposition": "applied", "guard_passed": true, "id": "U-0006", "kind": "disposition", "note": "applied on count_lines", "record": "D-0002", "session": "S-0004"}
