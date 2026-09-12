@@ -1,7 +1,7 @@
 {
   "attached": true,
-  "carry_forward": "",
-  "closed_at": null,
+  "carry_forward": "pass 1 scored {'error_cause_present': 0.0, 'output_schema_valid': 1.0, 'suite_hash': 1.0, 'task_pass_rate': 0.5, 'tool_budget_respected': 0.0}; consulted nothing; filed 3 observations (O-0001, O-0002, O-0003); open fires: none",
+  "closed_at": "2026-09-12T15:19:07.555694-07:00",
   "considered": [
     {
       "guard_passed": true,
@@ -213,10 +213,51 @@
       "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b3-c130-7aa2-90e5-4d2f51574280",
       "findings": [],
       "lens": "L-0002"
+    },
+    {
+      "answer": "nothing found on this reading",
+      "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b3-efd7-797c-a7e3-c080cad598b4",
+      "findings": [],
+      "lens": "L-0003"
+    },
+    {
+      "answer": "read from the rows' tool errors",
+      "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b3-efd9-76c8-9387-3bf5d71012c6",
+      "findings": [
+        {
+          "anchor": {
+            "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b3-ce3a-7d5f-90a1-d7d42b9e010e",
+            "path": "suite/tools.py:54"
+          },
+          "noticed": "task sum_numbers failed on a transient fault (HTTP 502 Bad Gateway from /numbers (transient)) and the reported error named no cause",
+          "recheck_when": "any tool call that can fail transiently"
+        },
+        {
+          "anchor": {
+            "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b3-ce3b-7921-b11f-8f7d2869e79f",
+            "path": "suite/tools.py:54"
+          },
+          "noticed": "task fetch_user_name failed on a transient fault (HTTP 502 Bad Gateway from /users/7 (transient)) and the reported error named no cause",
+          "recheck_when": "any tool call that can fail transiently"
+        },
+        {
+          "anchor": {
+            "call": "weave:///slavazinevich-worldvue/hgi/call/01a097b3-ce40-7f71-9406-25fe924cf8c4",
+            "path": "suite/tools.py:54"
+          },
+          "noticed": "task count_lines exceeded its shell budget: independent calls were issued one per input instead of batched",
+          "recheck_when": "a budgeted tool over several independent inputs"
+        }
+      ],
+      "lens": "L-0004"
     }
   ],
   "model_id": "stub",
-  "observations_filed": [],
+  "observations_filed": [
+    "O-0001",
+    "O-0002",
+    "O-0003"
+  ],
   "pass": 1,
   "proposals": [],
   "started_at": "2026-09-12T15:18:55.132647-07:00",
