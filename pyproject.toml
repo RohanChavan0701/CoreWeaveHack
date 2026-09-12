@@ -1,20 +1,31 @@
 [project]
-name = "coreweavehack"
+name = "hgi"
 version = "0.1.0"
-description = "Add your description here"
+description = "HGI: an attached associative memory for agent loops — a typed record store with a governed read path and a governed write path."
 readme = "README.md"
 authors = [
     { name = "SlavaZinevich", email = "slavazinevich@gmail.com" }
 ]
 requires-python = ">=3.14"
 dependencies = [
+    "marimo>=0.24.2",
+    "openai>=3.13.0",
+    "pydantic>=2.13.5",
+    "pytest>=9.0.2",
     "wandb>=0.30.0",
     "weave>=0.53.9",
 ]
 
 [project.scripts]
-coreweavehack = "coreweavehack:main"
+hgi = "hgi.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = ""
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]

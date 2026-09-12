@@ -4,6 +4,7 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+.obsidian
 
 # --- Environment / secrets ---
 .env
