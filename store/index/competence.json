@@ -1,8 +1,8 @@
 [
   {
-    "applied": 1,
-    "applied_over_considered": 1.0,
-    "considered": 1,
+    "applied": 0,
+    "applied_over_considered": null,
+    "considered": 0,
     "guard_failed": 0,
     "off_map": 0,
     "passes_in_window": 6,
@@ -10,9 +10,9 @@
     "window_passes": 6
   },
   {
-    "applied": 1,
-    "applied_over_considered": 1.0,
-    "considered": 1,
+    "applied": 0,
+    "applied_over_considered": null,
+    "considered": 0,
     "guard_failed": 0,
     "off_map": 0,
     "passes_in_window": 6,
