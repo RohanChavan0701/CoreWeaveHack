@@ -126,16 +126,47 @@ hgi close       --session S-nnnn            # dispositions, observations, steers
 hgi consolidate                             # the backward pass over the ledgers
 hgi lint                                    # the floor
 hgi index                                   # regenerate projections
-hgi lineage     D-0007                      # the path query over the lineage DAG
+hgi price       --model <id>                # the size of a model swap over the conditioning records
+hgi lineage     D-0007                      # the admitting commit, and the path query over the lineage DAG
 hgi suite       show | tasks | fetch <fam>  # the task suite in scope; transcribe a dataset family
 hgi roles       try <request> --store <arm> # one role request against a copy of a store; how the reply parsed
 ```
 
 Every command that writes ends in a commit whose message names the record
-ids it admitted, flipped or retired. `./demo.sh` runs the whole
-demonstration; `uv run marimo run dashboard.py` opens the projection surface
-and the escalation queue; `uv run hgi mirror` publishes the ledgers to Weave
-for the analyst.
+ids it admitted, flipped or retired, which is what makes the admitting
+commit derivable: a record carries no hash of the commit that admitted it,
+so `hgi lineage` reads it back as the oldest commit naming the id.
+`./demo.sh` runs the whole demonstration; `uv run marimo run dashboard.py`
+opens the projection surface and the escalation queue; `uv run hgi mirror`
+publishes the ledgers to Weave for the analyst.
+
+Every lens, article and accepted decision records the frozen model its text
+was authored against, and a model swap re-prices all of them in both
+directions. `hgi price` names what a swap costs; `hgi price --restamp` moves
+the stamp without claiming the text moved with it, keeping
+`priced_for.authored_for` at the model that authored it, so the
+`model-pricing` check goes on warning until the text is re-authored.
+
+## The backward pass
+
+`hgi consolidate` runs every *k* passes and on any fire owed to it. Each leg
+is a nominator; every verdict is the adjudicator's, in its own context, and
+the committer alone writes. In order:
+
+| Leg | Nominates on | Executes as |
+|---|---|---|
+| nominations | the brief: observations grouped by the blind coder's shapes under the independence bar; `fusion` (dispositions bimodal across matched sub-shapes → split); `convergence` (identical hooks applied together → fold); `structural_zero` (a record no registered hook reaches → hook-edit) | a draft per nomination through attack and verdict; a `hook-edit` or `counterfactual-edit` is a successor derived from the one record it supersedes; a leaf names `split_from`, a fold `folded_from`, and admission writes the DAG move with reciprocal pointers |
+| deferrals | a `defer(<until>)` verdict | the condition becomes a latch on the draft — a watch predicate the oracle's next runs fire, or passes to wait — and the fire, owed to the backward pass, re-adjudicates the draft in fresh contexts |
+| fires owed | revisit latches whose predicate held; deferral latches | a decision's by a currency verdict on its warrant; a draft's by re-adjudication; the disposition and any flip land in one commit. A fire owed to the working pass instead is discharged by that pass at close, or the close is refused |
+| credit | the task-level credit table | oracle-attributed steers, credit assigned by the adjudicator |
+| retirement | applied ÷ considered under the record's retirement guard over the window | mootness by the adjudicator's killer-item check |
+| genesis anchoring | a seed article with no anchor | the consolidator names an instance from the ledgers, the adjudicator says whether it exemplifies the article, the committer appends the anchor; past the deadline in the bars an article still unanchored is evicted |
+| vocabulary | the same `other(<what>)` from independent passes | the blind coder recodes the presentations with the candidate withheld, the adjudicator admits or declines, the registry grows in place |
+| propagation | a wiring latch whose neighbour left the status it last saw — a tombstone's successor, a warrant's cited record | a mechanical check in the same commit; a rotted anchor goes to the adjudicator as a currency question |
+
+The projections under `store/index/` show each leg's live state: `hooks`,
+`summaries`, `triggers`, `deferred`, `wiring`, `fires`, `competence`,
+`fusion`, `convergence`, `structural_zero`, `lineage`, `matrix`.
 
 ## The world
 
@@ -237,4 +268,6 @@ The tests are the slice acceptance bars of spec § 13: the floor's named
 refusals and the committer (slice 0), facts, watches and fires (slice 1),
 two passes chained through the store (slice 2), admit, decline, escalate,
 the human queue, verdict authority and role separation on the ledger
-(slice 3), and the retirement leg.
+(slice 3), the retirement leg, and the backward pass's other legs: split
+and fold on the lineage DAG, the structural-zero audit and the edit rungs,
+deferral latches and propagation, genesis anchoring, and vocabulary growth.
