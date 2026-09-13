@@ -24,7 +24,12 @@ ledger records the pair. None of them settles anything by count.
   coder recodes the presentations with the candidate withheld, the
   adjudicator admits or declines, and the committer mints through the
   registry — except a vocabulary a verdict seam routes, whose recurrence is
-  surfaced but not grown in place without a companion route act.
+  surfaced but not grown in place without a companion route act. Before any
+  of that, :func:`revision_route` reads the escape pile against the axis's
+  members (doctrine § 7.5): a distinction that cross-cuts several members is
+  a question the axis conflated — vertical, surfaced and never minted as a
+  member — and only a missing peer or a partition of one member is grown
+  horizontally.
 """
 
 from __future__ import annotations
@@ -392,6 +397,69 @@ def escape_clusters(store: Store, vocab: str = "work-shape") -> list[dict[str, A
     return [{"vocabulary": vocab, "term": what, **c} for what, c in sorted(seen.items())]
 
 
+def _members_of(store: Store, vocab: str) -> dict[str, list[str]]:
+    """Every occasion of ``vocab`` and the registered members it carries — the axis's partition of the instance set.
+
+    A session carries the work-shape terms it classified into; a record's latch carries the key-spaces of the record's
+    other latches (the distinction an escaped key-space sits beside); a ledger entry carries one verdict, so a verdict
+    vocabulary has no co-occurrence to read and every escape there is a missing peer.
+    """
+    registered = set(store.registry.terms(vocab))
+    members: dict[str, list[str]] = {}
+    if vocab == "work-shape":
+        for s in store.all("session"):
+            if s.attached and s.closed_at is not None:  # type: ignore[attr-defined]
+                members[s.id] = sorted(set(s.work_shape.terms) & registered)  # type: ignore[attr-defined]
+    elif vocab == "key-space":
+        for host in [*store.decisions(), *store.drafts()]:
+            hid = host.id if isinstance(host, Decision) else host.uid
+            spaces = [l.key_space for l in host.all_latches()]
+            for i, latch in enumerate(host.all_latches()):
+                members[f"{hid}#{i}"] = sorted({k for j, k in enumerate(spaces) if j != i and k in registered})
+    return members
+
+
+def revision_route(store: Store, vocab: str, cluster: dict[str, Any]) -> dict[str, Any]:
+    """Horizontal or vertical: what the escape pile asks of the axis, computed from its co-occurrence with the axis's members.
+
+    An axis partitions its occasions into members' blocks; the candidate distinction — the escaping occasions — partitions
+    them too, and the relation between the partitions routes the move (doctrine § 7.5). Three cheap features approximate
+    it: **truth-maker identity** is assumed same, since an escape written in a field of ``vocab`` routes to that
+    vocabulary's evidence (the adjudicator may say otherwise); **breadth** is how many registered members the escaping
+    occasions also carry; **dependence** is the share of escaping occasions that carry the most co-occurring member.
+
+    - breadth 0 → the missing peer: add the member (horizontal);
+    - breadth 1, or a member every escaping occasion carries → a value within that member: partition it (horizontal);
+    - breadth ≥ 2 with no member on every occasion → a dimension the axis conflated: split the axis (vertical) — surfaced,
+      never minted as a member, because the fix is a re-derivation the machine proposes and the human names (I2).
+
+    The nominator weakens early by design: under twice the independence bar the reading is ``ambiguous (small N)`` and no
+    vertical route fires — early vocabulary error is caught late rather than a schema change fired on a handful of escapes.
+    """
+    bar = store.registry.bars.get("vocabulary", {}).get("independent_escapes", 2)
+    members = _members_of(store, vocab)
+    escaping = [o for o in cluster["sessions"] if o in members]
+    n = len(escaping)
+    counts: dict[str, int] = defaultdict(int)
+    for o in escaping:
+        for m in members[o]:
+            counts[m] += 1
+    table = dict(sorted(counts.items()))
+    breadth = len(table)
+    dependence = (max(table.values()) / n) if table and n else None
+    dominant = max(table, key=table.get) if table else None
+    if n < 2 * bar:
+        reading, route = "ambiguous (small N): the dependence feature is unreliable under twice the bar; horizontal by default", "horizontal"
+    elif breadth == 0:
+        reading, route = "a missing peer: the escaping occasions carry no registered member", "horizontal"
+    elif breadth == 1 or dependence == 1.0:
+        reading, route = f"a value within {dominant}: every escaping occasion carries it — partition that member", "horizontal"
+    else:
+        reading, route = f"a dimension the axis conflated: the distinction cross-cuts {breadth} members with no member on every occasion — split the axis", "vertical"
+    return {"vocabulary": vocab, "term": cluster["term"], "occasions": n, "breadth": breadth, "dependence": dependence, "table": table,
+            "truth_maker": "assumed the vocabulary's own; different is the adjudicator's call", "reading": reading, "route": route}
+
+
 def reviewable_vocabularies(store: Store) -> list[str]:
     """The closed vocabularies whose escapes the loop keeps and this review clusters: the pass's work-shape,
     a latch's key-space, and every species' verdict — the sources :func:`escape_events` reads."""
@@ -428,14 +496,19 @@ def _grow_vocabulary(store: Store, record: Consolidation, vocab: str) -> list[No
         if len(cluster["sessions"]) < bar:
             continue
         what = cluster["term"]
-        n = Nomination(rung="hook-edit", rung_why=f"escape recurrence: other({what}) from {len(cluster['sessions'])} independent occasions in {vocab}; the route-before-mint ladder's last rung for a term",
+        route = revision_route(store, vocab, cluster)
+        n = Nomination(rung="hook-edit", rung_why=f"escape recurrence: other({what}) from {len(cluster['sessions'])} independent occasions in {vocab}; the route-before-mint ladder's last rung for a term; revision routing reads it as {route['route']}: {route['reading']}",
                        subject=f"{vocab}/{what}", evidence=[e["session"] for e in cluster["escapes"]])
+        if route["route"] == "vertical":
+            n.outcome = f"vertical: {route['reading']}; the axis's question is re-derived by the human, not grown by a member — surfaced, not minted (table {route['table']})"
+            out.append(n)
+            continue
         text = " ".join(p["prompt"] for p in _suite.current().presentations())
         coded, coder_call = _coder.code([{"name": what, "noticed": text}], store.registry.terms(vocab), session=record.id, records_in_context=[])
         coder_terms = coded.get(what, [])
         covered = [t for t in coder_terms if not is_escape(t)]
         c = _model.complete("adjudicator", roles.request("vocabulary", vocabulary=vocab, term=what, escapes=cluster["escapes"], coder=coder_terms,
-                                                         existing=store.registry.terms(vocab), bar=bar), session=record.id)
+                                                         existing=store.registry.terms(vocab), bar=bar, route=route), session=record.id)
         out_ = c.json()
         v = str(out_.get("verdict", "decline(adjudicator returned no verdict)"))
         act = store.registry.route("adjudicator-verdict", v, VOCABULARY)
@@ -444,7 +517,7 @@ def _grow_vocabulary(store: Store, record: Consolidation, vocab: str) -> list[No
                             claim=f"the presentations escaping to other({what}) are one shape no {vocab} term covers",
                             proposer=RoleCall(role="consolidator", model_id=None, call=None),
                             contradiction={"source": {"role": "coder", "model_id": _model.model_id("coder"), "call": coder_call},
-                                           "coding": {"coder": coder_terms, "covered_by": covered, "sessions": cluster["sessions"], "after_pass": record.after_pass}},
+                                           "coding": {"coder": coder_terms, "covered_by": covered, "sessions": cluster["sessions"], "after_pass": record.after_pass, "route": route}},
                             verdict="agree" if admitted else "disagree", adjudicator=RoleCall(role="adjudicator", model_id=c.model_id, call=c.call),
                             outcome=v if not admitted else f"admit: {out_.get('means', '')}", rung="hook-edit")
         store.append(entry)

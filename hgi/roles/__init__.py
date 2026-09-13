@@ -67,7 +67,7 @@ REPLIES: dict[str, Any] = {
     "anchor": {"anchors": [{"article": "<a C- id from `articles`>", "anchor": "<one id or URI from `instances` that exemplifies the article>",
                             "why": "<how that instance instantiates the article's claim>"}]},
     "exemplifies": {"verdict": "<still-holds if the instance exemplifies the article; reversed if it contradicts it; moot if it does not bear on it>", "why": "<one sentence>"},
-    "vocabulary": {"verdict": "<admit if the escapes name one shape no registered term covers and the blind coder also escaped; else decline(<why>)>",
+    "vocabulary": {"verdict": "<admit if the escapes name one shape no registered term covers and the blind coder also escaped, and `route.route` is horizontal — a missing peer or a partition of one member; else decline(<why>)>",
                    "means": "<for admit: one sentence defining the term, as the registry will carry it>"},
     "currency": {"verdict": "<still-holds | reversed | moot>", "why": "<one sentence; a record whose cited anchor (`rotted`) retired still holds only if the anchor's successor stands for it; a pass's `finding` reverses a premise only when the evidence it cites shows that premise false; a `lens` at a door is moot when its repeated product is a cacheable answer or its seed never produced, still-holds when the question is still where judgment is needed>",
                  "premise": "<for reversed: the id of the premise the reading reversed; null when the warrant as a whole is disputed>"},
