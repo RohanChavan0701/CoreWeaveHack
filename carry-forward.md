@@ -113,7 +113,7 @@ each with why it may be right and why it may not.
     consolidation adopts one whose lesson a ratified group earns; the stub
     adopts (`tests/test_proposals.py`), and the real model may draft its own.
 14. **Re-authoring on a re-price.** `hgi price --restamp` moves the stamp and
-    records that the text did not move with it (decision 22); replacing the
+    records that the text did not move with it (decision 29); replacing the
     text against the new model is authoring work and is not mechanized. A
     role that re-authors a lens's angle or an article would close this, and
     would meet the same unverified drafting contracts as item 4.
@@ -152,7 +152,7 @@ each with why it may be right and why it may not.
 4. **`admission.commit` is derived, not stored.** A commit cannot contain its
    own hash; the commit message names the ids it admitted, so the anchor is
    git history, read by `hgi.store.admitting_commit` and printed by `hgi
-   lineage` (decision 21). *Risk:* the spec puts the field on the envelope;
+   lineage` (decision 28). *Risk:* the spec puts the field on the envelope;
    a consumer expecting it there finds nothing.
 5. **Facts are mirrored on the session record** (`evaluation.scores` and
    `evaluation.rows`) with the Weave run URI as `source`, and the watch
@@ -246,11 +246,11 @@ each with why it may be right and why it may not.
     the retirement guard from the bars. *Right:* on gpt-oss-120b the full
     body came back as placeholders in every try and the sketch parses and
     clears the floor in every try since; the stub answers in the same
-    shape. *Risk:* the ladder's other rungs (`counterfactual-edit`,
-    `hook-edit`) still have no operator, so a sketch is always a new
-    decision whatever rung it names; and a sketch cannot express a latch
-    the derivation does not know (a wiring latch, a second consultation
-    hook).
+    shape. *Risk:* the rule-tier rungs (`adoption-row`, `rule-enrollment`)
+    have no operator in a decisions-only roster; an edit rung derives its
+    successor from the record it supersedes rather than from a sketch
+    (decision 34), and a sketch cannot express a latch the derivation does
+    not know (a wiring latch, a second consultation hook).
 22. **Ids are minted against the counters on disk**, re-read before every
     reservation. *Right:* a long-running runner and the commands it drives
     hold separate registry objects; the baseline arm's three consolidations
@@ -286,7 +286,7 @@ each with why it may be right and why it may not.
     *Risk:* a record whose tasks improved for another reason earns no steer
     even when it was wrong — the oracle's floor, disclosed.
 
-21. **The admitting commit is the oldest commit naming the id**, rather than
+28. **The admitting commit is the oldest commit naming the id**, rather than
     a commit parsed for the verb that names it. History is append-only and
     no message names a record before the commit that wrote it, so the oldest
     naming is the admission, and no vocabulary of message verbs has to be
@@ -295,7 +295,7 @@ each with why it may be right and why it may not.
     id it did not write — a revert, a plan, a message quoting another —
     reads as an admission; nothing enforces the convention the messages
     follow.
-22. **A re-price that does not re-author says so on the record**
+29. **A re-price that does not re-author says so on the record**
     (`priced_for.authored_for`). *Right:* the stamp cannot launder the swap
     into a green floor; the warning stands until the text follows, and
     swapping back clears the field because stamp and authoring agree again.
@@ -303,13 +303,13 @@ each with why it may be right and why it may not.
     indefinitely priced for a model nothing was authored for, behind a
     warning nobody reads, which is exactly what `hgi genesis --force`
     avoided by making a price a fresh seed.
-23. **A tombstone's `superseded_by` is a list**, not the scalar the spec's
+30. **A tombstone's `superseded_by` is a list**, not the scalar the spec's
     envelope example shows, because a split leaves one retiree with several
     heirs and a scalar cannot name them. A record written with a scalar or
     `null` reads as the list it means; `store/decisions/D-0001.json` still
     carries the scalar it was written with. *Risk:* a reader of the spec's
     example expects a string.
-24. **A deferral is a latch on the draft itself**, in the pre-admission
+31. **A deferral is a latch on the draft itself**, in the pre-admission
     tier, and only that latch is exposed to the watch evaluator — the
     draft's own fan is not yet live. An adjudicator that defers without a
     condition, or returns an escape verdict, re-queues the draft at the
@@ -317,23 +317,25 @@ each with why it may be right and why it may not.
     fire. *Risk:* the adjudicator's `until` is read from a fixed shape
     (scorer, comparator, value, persistence — or passes); a condition it
     phrases otherwise becomes the schedule default.
-25. **Observations a pending draft rests on are claimed** until the draft
-    is disposed, so a deferred draft is not nominated twice from the same
-    instances. *Risk:* a declined draft frees them, and the same fork is
-    nominated again at the next consolidation from the same observations.
-26. **A wiring latch's guard remembers the status it saw**, and the fire
+32. **Observations a deferred draft rests on are claimed** until the draft
+    is disposed, so it is not nominated twice from the same instances; a
+    pass proposal is left unclaimed, so its instances still group and a
+    nomination can adopt it. *Risk:* a declined draft frees them, and the
+    same fork is nominated again at the next consolidation from the same
+    observations.
+33. **A wiring latch's guard remembers the status it saw**, and the fire
     ledger carries every later observation, so the latch stays immutable
     and one departure fires once. A warrant that cites a record is wired to
     it at admission, excluding the records the draft retires (the lineage
     edge already carries those, and citing a predecessor would otherwise
     close a wiring cycle the lint refuses). *Risk:* a wiring latch written
     before guards remembered statuses reads its successor as `accepted`.
-27. **The edit rungs are successor records** derived from the one record
+34. **The edit rungs are successor records** derived from the one record
     they supersede with the named fields replaced — never an edit in
     place, because a decision is frozen after acceptance. The retirement
     review's nomination still names `counterfactual-edit` as its rung for
     want of a `retire` rung in the ladder vocabulary.
-28. **Genesis anchoring is a currency question**, not an attack: the
+35. **Genesis anchoring is a currency question**, not an attack: the
     consolidator proposes an instance, the adjudicator reads the instance
     itself, and the ledger entry's species is `currency` with `still-holds`
     meaning the instance exemplifies the article. No examiner sits between
@@ -341,27 +343,27 @@ each with why it may be right and why it may not.
     draft. *Risk:* proposer and adjudicator without a contradictor is a
     weaker separation than the protocol of § 10.9; the adjudicator is handed
     the record, never the proposer's `why`.
-29. **Vocabulary growth files as a `coding` entry** whose contradictor is
+36. **Vocabulary growth files as a `coding` entry** whose contradictor is
     the blind coder and whose verdict is `agree` | `disagree`; the
     adjudicator's own token (`admit` | `decline(<why>)`) is the entry's
     outcome. A declined term is re-nominated only by escapes from passes
     after the verdict.
 
-30. **Every verdict seam routes through a closed table**
+37. **Every verdict seam routes through a closed table**
     (`registry.route_table`), and a term the vocabulary admits but the seam
     has no act for raises `Unrouted`; a test proves every table covers its
     vocabulary and the escape. *Right:* the `defer` fall-through of the
     first build cannot recur silently. *Risk:* an act tag is a string the
     seam dispatches on; the table proves coverage, not that the act is
     right.
-31. **A settlement cites its licence** — an adjudicated ledger entry, a
+38. **A settlement cites its licence** — an adjudicated ledger entry, a
     dispositive fire, or the admitted successor — and the committer refuses
     any other, so a corroborating fire nominates and never settles. The
     retirement latch is corroborating, so retirement cites the adjudicator's
     currency entry, and the lint proves the licence on every settled latch.
     *Risk:* `evict_article` cites no licence; the deadline in the bars is
     its only ground.
-32. **A fire owed to the working pass is disposed at close** as a consulted
+39. **A fire owed to the working pass is disposed at close** as a consulted
     record is — from the pass's own rows, in the session's commit — or the
     close is refused, and the lint's `fire-completeness` check reads the
     close seam. *Risk:* no latch in the decisions-only roster names the
