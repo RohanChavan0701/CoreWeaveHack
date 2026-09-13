@@ -13,6 +13,10 @@ ledger records the pair. None of them settles anything by count.
   genesis`` and no anchor; the consolidator proposes an instance from the
   loop's own ledgers, the adjudicator says whether it exemplifies the
   article, and an article still unanchored past the deadline is evicted.
+- :func:`lenses` — the lens tier's lifecycle (doctrine § 7.4, the crystallization law; § 14.1's lens column): a lens's
+  warrant is its effect evidence, derived here from the products that reached a consumer; a seed lens unanchored past
+  the genesis deadline, or a lens whose product stopped varying, is nominated to the adjudicator and retired on
+  ``moot`` — the answer is cacheable, or the question was never needed.
 - :func:`vocabulary` — the route-before-mint ladder's last rung for a term,
   for every closed vocabulary whose escapes the loop keeps (a pass's
   work-shape, a latch's key-space, a species' verdict): the same
@@ -25,6 +29,7 @@ ledger records the pair. None of them settles anything by count.
 
 from __future__ import annotations
 
+import json
 import re
 from collections import defaultdict
 from typing import Any
@@ -178,6 +183,129 @@ def genesis_anchors(store: Store, record: Consolidation) -> list[Nomination]:
                 store.evict_article(store.read("constitution", article.id))  # type: ignore[arg-type]
                 record.flipped.append(article.id)
                 next(n for n in out if n.subject == article.id).outcome += f"; evicted past the {deadline}-consolidation deadline"
+    return out
+
+
+# --- the lens tier -------------------------------------------------------------------------------
+
+LENS = route_table("lens-review", "currency-verdict", {"still-holds": "keep", "reversed": "retire", "moot": "retire", "pending": "keep", "other": "keep"})
+"""A lens nominated for a crystallization door or the genesis deadline: ``moot`` retires it (the question is no longer where
+judgment is needed), ``reversed`` too (the angle misleads), ``still-holds`` keeps it — the killer-item check is the adjudicator's."""
+
+
+def lens_walks(store: Store) -> dict[str, list[dict[str, Any]]]:
+    """Every walk of every lens, as ``{lens id: [{occasion, product}]}`` — a session's answer for a boot or close lens, an attack
+    entry's claims for an examiner lens. The product is what the walk filed; its variance across walks is the crystallization signal."""
+    walks: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for s in store.all("session"):
+        if not s.attached:  # type: ignore[attr-defined]
+            continue
+        for a in s.lens_answers:  # type: ignore[attr-defined]
+            walks[a.lens].append({"occasion": s.id, "product": a.findings, "call": a.call})
+    for e in store.all("hypothesis"):
+        attack = e.contradiction.attack  # type: ignore[attr-defined]
+        if attack is None:
+            continue
+        by_lens: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for c in attack.claims:
+            if c.lens:
+                by_lens[c.lens].append({"target": c.target, "landed": c.landed})
+        for lens_id, claims in by_lens.items():
+            walks[lens_id].append({"occasion": e.id, "product": claims, "call": next((c.call for c in attack.claims if c.lens == lens_id), None)})
+    return walks
+
+
+def lens_anchors(store: Store) -> dict[str, list[str]]:
+    """The instances a lens's product reached a consumer through — its effect evidence, derived (I3), never authored.
+
+    A boot lens's finding that disposed a record: the disposition. A close lens's finding that became an observation the
+    backward pass promoted or dismissed: that observation. A close lens's contradiction the adjudicator settled: the
+    settling entry. A recall probe the consolidator re-keyed on: the nomination's entry. An examiner lens's landed claim
+    the adjudicator upheld: the attack entry. And any steer whose correction cites the lens.
+    """
+    anchors: dict[str, set[str]] = defaultdict(set)
+    dispositions = store.all("disposition")
+    observations = {o.session: [] for o in store.observations(state=None)}
+    for o in store.observations(state=None):
+        observations[o.session].append(o)
+    for s in store.all("session"):
+        if not s.attached:  # type: ignore[attr-defined]
+            continue
+        for a in s.lens_answers:  # type: ignore[attr-defined]
+            if not a.findings:
+                continue
+            if a.lens == "L-0001":
+                named = {f.get("record") for f in a.findings}
+                anchors[a.lens] |= {u.id for u in dispositions if u.session == s.id and u.record in named and u.disposition == "considered-not-applicable"}  # type: ignore[attr-defined]
+            elif a.lens == "L-0004":
+                anchors[a.lens] |= {o.name for o in observations.get(s.id, []) if o.disposition.state in ("promoted", "dismissed")}
+            elif a.lens == "L-0003":
+                anchors[a.lens] |= {e.id for e in store.all("hypothesis") if e.contradiction.source.call == a.call and e.verdict != "pending"}  # type: ignore[attr-defined]
+                anchors[a.lens] |= {e.id for e in store.all("hypothesis") if isinstance(e.contradiction.coding, dict)  # type: ignore[attr-defined]
+                                    and e.contradiction.coding.get("pending") in {x.id for x in store.all("hypothesis") if x.contradiction.source.call == a.call}}  # type: ignore[attr-defined]
+    for k in store.all("consolidation"):
+        for n in k.nominations:  # type: ignore[attr-defined]
+            if n.subject.startswith("recall:") and n.ledger_entry:
+                anchors["L-0002"].add(n.ledger_entry)
+    for e in store.all("hypothesis"):
+        attack = e.contradiction.attack  # type: ignore[attr-defined]
+        if attack and e.verdict in ("attack-landed", "premise-killed"):  # type: ignore[attr-defined]
+            anchors.update({c.lens: anchors[c.lens] | {e.id} for c in attack.claims if c.lens and c.landed})
+    for t in store.all("steer"):
+        for lens_id in re.findall(r"\bL-\d{4}\b", t.correction):  # type: ignore[attr-defined]
+            anchors[lens_id].add(t.id)
+    return {k: sorted(v) for k, v in anchors.items()}
+
+
+def collapsed(walks: list[dict[str, Any]], window: int) -> dict[str, Any] | None:
+    """The variance-collapse reading over a lens's walks: the one product it filed every time, once it has been walked the
+    review window over and the product is not empty. An empty stream is no signal, not a cached answer."""
+    if len(walks) < window:
+        return None
+    products = {json.dumps(w["product"], sort_keys=True) for w in walks}
+    if len(products) != 1 or not walks[0]["product"]:
+        return None
+    return {"walks": len(walks), "product": walks[0]["product"]}
+
+
+def lenses(store: Store, record: Consolidation) -> list[Nomination]:
+    """The lens review: anchors derived and appended; a seed unanchored past the deadline, or a stream that stopped varying,
+    goes to the adjudicator, and ``moot`` retires the lens — it is kept in the register as evidence and walked by nothing."""
+    out = []
+    walks = lens_walks(store)
+    anchors = lens_anchors(store)
+    deadline = store.registry.bars.get("genesis_anchor_deadline_consolidations", 3)
+    window = store.registry.bars["retirement"]["window_passes"]
+    past_deadline = len(store.all("consolidation")) >= deadline
+    for lens in store.registry.lenses():
+        new = [a for a in anchors.get(lens.id, []) if a not in lens.warrant.anchors]
+        if new:
+            store.registry.patch_lens(lens.id, {"warrant": {"evidence": lens.warrant.evidence, "anchors": [*lens.warrant.anchors, *new]}})
+            record.anchored.append(lens.id)
+        anchored = bool(lens.warrant.anchors or new)
+        walked = walks.get(lens.id, [])
+        crystal = collapsed(walked, window)
+        unearned = past_deadline and not anchored and lens.warrant.evidence == "genesis"
+        if not (crystal or unearned):
+            continue
+        door = "variance-collapse" if crystal else "genesis-deadline"
+        c = _model.complete("adjudicator", roles.request("currency", lens={"id": lens.id, "angle": lens.angle, "host": lens.host, "consumer": lens.consumer},
+                                                         door=door, walks=len(walked), products=sum(1 for w in walked if w["product"]),
+                                                         repeated_product=crystal["product"] if crystal else None, anchors=lens.warrant.anchors), session=record.id)
+        out_ = c.json()
+        v = str(out_.get("verdict", "pending"))
+        entry = _entry(store, subject=lens.id, claim=f"{lens.id} is where judgment is still needed" + (f"; its product stopped varying over {crystal['walks']} walks" if crystal else f"; a seed unanchored past {deadline} consolidations"),
+                       proposer=RoleCall(role="consolidator", model_id=None, call=None), c=c, verdict=v,
+                       coding={"door": door, "walks": len(walked), "anchors": lens.warrant.anchors, "repeated_product": crystal["product"] if crystal else None},
+                       why=out_.get("why"), source=f"lens-walks:{lens.id}")
+        n = Nomination(rung="counterfactual-edit", rung_why=f"lens review: {door}", subject=lens.id, evidence=[w["occasion"] for w in walked][-window:], ledger_entry=entry.id)
+        if store.registry.route("currency-verdict", v, LENS) == "retire":
+            store.registry.patch_lens(lens.id, {"status": "retired"})
+            record.retired.append(lens.id)
+            n.outcome = f"{v}: retired through the {door} door" + (f"; the cacheable answer is {json.dumps(crystal['product'])[:120]}" if crystal else "")
+        else:
+            n.outcome = f"{v}: kept"
+        out.append(n)
     return out
 
 

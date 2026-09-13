@@ -675,8 +675,15 @@ class LensTelemetry(Strict):
 
 
 class Lens(Strict):
+    """Composition's unit, evaluated at the lens's coordinates of the pentad (doctrine § 14.1): activation is its host's
+    walk; the payload a question, never an answer; the warrant its effect evidence — the anchored instances its product
+    reached a consumer through, and the steers that cite it; enforcement the floor's shape checks with answer truth as
+    residue; the lifecycle the crystallization doors — variance-collapse and authority-crystallization — plus the
+    genesis deadline every seed shares."""
+
     id: str
     kind: Literal["lens"] = "lens"
+    status: Term("lens-status") = "live"
     angle: str
     counterfactual: str
     purpose: Term("lens-purpose")
@@ -688,6 +695,10 @@ class Lens(Strict):
     """For an examiner-hosted lens: the attack-claim target classes its angle may land on, as prefixes (``premise:``,
     ``warrant:independence``). A claim outside them is another angle's product and is dropped — a distinct product per
     angle is what makes the fan an ensemble rather than a longer prompt."""
+    warrant: GenesisWarrant = Field(default_factory=lambda: GenesisWarrant(evidence="genesis"))
+    """Effect evidence: ``genesis`` until the lens's product reaches a consumer — an observation promoted, an entry
+    adjudicated, a claim upheld, a steer citing it — each such instance an anchor. A seed lens unanchored past the
+    deadline is a question nobody's answer ever needed."""
     priced_for: Priced = Field(default_factory=Priced)
     telemetry: LensTelemetry = Field(default_factory=LensTelemetry)
 
@@ -732,6 +743,8 @@ class Consolidation(Strict):
     """Pass proposals dropped unadopted at the bar ``proposal_ttl_consolidations``."""
     dismissed: list[str] = Field(default_factory=list)
     """Observations the noise filter dismissed as irreducible, each pointing at its reality entry (§ 10.2)."""
+    retired: list[str] = Field(default_factory=list)
+    """Lenses retired in this pass through a crystallization door or the genesis deadline."""
 
 
 # --- kind table ---------------------------------------------------------------

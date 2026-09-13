@@ -69,7 +69,7 @@ REPLIES: dict[str, Any] = {
     "exemplifies": {"verdict": "<still-holds if the instance exemplifies the article; reversed if it contradicts it; moot if it does not bear on it>", "why": "<one sentence>"},
     "vocabulary": {"verdict": "<admit if the escapes name one shape no registered term covers and the blind coder also escaped; else decline(<why>)>",
                    "means": "<for admit: one sentence defining the term, as the registry will carry it>"},
-    "currency": {"verdict": "<still-holds | reversed | moot>", "why": "<one sentence; a record whose cited anchor (`rotted`) retired still holds only if the anchor's successor stands for it; a pass's `finding` reverses a premise only when the evidence it cites shows that premise false>",
+    "currency": {"verdict": "<still-holds | reversed | moot>", "why": "<one sentence; a record whose cited anchor (`rotted`) retired still holds only if the anchor's successor stands for it; a pass's `finding` reverses a premise only when the evidence it cites shows that premise false; a `lens` at a door is moot when its repeated product is a cacheable answer or its seed never produced, still-holds when the question is still where judgment is needed>",
                  "premise": "<for reversed: the id of the premise the reading reversed; null when the warrant as a whole is disputed>"},
     "reauthor": {"text": {"<the name of a field being re-authored, such as `angle` or `article`>": "<that field's content re-authored to condition the new model: the same claim, the wording that conditions it>"}},
 }

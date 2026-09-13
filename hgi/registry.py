@@ -197,13 +197,19 @@ class Registry:
             raise KeyError(name)
         write_json(self.path(name), payload)
 
-    def lenses(self, host: str | None = None) -> list[Any]:
-        """The lens register as typed :class:`hgi.types.Lens` records, optionally filtered by host."""
+    def lenses(self, host: str | None = None, status: str | None = "live") -> list[Any]:
+        """The lens register as typed :class:`hgi.types.Lens` records, optionally filtered by host; live lenses only
+        unless ``status`` is ``None`` — a retired lens is kept as evidence and walked by nothing."""
         from hgi.types import Lens  # lazy: types validates against this registry
 
         raw = read_json(self.path("lenses"))
         lenses = [Lens.model_validate(item, context={"registry": self}) for item in raw]
-        return [l for l in lenses if host is None or l.host == host]
+        return [l for l in lenses if (host is None or l.host == host) and (status is None or l.status == status)]
+
+    def patch_lens(self, lens_id: str, patch: dict[str, Any]) -> None:
+        """Correct one lens in the register in place — the register's one write form; git carries the history."""
+        path = self.path("lenses")
+        write_json(path, [item | patch if item.get("id") == lens_id else item for item in read_json(path)])
 
 
 # --- loading ---------------------------------------------------------------

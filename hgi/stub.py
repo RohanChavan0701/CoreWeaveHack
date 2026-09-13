@@ -400,6 +400,12 @@ def _vocabulary(req):
 
 @handles("currency")
 def _currency(req):
+    if req.get("lens") is not None:  # a lens at a crystallization door: retire only a stream that repeats a non-empty product, or a seed that never produced
+        if req.get("door") == "variance-collapse" and req.get("repeated_product"):
+            return {"verdict": "moot", "why": f"the lens answered {req['walks']} walks with one product; the answer is cacheable and the question retires", "premise": None}
+        if req.get("door") == "genesis-deadline" and not req.get("products") and req.get("walks", 0) >= 1:
+            return {"verdict": "moot", "why": "walked and never produced anything a consumer took; the question was not where judgment was needed", "premise": None}
+        return {"verdict": "still-holds", "why": "an empty or unwalked stream is no signal; the killer-item check keeps the question", "premise": None}
     if req.get("finding") is not None:  # a pass's close-time contradiction: it reverses a premise only when it names one
         named = [p["id"] for p in req.get("premises", []) if p["id"] in str(req["finding"].get("what_changed", "")) + str(req.get("claim", ""))]
         if str(req["finding"].get("slot", "warrant")) == "warrant" and named:

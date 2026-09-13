@@ -52,7 +52,7 @@ def test_an_article_the_history_never_instantiates_is_evicted_at_the_deadline(st
     n = next(n for n in record.nominations if n.subject == "C-0002")
     assert n.outcome == f"no instance proposed; evicted past the {deadline}-consolidation deadline"
     assert [a.id for a in store.articles()] == ["C-0001", "C-0003", "C-0004", "C-0005", "C-0006", "C-0007"]
-    assert not [f for f in _lint.run(store).findings if f.check == "genesis-anchor"]
+    assert not [f for f in _lint.run(store).findings if f.check == "genesis-anchor" and f.record.startswith("C-")]
     _index.regenerate(store)
     assert _lint.run(store).green
 

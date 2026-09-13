@@ -356,6 +356,19 @@
       }
     }
   },
+  "lens-status": {
+    "means": "a lens's lifecycle: walked, or retired through a crystallization door (§ 7.4 of the doctrine)",
+    "terms": {
+      "live": {
+        "means": "walked by its host",
+        "since": "2026-09-12"
+      },
+      "retired": {
+        "means": "no longer walked: its answer crystallized, or its genesis earned no anchor by the deadline",
+        "since": "2026-09-12"
+      }
+    }
+  },
   "matrix-cell": {
     "means": "the detection matrix of § 10.1: did the store catch it, did the world or a human",
     "terms": {

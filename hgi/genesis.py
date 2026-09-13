@@ -117,6 +117,9 @@ VOCABULARY: dict[str, dict] = {
     "lens-purpose": {"means": "", "terms": _terms(("adjudicative", "terminates in an authority, never in the answerer"), ("generative", "touches the item; is never handed an answer"))},
     "lens-contact": {"means": "the strongest contact outside the answerer the lens forces", "terms": _terms(("record", ""), ("artifact", ""), ("oracle", ""), ("none", ""))},
     "lens-host": {"means": "the step that walks the lens", "terms": _terms(("boot", ""), ("close", ""), ("examiner", ""))},
+    "lens-status": {"means": "a lens's lifecycle: walked, or retired through a crystallization door (§ 7.4 of the doctrine)", "terms": _terms(
+        ("live", "walked by its host"), ("retired", "no longer walked: its answer crystallized, or its genesis earned no anchor by the deadline"),
+    )},
     "role": {"means": "the four contexts of the separation of powers, plus the pass and the coder", "terms": _terms(
         ("pass", "the working pass — the agent under test and its boot and close steps"),
         ("consolidator", "nominates"), ("examiner", "contradicts"), ("adjudicator", "verdicts"),
@@ -224,7 +227,7 @@ def seed(root: Path | str, model_id: str | None = None, now: datetime | None = N
     write_json(reg_dir / "bars.json", BARS)
     write_json(reg_dir / "constitution.json", CONSTITUTION_CAP)
     write_json(reg_dir / "lenses.json", [
-        {**lens, "kind": "lens", "priced_for": {"model_id": model_id},
+        {**lens, "kind": "lens", "status": "live", "warrant": {"evidence": "genesis", "anchors": []}, "priced_for": {"model_id": model_id},
          "telemetry": {"answer_variance": "design-stage", "decoy_rejection": "design-stage", "miss_stream": "steers/ citing this lens"}}
         for lens in LENSES
     ])

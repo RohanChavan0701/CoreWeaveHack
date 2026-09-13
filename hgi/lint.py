@@ -30,7 +30,8 @@ model-pricing                boot           warns on a conditioning record (lens
                                             model other than the session's, or restamped for it without re-authoring
 role-pricing                 boot           warns on a role prompt not priced for the model the role runs on          reading a role's replies on an unread model
 oracle-honesty               runtime        fails a fact carrying both a zero value and an unevaluable reason         a scorer measuring the wrong quantity
-genesis-anchor               consolidation  warns on a genesis article past its anchor deadline with no anchor         whether the anchor exemplifies the article
+genesis-anchor               consolidation  warns on a genesis article or lens past its anchor deadline with no        whether the anchor exemplifies the article; whether
+                                            anchor                                                                     the lens's product was worth consuming
 
 Two seams lie beyond the lint: the review seam (the examiner over a committed
 draft) and the consumption seam (read the record, never only its projection).
@@ -458,8 +459,10 @@ def check_genesis(store: Store) -> list[Finding]:
     done = len(store.all("consolidation"))
     if done < deadline:
         return []
-    return [warn("genesis-anchor", a.id, f"genesis article past {deadline} consolidation passes with no anchor; evict or anchor")
-            for a in store.articles() if a.warrant.evidence == "genesis" and not a.warrant.anchors]
+    return ([warn("genesis-anchor", a.id, f"genesis article past {deadline} consolidation passes with no anchor; evict or anchor")
+             for a in store.articles() if a.warrant.evidence == "genesis" and not a.warrant.anchors]
+            + [warn("genesis-anchor", l.id, f"genesis lens past {deadline} consolidation passes with no anchor: nothing it produced reached a consumer; retire or anchor")
+               for l in store.registry.lenses() if l.warrant.evidence == "genesis" and not l.warrant.anchors])
 
 
 # --- running ------------------------------------------------------------------------

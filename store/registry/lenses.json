@@ -15,10 +15,15 @@
     },
     "product": "a list of {record, disposition, why}; empty is a legal answer",
     "purpose": "adjudicative",
+    "status": "live",
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
       "miss_stream": "steers/ citing this lens"
+    },
+    "warrant": {
+      "anchors": [],
+      "evidence": "genesis"
     }
   },
   {
@@ -37,10 +42,15 @@
     },
     "product": "a list of {record, why}; empty is a legal answer",
     "purpose": "generative",
+    "status": "live",
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
       "miss_stream": "steers/ citing this lens"
+    },
+    "warrant": {
+      "anchors": [],
+      "evidence": "genesis"
     }
   },
   {
@@ -59,10 +69,15 @@
     },
     "product": "a list of {record, slot, what-changed, anchor}; empty is a legal answer",
     "purpose": "adjudicative",
+    "status": "live",
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
       "miss_stream": "steers/ citing this lens"
+    },
+    "warrant": {
+      "anchors": [],
+      "evidence": "genesis"
     }
   },
   {
@@ -81,10 +96,15 @@
     },
     "product": "a list of {noticed, anchor}; each becomes an observation",
     "purpose": "generative",
+    "status": "live",
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
       "miss_stream": "steers/ citing this lens"
+    },
+    "warrant": {
+      "anchors": [],
+      "evidence": "genesis"
     }
   },
   {
@@ -106,10 +126,15 @@
     },
     "product": "claims on `warrant:independence`, each naming the sessions read",
     "purpose": "adjudicative",
+    "status": "live",
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
       "miss_stream": "steers/ citing this lens"
+    },
+    "warrant": {
+      "anchors": [],
+      "evidence": "genesis"
     }
   },
   {
@@ -131,10 +156,15 @@
     },
     "product": "one claim per premise, `premise:<id>`, its refutation the premise's own falsifier read against the evidence",
     "purpose": "adjudicative",
+    "status": "live",
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
       "miss_stream": "steers/ citing this lens"
+    },
+    "warrant": {
+      "anchors": [],
+      "evidence": "genesis"
     }
   },
   {
@@ -156,10 +186,15 @@
     },
     "product": "a claim on `payload:abstraction`",
     "purpose": "adjudicative",
+    "status": "live",
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
       "miss_stream": "steers/ citing this lens"
+    },
+    "warrant": {
+      "anchors": [],
+      "evidence": "genesis"
     }
   },
   {
@@ -181,10 +216,15 @@
     },
     "product": "a claim on `warrant:watch-direction`, its evidence the predicate",
     "purpose": "adjudicative",
+    "status": "live",
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
       "miss_stream": "steers/ citing this lens"
+    },
+    "warrant": {
+      "anchors": [],
+      "evidence": "genesis"
     }
   }
 ]

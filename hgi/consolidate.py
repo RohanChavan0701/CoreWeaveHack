@@ -771,6 +771,7 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
     steers = credit(store, record, brief, sessions)
     record.nominations += _reviews.retirement(store, record)
     record.nominations += _reviews.genesis_anchors(store, record)
+    record.nominations += _reviews.lenses(store, record)
     record.nominations += _reviews.vocabulary(store, record)
     propagate(store, record)
     record.closed_at = now()
@@ -790,7 +791,8 @@ def report(record: Consolidation, steers: list[Steer]) -> str:
                  f"flipped: {', '.join(record.flipped) or 'none'}; deferred: {', '.join(record.deferred) or 'none'}; anchored: {', '.join(record.anchored) or 'none'}; "
                  f"minted: {', '.join(record.minted) or 'none'}"
                  + (f"; proposals expired: {', '.join(record.expired)}" if record.expired else "")
-                 + (f"; dismissed as irreducible: {', '.join(record.dismissed)}" if record.dismissed else ""))
+                 + (f"; dismissed as irreducible: {', '.join(record.dismissed)}" if record.dismissed else "")
+                 + (f"; lenses retired: {', '.join(record.retired)}" if record.retired else ""))
     if record.analyst_report:
         lines.append(f"analyst report: {record.analyst_report}")
     return "\n".join(lines)
