@@ -170,14 +170,8 @@ def resolve(store: Store, anchor: str) -> dict[str, Any] | None:
     """What an anchor names, as the adjudicator reads it: the record itself, a ledger line, or the URI as given."""
     if anchor.startswith("weave:///"):
         return {"uri": anchor}
-    record = store.find(anchor) or store.observation(anchor)
-    if record is not None:
-        return record.model_dump(mode="json", by_alias=True)
-    for kind in ("hypothesis", "disposition", "steer"):
-        for line in store.all(kind):
-            if line.id == anchor:  # type: ignore[attr-defined]
-                return line.model_dump(mode="json", by_alias=True)
-    return None
+    record = store.lookup(anchor)
+    return record.model_dump(mode="json", by_alias=True) if record is not None else None
 
 
 def genesis_anchors(store: Store, record: Consolidation) -> list[Nomination]:

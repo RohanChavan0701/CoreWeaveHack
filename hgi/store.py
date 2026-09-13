@@ -174,6 +174,19 @@ class Store:
                 return self.read(kind, id)
         return None
 
+    def lookup(self, key: str) -> BaseModel | None:
+        """Whatever the store holds under ``key``: a file-layout record by id, an observation by name or uid, or a ledger line by id.
+
+        What an anchor written inline in prose resolves to — the lint and the anchoring review read it; ``None`` names nothing."""
+        record = self.find(key) or self.observation(key)
+        if record is not None:
+            return record
+        prefix = key.split("-", 1)[0] if ID_PATTERN.match(key) else None
+        for kind, (_, layout) in LAYOUTS.items():
+            if layout == "jsonl" and PREFIXES.get(kind) == prefix:
+                return next((line for line in self.all(kind) if line.id == key), None)  # type: ignore[attr-defined]
+        return None
+
     # --- writes -------------------------------------------------------------
     def write(self, record: BaseModel) -> Path:
         """Write a file-layout record in canonical JSON. Refuses to create an eternal record outside the committer."""

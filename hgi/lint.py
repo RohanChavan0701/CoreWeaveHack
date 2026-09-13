@@ -8,8 +8,9 @@ Check                        Seam           Fails / warns                       
 ---------------------------  -------------  -------------------------------------------------------------------------  --------------------------------------------------
 schema                       write          fails a record that does not parse against its declared type              truth of any field
 closed-vocabulary            write          fails an enum value outside the registry without an other(<what>) escape  whether the escape should have been a term
-complement-law               write          fails a decision without falsifiers or a counterfactual, a consultation   whether the pair is non-vacuous
-                                            latch without not_this; warns on a counterfactual with no anchor
+complement-law               write          fails a decision without falsifiers or a counterfactual, a consultation   whether the pair is non-vacuous; whether an anchor
+                                            latch without not_this; warns on a counterfactual with no anchor, or     that resolves exemplifies the overshoot
+                                            with an anchor naming a record or observation the store does not hold
 settlement-test              write          fails a projection cell carrying a compliable sentence                    compliance by omission
 verdict-authority            write          fails a proposal or attack payload carrying a verdict; fails a ledger     whether the adjudicator's verdict is right
                                             verdict with no adjudicator call
@@ -52,6 +53,7 @@ from hgi import index as _index
 from hgi.registry import read_json
 from hgi.store import LAYOUTS, Store
 from hgi.types import (
+    ID_PATTERN,
     RECORD_MODELS,
     ConstitutionArticle,
     Decision,
@@ -218,8 +220,21 @@ def check_role_separation(store: Store) -> list[Finding]:
 
 # --- complement law ---------------------------------------------------------------
 
-def body_findings(id: str, body: DecisionBody) -> list[Finding]:
-    """The complement-law findings for a decision body; shared by drafts (the committer's floor) and admitted decisions."""
+def unresolved_anchors(store: Store, text: str) -> list[str]:
+    """The anchors cited in ``text`` that name a record, observation or ledger line the store does not hold.
+
+    An anchor is an observation name or uid, a record id, a Weave URI, a commit or a ``path:line``; the first two kinds
+    are the store's to resolve, and one that resolves to nothing is checked here. A URI, a commit and a path name what
+    lives outside the store and are not resolved."""
+    return [a for a in anchors_in(text) if ID_PATTERN.match(a) and store.lookup(a) is None]
+
+
+def body_findings(id: str, body: DecisionBody, store: Store | None = None) -> list[Finding]:
+    """The complement-law findings for a decision body; shared by drafts (the committer's floor) and admitted decisions.
+
+    With a store, an anchor the counterfactual cites is resolved against it: a pair citing an instance that does not
+    exist is priming wearing an anchor, and warns — never fails, because the anchor may name what a later admission
+    holds, and the demonstration's admitted records must stay at the floor."""
     out = []
     if not body.warrant.premises or any(not p.falsifier.strip() for p in body.warrant.premises):
         out.append(fail("complement-law", id, "a decision carries premises written as what would refute them"))
@@ -227,6 +242,8 @@ def body_findings(id: str, body: DecisionBody) -> list[Finding]:
         out.append(fail("complement-law", id, "a decision carries a counterfactual — the directive's named overshoot"))
     elif not anchors_in(body.counterfactual):
         out.append(warn("complement-law", id, "the counterfactual cites no anchor; a pair with no anchored instance is priming"))
+    elif store is not None and (missing := unresolved_anchors(store, body.counterfactual)):
+        out.append(warn("complement-law", id, f"the counterfactual cites {', '.join(missing)}, which names nothing in the store; a pair citing an instance that does not exist is priming wearing an anchor"))
     for i, latch in enumerate(body.latches):
         if latch.type == "consultation" and not (latch.guard.not_this or body.summary.not_this):
             out.append(fail("complement-law", id, f"consultation latch {i} declares no not-this exclusions"))
@@ -237,9 +254,9 @@ def body_findings(id: str, body: DecisionBody) -> list[Finding]:
 def check_complement_law(store: Store) -> list[Finding]:
     out = []
     for d in store.decisions():
-        out += body_findings(d.id, d)
+        out += body_findings(d.id, d, store)
     for draft in store.drafts():
-        out += body_findings(draft.name, draft.body)
+        out += body_findings(draft.name, draft.body, store)
     for a in store.articles():
         if not a.counterfactual.strip():
             out.append(fail("complement-law", a.id, "an article carries a counterfactual"))
@@ -513,7 +530,7 @@ def run(store: Store, seams: tuple[str, ...] | None = None, model_id: str | None
 
 def check_draft(store: Store, draft: Draft) -> list[Finding]:
     """The committer's floor over one draft: shape, complement law, ports for the status it will take."""
-    findings = body_findings(draft.name, draft.body)
+    findings = body_findings(draft.name, draft.body, store)
     declared = store.registry.ports.get("decision", {}).get("accepted", {})
     present = {l.type for l in draft.body.all_latches()}
     for latch_type, mark in declared.items():
