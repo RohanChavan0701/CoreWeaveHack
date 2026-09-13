@@ -1,0 +1,2537 @@
+{
+  "arm": "economy-attached",
+  "curve": {
+    "1": 0.5,
+    "2": 0.625,
+    "3": 0.375
+  },
+  "final": {
+    "original": {
+      "consolidations": [
+        "K-0001"
+      ],
+      "decisions": [],
+      "fires": [],
+      "ledger": {
+        "currency": 3
+      },
+      "observations": {
+        "by_shape": {
+          "http-tool test-failure-triage": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0003"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0001"
+            ]
+          },
+          "output-schema shell-tool": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0005"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0002"
+            ]
+          },
+          "output-schema test-failure-triage": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0002"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0001"
+            ]
+          },
+          "shell-tool test-failure-triage": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0001"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0001"
+            ]
+          },
+          "shell-tool tool-budget": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0004"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0002"
+            ]
+          },
+          "uncoded": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0006",
+              "O-0007",
+              "O-0008",
+              "O-0009"
+            ],
+            "open": 4,
+            "promoted": 0,
+            "sessions": [
+              "S-0003"
+            ]
+          }
+        },
+        "by_state": {
+          "open": 9
+        },
+        "open": [
+          {
+            "name": "O-0001",
+            "noticed": "The first attempt used a single `wc -l` on all files, which returned per\u2011file counts instead of the required total line count, causing the task to fail.",
+            "session": "S-0001",
+            "shape": [
+              "shell-tool",
+              "test-failure-triage"
+            ]
+          },
+          {
+            "name": "O-0002",
+            "noticed": "In task curriculum/footer_03 the initial attempt counted lines with awk but failed to verify the output schema, causing the task to be marked failed.",
+            "session": "S-0001",
+            "shape": [
+              "output-schema",
+              "test-failure-triage"
+            ]
+          },
+          {
+            "name": "O-0003",
+            "noticed": "The task curriculum/moved_07 tried to GET /agents/14 and return 'ok', but the endpoint returned 410 Gone, so the attempt failed; the correct convention would have been to check for a successful response before extracting the ok field.",
+            "session": "S-0001",
+            "shape": [
+              "http-tool",
+              "test-failure-triage"
+            ]
+          },
+          {
+            "name": "O-0004",
+            "noticed": "The task curriculum/newline_04 ran two wc -l commands separately, which violated the requirement to return the total line count within the budget, leading to failure.",
+            "session": "S-0002",
+            "shape": [
+              "shell-tool",
+              "tool-budget"
+            ]
+          },
+          {
+            "name": "O-0005",
+            "noticed": "In task curriculum/csv_02 the first awk command printed an empty string for zero matches instead of a numeric 0, violating the convention that a result must always be a number.",
+            "session": "S-0002",
+            "shape": [
+              "output-schema",
+              "shell-tool"
+            ]
+          },
+          {
+            "name": "O-0006",
+            "noticed": "In task curriculum/footer_04 the first attempt used awk to compute the sum 3830 but returned a plain number rather than the expected formatted result, violating the output convention.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0007",
+            "noticed": "In task curriculum/newline_11 the attempt ran `wc -l capture-1.dat capture-2.dat capture-3.dat` but did not isolate the total line count as a plain number, violating the expected output convention.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0008",
+            "noticed": "In task curriculum/footer_07, the attempt counted the CSV rows with awk and output the number 9, but the required JSON result format was missed.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0009",
+            "noticed": "Task curriculum/moved_01 attempted GET /devices/69 on the wrong API version, causing a 410 Gone error; it should have used the v2 endpoint.",
+            "session": "S-0003",
+            "shape": []
+          }
+        ]
+      },
+      "proposals": [
+        {
+          "decision": "Enforce tool budget limits for shell calls to prevent exceeding allocated call count.",
+          "deferred": false,
+          "name": "P-0001",
+          "proposed_by": "S-0001",
+          "rung": "floor",
+          "uid": "01a09985-fb23-77c7-bcb0-aa3d21988791"
+        },
+        {
+          "decision": "Require task_pass_rate >= 0.5 before accepting a curriculum row.",
+          "deferred": false,
+          "name": "P-0001",
+          "proposed_by": "S-0002",
+          "rung": "new-decision",
+          "uid": "01a09987-a1a5-749a-ac70-402561a3c0a2"
+        },
+        {
+          "decision": "Tasks whose error_cause_present score is 1.0 must be marked as failed before any pass decision is recorded.",
+          "deferred": false,
+          "name": "P-0001",
+          "proposed_by": "S-0003",
+          "rung": "new-decision",
+          "uid": "01a0998b-a631-73a5-8a67-65da97442108"
+        }
+      ],
+      "queue": [],
+      "steers": []
+    },
+    "retrofit": {
+      "consolidations": [
+        "K-0001"
+      ],
+      "decisions": [
+        {
+          "anchors": [
+            "O-0003",
+            "O-0011"
+          ],
+          "decision": "All task outputs must terminate with a newline character to conform to the required output convention.",
+          "displaced_from": null,
+          "hook": [
+            "line-unterminated",
+            "shell-tool",
+            "tool-budget"
+          ],
+          "id": "D-0004",
+          "premises": {
+            "p1": "supported"
+          },
+          "proposed_by": "K-0001",
+          "rung": "new-decision",
+          "status": "accepted",
+          "superseded_by": [],
+          "supersedes": []
+        }
+      ],
+      "fires": [],
+      "ledger": {
+        "attack": 2,
+        "currency": 6,
+        "reality": 3
+      },
+      "observations": {
+        "by_shape": {
+          "line-unterminated": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [],
+            "open": 0,
+            "promoted": 2,
+            "sessions": []
+          },
+          "other(CSV header not skipped)": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0006"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0001"
+            ]
+          },
+          "other(always print count)": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0012"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0002"
+            ]
+          },
+          "other(count includes header)": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0002"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0001"
+            ]
+          },
+          "other(no rule matched)": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0007",
+              "O-0008",
+              "O-0009",
+              "O-0010",
+              "O-0016",
+              "O-0017",
+              "O-0018"
+            ],
+            "open": 7,
+            "promoted": 0,
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ]
+          },
+          "other(non-transient HTTP error)": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0013"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0002"
+            ]
+          },
+          "route-guarded": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0005",
+              "O-0014",
+              "O-0015"
+            ],
+            "open": 3,
+            "promoted": 0,
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ]
+          },
+          "route-versioned": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0004"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0001"
+            ]
+          },
+          "summary-row": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0001"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0001"
+            ]
+          },
+          "uncoded": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0019",
+              "O-0020",
+              "O-0021",
+              "O-0022",
+              "O-0023",
+              "O-0024",
+              "O-0025",
+              "O-0026"
+            ],
+            "open": 8,
+            "promoted": 0,
+            "sessions": [
+              "S-0003"
+            ]
+          }
+        },
+        "by_state": {
+          "open": 24,
+          "promoted": 2
+        },
+        "open": [
+          {
+            "name": "O-0001",
+            "noticed": "The wc -l command produced per\u2011file counts and a total, but the task required returning only the total line count as a plain number, so the output convention was missed.",
+            "session": "S-0001",
+            "shape": [
+              "summary-row"
+            ]
+          },
+          {
+            "name": "O-0002",
+            "noticed": "In task curriculum/footer_03 the shell command omitted the header line, but the expected convention is to count all lines, so the correct result would have been 7.",
+            "session": "S-0001",
+            "shape": [
+              "other(count includes header)"
+            ]
+          },
+          {
+            "name": "O-0004",
+            "noticed": "GET /agents/14 returned 410 Gone because the API only serves /v2/agents/14, violating the task's endpoint convention.",
+            "session": "S-0001",
+            "shape": [
+              "route-versioned"
+            ]
+          },
+          {
+            "name": "O-0005",
+            "noticed": "GET /secure/limits failed with HTTP 401 Unauthorized because the request omitted the required token query parameter.",
+            "session": "S-0001",
+            "shape": [
+              "route-guarded"
+            ]
+          },
+          {
+            "name": "O-0006",
+            "noticed": "The first awk command did not skip the CSV header row, violating the CSV header convention.",
+            "session": "S-0001",
+            "shape": [
+              "other(CSV header not skipped)"
+            ]
+          },
+          {
+            "name": "O-0007",
+            "noticed": "curriculum/newline_09 executed wc -l on extracts and returned 19 but no rule matched.",
+            "session": "S-0001",
+            "shape": [
+              "other(no rule matched)"
+            ]
+          },
+          {
+            "name": "O-0008",
+            "noticed": "curriculum/footer_03 ran awk and wc -l, got 6, but no rule matched.",
+            "session": "S-0001",
+            "shape": [
+              "other(no rule matched)"
+            ]
+          },
+          {
+            "name": "O-0009",
+            "noticed": "curriculum/newline_03 counted lines across slices, got 19, but no rule matched.",
+            "session": "S-0001",
+            "shape": [
+              "other(no rule matched)"
+            ]
+          },
+          {
+            "name": "O-0010",
+            "noticed": "curriculum/moved_07 attempted to retrieve agent data, got HTTP 410 error, but no rule matched.",
+            "session": "S-0001",
+            "shape": [
+              "other(no rule matched)"
+            ]
+          },
+          {
+            "name": "O-0012",
+            "noticed": "The first awk command printed nothing for zero matches, violating the convention that a count must always be printed.",
+            "session": "S-0002",
+            "shape": [
+              "other(always print count)"
+            ]
+          },
+          {
+            "name": "O-0013",
+            "noticed": "In task curriculum/moved_05 the first tool call returned a non-transient HTTP 410 Gone error.",
+            "session": "S-0002",
+            "shape": [
+              "other(non-transient HTTP error)"
+            ]
+          },
+          {
+            "name": "O-0014",
+            "noticed": "The first attempt failed with HTTP 401 Unauthorized because the required token query parameter was missing.",
+            "session": "S-0002",
+            "shape": [
+              "route-guarded"
+            ]
+          },
+          {
+            "name": "O-0015",
+            "noticed": "GET /secure/ledger failed with HTTP 401 Unauthorized because the required token query parameter was omitted.",
+            "session": "S-0002",
+            "shape": [
+              "route-guarded"
+            ]
+          },
+          {
+            "name": "O-0016",
+            "noticed": "Task curriculum/newline_04 ran with result 9 but no rule was applied.",
+            "session": "S-0002",
+            "shape": [
+              "other(no rule matched)"
+            ]
+          },
+          {
+            "name": "O-0017",
+            "noticed": "Task curriculum/footer_06 ran with result 1640 but no rule was applied.",
+            "session": "S-0002",
+            "shape": [
+              "other(no rule matched)"
+            ]
+          },
+          {
+            "name": "O-0018",
+            "noticed": "Task curriculum/csv_02 ran with result 0 but no rule was applied.",
+            "session": "S-0002",
+            "shape": [
+              "other(no rule matched)"
+            ]
+          },
+          {
+            "name": "O-0019",
+            "noticed": "In task curriculum/newline_11 the first attempt ran `wc -l capture-1.dat capture-2.dat capture-3.dat` expecting a plain total line count, but the convention requires the output to be just the total number without file labels.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0020",
+            "noticed": "The task attempted GET /devices/69 and received HTTP 410 Gone; using the correct /v2/devices/69 would have satisfied the API version convention.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0021",
+            "noticed": "GET /secure/usage failed with HTTP 401 Unauthorized because the required token query parameter was missing.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0022",
+            "noticed": "Task curriculum/footer_04 failed with result 3830 and no applicable rule.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0023",
+            "noticed": "Task curriculum/csv_06 failed with result 1 and no applicable rule.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0024",
+            "noticed": "Task curriculum/newline_11 failed with result 10 and no applicable rule.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0025",
+            "noticed": "Task curriculum/footer_07 failed with result 9 and no applicable rule.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0026",
+            "noticed": "Task curriculum/moved_01 failed with HTTP 410 error and no applicable rule.",
+            "session": "S-0003",
+            "shape": []
+          }
+        ]
+      },
+      "proposals": [
+        {
+          "decision": "Add a pre\u2011execution hook that aborts a task when its tool_budget_respected score is 0.0, ensuring budget limits are respected before any shell calls are issued.",
+          "deferred": false,
+          "name": "P-0001",
+          "proposed_by": "S-0001",
+          "rung": "hook-edit",
+          "uid": "01a09c39-d42d-72fa-a366-db7012afc5ba"
+        },
+        {
+          "decision": "Require that every task's output terminates with a newline character before scoring.",
+          "deferred": false,
+          "name": "P-0001",
+          "proposed_by": "S-0002",
+          "rung": "hook-edit",
+          "uid": "01a09c3e-98f4-778f-ae65-4a99ca463bd6"
+        },
+        {
+          "decision": "Require that any task producing textual output must terminate with a newline character.",
+          "deferred": false,
+          "name": "P-0001",
+          "proposed_by": "S-0003",
+          "rung": "hook-edit",
+          "uid": "01a09c4c-b5d5-74a2-8361-b846e216994c"
+        }
+      ],
+      "queue": [
+        {
+          "name": "P-0001",
+          "uid": "01a09c45-17fa-7707-ab9b-4d929d646bdd",
+          "why": "escalate(adjudicator returned a token outside the vocabulary: admit-amended)"
+        }
+      ],
+      "steers": []
+    }
+  },
+  "passes": [
+    {
+      "divergence": [
+        "pass 1: the close filed 3 observations originally and 10 retrofitted \u2014 the close lenses are today's (L-0004 per failed row, L-0009 on recovered misses, L-0010 off-map) on the same rows"
+      ],
+      "original": {
+        "close": {
+          "carry_forward": "pass 1 scored {'error_cause_present': 1.0, 'method_transfer': 0.0, 'output_schema_valid': 1.0, 'solution_economy': 0.26, 'suite_hash': 1.0, 'task_pass_rate': 0.5, 'tool_budget_respected': 0.86, 'turn_economy': 0.27}; consulted nothing; filed 3 observations (O-0001, O-0002, O-0003); open fires: none",
+          "dispositions": [
+            {
+              "disposition": "fired-off-map",
+              "note": "work failed and matched no hook",
+              "record": "none"
+            }
+          ],
+          "ledger_entries": [],
+          "observations_filed": [
+            "O-0001",
+            "O-0002",
+            "O-0003"
+          ],
+          "proposals": 1,
+          "steers_filed": []
+        },
+        "commit": "7edef2d",
+        "consolidation": null,
+        "failed": [
+          "curriculum/newline_09",
+          "curriculum/footer_03",
+          "curriculum/newline_03",
+          "curriculum/moved_07"
+        ],
+        "in_context": [],
+        "off_map": true,
+        "pass": 1,
+        "rows": 8,
+        "score": 0.5,
+        "session": "S-0001",
+        "splice": null,
+        "store": {
+          "consolidations": [],
+          "decisions": [],
+          "fires": [],
+          "ledger": {},
+          "observations": {
+            "by_shape": {
+              "uncoded": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0001",
+                  "O-0002",
+                  "O-0003"
+                ],
+                "open": 3,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              }
+            },
+            "by_state": {
+              "open": 3
+            },
+            "open": [
+              {
+                "name": "O-0001",
+                "noticed": "The first attempt used a single `wc -l` on all files, which returned per\u2011file counts instead of the required total line count, causing the task to fail.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0002",
+                "noticed": "In task curriculum/footer_03 the initial attempt counted lines with awk but failed to verify the output schema, causing the task to be marked failed.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0003",
+                "noticed": "The task curriculum/moved_07 tried to GET /agents/14 and return 'ok', but the endpoint returned 410 Gone, so the attempt failed; the correct convention would have been to check for a successful response before extracting the ok field.",
+                "session": "S-0001",
+                "shape": []
+              }
+            ]
+          },
+          "proposals": [
+            {
+              "decision": "Enforce tool budget limits for shell calls to prevent exceeding allocated call count.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0001",
+              "rung": "floor",
+              "uid": "01a09985-fb23-77c7-bcb0-aa3d21988791"
+            }
+          ],
+          "queue": [],
+          "steers": []
+        },
+        "subject": "Close S-0001 pass 1: filed O-0001 O-0002 O-0003"
+      },
+      "pass": 1,
+      "retrofit": {
+        "close": {
+          "carry_forward": "pass 1 scored {'error_cause_present': 1.0, 'method_transfer': 0.0, 'output_schema_valid': 1.0, 'solution_economy': 0.26, 'suite_hash': 1.0, 'task_pass_rate': 0.5, 'tool_budget_respected': 0.86, 'turn_economy': 0.27}; consulted nothing; filed 10 observations (O-0001, O-0002, O-0003, O-0004, O-0005, O-0006, O-0007, O-0008, O-0009, O-0010); open fires: none",
+          "dispositions": [
+            {
+              "disposition": "fired-off-map",
+              "note": "work failed and matched no hook",
+              "record": "none"
+            }
+          ],
+          "ledger_entries": [],
+          "observations_filed": [
+            "O-0001",
+            "O-0002",
+            "O-0003",
+            "O-0004",
+            "O-0005",
+            "O-0006",
+            "O-0007",
+            "O-0008",
+            "O-0009",
+            "O-0010"
+          ],
+          "proposals": 1,
+          "steers_filed": []
+        },
+        "consolidation": null,
+        "failed": [
+          "curriculum/newline_09",
+          "curriculum/footer_03",
+          "curriculum/newline_03",
+          "curriculum/moved_07"
+        ],
+        "in_context": [],
+        "off_map": true,
+        "pass": 1,
+        "rows": 8,
+        "score": 0.5,
+        "session": "S-0001",
+        "splice": {
+          "considered": [],
+          "consulted": [],
+          "fires_emitted": [],
+          "fires_owed": [],
+          "fires_seen": [],
+          "lens_answers": [
+            "L-0001",
+            "L-0002",
+            "L-0003",
+            "L-0004",
+            "L-0004",
+            "L-0004",
+            "L-0004"
+          ],
+          "original_close": {
+            "carry_forward": "pass 1 scored {'error_cause_present': 1.0, 'method_transfer': 0.0, 'output_schema_valid': 1.0, 'solution_economy': 0.26, 'suite_hash': 1.0, 'task_pass_rate': 0.5, 'tool_budget_respected': 0.86, 'turn_economy': 0.27}; consulted nothing; filed 3 observations (O-0001, O-0002, O-0003); open fires: none",
+            "ledger_entries": [],
+            "observations_filed": [
+              "O-0001",
+              "O-0002",
+              "O-0003"
+            ],
+            "proposals": 1,
+            "steers_filed": []
+          }
+        },
+        "store": {
+          "consolidations": [],
+          "decisions": [],
+          "fires": [],
+          "ledger": {},
+          "observations": {
+            "by_shape": {
+              "uncoded": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0001",
+                  "O-0002",
+                  "O-0003",
+                  "O-0004",
+                  "O-0005",
+                  "O-0006",
+                  "O-0007",
+                  "O-0008",
+                  "O-0009",
+                  "O-0010"
+                ],
+                "open": 10,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              }
+            },
+            "by_state": {
+              "open": 10
+            },
+            "open": [
+              {
+                "name": "O-0001",
+                "noticed": "The wc -l command produced per\u2011file counts and a total, but the task required returning only the total line count as a plain number, so the output convention was missed.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0002",
+                "noticed": "In task curriculum/footer_03 the shell command omitted the header line, but the expected convention is to count all lines, so the correct result would have been 7.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0003",
+                "noticed": "The shell command returned the correct line count (19) but did not ensure the result ends with a newline, violating the task's output convention.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0004",
+                "noticed": "GET /agents/14 returned 410 Gone because the API only serves /v2/agents/14, violating the task's endpoint convention.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0005",
+                "noticed": "GET /secure/limits failed with HTTP 401 Unauthorized because the request omitted the required token query parameter.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0006",
+                "noticed": "The first awk command did not skip the CSV header row, violating the CSV header convention.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0007",
+                "noticed": "curriculum/newline_09 executed wc -l on extracts and returned 19 but no rule matched.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0008",
+                "noticed": "curriculum/footer_03 ran awk and wc -l, got 6, but no rule matched.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0009",
+                "noticed": "curriculum/newline_03 counted lines across slices, got 19, but no rule matched.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0010",
+                "noticed": "curriculum/moved_07 attempted to retrieve agent data, got HTTP 410 error, but no rule matched.",
+                "session": "S-0001",
+                "shape": []
+              }
+            ]
+          },
+          "proposals": [
+            {
+              "decision": "Add a pre\u2011execution hook that aborts a task when its tool_budget_respected score is 0.0, ensuring budget limits are respected before any shell calls are issued.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0001",
+              "rung": "hook-edit",
+              "uid": "01a09c39-d42d-72fa-a366-db7012afc5ba"
+            }
+          ],
+          "queue": [],
+          "steers": []
+        }
+      }
+    },
+    {
+      "divergence": [
+        "pass 2: the close filed 2 observations originally and 8 retrofitted \u2014 the close lenses are today's (L-0004 per failed row, L-0009 on recovered misses, L-0010 off-map) on the same rows",
+        "after pass 2: the original K-0001 admitted nothing; the retrofit K-0001 admitted D-0004",
+        "after pass 2: nomination outcomes \u2014 original none; retrofit {'admitted D-0004': 1, 'escalated to the human queue': 1, 'draft refused at parse: a hook-edit supersedes exactly one record': 1}"
+      ],
+      "original": {
+        "close": {
+          "carry_forward": "pass 2 scored {'error_cause_present': 'unevaluable', 'method_transfer': 'unevaluable', 'output_schema_valid': 1.0, 'solution_economy': 0.36, 'suite_hash': 1.0, 'task_pass_rate': 0.62, 'tool_budget_respected': 1.0, 'turn_economy': 0.38}; consulted nothing; filed 2 observations (O-0004, O-0005); open fires: none",
+          "dispositions": [],
+          "ledger_entries": [],
+          "observations_filed": [
+            "O-0004",
+            "O-0005"
+          ],
+          "proposals": 1,
+          "steers_filed": []
+        },
+        "commit": "1f8aaa1",
+        "consolidation": {
+          "admitted": [],
+          "after_pass": 2,
+          "anchored": [
+            "C-0001",
+            "C-0002",
+            "C-0006"
+          ],
+          "deferred": [],
+          "dismissed": [],
+          "expired": [],
+          "fires_discharged": [],
+          "flipped": [],
+          "groups": [
+            {
+              "observations": [
+                "O-0003"
+              ],
+              "sessions": [
+                "S-0001"
+              ],
+              "shape": [
+                "http-tool",
+                "test-failure-triage"
+              ]
+            },
+            {
+              "observations": [
+                "O-0005"
+              ],
+              "sessions": [
+                "S-0002"
+              ],
+              "shape": [
+                "output-schema",
+                "shell-tool"
+              ]
+            },
+            {
+              "observations": [
+                "O-0002"
+              ],
+              "sessions": [
+                "S-0001"
+              ],
+              "shape": [
+                "output-schema",
+                "test-failure-triage"
+              ]
+            },
+            {
+              "observations": [
+                "O-0001"
+              ],
+              "sessions": [
+                "S-0001"
+              ],
+              "shape": [
+                "shell-tool",
+                "test-failure-triage"
+              ]
+            },
+            {
+              "observations": [
+                "O-0004"
+              ],
+              "sessions": [
+                "S-0002"
+              ],
+              "shape": [
+                "shell-tool",
+                "tool-budget"
+              ]
+            }
+          ],
+          "id": "K-0001",
+          "minted": [],
+          "nominations": [
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "anchored to S-0001",
+              "rung": "article",
+              "subject": "C-0001"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "anchored to U-0001",
+              "rung": "article",
+              "subject": "C-0002"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "no instance proposed",
+              "rung": "article",
+              "subject": "C-0003"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "no instance proposed",
+              "rung": "article",
+              "subject": "C-0004"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "no instance proposed",
+              "rung": "article",
+              "subject": "C-0005"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "anchored to S-0002",
+              "rung": "article",
+              "subject": "C-0006"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "no instance proposed",
+              "rung": "article",
+              "subject": "C-0007"
+            }
+          ],
+          "retired": [],
+          "sessions_read": [
+            "S-0001",
+            "S-0002"
+          ],
+          "triage": []
+        },
+        "failed": [
+          "curriculum/newline_04",
+          "curriculum/footer_06",
+          "curriculum/csv_02"
+        ],
+        "in_context": [],
+        "off_map": false,
+        "pass": 2,
+        "rows": 8,
+        "score": 0.625,
+        "session": "S-0002",
+        "splice": null,
+        "store": {
+          "consolidations": [
+            "K-0001"
+          ],
+          "decisions": [],
+          "fires": [],
+          "ledger": {
+            "currency": 3
+          },
+          "observations": {
+            "by_shape": {
+              "http-tool test-failure-triage": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0003"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "output-schema shell-tool": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0005"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "output-schema test-failure-triage": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0002"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "shell-tool test-failure-triage": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0001"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "shell-tool tool-budget": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0004"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              }
+            },
+            "by_state": {
+              "open": 5
+            },
+            "open": [
+              {
+                "name": "O-0001",
+                "noticed": "The first attempt used a single `wc -l` on all files, which returned per\u2011file counts instead of the required total line count, causing the task to fail.",
+                "session": "S-0001",
+                "shape": [
+                  "shell-tool",
+                  "test-failure-triage"
+                ]
+              },
+              {
+                "name": "O-0002",
+                "noticed": "In task curriculum/footer_03 the initial attempt counted lines with awk but failed to verify the output schema, causing the task to be marked failed.",
+                "session": "S-0001",
+                "shape": [
+                  "output-schema",
+                  "test-failure-triage"
+                ]
+              },
+              {
+                "name": "O-0003",
+                "noticed": "The task curriculum/moved_07 tried to GET /agents/14 and return 'ok', but the endpoint returned 410 Gone, so the attempt failed; the correct convention would have been to check for a successful response before extracting the ok field.",
+                "session": "S-0001",
+                "shape": [
+                  "http-tool",
+                  "test-failure-triage"
+                ]
+              },
+              {
+                "name": "O-0004",
+                "noticed": "The task curriculum/newline_04 ran two wc -l commands separately, which violated the requirement to return the total line count within the budget, leading to failure.",
+                "session": "S-0002",
+                "shape": [
+                  "shell-tool",
+                  "tool-budget"
+                ]
+              },
+              {
+                "name": "O-0005",
+                "noticed": "In task curriculum/csv_02 the first awk command printed an empty string for zero matches instead of a numeric 0, violating the convention that a result must always be a number.",
+                "session": "S-0002",
+                "shape": [
+                  "output-schema",
+                  "shell-tool"
+                ]
+              }
+            ]
+          },
+          "proposals": [
+            {
+              "decision": "Enforce tool budget limits for shell calls to prevent exceeding allocated call count.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0001",
+              "rung": "floor",
+              "uid": "01a09985-fb23-77c7-bcb0-aa3d21988791"
+            },
+            {
+              "decision": "Require task_pass_rate >= 0.5 before accepting a curriculum row.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0002",
+              "rung": "new-decision",
+              "uid": "01a09987-a1a5-749a-ac70-402561a3c0a2"
+            }
+          ],
+          "queue": [],
+          "steers": []
+        },
+        "subject": "Consolidate K-0001 after pass 2: admitted nothing"
+      },
+      "pass": 2,
+      "retrofit": {
+        "close": {
+          "carry_forward": "pass 2 scored {'error_cause_present': 'unevaluable', 'method_transfer': 'unevaluable', 'output_schema_valid': 1.0, 'solution_economy': 0.36, 'suite_hash': 1.0, 'task_pass_rate': 0.62, 'tool_budget_respected': 1.0, 'turn_economy': 0.38}; consulted nothing; filed 8 observations (O-0011, O-0012, O-0013, O-0014, O-0015, O-0016, O-0017, O-0018); open fires: none",
+          "dispositions": [],
+          "ledger_entries": [],
+          "observations_filed": [
+            "O-0011",
+            "O-0012",
+            "O-0013",
+            "O-0014",
+            "O-0015",
+            "O-0016",
+            "O-0017",
+            "O-0018"
+          ],
+          "proposals": 1,
+          "steers_filed": []
+        },
+        "consolidation": {
+          "admitted": [
+            "D-0004"
+          ],
+          "after_pass": 2,
+          "anchored": [
+            "C-0001",
+            "C-0003",
+            "C-0007",
+            "L-0004"
+          ],
+          "deferred": [],
+          "dismissed": [],
+          "expired": [],
+          "fires_discharged": [],
+          "flipped": [],
+          "groups": [
+            {
+              "observations": [
+                "O-0003",
+                "O-0011"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "line-unterminated"
+              ]
+            },
+            {
+              "observations": [
+                "O-0006"
+              ],
+              "sessions": [
+                "S-0001"
+              ],
+              "shape": [
+                "other(CSV header not skipped)"
+              ]
+            },
+            {
+              "observations": [
+                "O-0012"
+              ],
+              "sessions": [
+                "S-0002"
+              ],
+              "shape": [
+                "other(always print count)"
+              ]
+            },
+            {
+              "observations": [
+                "O-0002"
+              ],
+              "sessions": [
+                "S-0001"
+              ],
+              "shape": [
+                "other(count includes header)"
+              ]
+            },
+            {
+              "observations": [
+                "O-0007",
+                "O-0008",
+                "O-0009",
+                "O-0010",
+                "O-0016",
+                "O-0017",
+                "O-0018"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "other(no rule matched)"
+              ]
+            },
+            {
+              "observations": [
+                "O-0013"
+              ],
+              "sessions": [
+                "S-0002"
+              ],
+              "shape": [
+                "other(non-transient HTTP error)"
+              ]
+            },
+            {
+              "observations": [
+                "O-0005",
+                "O-0014",
+                "O-0015"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "route-guarded"
+              ]
+            },
+            {
+              "observations": [
+                "O-0004"
+              ],
+              "sessions": [
+                "S-0001"
+              ],
+              "shape": [
+                "route-versioned"
+              ]
+            },
+            {
+              "observations": [
+                "O-0001"
+              ],
+              "sessions": [
+                "S-0001"
+              ],
+              "shape": [
+                "summary-row"
+              ]
+            }
+          ],
+          "id": "K-0001",
+          "minted": [],
+          "nominations": [
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "admitted D-0004; the payload was promoted on the examiner's abstraction claim",
+              "rung": "new-decision",
+              "subject": "newline"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "escalated to the human queue",
+              "rung": "new-decision",
+              "subject": "auth-token"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "draft refused at parse: a hook-edit supersedes exactly one record; got []",
+              "rung": "hook-edit",
+              "subject": "unmatched"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "anchored to D-0004",
+              "rung": "article",
+              "subject": "C-0001"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "moot: not anchored",
+              "rung": "article",
+              "subject": "C-0002"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "anchored to H-0001",
+              "rung": "article",
+              "subject": "C-0003"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "moot: not anchored",
+              "rung": "article",
+              "subject": "C-0004"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "no instance proposed",
+              "rung": "article",
+              "subject": "C-0005"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "moot: not anchored",
+              "rung": "article",
+              "subject": "C-0006"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "anchored to D-0004",
+              "rung": "article",
+              "subject": "C-0007"
+            }
+          ],
+          "retired": [],
+          "sessions_read": [
+            "S-0001",
+            "S-0002"
+          ],
+          "triage": [
+            {
+              "act": "route",
+              "ledger_entry": "H-0001",
+              "observations": [
+                "O-0003",
+                "O-0011"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "line-unterminated"
+              ],
+              "verdict": "reducible"
+            },
+            {
+              "act": "route",
+              "ledger_entry": "H-0002",
+              "observations": [
+                "O-0007",
+                "O-0008",
+                "O-0009",
+                "O-0010",
+                "O-0016",
+                "O-0017",
+                "O-0018"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "other(no rule matched)"
+              ],
+              "verdict": "reducible"
+            },
+            {
+              "act": "route",
+              "ledger_entry": "H-0003",
+              "observations": [
+                "O-0005",
+                "O-0014",
+                "O-0015"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "route-guarded"
+              ],
+              "verdict": "reducible"
+            }
+          ]
+        },
+        "failed": [
+          "curriculum/newline_04",
+          "curriculum/footer_06",
+          "curriculum/csv_02"
+        ],
+        "in_context": [],
+        "off_map": false,
+        "pass": 2,
+        "rows": 8,
+        "score": 0.625,
+        "session": "S-0002",
+        "splice": {
+          "considered": [],
+          "consulted": [],
+          "fires_emitted": [],
+          "fires_owed": [],
+          "fires_seen": [],
+          "lens_answers": [
+            "L-0001",
+            "L-0002",
+            "L-0003",
+            "L-0004",
+            "L-0004",
+            "L-0004"
+          ],
+          "original_close": {
+            "carry_forward": "pass 2 scored {'error_cause_present': 'unevaluable', 'method_transfer': 'unevaluable', 'output_schema_valid': 1.0, 'solution_economy': 0.36, 'suite_hash': 1.0, 'task_pass_rate': 0.62, 'tool_budget_respected': 1.0, 'turn_economy': 0.38}; consulted nothing; filed 2 observations (O-0004, O-0005); open fires: none",
+            "ledger_entries": [],
+            "observations_filed": [
+              "O-0004",
+              "O-0005"
+            ],
+            "proposals": 1,
+            "steers_filed": []
+          }
+        },
+        "store": {
+          "consolidations": [
+            "K-0001"
+          ],
+          "decisions": [
+            {
+              "anchors": [
+                "O-0003",
+                "O-0011"
+              ],
+              "decision": "All task outputs must terminate with a newline character to conform to the required output convention.",
+              "displaced_from": null,
+              "hook": [
+                "line-unterminated",
+                "shell-tool",
+                "tool-budget"
+              ],
+              "id": "D-0004",
+              "premises": {
+                "p1": "supported"
+              },
+              "proposed_by": "K-0001",
+              "rung": "new-decision",
+              "status": "accepted",
+              "superseded_by": [],
+              "supersedes": []
+            }
+          ],
+          "fires": [],
+          "ledger": {
+            "attack": 2,
+            "currency": 6,
+            "reality": 3
+          },
+          "observations": {
+            "by_shape": {
+              "line-unterminated": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [],
+                "open": 0,
+                "promoted": 2,
+                "sessions": []
+              },
+              "other(CSV header not skipped)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0006"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "other(always print count)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0012"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "other(count includes header)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0002"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "other(no rule matched)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0007",
+                  "O-0008",
+                  "O-0009",
+                  "O-0010",
+                  "O-0016",
+                  "O-0017",
+                  "O-0018"
+                ],
+                "open": 7,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001",
+                  "S-0002"
+                ]
+              },
+              "other(non-transient HTTP error)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0013"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "route-guarded": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0005",
+                  "O-0014",
+                  "O-0015"
+                ],
+                "open": 3,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001",
+                  "S-0002"
+                ]
+              },
+              "route-versioned": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0004"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "summary-row": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0001"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              }
+            },
+            "by_state": {
+              "open": 16,
+              "promoted": 2
+            },
+            "open": [
+              {
+                "name": "O-0001",
+                "noticed": "The wc -l command produced per\u2011file counts and a total, but the task required returning only the total line count as a plain number, so the output convention was missed.",
+                "session": "S-0001",
+                "shape": [
+                  "summary-row"
+                ]
+              },
+              {
+                "name": "O-0002",
+                "noticed": "In task curriculum/footer_03 the shell command omitted the header line, but the expected convention is to count all lines, so the correct result would have been 7.",
+                "session": "S-0001",
+                "shape": [
+                  "other(count includes header)"
+                ]
+              },
+              {
+                "name": "O-0004",
+                "noticed": "GET /agents/14 returned 410 Gone because the API only serves /v2/agents/14, violating the task's endpoint convention.",
+                "session": "S-0001",
+                "shape": [
+                  "route-versioned"
+                ]
+              },
+              {
+                "name": "O-0005",
+                "noticed": "GET /secure/limits failed with HTTP 401 Unauthorized because the request omitted the required token query parameter.",
+                "session": "S-0001",
+                "shape": [
+                  "route-guarded"
+                ]
+              },
+              {
+                "name": "O-0006",
+                "noticed": "The first awk command did not skip the CSV header row, violating the CSV header convention.",
+                "session": "S-0001",
+                "shape": [
+                  "other(CSV header not skipped)"
+                ]
+              },
+              {
+                "name": "O-0007",
+                "noticed": "curriculum/newline_09 executed wc -l on extracts and returned 19 but no rule matched.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              },
+              {
+                "name": "O-0008",
+                "noticed": "curriculum/footer_03 ran awk and wc -l, got 6, but no rule matched.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              },
+              {
+                "name": "O-0009",
+                "noticed": "curriculum/newline_03 counted lines across slices, got 19, but no rule matched.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              },
+              {
+                "name": "O-0010",
+                "noticed": "curriculum/moved_07 attempted to retrieve agent data, got HTTP 410 error, but no rule matched.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              },
+              {
+                "name": "O-0012",
+                "noticed": "The first awk command printed nothing for zero matches, violating the convention that a count must always be printed.",
+                "session": "S-0002",
+                "shape": [
+                  "other(always print count)"
+                ]
+              },
+              {
+                "name": "O-0013",
+                "noticed": "In task curriculum/moved_05 the first tool call returned a non-transient HTTP 410 Gone error.",
+                "session": "S-0002",
+                "shape": [
+                  "other(non-transient HTTP error)"
+                ]
+              },
+              {
+                "name": "O-0014",
+                "noticed": "The first attempt failed with HTTP 401 Unauthorized because the required token query parameter was missing.",
+                "session": "S-0002",
+                "shape": [
+                  "route-guarded"
+                ]
+              },
+              {
+                "name": "O-0015",
+                "noticed": "GET /secure/ledger failed with HTTP 401 Unauthorized because the required token query parameter was omitted.",
+                "session": "S-0002",
+                "shape": [
+                  "route-guarded"
+                ]
+              },
+              {
+                "name": "O-0016",
+                "noticed": "Task curriculum/newline_04 ran with result 9 but no rule was applied.",
+                "session": "S-0002",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              },
+              {
+                "name": "O-0017",
+                "noticed": "Task curriculum/footer_06 ran with result 1640 but no rule was applied.",
+                "session": "S-0002",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              },
+              {
+                "name": "O-0018",
+                "noticed": "Task curriculum/csv_02 ran with result 0 but no rule was applied.",
+                "session": "S-0002",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              }
+            ]
+          },
+          "proposals": [
+            {
+              "decision": "Add a pre\u2011execution hook that aborts a task when its tool_budget_respected score is 0.0, ensuring budget limits are respected before any shell calls are issued.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0001",
+              "rung": "hook-edit",
+              "uid": "01a09c39-d42d-72fa-a366-db7012afc5ba"
+            },
+            {
+              "decision": "Require that every task's output terminates with a newline character before scoring.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0002",
+              "rung": "hook-edit",
+              "uid": "01a09c3e-98f4-778f-ae65-4a99ca463bd6"
+            }
+          ],
+          "queue": [
+            {
+              "name": "P-0001",
+              "uid": "01a09c45-17fa-7707-ab9b-4d929d646bdd",
+              "why": "escalate(adjudicator returned a token outside the vocabulary: admit-amended)"
+            }
+          ],
+          "steers": []
+        }
+      }
+    },
+    {
+      "divergence": [
+        "pass 3: the close filed 4 observations originally and 8 retrofitted \u2014 the close lenses are today's (L-0004 per failed row, L-0009 on recovered misses, L-0010 off-map) on the same rows"
+      ],
+      "original": {
+        "close": {
+          "carry_forward": "pass 3 scored {'error_cause_present': 1.0, 'method_transfer': 'unevaluable', 'output_schema_valid': 1.0, 'solution_economy': 0.21, 'suite_hash': 1.0, 'task_pass_rate': 0.38, 'tool_budget_respected': 1.0, 'turn_economy': 0.21}; consulted nothing; filed 4 observations (O-0006, O-0007, O-0008, O-0009); open fires: none",
+          "dispositions": [
+            {
+              "disposition": "fired-off-map",
+              "note": "work failed and matched no hook",
+              "record": "none"
+            }
+          ],
+          "ledger_entries": [],
+          "observations_filed": [
+            "O-0006",
+            "O-0007",
+            "O-0008",
+            "O-0009"
+          ],
+          "proposals": 1,
+          "steers_filed": []
+        },
+        "commit": "a82bdb8",
+        "consolidation": null,
+        "failed": [
+          "curriculum/footer_04",
+          "curriculum/csv_06",
+          "curriculum/newline_11",
+          "curriculum/footer_07",
+          "curriculum/moved_01"
+        ],
+        "in_context": [],
+        "off_map": true,
+        "pass": 3,
+        "rows": 8,
+        "score": 0.375,
+        "session": "S-0003",
+        "splice": null,
+        "store": {
+          "consolidations": [
+            "K-0001"
+          ],
+          "decisions": [],
+          "fires": [],
+          "ledger": {
+            "currency": 3
+          },
+          "observations": {
+            "by_shape": {
+              "http-tool test-failure-triage": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0003"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "output-schema shell-tool": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0005"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "output-schema test-failure-triage": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0002"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "shell-tool test-failure-triage": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0001"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "shell-tool tool-budget": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0004"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "uncoded": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0006",
+                  "O-0007",
+                  "O-0008",
+                  "O-0009"
+                ],
+                "open": 4,
+                "promoted": 0,
+                "sessions": [
+                  "S-0003"
+                ]
+              }
+            },
+            "by_state": {
+              "open": 9
+            },
+            "open": [
+              {
+                "name": "O-0001",
+                "noticed": "The first attempt used a single `wc -l` on all files, which returned per\u2011file counts instead of the required total line count, causing the task to fail.",
+                "session": "S-0001",
+                "shape": [
+                  "shell-tool",
+                  "test-failure-triage"
+                ]
+              },
+              {
+                "name": "O-0002",
+                "noticed": "In task curriculum/footer_03 the initial attempt counted lines with awk but failed to verify the output schema, causing the task to be marked failed.",
+                "session": "S-0001",
+                "shape": [
+                  "output-schema",
+                  "test-failure-triage"
+                ]
+              },
+              {
+                "name": "O-0003",
+                "noticed": "The task curriculum/moved_07 tried to GET /agents/14 and return 'ok', but the endpoint returned 410 Gone, so the attempt failed; the correct convention would have been to check for a successful response before extracting the ok field.",
+                "session": "S-0001",
+                "shape": [
+                  "http-tool",
+                  "test-failure-triage"
+                ]
+              },
+              {
+                "name": "O-0004",
+                "noticed": "The task curriculum/newline_04 ran two wc -l commands separately, which violated the requirement to return the total line count within the budget, leading to failure.",
+                "session": "S-0002",
+                "shape": [
+                  "shell-tool",
+                  "tool-budget"
+                ]
+              },
+              {
+                "name": "O-0005",
+                "noticed": "In task curriculum/csv_02 the first awk command printed an empty string for zero matches instead of a numeric 0, violating the convention that a result must always be a number.",
+                "session": "S-0002",
+                "shape": [
+                  "output-schema",
+                  "shell-tool"
+                ]
+              },
+              {
+                "name": "O-0006",
+                "noticed": "In task curriculum/footer_04 the first attempt used awk to compute the sum 3830 but returned a plain number rather than the expected formatted result, violating the output convention.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0007",
+                "noticed": "In task curriculum/newline_11 the attempt ran `wc -l capture-1.dat capture-2.dat capture-3.dat` but did not isolate the total line count as a plain number, violating the expected output convention.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0008",
+                "noticed": "In task curriculum/footer_07, the attempt counted the CSV rows with awk and output the number 9, but the required JSON result format was missed.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0009",
+                "noticed": "Task curriculum/moved_01 attempted GET /devices/69 on the wrong API version, causing a 410 Gone error; it should have used the v2 endpoint.",
+                "session": "S-0003",
+                "shape": []
+              }
+            ]
+          },
+          "proposals": [
+            {
+              "decision": "Enforce tool budget limits for shell calls to prevent exceeding allocated call count.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0001",
+              "rung": "floor",
+              "uid": "01a09985-fb23-77c7-bcb0-aa3d21988791"
+            },
+            {
+              "decision": "Require task_pass_rate >= 0.5 before accepting a curriculum row.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0002",
+              "rung": "new-decision",
+              "uid": "01a09987-a1a5-749a-ac70-402561a3c0a2"
+            },
+            {
+              "decision": "Tasks whose error_cause_present score is 1.0 must be marked as failed before any pass decision is recorded.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0003",
+              "rung": "new-decision",
+              "uid": "01a0998b-a631-73a5-8a67-65da97442108"
+            }
+          ],
+          "queue": [],
+          "steers": []
+        },
+        "subject": "Close S-0003 pass 3: filed O-0006 O-0007 O-0008 O-0009"
+      },
+      "pass": 3,
+      "retrofit": {
+        "close": {
+          "carry_forward": "pass 3 scored {'error_cause_present': 1.0, 'method_transfer': 'unevaluable', 'output_schema_valid': 1.0, 'solution_economy': 0.21, 'suite_hash': 1.0, 'task_pass_rate': 0.38, 'tool_budget_respected': 1.0, 'turn_economy': 0.21}; consulted nothing; filed 8 observations (O-0019, O-0020, O-0021, O-0022, O-0023, O-0024, O-0025, O-0026); open fires: none",
+          "dispositions": [
+            {
+              "disposition": "fired-off-map",
+              "note": "work failed and matched no hook",
+              "record": "none"
+            }
+          ],
+          "ledger_entries": [],
+          "observations_filed": [
+            "O-0019",
+            "O-0020",
+            "O-0021",
+            "O-0022",
+            "O-0023",
+            "O-0024",
+            "O-0025",
+            "O-0026"
+          ],
+          "proposals": 1,
+          "steers_filed": []
+        },
+        "consolidation": null,
+        "failed": [
+          "curriculum/footer_04",
+          "curriculum/csv_06",
+          "curriculum/newline_11",
+          "curriculum/footer_07",
+          "curriculum/moved_01"
+        ],
+        "in_context": [],
+        "off_map": true,
+        "pass": 3,
+        "rows": 8,
+        "score": 0.375,
+        "session": "S-0003",
+        "splice": {
+          "considered": [],
+          "consulted": [],
+          "fires_emitted": [],
+          "fires_owed": [],
+          "fires_seen": [],
+          "lens_answers": [
+            "L-0001",
+            "L-0002",
+            "L-0003",
+            "L-0004",
+            "L-0004",
+            "L-0004",
+            "L-0004",
+            "L-0004"
+          ],
+          "original_close": {
+            "carry_forward": "pass 3 scored {'error_cause_present': 1.0, 'method_transfer': 'unevaluable', 'output_schema_valid': 1.0, 'solution_economy': 0.21, 'suite_hash': 1.0, 'task_pass_rate': 0.38, 'tool_budget_respected': 1.0, 'turn_economy': 0.21}; consulted nothing; filed 4 observations (O-0006, O-0007, O-0008, O-0009); open fires: none",
+            "ledger_entries": [],
+            "observations_filed": [
+              "O-0006",
+              "O-0007",
+              "O-0008",
+              "O-0009"
+            ],
+            "proposals": 1,
+            "steers_filed": []
+          }
+        },
+        "store": {
+          "consolidations": [
+            "K-0001"
+          ],
+          "decisions": [
+            {
+              "anchors": [
+                "O-0003",
+                "O-0011"
+              ],
+              "decision": "All task outputs must terminate with a newline character to conform to the required output convention.",
+              "displaced_from": null,
+              "hook": [
+                "line-unterminated",
+                "shell-tool",
+                "tool-budget"
+              ],
+              "id": "D-0004",
+              "premises": {
+                "p1": "supported"
+              },
+              "proposed_by": "K-0001",
+              "rung": "new-decision",
+              "status": "accepted",
+              "superseded_by": [],
+              "supersedes": []
+            }
+          ],
+          "fires": [],
+          "ledger": {
+            "attack": 2,
+            "currency": 6,
+            "reality": 3
+          },
+          "observations": {
+            "by_shape": {
+              "line-unterminated": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [],
+                "open": 0,
+                "promoted": 2,
+                "sessions": []
+              },
+              "other(CSV header not skipped)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0006"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "other(always print count)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0012"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "other(count includes header)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0002"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "other(no rule matched)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0007",
+                  "O-0008",
+                  "O-0009",
+                  "O-0010",
+                  "O-0016",
+                  "O-0017",
+                  "O-0018"
+                ],
+                "open": 7,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001",
+                  "S-0002"
+                ]
+              },
+              "other(non-transient HTTP error)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0013"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "route-guarded": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0005",
+                  "O-0014",
+                  "O-0015"
+                ],
+                "open": 3,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001",
+                  "S-0002"
+                ]
+              },
+              "route-versioned": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0004"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "summary-row": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0001"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "uncoded": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0019",
+                  "O-0020",
+                  "O-0021",
+                  "O-0022",
+                  "O-0023",
+                  "O-0024",
+                  "O-0025",
+                  "O-0026"
+                ],
+                "open": 8,
+                "promoted": 0,
+                "sessions": [
+                  "S-0003"
+                ]
+              }
+            },
+            "by_state": {
+              "open": 24,
+              "promoted": 2
+            },
+            "open": [
+              {
+                "name": "O-0001",
+                "noticed": "The wc -l command produced per\u2011file counts and a total, but the task required returning only the total line count as a plain number, so the output convention was missed.",
+                "session": "S-0001",
+                "shape": [
+                  "summary-row"
+                ]
+              },
+              {
+                "name": "O-0002",
+                "noticed": "In task curriculum/footer_03 the shell command omitted the header line, but the expected convention is to count all lines, so the correct result would have been 7.",
+                "session": "S-0001",
+                "shape": [
+                  "other(count includes header)"
+                ]
+              },
+              {
+                "name": "O-0004",
+                "noticed": "GET /agents/14 returned 410 Gone because the API only serves /v2/agents/14, violating the task's endpoint convention.",
+                "session": "S-0001",
+                "shape": [
+                  "route-versioned"
+                ]
+              },
+              {
+                "name": "O-0005",
+                "noticed": "GET /secure/limits failed with HTTP 401 Unauthorized because the request omitted the required token query parameter.",
+                "session": "S-0001",
+                "shape": [
+                  "route-guarded"
+                ]
+              },
+              {
+                "name": "O-0006",
+                "noticed": "The first awk command did not skip the CSV header row, violating the CSV header convention.",
+                "session": "S-0001",
+                "shape": [
+                  "other(CSV header not skipped)"
+                ]
+              },
+              {
+                "name": "O-0007",
+                "noticed": "curriculum/newline_09 executed wc -l on extracts and returned 19 but no rule matched.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              },
+              {
+                "name": "O-0008",
+                "noticed": "curriculum/footer_03 ran awk and wc -l, got 6, but no rule matched.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              },
+              {
+                "name": "O-0009",
+                "noticed": "curriculum/newline_03 counted lines across slices, got 19, but no rule matched.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              },
+              {
+                "name": "O-0010",
+                "noticed": "curriculum/moved_07 attempted to retrieve agent data, got HTTP 410 error, but no rule matched.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              },
+              {
+                "name": "O-0012",
+                "noticed": "The first awk command printed nothing for zero matches, violating the convention that a count must always be printed.",
+                "session": "S-0002",
+                "shape": [
+                  "other(always print count)"
+                ]
+              },
+              {
+                "name": "O-0013",
+                "noticed": "In task curriculum/moved_05 the first tool call returned a non-transient HTTP 410 Gone error.",
+                "session": "S-0002",
+                "shape": [
+                  "other(non-transient HTTP error)"
+                ]
+              },
+              {
+                "name": "O-0014",
+                "noticed": "The first attempt failed with HTTP 401 Unauthorized because the required token query parameter was missing.",
+                "session": "S-0002",
+                "shape": [
+                  "route-guarded"
+                ]
+              },
+              {
+                "name": "O-0015",
+                "noticed": "GET /secure/ledger failed with HTTP 401 Unauthorized because the required token query parameter was omitted.",
+                "session": "S-0002",
+                "shape": [
+                  "route-guarded"
+                ]
+              },
+              {
+                "name": "O-0016",
+                "noticed": "Task curriculum/newline_04 ran with result 9 but no rule was applied.",
+                "session": "S-0002",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              },
+              {
+                "name": "O-0017",
+                "noticed": "Task curriculum/footer_06 ran with result 1640 but no rule was applied.",
+                "session": "S-0002",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              },
+              {
+                "name": "O-0018",
+                "noticed": "Task curriculum/csv_02 ran with result 0 but no rule was applied.",
+                "session": "S-0002",
+                "shape": [
+                  "other(no rule matched)"
+                ]
+              },
+              {
+                "name": "O-0019",
+                "noticed": "In task curriculum/newline_11 the first attempt ran `wc -l capture-1.dat capture-2.dat capture-3.dat` expecting a plain total line count, but the convention requires the output to be just the total number without file labels.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0020",
+                "noticed": "The task attempted GET /devices/69 and received HTTP 410 Gone; using the correct /v2/devices/69 would have satisfied the API version convention.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0021",
+                "noticed": "GET /secure/usage failed with HTTP 401 Unauthorized because the required token query parameter was missing.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0022",
+                "noticed": "Task curriculum/footer_04 failed with result 3830 and no applicable rule.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0023",
+                "noticed": "Task curriculum/csv_06 failed with result 1 and no applicable rule.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0024",
+                "noticed": "Task curriculum/newline_11 failed with result 10 and no applicable rule.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0025",
+                "noticed": "Task curriculum/footer_07 failed with result 9 and no applicable rule.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0026",
+                "noticed": "Task curriculum/moved_01 failed with HTTP 410 error and no applicable rule.",
+                "session": "S-0003",
+                "shape": []
+              }
+            ]
+          },
+          "proposals": [
+            {
+              "decision": "Add a pre\u2011execution hook that aborts a task when its tool_budget_respected score is 0.0, ensuring budget limits are respected before any shell calls are issued.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0001",
+              "rung": "hook-edit",
+              "uid": "01a09c39-d42d-72fa-a366-db7012afc5ba"
+            },
+            {
+              "decision": "Require that every task's output terminates with a newline character before scoring.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0002",
+              "rung": "hook-edit",
+              "uid": "01a09c3e-98f4-778f-ae65-4a99ca463bd6"
+            },
+            {
+              "decision": "Require that any task producing textual output must terminate with a newline character.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0003",
+              "rung": "hook-edit",
+              "uid": "01a09c4c-b5d5-74a2-8361-b846e216994c"
+            }
+          ],
+          "queue": [
+            {
+              "name": "P-0001",
+              "uid": "01a09c45-17fa-7707-ab9b-4d929d646bdd",
+              "why": "escalate(adjudicator returned a token outside the vocabulary: admit-amended)"
+            }
+          ],
+          "steers": []
+        }
+      }
+    }
+  ],
+  "retrofit": {
+    "batches": null,
+    "cadence": 2,
+    "code_commit": "faabceb594d23f1add9125764073c8b83893f940",
+    "date": "2026-09-13T19:19:51.055038+00:00",
+    "id_counters": {
+      "D": 3,
+      "S": 12
+    },
+    "pass_model": "openai/gpt-oss-120b",
+    "source": "/Users/slavazinevich/GenDev/CoreWeaveHack/.claude/worktrees/nervous-rubin-e8e759/runs/economy/attached",
+    "source_arm": "attached",
+    "source_code_commit": null,
+    "source_commit": "0e05e340b237f3a72f0364a798f0d0730a5fe416",
+    "source_experiment": "economy",
+    "source_passes": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "teacher": "openai/gpt-oss-120b",
+    "upto": null
+  }
+}

@@ -1,0 +1,2793 @@
+{
+  "arm": "stream-120b-attached",
+  "curve": {
+    "1": 0.25,
+    "2": 0.5,
+    "3": 0.375
+  },
+  "final": {
+    "original": {
+      "consolidations": [
+        "K-0001"
+      ],
+      "decisions": [],
+      "fires": [],
+      "ledger": {
+        "attack": 1,
+        "reality": 3
+      },
+      "observations": {
+        "by_shape": {
+          "http-tool": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0001",
+              "O-0003",
+              "O-0005",
+              "O-0007"
+            ],
+            "open": 4,
+            "promoted": 0,
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ]
+          },
+          "output-schema": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0004",
+              "O-0009"
+            ],
+            "open": 2,
+            "promoted": 0,
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ]
+          },
+          "shell-tool": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0006"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0002"
+            ]
+          },
+          "test-failure-triage": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0002",
+              "O-0008"
+            ],
+            "open": 2,
+            "promoted": 0,
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ]
+          },
+          "uncoded": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0010",
+              "O-0011",
+              "O-0012",
+              "O-0013",
+              "O-0014"
+            ],
+            "open": 5,
+            "promoted": 0,
+            "sessions": [
+              "S-0003"
+            ]
+          }
+        },
+        "by_state": {
+          "open": 14
+        },
+        "open": [
+          {
+            "name": "O-0001",
+            "noticed": "In task curriculum/moved_06 the first attempt called GET /zones/90 on the wrong endpoint, received HTTP 410 Gone, and would have passed by calling /v2/zones/90 to obtain the zone name.",
+            "session": "S-0001",
+            "shape": [
+              "http-tool"
+            ]
+          },
+          {
+            "name": "O-0002",
+            "noticed": "In task curriculum/newline_02 the first attempt counted 14 lines, but the correct total should include all lines from the five shard files, so the line-count convention was missed.",
+            "session": "S-0001",
+            "shape": [
+              "test-failure-triage"
+            ]
+          },
+          {
+            "name": "O-0003",
+            "noticed": "Task curriculum/moved_04 attempted GET /plans/49 but received 410 Gone, so it should have recorded an observation of the missing plan.",
+            "session": "S-0001",
+            "shape": [
+              "http-tool"
+            ]
+          },
+          {
+            "name": "O-0004",
+            "noticed": "The first attempt returned a plain number instead of the required JSON result, violating the output schema.",
+            "session": "S-0001",
+            "shape": [
+              "output-schema"
+            ]
+          },
+          {
+            "name": "O-0005",
+            "noticed": "GET /secure/ledger returned HTTP 401 Unauthorized because the required token was missing.",
+            "session": "S-0001",
+            "shape": [
+              "http-tool"
+            ]
+          },
+          {
+            "name": "O-0006",
+            "noticed": "In task curriculum/footer_04 the model attempted a shell call with invalid JSON arguments, causing a BadRequestError; a correctly formatted JSON call would have succeeded.",
+            "session": "S-0002",
+            "shape": [
+              "shell-tool"
+            ]
+          },
+          {
+            "name": "O-0007",
+            "noticed": "Task curriculum/moved_00 attempted GET /projects/82 on a deprecated endpoint, but the correct call should target /v2/projects/82 to retrieve the project name.",
+            "session": "S-0002",
+            "shape": [
+              "http-tool"
+            ]
+          },
+          {
+            "name": "O-0008",
+            "noticed": "In task curriculum/newline_00 the first attempt returned 12 lines, which was incorrect, missing the correct total and thus violating the convention of accurately summing lines across both files.",
+            "session": "S-0002",
+            "shape": [
+              "test-failure-triage"
+            ]
+          },
+          {
+            "name": "O-0009",
+            "noticed": "Task curriculum/paged_00 attempted GET /entries but received HTTP 406, violating the expected summed result output schema.",
+            "session": "S-0002",
+            "shape": [
+              "output-schema"
+            ]
+          },
+          {
+            "name": "O-0010",
+            "noticed": "In task curriculum/footer_11 the shell call returned 6 but no observation of the failure was filed, so the task was marked failed.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0011",
+            "noticed": "In task curriculum/newline_03 the first attempt reported 15 lines total, which is incorrect and thus failed the task.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0012",
+            "noticed": "The GET /nodes/36 returned HTTP 410 Gone, preventing verification of the ok field for task curriculum/moved_03.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0013",
+            "noticed": "In task curriculum/csv_04 the first attempt returned 0 Oslo people, which is incorrect, so an observation of the wrong result should have fired.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0014",
+            "noticed": "The first attempt returned 6 parcels, failing the task's pass criteria.",
+            "session": "S-0003",
+            "shape": []
+          }
+        ]
+      },
+      "proposals": [
+        {
+          "decision": "Enforce output\u2011schema validation as a prerequisite for accepting any task result.",
+          "deferred": false,
+          "name": "P-0001",
+          "proposed_by": "S-0001",
+          "rung": "new-decision",
+          "uid": "01a09975-4ac8-76c1-93be-bf4b55eff5db"
+        },
+        {
+          "decision": "Require that any tool call supplying a JSON\u2011encoded argument be validated for proper JSON syntax before the call is issued.",
+          "deferred": false,
+          "name": "P-0001",
+          "proposed_by": "S-0002",
+          "rung": "hook-edit",
+          "uid": "01a09979-254a-75a9-a6db-ff6ac33bcec0"
+        },
+        {
+          "decision": "Enforce a hard tool\u2011budget limit for each curriculum task and abort the task when the limit is exceeded.",
+          "deferred": false,
+          "name": "P-0001",
+          "proposed_by": "S-0003",
+          "rung": "hook-edit",
+          "uid": "01a0997f-0890-7763-8981-6357f4043d81"
+        }
+      ],
+      "queue": [],
+      "steers": []
+    },
+    "retrofit": {
+      "consolidations": [
+        "K-0001"
+      ],
+      "decisions": [
+        {
+          "anchors": [
+            "O-0005",
+            "O-0015"
+          ],
+          "decision": "Require the presence of a token query parameter for all secure\u2011route requests before proceeding.",
+          "displaced_from": "hook-edit",
+          "hook": [
+            "route-guarded",
+            "error-wrapping",
+            "file-tool",
+            "http-tool"
+          ],
+          "id": "D-0003",
+          "premises": {
+            "p1": "supported"
+          },
+          "proposed_by": "K-0001",
+          "rung": "new-decision",
+          "status": "accepted",
+          "superseded_by": [],
+          "supersedes": []
+        }
+      ],
+      "fires": [],
+      "ledger": {
+        "attack": 1,
+        "currency": 6,
+        "reality": 2
+      },
+      "observations": {
+        "by_shape": {
+          "listing-paged": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0014"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0002"
+            ]
+          },
+          "other(bad request error)": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0016"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0002"
+            ]
+          },
+          "other(malformed JSON arguments)": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0012"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0002"
+            ]
+          },
+          "other(missing result validation check)": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0003"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0001"
+            ]
+          },
+          "other(no applicable rule)": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0006",
+              "O-0007",
+              "O-0008",
+              "O-0009",
+              "O-0010",
+              "O-0011"
+            ],
+            "open": 6,
+            "promoted": 0,
+            "sessions": [
+              "S-0001"
+            ]
+          },
+          "other(no store rule)": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0018",
+              "O-0019"
+            ],
+            "open": 2,
+            "promoted": 0,
+            "sessions": [
+              "S-0002"
+            ]
+          },
+          "output-schema": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0004"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0001"
+            ]
+          },
+          "route-guarded": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [],
+            "open": 0,
+            "promoted": 2,
+            "sessions": []
+          },
+          "route-versioned": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0002",
+              "O-0013",
+              "O-0017"
+            ],
+            "open": 3,
+            "promoted": 0,
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ]
+          },
+          "shell-tool": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0001"
+            ],
+            "open": 1,
+            "promoted": 0,
+            "sessions": [
+              "S-0001"
+            ]
+          },
+          "uncoded": {
+            "dismissed": 0,
+            "expired": 0,
+            "names": [
+              "O-0020",
+              "O-0021",
+              "O-0022",
+              "O-0023",
+              "O-0024",
+              "O-0025",
+              "O-0026",
+              "O-0027",
+              "O-0028",
+              "O-0029",
+              "O-0030"
+            ],
+            "open": 11,
+            "promoted": 0,
+            "sessions": [
+              "S-0003"
+            ]
+          }
+        },
+        "by_state": {
+          "open": 28,
+          "promoted": 2
+        },
+        "open": [
+          {
+            "name": "O-0001",
+            "noticed": "In task curriculum/csv_02 the first attempt returned 0 instead of the correct count of people in Helsinki, violating the convention of using a shell command to filter and count CSV rows.",
+            "session": "S-0001",
+            "shape": [
+              "shell-tool"
+            ]
+          },
+          {
+            "name": "O-0002",
+            "noticed": "Task curriculum/moved_06 attempted GET /zones/90 and received a 410 Gone error; the correct convention is to use the versioned endpoint /v2/zones/90.",
+            "session": "S-0001",
+            "shape": [
+              "route-versioned"
+            ]
+          },
+          {
+            "name": "O-0003",
+            "noticed": "The first attempt ran a single shell command returning 14 lines but omitted the required check of the total line count, violating the convention that a check record must validate the task's result.",
+            "session": "S-0001",
+            "shape": [
+              "other(missing result validation check)"
+            ]
+          },
+          {
+            "name": "O-0004",
+            "noticed": "GET /plans/49 returned 410 Gone, so the task could not retrieve the plan name as required by the convention of a successful response containing a name field.",
+            "session": "S-0001",
+            "shape": [
+              "output-schema"
+            ]
+          },
+          {
+            "name": "O-0006",
+            "noticed": "Task curriculum/csv_02 failed with no applicable rule.",
+            "session": "S-0001",
+            "shape": [
+              "other(no applicable rule)"
+            ]
+          },
+          {
+            "name": "O-0007",
+            "noticed": "Task curriculum/moved_06 failed with no applicable rule.",
+            "session": "S-0001",
+            "shape": [
+              "other(no applicable rule)"
+            ]
+          },
+          {
+            "name": "O-0008",
+            "noticed": "Task curriculum/newline_02 failed with no applicable rule.",
+            "session": "S-0001",
+            "shape": [
+              "other(no applicable rule)"
+            ]
+          },
+          {
+            "name": "O-0009",
+            "noticed": "Task curriculum/moved_04 failed with no applicable rule.",
+            "session": "S-0001",
+            "shape": [
+              "other(no applicable rule)"
+            ]
+          },
+          {
+            "name": "O-0010",
+            "noticed": "Task curriculum/footer_09 failed with no applicable rule.",
+            "session": "S-0001",
+            "shape": [
+              "other(no applicable rule)"
+            ]
+          },
+          {
+            "name": "O-0011",
+            "noticed": "Task curriculum/token_02 failed with no applicable rule.",
+            "session": "S-0001",
+            "shape": [
+              "other(no applicable rule)"
+            ]
+          },
+          {
+            "name": "O-0012",
+            "noticed": "In task curriculum/footer_04 the initial attempt sent malformed JSON arguments to the tool, resulting in a BadRequestError and no result.",
+            "session": "S-0002",
+            "shape": [
+              "other(malformed JSON arguments)"
+            ]
+          },
+          {
+            "name": "O-0013",
+            "noticed": "Task curriculum/moved_00 attempted GET /projects/82 and received HTTP 410 Gone; the convention missed was using the /v2/projects/82 endpoint.",
+            "session": "S-0002",
+            "shape": [
+              "route-versioned"
+            ]
+          },
+          {
+            "name": "O-0014",
+            "noticed": "Task curriculum/paged_00 attempted GET /entries, got HTTP 406, missing the convention of handling pagination and summing all items.",
+            "session": "S-0002",
+            "shape": [
+              "listing-paged"
+            ]
+          },
+          {
+            "name": "O-0016",
+            "noticed": "Task curriculum/footer_04 failed with a BadRequestError during validation.",
+            "session": "S-0002",
+            "shape": [
+              "other(bad request error)"
+            ]
+          },
+          {
+            "name": "O-0017",
+            "noticed": "Task curriculum/moved_00 failed with an HTTP 410 Gone error retrieving the project.",
+            "session": "S-0002",
+            "shape": [
+              "route-versioned"
+            ]
+          },
+          {
+            "name": "O-0018",
+            "noticed": "Task curriculum/newline_00 completed but the work was not covered by any store rule.",
+            "session": "S-0002",
+            "shape": [
+              "other(no store rule)"
+            ]
+          },
+          {
+            "name": "O-0019",
+            "noticed": "Task curriculum/paged_00 completed but the work was not covered by any store rule.",
+            "session": "S-0002",
+            "shape": [
+              "other(no store rule)"
+            ]
+          },
+          {
+            "name": "O-0020",
+            "noticed": "In task curriculum/footer_11 the shell call returned 6, because it included the CSV header as a record instead of counting only data rows.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0021",
+            "noticed": "In task curriculum/newline_03 the initial attempt used one shell call (weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997c-b4b9-7391-9f86-5bb11c9309d5) to total the lines, returning 15, but the convention requires a verification check of the line count which was omitted.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0022",
+            "noticed": "The attempt tried GET /nodes/36 but received HTTP 410 Gone, so the required `ok` field could not be verified.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0023",
+            "noticed": "In task curriculum/paged_09 the first attempt returned 6 parcels without applying the required filter for active:true, which violates the convention that only active parcels should be counted.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0024",
+            "noticed": "GET /secure/audit failed with HTTP 401 Unauthorized because the required token query parameter was missing.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0025",
+            "noticed": "The first shell call failed with a non\u2011transient awk syntax error because the CSV field quoting was incorrect.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0026",
+            "noticed": "curriculum/footer_11 failed with no applicable rule.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0027",
+            "noticed": "curriculum/newline_03 failed with no applicable rule.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0028",
+            "noticed": "curriculum/moved_03 failed with no applicable rule.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0029",
+            "noticed": "curriculum/csv_04 failed with no applicable rule.",
+            "session": "S-0003",
+            "shape": []
+          },
+          {
+            "name": "O-0030",
+            "noticed": "curriculum/paged_09 failed with no applicable rule.",
+            "session": "S-0003",
+            "shape": []
+          }
+        ]
+      },
+      "proposals": [
+        {
+          "decision": "Introduce a hook that checks HTTP response status codes after each tool call and aborts or retries on 4xx errors before any payload is processed.",
+          "deferred": false,
+          "name": "P-0001",
+          "proposed_by": "S-0001",
+          "rung": "hook-edit",
+          "uid": "01a09c3a-160c-702e-bb7a-c337c8b38c1b"
+        },
+        {
+          "decision": "Validate JSON argument strings before any tool call.",
+          "deferred": false,
+          "name": "P-0001",
+          "proposed_by": "S-0002",
+          "rung": "hook-edit",
+          "uid": "01a09c3e-22b0-77cb-a4ff-52549f661bd5"
+        },
+        {
+          "decision": "Abort a task when a tool call exceeds its allocated budget and record a budget\u2011violation error before any further processing.",
+          "deferred": false,
+          "name": "P-0001",
+          "proposed_by": "S-0003",
+          "rung": "hook-edit",
+          "uid": "01a09c4a-a960-7234-8009-3631029c0bb8"
+        }
+      ],
+      "queue": [],
+      "steers": []
+    }
+  },
+  "passes": [
+    {
+      "divergence": [
+        "pass 1: the close filed 5 observations originally and 11 retrofitted \u2014 the close lenses are today's (L-0004 per failed row, L-0009 on recovered misses, L-0010 off-map) on the same rows"
+      ],
+      "original": {
+        "close": {
+          "carry_forward": "pass 1 scored {'error_cause_present': 0.0, 'output_schema_valid': 0.71, 'suite_hash': 1.0, 'task_pass_rate': 0.25, 'tool_budget_respected': 1.0}; consulted nothing; filed 5 observations (O-0001, O-0002, O-0003, O-0004, O-0005); open fires: none",
+          "dispositions": [
+            {
+              "disposition": "fired-off-map",
+              "note": "work failed and matched no hook",
+              "record": "none"
+            }
+          ],
+          "ledger_entries": [],
+          "observations_filed": [
+            "O-0001",
+            "O-0002",
+            "O-0003",
+            "O-0004",
+            "O-0005"
+          ],
+          "proposals": 1,
+          "steers_filed": []
+        },
+        "commit": "5f089ce",
+        "consolidation": null,
+        "failed": [
+          "curriculum/csv_02",
+          "curriculum/moved_06",
+          "curriculum/newline_02",
+          "curriculum/moved_04",
+          "curriculum/footer_09",
+          "curriculum/token_02"
+        ],
+        "in_context": [],
+        "off_map": true,
+        "pass": 1,
+        "rows": 8,
+        "score": 0.25,
+        "session": "S-0001",
+        "splice": null,
+        "store": {
+          "consolidations": [],
+          "decisions": [],
+          "fires": [],
+          "ledger": {},
+          "observations": {
+            "by_shape": {
+              "uncoded": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0001",
+                  "O-0002",
+                  "O-0003",
+                  "O-0004",
+                  "O-0005"
+                ],
+                "open": 5,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              }
+            },
+            "by_state": {
+              "open": 5
+            },
+            "open": [
+              {
+                "name": "O-0001",
+                "noticed": "In task curriculum/moved_06 the first attempt called GET /zones/90 on the wrong endpoint, received HTTP 410 Gone, and would have passed by calling /v2/zones/90 to obtain the zone name.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0002",
+                "noticed": "In task curriculum/newline_02 the first attempt counted 14 lines, but the correct total should include all lines from the five shard files, so the line-count convention was missed.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0003",
+                "noticed": "Task curriculum/moved_04 attempted GET /plans/49 but received 410 Gone, so it should have recorded an observation of the missing plan.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0004",
+                "noticed": "The first attempt returned a plain number instead of the required JSON result, violating the output schema.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0005",
+                "noticed": "GET /secure/ledger returned HTTP 401 Unauthorized because the required token was missing.",
+                "session": "S-0001",
+                "shape": []
+              }
+            ]
+          },
+          "proposals": [
+            {
+              "decision": "Enforce output\u2011schema validation as a prerequisite for accepting any task result.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0001",
+              "rung": "new-decision",
+              "uid": "01a09975-4ac8-76c1-93be-bf4b55eff5db"
+            }
+          ],
+          "queue": [],
+          "steers": []
+        },
+        "subject": "Close S-0001 pass 1: filed O-0001 O-0002 O-0003 O-0004 O-0005"
+      },
+      "pass": 1,
+      "retrofit": {
+        "close": {
+          "carry_forward": "pass 1 scored {'error_cause_present': 0.0, 'output_schema_valid': 0.71, 'suite_hash': 1.0, 'task_pass_rate': 0.25, 'tool_budget_respected': 1.0}; consulted nothing; filed 11 observations (O-0001, O-0002, O-0003, O-0004, O-0005, O-0006, O-0007, O-0008, O-0009, O-0010, O-0011); open fires: none",
+          "dispositions": [
+            {
+              "disposition": "fired-off-map",
+              "note": "work failed and matched no hook",
+              "record": "none"
+            }
+          ],
+          "ledger_entries": [],
+          "observations_filed": [
+            "O-0001",
+            "O-0002",
+            "O-0003",
+            "O-0004",
+            "O-0005",
+            "O-0006",
+            "O-0007",
+            "O-0008",
+            "O-0009",
+            "O-0010",
+            "O-0011"
+          ],
+          "proposals": 1,
+          "steers_filed": []
+        },
+        "consolidation": null,
+        "failed": [
+          "curriculum/csv_02",
+          "curriculum/moved_06",
+          "curriculum/newline_02",
+          "curriculum/moved_04",
+          "curriculum/footer_09",
+          "curriculum/token_02"
+        ],
+        "in_context": [],
+        "off_map": true,
+        "pass": 1,
+        "rows": 8,
+        "score": 0.25,
+        "session": "S-0001",
+        "splice": {
+          "considered": [],
+          "consulted": [],
+          "fires_emitted": [],
+          "fires_owed": [],
+          "fires_seen": [],
+          "lens_answers": [
+            "L-0001",
+            "L-0002",
+            "L-0003",
+            "L-0004",
+            "L-0004",
+            "L-0004",
+            "L-0004",
+            "L-0004",
+            "L-0004"
+          ],
+          "original_close": {
+            "carry_forward": "pass 1 scored {'error_cause_present': 0.0, 'output_schema_valid': 0.71, 'suite_hash': 1.0, 'task_pass_rate': 0.25, 'tool_budget_respected': 1.0}; consulted nothing; filed 5 observations (O-0001, O-0002, O-0003, O-0004, O-0005); open fires: none",
+            "ledger_entries": [],
+            "observations_filed": [
+              "O-0001",
+              "O-0002",
+              "O-0003",
+              "O-0004",
+              "O-0005"
+            ],
+            "proposals": 1,
+            "steers_filed": []
+          }
+        },
+        "store": {
+          "consolidations": [],
+          "decisions": [],
+          "fires": [],
+          "ledger": {},
+          "observations": {
+            "by_shape": {
+              "uncoded": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0001",
+                  "O-0002",
+                  "O-0003",
+                  "O-0004",
+                  "O-0005",
+                  "O-0006",
+                  "O-0007",
+                  "O-0008",
+                  "O-0009",
+                  "O-0010",
+                  "O-0011"
+                ],
+                "open": 11,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              }
+            },
+            "by_state": {
+              "open": 11
+            },
+            "open": [
+              {
+                "name": "O-0001",
+                "noticed": "In task curriculum/csv_02 the first attempt returned 0 instead of the correct count of people in Helsinki, violating the convention of using a shell command to filter and count CSV rows.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0002",
+                "noticed": "Task curriculum/moved_06 attempted GET /zones/90 and received a 410 Gone error; the correct convention is to use the versioned endpoint /v2/zones/90.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0003",
+                "noticed": "The first attempt ran a single shell command returning 14 lines but omitted the required check of the total line count, violating the convention that a check record must validate the task's result.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0004",
+                "noticed": "GET /plans/49 returned 410 Gone, so the task could not retrieve the plan name as required by the convention of a successful response containing a name field.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0005",
+                "noticed": "Task curriculum/token_02 attempted GET /secure/ledger without the required token query parameter, which the convention requires for /secure routes.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0006",
+                "noticed": "Task curriculum/csv_02 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0007",
+                "noticed": "Task curriculum/moved_06 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0008",
+                "noticed": "Task curriculum/newline_02 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0009",
+                "noticed": "Task curriculum/moved_04 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0010",
+                "noticed": "Task curriculum/footer_09 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": []
+              },
+              {
+                "name": "O-0011",
+                "noticed": "Task curriculum/token_02 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": []
+              }
+            ]
+          },
+          "proposals": [
+            {
+              "decision": "Introduce a hook that checks HTTP response status codes after each tool call and aborts or retries on 4xx errors before any payload is processed.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0001",
+              "rung": "hook-edit",
+              "uid": "01a09c3a-160c-702e-bb7a-c337c8b38c1b"
+            }
+          ],
+          "queue": [],
+          "steers": []
+        }
+      }
+    },
+    {
+      "divergence": [
+        "pass 2: the close filed 4 observations originally and 8 retrofitted \u2014 the close lenses are today's (L-0004 per failed row, L-0009 on recovered misses, L-0010 off-map) on the same rows",
+        "after pass 2: the original K-0001 admitted nothing; the retrofit K-0001 admitted D-0003",
+        "after pass 2: nomination outcomes \u2014 original {'declined': 1}; retrofit {'admitted D-0003': 1, 'draft refused at parse: a hook-edit supersedes exactly one record': 1}"
+      ],
+      "original": {
+        "close": {
+          "carry_forward": "pass 2 scored {'error_cause_present': 0.5, 'output_schema_valid': 0.83, 'suite_hash': 1.0, 'task_pass_rate': 0.5, 'tool_budget_respected': 1.0}; consulted nothing; filed 4 observations (O-0006, O-0007, O-0008, O-0009); open fires: none",
+          "dispositions": [
+            {
+              "disposition": "fired-off-map",
+              "note": "work failed and matched no hook",
+              "record": "none"
+            }
+          ],
+          "ledger_entries": [],
+          "observations_filed": [
+            "O-0006",
+            "O-0007",
+            "O-0008",
+            "O-0009"
+          ],
+          "proposals": 1,
+          "steers_filed": []
+        },
+        "commit": "486f13c",
+        "consolidation": {
+          "admitted": [],
+          "after_pass": 2,
+          "anchored": [
+            "L-0007"
+          ],
+          "deferred": [],
+          "dismissed": [],
+          "expired": [],
+          "fires_discharged": [],
+          "flipped": [],
+          "groups": [
+            {
+              "observations": [
+                "O-0001",
+                "O-0003",
+                "O-0005",
+                "O-0007"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "http-tool"
+              ]
+            },
+            {
+              "observations": [
+                "O-0004",
+                "O-0009"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "output-schema"
+              ]
+            },
+            {
+              "observations": [
+                "O-0006"
+              ],
+              "sessions": [
+                "S-0002"
+              ],
+              "shape": [
+                "shell-tool"
+              ]
+            },
+            {
+              "observations": [
+                "O-0002",
+                "O-0008"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "test-failure-triage"
+              ]
+            }
+          ],
+          "id": "K-0001",
+          "minted": [],
+          "nominations": [
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "declined; draft dropped",
+              "rung": "new-decision",
+              "subject": "endpoint-versioning"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "no instance proposed",
+              "rung": "article",
+              "subject": "C-0001"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "no instance proposed",
+              "rung": "article",
+              "subject": "C-0002"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "no instance proposed",
+              "rung": "article",
+              "subject": "C-0003"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "no instance proposed",
+              "rung": "article",
+              "subject": "C-0004"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "no instance proposed",
+              "rung": "article",
+              "subject": "C-0005"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "no instance proposed",
+              "rung": "article",
+              "subject": "C-0006"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "no instance proposed",
+              "rung": "article",
+              "subject": "C-0007"
+            }
+          ],
+          "retired": [],
+          "sessions_read": [
+            "S-0001",
+            "S-0002"
+          ],
+          "triage": [
+            {
+              "act": "route",
+              "ledger_entry": "H-0001",
+              "observations": [
+                "O-0001",
+                "O-0003",
+                "O-0005",
+                "O-0007"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "http-tool"
+              ],
+              "verdict": "reducible"
+            },
+            {
+              "act": "route",
+              "ledger_entry": "H-0002",
+              "observations": [
+                "O-0004",
+                "O-0009"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "output-schema"
+              ],
+              "verdict": "reducible"
+            },
+            {
+              "act": "route",
+              "ledger_entry": "H-0003",
+              "observations": [
+                "O-0002",
+                "O-0008"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "test-failure-triage"
+              ],
+              "verdict": "reducible"
+            }
+          ]
+        },
+        "failed": [
+          "curriculum/footer_04",
+          "curriculum/moved_00",
+          "curriculum/newline_00",
+          "curriculum/paged_00"
+        ],
+        "in_context": [],
+        "off_map": true,
+        "pass": 2,
+        "rows": 8,
+        "score": 0.5,
+        "session": "S-0002",
+        "splice": null,
+        "store": {
+          "consolidations": [
+            "K-0001"
+          ],
+          "decisions": [],
+          "fires": [],
+          "ledger": {
+            "attack": 1,
+            "reality": 3
+          },
+          "observations": {
+            "by_shape": {
+              "http-tool": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0001",
+                  "O-0003",
+                  "O-0005",
+                  "O-0007"
+                ],
+                "open": 4,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001",
+                  "S-0002"
+                ]
+              },
+              "output-schema": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0004",
+                  "O-0009"
+                ],
+                "open": 2,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001",
+                  "S-0002"
+                ]
+              },
+              "shell-tool": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0006"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "test-failure-triage": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0002",
+                  "O-0008"
+                ],
+                "open": 2,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001",
+                  "S-0002"
+                ]
+              }
+            },
+            "by_state": {
+              "open": 9
+            },
+            "open": [
+              {
+                "name": "O-0001",
+                "noticed": "In task curriculum/moved_06 the first attempt called GET /zones/90 on the wrong endpoint, received HTTP 410 Gone, and would have passed by calling /v2/zones/90 to obtain the zone name.",
+                "session": "S-0001",
+                "shape": [
+                  "http-tool"
+                ]
+              },
+              {
+                "name": "O-0002",
+                "noticed": "In task curriculum/newline_02 the first attempt counted 14 lines, but the correct total should include all lines from the five shard files, so the line-count convention was missed.",
+                "session": "S-0001",
+                "shape": [
+                  "test-failure-triage"
+                ]
+              },
+              {
+                "name": "O-0003",
+                "noticed": "Task curriculum/moved_04 attempted GET /plans/49 but received 410 Gone, so it should have recorded an observation of the missing plan.",
+                "session": "S-0001",
+                "shape": [
+                  "http-tool"
+                ]
+              },
+              {
+                "name": "O-0004",
+                "noticed": "The first attempt returned a plain number instead of the required JSON result, violating the output schema.",
+                "session": "S-0001",
+                "shape": [
+                  "output-schema"
+                ]
+              },
+              {
+                "name": "O-0005",
+                "noticed": "GET /secure/ledger returned HTTP 401 Unauthorized because the required token was missing.",
+                "session": "S-0001",
+                "shape": [
+                  "http-tool"
+                ]
+              },
+              {
+                "name": "O-0006",
+                "noticed": "In task curriculum/footer_04 the model attempted a shell call with invalid JSON arguments, causing a BadRequestError; a correctly formatted JSON call would have succeeded.",
+                "session": "S-0002",
+                "shape": [
+                  "shell-tool"
+                ]
+              },
+              {
+                "name": "O-0007",
+                "noticed": "Task curriculum/moved_00 attempted GET /projects/82 on a deprecated endpoint, but the correct call should target /v2/projects/82 to retrieve the project name.",
+                "session": "S-0002",
+                "shape": [
+                  "http-tool"
+                ]
+              },
+              {
+                "name": "O-0008",
+                "noticed": "In task curriculum/newline_00 the first attempt returned 12 lines, which was incorrect, missing the correct total and thus violating the convention of accurately summing lines across both files.",
+                "session": "S-0002",
+                "shape": [
+                  "test-failure-triage"
+                ]
+              },
+              {
+                "name": "O-0009",
+                "noticed": "Task curriculum/paged_00 attempted GET /entries but received HTTP 406, violating the expected summed result output schema.",
+                "session": "S-0002",
+                "shape": [
+                  "output-schema"
+                ]
+              }
+            ]
+          },
+          "proposals": [
+            {
+              "decision": "Enforce output\u2011schema validation as a prerequisite for accepting any task result.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0001",
+              "rung": "new-decision",
+              "uid": "01a09975-4ac8-76c1-93be-bf4b55eff5db"
+            },
+            {
+              "decision": "Require that any tool call supplying a JSON\u2011encoded argument be validated for proper JSON syntax before the call is issued.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0002",
+              "rung": "hook-edit",
+              "uid": "01a09979-254a-75a9-a6db-ff6ac33bcec0"
+            }
+          ],
+          "queue": [],
+          "steers": []
+        },
+        "subject": "Consolidate K-0001 after pass 2: admitted nothing"
+      },
+      "pass": 2,
+      "retrofit": {
+        "close": {
+          "carry_forward": "pass 2 scored {'error_cause_present': 0.5, 'output_schema_valid': 0.83, 'suite_hash': 1.0, 'task_pass_rate': 0.5, 'tool_budget_respected': 1.0}; consulted nothing; filed 8 observations (O-0012, O-0013, O-0014, O-0015, O-0016, O-0017, O-0018, O-0019); open fires: none",
+          "dispositions": [
+            {
+              "disposition": "fired-off-map",
+              "note": "work failed and matched no hook",
+              "record": "none"
+            }
+          ],
+          "ledger_entries": [],
+          "observations_filed": [
+            "O-0012",
+            "O-0013",
+            "O-0014",
+            "O-0015",
+            "O-0016",
+            "O-0017",
+            "O-0018",
+            "O-0019"
+          ],
+          "proposals": 1,
+          "steers_filed": []
+        },
+        "consolidation": {
+          "admitted": [
+            "D-0003"
+          ],
+          "after_pass": 2,
+          "anchored": [
+            "C-0002",
+            "C-0003",
+            "C-0006",
+            "L-0004"
+          ],
+          "deferred": [],
+          "dismissed": [],
+          "expired": [],
+          "fires_discharged": [],
+          "flipped": [],
+          "groups": [
+            {
+              "observations": [
+                "O-0014"
+              ],
+              "sessions": [
+                "S-0002"
+              ],
+              "shape": [
+                "listing-paged"
+              ]
+            },
+            {
+              "observations": [
+                "O-0016"
+              ],
+              "sessions": [
+                "S-0002"
+              ],
+              "shape": [
+                "other(bad request error)"
+              ]
+            },
+            {
+              "observations": [
+                "O-0012"
+              ],
+              "sessions": [
+                "S-0002"
+              ],
+              "shape": [
+                "other(malformed JSON arguments)"
+              ]
+            },
+            {
+              "observations": [
+                "O-0003"
+              ],
+              "sessions": [
+                "S-0001"
+              ],
+              "shape": [
+                "other(missing result validation check)"
+              ]
+            },
+            {
+              "observations": [
+                "O-0006",
+                "O-0007",
+                "O-0008",
+                "O-0009",
+                "O-0010",
+                "O-0011"
+              ],
+              "sessions": [
+                "S-0001"
+              ],
+              "shape": [
+                "other(no applicable rule)"
+              ]
+            },
+            {
+              "observations": [
+                "O-0018",
+                "O-0019"
+              ],
+              "sessions": [
+                "S-0002"
+              ],
+              "shape": [
+                "other(no store rule)"
+              ]
+            },
+            {
+              "observations": [
+                "O-0004"
+              ],
+              "sessions": [
+                "S-0001"
+              ],
+              "shape": [
+                "output-schema"
+              ]
+            },
+            {
+              "observations": [
+                "O-0005",
+                "O-0015"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "route-guarded"
+              ]
+            },
+            {
+              "observations": [
+                "O-0002",
+                "O-0013",
+                "O-0017"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "route-versioned"
+              ]
+            },
+            {
+              "observations": [
+                "O-0001"
+              ],
+              "sessions": [
+                "S-0001"
+              ],
+              "shape": [
+                "shell-tool"
+              ]
+            }
+          ],
+          "id": "K-0001",
+          "minted": [],
+          "nominations": [
+            {
+              "adopts": null,
+              "displaced_from": "hook-edit",
+              "outcome": "admitted D-0003",
+              "rung": "new-decision",
+              "subject": "token-guard"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "draft refused at parse: a hook-edit supersedes exactly one record; got []",
+              "rung": "hook-edit",
+              "subject": "endpoint-version"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "moot: not anchored",
+              "rung": "article",
+              "subject": "C-0001"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "anchored to U-0001",
+              "rung": "article",
+              "subject": "C-0002"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "anchored to H-0001",
+              "rung": "article",
+              "subject": "C-0003"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "no instance proposed",
+              "rung": "article",
+              "subject": "C-0004"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "reversed: not anchored",
+              "rung": "article",
+              "subject": "C-0005"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "anchored to D-0003",
+              "rung": "article",
+              "subject": "C-0006"
+            },
+            {
+              "adopts": null,
+              "displaced_from": null,
+              "outcome": "moot: not anchored",
+              "rung": "article",
+              "subject": "C-0007"
+            }
+          ],
+          "retired": [],
+          "sessions_read": [
+            "S-0001",
+            "S-0002"
+          ],
+          "triage": [
+            {
+              "act": "route",
+              "ledger_entry": "H-0001",
+              "observations": [
+                "O-0005",
+                "O-0015"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "route-guarded"
+              ],
+              "verdict": "reducible"
+            },
+            {
+              "act": "route",
+              "ledger_entry": "H-0002",
+              "observations": [
+                "O-0002",
+                "O-0013",
+                "O-0017"
+              ],
+              "sessions": [
+                "S-0001",
+                "S-0002"
+              ],
+              "shape": [
+                "route-versioned"
+              ],
+              "verdict": "reducible"
+            }
+          ]
+        },
+        "failed": [
+          "curriculum/footer_04",
+          "curriculum/moved_00",
+          "curriculum/newline_00",
+          "curriculum/paged_00"
+        ],
+        "in_context": [],
+        "off_map": true,
+        "pass": 2,
+        "rows": 8,
+        "score": 0.5,
+        "session": "S-0002",
+        "splice": {
+          "considered": [],
+          "consulted": [],
+          "fires_emitted": [],
+          "fires_owed": [],
+          "fires_seen": [],
+          "lens_answers": [
+            "L-0001",
+            "L-0002",
+            "L-0003",
+            "L-0004",
+            "L-0004",
+            "L-0004",
+            "L-0004"
+          ],
+          "original_close": {
+            "carry_forward": "pass 2 scored {'error_cause_present': 0.5, 'output_schema_valid': 0.83, 'suite_hash': 1.0, 'task_pass_rate': 0.5, 'tool_budget_respected': 1.0}; consulted nothing; filed 4 observations (O-0006, O-0007, O-0008, O-0009); open fires: none",
+            "ledger_entries": [],
+            "observations_filed": [
+              "O-0006",
+              "O-0007",
+              "O-0008",
+              "O-0009"
+            ],
+            "proposals": 1,
+            "steers_filed": []
+          }
+        },
+        "store": {
+          "consolidations": [
+            "K-0001"
+          ],
+          "decisions": [
+            {
+              "anchors": [
+                "O-0005",
+                "O-0015"
+              ],
+              "decision": "Require the presence of a token query parameter for all secure\u2011route requests before proceeding.",
+              "displaced_from": "hook-edit",
+              "hook": [
+                "route-guarded",
+                "error-wrapping",
+                "file-tool",
+                "http-tool"
+              ],
+              "id": "D-0003",
+              "premises": {
+                "p1": "supported"
+              },
+              "proposed_by": "K-0001",
+              "rung": "new-decision",
+              "status": "accepted",
+              "superseded_by": [],
+              "supersedes": []
+            }
+          ],
+          "fires": [],
+          "ledger": {
+            "attack": 1,
+            "currency": 6,
+            "reality": 2
+          },
+          "observations": {
+            "by_shape": {
+              "listing-paged": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0014"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "other(bad request error)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0016"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "other(malformed JSON arguments)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0012"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "other(missing result validation check)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0003"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "other(no applicable rule)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0006",
+                  "O-0007",
+                  "O-0008",
+                  "O-0009",
+                  "O-0010",
+                  "O-0011"
+                ],
+                "open": 6,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "other(no store rule)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0018",
+                  "O-0019"
+                ],
+                "open": 2,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "output-schema": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0004"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "route-guarded": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [],
+                "open": 0,
+                "promoted": 2,
+                "sessions": []
+              },
+              "route-versioned": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0002",
+                  "O-0013",
+                  "O-0017"
+                ],
+                "open": 3,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001",
+                  "S-0002"
+                ]
+              },
+              "shell-tool": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0001"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              }
+            },
+            "by_state": {
+              "open": 17,
+              "promoted": 2
+            },
+            "open": [
+              {
+                "name": "O-0001",
+                "noticed": "In task curriculum/csv_02 the first attempt returned 0 instead of the correct count of people in Helsinki, violating the convention of using a shell command to filter and count CSV rows.",
+                "session": "S-0001",
+                "shape": [
+                  "shell-tool"
+                ]
+              },
+              {
+                "name": "O-0002",
+                "noticed": "Task curriculum/moved_06 attempted GET /zones/90 and received a 410 Gone error; the correct convention is to use the versioned endpoint /v2/zones/90.",
+                "session": "S-0001",
+                "shape": [
+                  "route-versioned"
+                ]
+              },
+              {
+                "name": "O-0003",
+                "noticed": "The first attempt ran a single shell command returning 14 lines but omitted the required check of the total line count, violating the convention that a check record must validate the task's result.",
+                "session": "S-0001",
+                "shape": [
+                  "other(missing result validation check)"
+                ]
+              },
+              {
+                "name": "O-0004",
+                "noticed": "GET /plans/49 returned 410 Gone, so the task could not retrieve the plan name as required by the convention of a successful response containing a name field.",
+                "session": "S-0001",
+                "shape": [
+                  "output-schema"
+                ]
+              },
+              {
+                "name": "O-0006",
+                "noticed": "Task curriculum/csv_02 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no applicable rule)"
+                ]
+              },
+              {
+                "name": "O-0007",
+                "noticed": "Task curriculum/moved_06 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no applicable rule)"
+                ]
+              },
+              {
+                "name": "O-0008",
+                "noticed": "Task curriculum/newline_02 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no applicable rule)"
+                ]
+              },
+              {
+                "name": "O-0009",
+                "noticed": "Task curriculum/moved_04 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no applicable rule)"
+                ]
+              },
+              {
+                "name": "O-0010",
+                "noticed": "Task curriculum/footer_09 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no applicable rule)"
+                ]
+              },
+              {
+                "name": "O-0011",
+                "noticed": "Task curriculum/token_02 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no applicable rule)"
+                ]
+              },
+              {
+                "name": "O-0012",
+                "noticed": "In task curriculum/footer_04 the initial attempt sent malformed JSON arguments to the tool, resulting in a BadRequestError and no result.",
+                "session": "S-0002",
+                "shape": [
+                  "other(malformed JSON arguments)"
+                ]
+              },
+              {
+                "name": "O-0013",
+                "noticed": "Task curriculum/moved_00 attempted GET /projects/82 and received HTTP 410 Gone; the convention missed was using the /v2/projects/82 endpoint.",
+                "session": "S-0002",
+                "shape": [
+                  "route-versioned"
+                ]
+              },
+              {
+                "name": "O-0014",
+                "noticed": "Task curriculum/paged_00 attempted GET /entries, got HTTP 406, missing the convention of handling pagination and summing all items.",
+                "session": "S-0002",
+                "shape": [
+                  "listing-paged"
+                ]
+              },
+              {
+                "name": "O-0016",
+                "noticed": "Task curriculum/footer_04 failed with a BadRequestError during validation.",
+                "session": "S-0002",
+                "shape": [
+                  "other(bad request error)"
+                ]
+              },
+              {
+                "name": "O-0017",
+                "noticed": "Task curriculum/moved_00 failed with an HTTP 410 Gone error retrieving the project.",
+                "session": "S-0002",
+                "shape": [
+                  "route-versioned"
+                ]
+              },
+              {
+                "name": "O-0018",
+                "noticed": "Task curriculum/newline_00 completed but the work was not covered by any store rule.",
+                "session": "S-0002",
+                "shape": [
+                  "other(no store rule)"
+                ]
+              },
+              {
+                "name": "O-0019",
+                "noticed": "Task curriculum/paged_00 completed but the work was not covered by any store rule.",
+                "session": "S-0002",
+                "shape": [
+                  "other(no store rule)"
+                ]
+              }
+            ]
+          },
+          "proposals": [
+            {
+              "decision": "Introduce a hook that checks HTTP response status codes after each tool call and aborts or retries on 4xx errors before any payload is processed.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0001",
+              "rung": "hook-edit",
+              "uid": "01a09c3a-160c-702e-bb7a-c337c8b38c1b"
+            },
+            {
+              "decision": "Validate JSON argument strings before any tool call.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0002",
+              "rung": "hook-edit",
+              "uid": "01a09c3e-22b0-77cb-a4ff-52549f661bd5"
+            }
+          ],
+          "queue": [],
+          "steers": []
+        }
+      }
+    },
+    {
+      "divergence": [
+        "pass 3: the close filed 5 observations originally and 11 retrofitted \u2014 the close lenses are today's (L-0004 per failed row, L-0009 on recovered misses, L-0010 off-map) on the same rows"
+      ],
+      "original": {
+        "close": {
+          "carry_forward": "pass 3 scored {'error_cause_present': 1.0, 'output_schema_valid': 1.0, 'suite_hash': 1.0, 'task_pass_rate': 0.38, 'tool_budget_respected': 0.86}; consulted nothing; filed 5 observations (O-0010, O-0011, O-0012, O-0013, O-0014); open fires: none",
+          "dispositions": [
+            {
+              "disposition": "fired-off-map",
+              "note": "work failed and matched no hook",
+              "record": "none"
+            }
+          ],
+          "ledger_entries": [],
+          "observations_filed": [
+            "O-0010",
+            "O-0011",
+            "O-0012",
+            "O-0013",
+            "O-0014"
+          ],
+          "proposals": 1,
+          "steers_filed": []
+        },
+        "commit": "9451137",
+        "consolidation": null,
+        "failed": [
+          "curriculum/footer_11",
+          "curriculum/newline_03",
+          "curriculum/moved_03",
+          "curriculum/csv_04",
+          "curriculum/paged_09"
+        ],
+        "in_context": [],
+        "off_map": true,
+        "pass": 3,
+        "rows": 8,
+        "score": 0.375,
+        "session": "S-0003",
+        "splice": null,
+        "store": {
+          "consolidations": [
+            "K-0001"
+          ],
+          "decisions": [],
+          "fires": [],
+          "ledger": {
+            "attack": 1,
+            "reality": 3
+          },
+          "observations": {
+            "by_shape": {
+              "http-tool": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0001",
+                  "O-0003",
+                  "O-0005",
+                  "O-0007"
+                ],
+                "open": 4,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001",
+                  "S-0002"
+                ]
+              },
+              "output-schema": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0004",
+                  "O-0009"
+                ],
+                "open": 2,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001",
+                  "S-0002"
+                ]
+              },
+              "shell-tool": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0006"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "test-failure-triage": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0002",
+                  "O-0008"
+                ],
+                "open": 2,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001",
+                  "S-0002"
+                ]
+              },
+              "uncoded": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0010",
+                  "O-0011",
+                  "O-0012",
+                  "O-0013",
+                  "O-0014"
+                ],
+                "open": 5,
+                "promoted": 0,
+                "sessions": [
+                  "S-0003"
+                ]
+              }
+            },
+            "by_state": {
+              "open": 14
+            },
+            "open": [
+              {
+                "name": "O-0001",
+                "noticed": "In task curriculum/moved_06 the first attempt called GET /zones/90 on the wrong endpoint, received HTTP 410 Gone, and would have passed by calling /v2/zones/90 to obtain the zone name.",
+                "session": "S-0001",
+                "shape": [
+                  "http-tool"
+                ]
+              },
+              {
+                "name": "O-0002",
+                "noticed": "In task curriculum/newline_02 the first attempt counted 14 lines, but the correct total should include all lines from the five shard files, so the line-count convention was missed.",
+                "session": "S-0001",
+                "shape": [
+                  "test-failure-triage"
+                ]
+              },
+              {
+                "name": "O-0003",
+                "noticed": "Task curriculum/moved_04 attempted GET /plans/49 but received 410 Gone, so it should have recorded an observation of the missing plan.",
+                "session": "S-0001",
+                "shape": [
+                  "http-tool"
+                ]
+              },
+              {
+                "name": "O-0004",
+                "noticed": "The first attempt returned a plain number instead of the required JSON result, violating the output schema.",
+                "session": "S-0001",
+                "shape": [
+                  "output-schema"
+                ]
+              },
+              {
+                "name": "O-0005",
+                "noticed": "GET /secure/ledger returned HTTP 401 Unauthorized because the required token was missing.",
+                "session": "S-0001",
+                "shape": [
+                  "http-tool"
+                ]
+              },
+              {
+                "name": "O-0006",
+                "noticed": "In task curriculum/footer_04 the model attempted a shell call with invalid JSON arguments, causing a BadRequestError; a correctly formatted JSON call would have succeeded.",
+                "session": "S-0002",
+                "shape": [
+                  "shell-tool"
+                ]
+              },
+              {
+                "name": "O-0007",
+                "noticed": "Task curriculum/moved_00 attempted GET /projects/82 on a deprecated endpoint, but the correct call should target /v2/projects/82 to retrieve the project name.",
+                "session": "S-0002",
+                "shape": [
+                  "http-tool"
+                ]
+              },
+              {
+                "name": "O-0008",
+                "noticed": "In task curriculum/newline_00 the first attempt returned 12 lines, which was incorrect, missing the correct total and thus violating the convention of accurately summing lines across both files.",
+                "session": "S-0002",
+                "shape": [
+                  "test-failure-triage"
+                ]
+              },
+              {
+                "name": "O-0009",
+                "noticed": "Task curriculum/paged_00 attempted GET /entries but received HTTP 406, violating the expected summed result output schema.",
+                "session": "S-0002",
+                "shape": [
+                  "output-schema"
+                ]
+              },
+              {
+                "name": "O-0010",
+                "noticed": "In task curriculum/footer_11 the shell call returned 6 but no observation of the failure was filed, so the task was marked failed.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0011",
+                "noticed": "In task curriculum/newline_03 the first attempt reported 15 lines total, which is incorrect and thus failed the task.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0012",
+                "noticed": "The GET /nodes/36 returned HTTP 410 Gone, preventing verification of the ok field for task curriculum/moved_03.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0013",
+                "noticed": "In task curriculum/csv_04 the first attempt returned 0 Oslo people, which is incorrect, so an observation of the wrong result should have fired.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0014",
+                "noticed": "The first attempt returned 6 parcels, failing the task's pass criteria.",
+                "session": "S-0003",
+                "shape": []
+              }
+            ]
+          },
+          "proposals": [
+            {
+              "decision": "Enforce output\u2011schema validation as a prerequisite for accepting any task result.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0001",
+              "rung": "new-decision",
+              "uid": "01a09975-4ac8-76c1-93be-bf4b55eff5db"
+            },
+            {
+              "decision": "Require that any tool call supplying a JSON\u2011encoded argument be validated for proper JSON syntax before the call is issued.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0002",
+              "rung": "hook-edit",
+              "uid": "01a09979-254a-75a9-a6db-ff6ac33bcec0"
+            },
+            {
+              "decision": "Enforce a hard tool\u2011budget limit for each curriculum task and abort the task when the limit is exceeded.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0003",
+              "rung": "hook-edit",
+              "uid": "01a0997f-0890-7763-8981-6357f4043d81"
+            }
+          ],
+          "queue": [],
+          "steers": []
+        },
+        "subject": "Close S-0003 pass 3: filed O-0010 O-0011 O-0012 O-0013 O-0014"
+      },
+      "pass": 3,
+      "retrofit": {
+        "close": {
+          "carry_forward": "pass 3 scored {'error_cause_present': 1.0, 'output_schema_valid': 1.0, 'suite_hash': 1.0, 'task_pass_rate': 0.38, 'tool_budget_respected': 0.86}; consulted nothing; filed 11 observations (O-0020, O-0021, O-0022, O-0023, O-0024, O-0025, O-0026, O-0027, O-0028, O-0029, O-0030); open fires: none",
+          "dispositions": [
+            {
+              "disposition": "fired-off-map",
+              "note": "work failed and matched no hook",
+              "record": "none"
+            }
+          ],
+          "ledger_entries": [],
+          "observations_filed": [
+            "O-0020",
+            "O-0021",
+            "O-0022",
+            "O-0023",
+            "O-0024",
+            "O-0025",
+            "O-0026",
+            "O-0027",
+            "O-0028",
+            "O-0029",
+            "O-0030"
+          ],
+          "proposals": 1,
+          "steers_filed": []
+        },
+        "consolidation": null,
+        "failed": [
+          "curriculum/footer_11",
+          "curriculum/newline_03",
+          "curriculum/moved_03",
+          "curriculum/csv_04",
+          "curriculum/paged_09"
+        ],
+        "in_context": [],
+        "off_map": true,
+        "pass": 3,
+        "rows": 8,
+        "score": 0.375,
+        "session": "S-0003",
+        "splice": {
+          "considered": [],
+          "consulted": [],
+          "fires_emitted": [],
+          "fires_owed": [],
+          "fires_seen": [],
+          "lens_answers": [
+            "L-0001",
+            "L-0002",
+            "L-0003",
+            "L-0004",
+            "L-0004",
+            "L-0004",
+            "L-0004",
+            "L-0004"
+          ],
+          "original_close": {
+            "carry_forward": "pass 3 scored {'error_cause_present': 1.0, 'output_schema_valid': 1.0, 'suite_hash': 1.0, 'task_pass_rate': 0.38, 'tool_budget_respected': 0.86}; consulted nothing; filed 5 observations (O-0010, O-0011, O-0012, O-0013, O-0014); open fires: none",
+            "ledger_entries": [],
+            "observations_filed": [
+              "O-0010",
+              "O-0011",
+              "O-0012",
+              "O-0013",
+              "O-0014"
+            ],
+            "proposals": 1,
+            "steers_filed": []
+          }
+        },
+        "store": {
+          "consolidations": [
+            "K-0001"
+          ],
+          "decisions": [
+            {
+              "anchors": [
+                "O-0005",
+                "O-0015"
+              ],
+              "decision": "Require the presence of a token query parameter for all secure\u2011route requests before proceeding.",
+              "displaced_from": "hook-edit",
+              "hook": [
+                "route-guarded",
+                "error-wrapping",
+                "file-tool",
+                "http-tool"
+              ],
+              "id": "D-0003",
+              "premises": {
+                "p1": "supported"
+              },
+              "proposed_by": "K-0001",
+              "rung": "new-decision",
+              "status": "accepted",
+              "superseded_by": [],
+              "supersedes": []
+            }
+          ],
+          "fires": [],
+          "ledger": {
+            "attack": 1,
+            "currency": 6,
+            "reality": 2
+          },
+          "observations": {
+            "by_shape": {
+              "listing-paged": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0014"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "other(bad request error)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0016"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "other(malformed JSON arguments)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0012"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "other(missing result validation check)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0003"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "other(no applicable rule)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0006",
+                  "O-0007",
+                  "O-0008",
+                  "O-0009",
+                  "O-0010",
+                  "O-0011"
+                ],
+                "open": 6,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "other(no store rule)": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0018",
+                  "O-0019"
+                ],
+                "open": 2,
+                "promoted": 0,
+                "sessions": [
+                  "S-0002"
+                ]
+              },
+              "output-schema": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0004"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "route-guarded": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [],
+                "open": 0,
+                "promoted": 2,
+                "sessions": []
+              },
+              "route-versioned": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0002",
+                  "O-0013",
+                  "O-0017"
+                ],
+                "open": 3,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001",
+                  "S-0002"
+                ]
+              },
+              "shell-tool": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0001"
+                ],
+                "open": 1,
+                "promoted": 0,
+                "sessions": [
+                  "S-0001"
+                ]
+              },
+              "uncoded": {
+                "dismissed": 0,
+                "expired": 0,
+                "names": [
+                  "O-0020",
+                  "O-0021",
+                  "O-0022",
+                  "O-0023",
+                  "O-0024",
+                  "O-0025",
+                  "O-0026",
+                  "O-0027",
+                  "O-0028",
+                  "O-0029",
+                  "O-0030"
+                ],
+                "open": 11,
+                "promoted": 0,
+                "sessions": [
+                  "S-0003"
+                ]
+              }
+            },
+            "by_state": {
+              "open": 28,
+              "promoted": 2
+            },
+            "open": [
+              {
+                "name": "O-0001",
+                "noticed": "In task curriculum/csv_02 the first attempt returned 0 instead of the correct count of people in Helsinki, violating the convention of using a shell command to filter and count CSV rows.",
+                "session": "S-0001",
+                "shape": [
+                  "shell-tool"
+                ]
+              },
+              {
+                "name": "O-0002",
+                "noticed": "Task curriculum/moved_06 attempted GET /zones/90 and received a 410 Gone error; the correct convention is to use the versioned endpoint /v2/zones/90.",
+                "session": "S-0001",
+                "shape": [
+                  "route-versioned"
+                ]
+              },
+              {
+                "name": "O-0003",
+                "noticed": "The first attempt ran a single shell command returning 14 lines but omitted the required check of the total line count, violating the convention that a check record must validate the task's result.",
+                "session": "S-0001",
+                "shape": [
+                  "other(missing result validation check)"
+                ]
+              },
+              {
+                "name": "O-0004",
+                "noticed": "GET /plans/49 returned 410 Gone, so the task could not retrieve the plan name as required by the convention of a successful response containing a name field.",
+                "session": "S-0001",
+                "shape": [
+                  "output-schema"
+                ]
+              },
+              {
+                "name": "O-0006",
+                "noticed": "Task curriculum/csv_02 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no applicable rule)"
+                ]
+              },
+              {
+                "name": "O-0007",
+                "noticed": "Task curriculum/moved_06 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no applicable rule)"
+                ]
+              },
+              {
+                "name": "O-0008",
+                "noticed": "Task curriculum/newline_02 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no applicable rule)"
+                ]
+              },
+              {
+                "name": "O-0009",
+                "noticed": "Task curriculum/moved_04 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no applicable rule)"
+                ]
+              },
+              {
+                "name": "O-0010",
+                "noticed": "Task curriculum/footer_09 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no applicable rule)"
+                ]
+              },
+              {
+                "name": "O-0011",
+                "noticed": "Task curriculum/token_02 failed with no applicable rule.",
+                "session": "S-0001",
+                "shape": [
+                  "other(no applicable rule)"
+                ]
+              },
+              {
+                "name": "O-0012",
+                "noticed": "In task curriculum/footer_04 the initial attempt sent malformed JSON arguments to the tool, resulting in a BadRequestError and no result.",
+                "session": "S-0002",
+                "shape": [
+                  "other(malformed JSON arguments)"
+                ]
+              },
+              {
+                "name": "O-0013",
+                "noticed": "Task curriculum/moved_00 attempted GET /projects/82 and received HTTP 410 Gone; the convention missed was using the /v2/projects/82 endpoint.",
+                "session": "S-0002",
+                "shape": [
+                  "route-versioned"
+                ]
+              },
+              {
+                "name": "O-0014",
+                "noticed": "Task curriculum/paged_00 attempted GET /entries, got HTTP 406, missing the convention of handling pagination and summing all items.",
+                "session": "S-0002",
+                "shape": [
+                  "listing-paged"
+                ]
+              },
+              {
+                "name": "O-0016",
+                "noticed": "Task curriculum/footer_04 failed with a BadRequestError during validation.",
+                "session": "S-0002",
+                "shape": [
+                  "other(bad request error)"
+                ]
+              },
+              {
+                "name": "O-0017",
+                "noticed": "Task curriculum/moved_00 failed with an HTTP 410 Gone error retrieving the project.",
+                "session": "S-0002",
+                "shape": [
+                  "route-versioned"
+                ]
+              },
+              {
+                "name": "O-0018",
+                "noticed": "Task curriculum/newline_00 completed but the work was not covered by any store rule.",
+                "session": "S-0002",
+                "shape": [
+                  "other(no store rule)"
+                ]
+              },
+              {
+                "name": "O-0019",
+                "noticed": "Task curriculum/paged_00 completed but the work was not covered by any store rule.",
+                "session": "S-0002",
+                "shape": [
+                  "other(no store rule)"
+                ]
+              },
+              {
+                "name": "O-0020",
+                "noticed": "In task curriculum/footer_11 the shell call returned 6, because it included the CSV header as a record instead of counting only data rows.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0021",
+                "noticed": "In task curriculum/newline_03 the initial attempt used one shell call (weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997c-b4b9-7391-9f86-5bb11c9309d5) to total the lines, returning 15, but the convention requires a verification check of the line count which was omitted.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0022",
+                "noticed": "The attempt tried GET /nodes/36 but received HTTP 410 Gone, so the required `ok` field could not be verified.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0023",
+                "noticed": "In task curriculum/paged_09 the first attempt returned 6 parcels without applying the required filter for active:true, which violates the convention that only active parcels should be counted.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0024",
+                "noticed": "GET /secure/audit failed with HTTP 401 Unauthorized because the required token query parameter was missing.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0025",
+                "noticed": "The first shell call failed with a non\u2011transient awk syntax error because the CSV field quoting was incorrect.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0026",
+                "noticed": "curriculum/footer_11 failed with no applicable rule.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0027",
+                "noticed": "curriculum/newline_03 failed with no applicable rule.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0028",
+                "noticed": "curriculum/moved_03 failed with no applicable rule.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0029",
+                "noticed": "curriculum/csv_04 failed with no applicable rule.",
+                "session": "S-0003",
+                "shape": []
+              },
+              {
+                "name": "O-0030",
+                "noticed": "curriculum/paged_09 failed with no applicable rule.",
+                "session": "S-0003",
+                "shape": []
+              }
+            ]
+          },
+          "proposals": [
+            {
+              "decision": "Introduce a hook that checks HTTP response status codes after each tool call and aborts or retries on 4xx errors before any payload is processed.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0001",
+              "rung": "hook-edit",
+              "uid": "01a09c3a-160c-702e-bb7a-c337c8b38c1b"
+            },
+            {
+              "decision": "Validate JSON argument strings before any tool call.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0002",
+              "rung": "hook-edit",
+              "uid": "01a09c3e-22b0-77cb-a4ff-52549f661bd5"
+            },
+            {
+              "decision": "Abort a task when a tool call exceeds its allocated budget and record a budget\u2011violation error before any further processing.",
+              "deferred": false,
+              "name": "P-0001",
+              "proposed_by": "S-0003",
+              "rung": "hook-edit",
+              "uid": "01a09c4a-a960-7234-8009-3631029c0bb8"
+            }
+          ],
+          "queue": [],
+          "steers": []
+        }
+      }
+    }
+  ],
+  "retrofit": {
+    "batches": "the pool has changed since the arm ran; batches rebuilt from the recorded task ids, hashes differ",
+    "cadence": 2,
+    "code_commit": "faabceb594d23f1add9125764073c8b83893f940",
+    "date": "2026-09-13T19:19:51.061398+00:00",
+    "id_counters": {
+      "D": 2,
+      "S": 12
+    },
+    "pass_model": "openai/gpt-oss-120b",
+    "source": "/Users/slavazinevich/GenDev/CoreWeaveHack/runs/stream/120b-attached",
+    "source_arm": "120b-attached",
+    "source_code_commit": null,
+    "source_commit": "8eb90694ff9170c48b244cffba1a159bd9456860",
+    "source_experiment": "stream",
+    "source_passes": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "teacher": "openai/gpt-oss-120b",
+    "upto": null
+  }
+}
