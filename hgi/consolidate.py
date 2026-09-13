@@ -461,7 +461,9 @@ ADJUDICATION = route_table("adjudication", "adjudicator-verdict",
 ATTACK_VERDICTS = route_table("attack-ledger", "adjudicator-verdict",
                               {"admit": "survived-with-attack-named", "admit-amended": "survived-with-attack-named", "decline": "attack-landed",
                                "defer": "pending", "escalate": "pending", "other": "pending"})
-"""The attack entry's verdict as the adjudicator's token settles it; a draft still pending leaves the attack pending."""
+"""The attack entry's verdict as the adjudicator's token settles it; a draft still pending leaves the attack pending. The
+backward pass's own decline is always a premise kill (:func:`adjudicate` overrides any other), so ``attack-landed`` is
+reached only from the human queue."""
 HUMAN = route_table("human-queue", "adjudicator-verdict",
                     {"admit": "admit", "admit-amended": "admit", "decline": "drop", "defer": "defer", "escalate": "keep", "other": "defer"})
 """The queue is the human's seat: an escalation from it has nowhere further to go and keeps the entry where it is."""
@@ -474,7 +476,10 @@ def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draf
 
     The two mechanical classes (:data:`hgi.types.MECHANICAL`) are read by the code before any context opens: a watch that
     fires on success is dropped from the draft, and the independence count is the floor's. A landed abstraction claim
-    with no premise kill beside it and the bar met sends the draft back to the consolidator once (:func:`promote`)."""
+    with no premise kill beside it and the bar met sends the draft back to the consolidator once (:func:`promote`). A
+    ``decline`` stands only on an upheld premise kill — a landed ``premise:`` claim the adjudicator declined on; a decline
+    with none is overridden to an admit (amended where an amendment was offered), the attack named on the entry and the
+    override on its outcome. Defer and escalate are the adjudicator's as returned."""
     claim = draft.body.decision
     draft, watch = drop_success_watch(store, draft)
     evidence = evidence_pack(store, draft, brief)
@@ -491,15 +496,18 @@ def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draf
     v, out, adjudicator = verdict(store, record, draft, attack_payload, evidence)
     amendment = out.get("amendment") if isinstance(out.get("amendment"), str) else None
     rationale = out.get("rationale") if isinstance(out.get("rationale"), str) else None
-    head = term_head(v)
-    landed_premise = any(c.get("landed") and str(c.get("target", "")).startswith("premise:") for c in attack_payload["claims"] if isinstance(c, dict))
+    landed_premise = any(str(c.get("target", "")).startswith("premise:") for c in landed)
+    overridden = None
+    if term_head(v) == "decline" and not landed_premise:
+        overridden, v = v, (f"admit-amended({amendment})" if amendment else "admit")
+    note = f"; the adjudicator's {overridden} was overridden: a decline stands only on an upheld premise kill" if overridden else ""
     act = store.registry.route("adjudicator-verdict", v, ADJUDICATION)
     entry = LedgerEntry(
         id=store.mint("hypothesis"), at=now(), species="attack", subject=draft.uid, claim=claim,
         proposer=RoleCall(role="consolidator", model_id=_model.model_id("consolidator"), call=record.brief.get("consolidator_call")),
         contradiction={"source": {"role": "examiner", "model_id": examiner.model_id, "call": examiner.call}, "attack": attack_payload,
                        "coding": {"promotion": promotion} if promotion else None},
-        verdict="premise-killed" if landed_premise and head == "decline" else store.registry.route("adjudicator-verdict", v, ATTACK_VERDICTS),
+        verdict="premise-killed" if term_head(v) == "decline" else store.registry.route("adjudicator-verdict", v, ATTACK_VERDICTS),
         adjudicator=RoleCall(role="adjudicator", model_id=adjudicator.model_id, call=adjudicator.call),
         amendment=amendment or (draft.body.decision if promotion else None), rationale=rationale, rung=nomination.rung,
     )
@@ -507,14 +515,14 @@ def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draf
     if act == "admit":
         floor = [f for f in _lint.check_draft(store, draft) if f.level == "fail"]
         if floor:
-            entry.outcome = "refused by the floor: " + "; ".join(f.message for f in floor)
+            entry.outcome = "refused by the floor: " + "; ".join(f.message for f in floor) + note
             store.drop_draft(draft.uid)
         else:
             admission_entry = entry.model_copy(update={"verdict": v})
             decision = store.admit(draft, admission_entry, role, amendment={"decision": amendment} if v.startswith("admit-amended") and amendment else None)
             record.flipped += [r for r in draft.retires if r not in record.flipped]
             record.admitted.append(decision.id)
-            entry.outcome = f"admitted {decision.id}" + ("; the payload was promoted on the examiner's abstraction claim" if promotion else "")
+            entry.outcome = f"admitted {decision.id}" + ("; the payload was promoted on the examiner's abstraction claim" if promotion else "") + note
     elif act == "drop":
         store.drop_draft(draft.uid)
         entry.outcome = "declined; draft dropped"
