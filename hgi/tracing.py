@@ -7,7 +7,10 @@ URI reads ``None``. ``attributes`` puts ``hgi.session``, ``hgi.pass``,
 ``hgi.role`` and ``hgi.records_in_context`` on every call made inside it (as a
 nested ``hgi`` attribute, so the trace store can be queried by
 ``attributes.hgi.session``), so any trace call can be joined back to what the
-pass was conditioned on.
+pass was conditioned on. ``run`` names the experiment and arm the process is
+executing; both ride on every call as ``hgi.experiment`` and ``hgi.arm`` and
+prefix every evaluation's display name, so arms of one experiment are told
+apart inside one project.
 """
 
 from __future__ import annotations
@@ -20,6 +23,7 @@ import weave
 
 _client = None
 _initialised = False
+_run: dict[str, Any] = {}
 
 
 def project_name() -> str | None:
@@ -50,11 +54,22 @@ def enabled() -> bool:
     return client() is not None
 
 
+def run(experiment: str | None = None, arm: str | None = None) -> None:
+    """Name the experiment and arm every call from now on belongs to; ``run()`` clears it."""
+    _run.clear()
+    _run.update({k: v for k, v in {"experiment": experiment, "arm": arm}.items() if v is not None})
+
+
+def run_label() -> str:
+    """``experiment/arm `` for display names, empty outside an experiment."""
+    return "/".join(v for v in (_run.get("experiment"), _run.get("arm")) if v) + " " if _run else ""
+
+
 @contextmanager
 def attributes(session: str | None = None, pass_: int | None = None, role: str | None = None,
                records_in_context: list[str] | None = None, **extra: Any) -> Iterator[None]:
     hgi: dict[str, Any] = {k: v for k, v in {
-        "session": session, "pass": pass_, "role": role, "records_in_context": records_in_context, **extra,
+        **_run, "session": session, "pass": pass_, "role": role, "records_in_context": records_in_context, **extra,
     }.items() if v is not None}
     with weave.attributes({"hgi": hgi}):
         yield
