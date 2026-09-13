@@ -1,8 +1,8 @@
 """The lens battery (§ 9.2, slice 6a): decoy rejection scored in Weave, telemetry populated off ``design-stage``.
 
 Offline the ``pass`` role is the stub, which files nothing for L-0003 and files a noticing for the genuine signals of
-L-0004 (a failed row's uncaught fault) and L-0009 (a passed row's non-transient recovered miss); the battery scores
-exactly that and writes the computed telemetry onto the lens register.
+L-0004 (a failed row's uncaught fault), L-0009 (a passed row's non-transient recovered miss) and L-0010 (a pass that
+failed and consulted nothing); the battery scores exactly that and writes the computed telemetry onto the lens register.
 """
 
 from __future__ import annotations
@@ -51,8 +51,8 @@ def test_signal_caught_scores_the_genuine_signal_only():
 def test_the_battery_plants_a_balance_of_decoys_and_signals_per_close_lens(store):
     lenses = store.registry.lenses("close")
     rows = lb.dataset_rows(lenses)
-    assert {l.id for l in lenses} == {"L-0003", "L-0004", "L-0009"}
-    for lens_id in ("L-0003", "L-0004", "L-0009"):
+    assert {l.id for l in lenses} == {"L-0003", "L-0004", "L-0009", "L-0010"}
+    for lens_id in ("L-0003", "L-0004", "L-0009", "L-0010"):
         of_lens = [r for r in rows if r["lens"] == lens_id]
         assert sum(r["is_decoy"] for r in of_lens) == 2
         assert sum(not r["is_decoy"] for r in of_lens) == 2
@@ -65,11 +65,12 @@ def test_the_battery_scores_decoy_rejection_and_computes_telemetry(store):
     result = lb.run_battery(store)
 
     # every close lens rejects every planted decoy on the honest stub answerer
-    for lens_id in ("L-0003", "L-0004", "L-0009"):
+    for lens_id in ("L-0003", "L-0004", "L-0009", "L-0010"):
         assert result.telemetry[lens_id].decoy_rejection.startswith("1.00")
-    # L-0004 and L-0009 discriminate (reject decoys, catch signals) so their filings vary; L-0003 files nothing, so no spread
+    # L-0004, L-0009 and L-0010 discriminate (reject decoys, catch signals) so their filings vary; L-0003 files nothing, so no spread
     assert result.telemetry["L-0004"].answer_variance.startswith("0.25")
     assert result.telemetry["L-0009"].answer_variance.startswith("0.25")
+    assert result.telemetry["L-0010"].answer_variance.startswith("0.25")
     assert result.telemetry["L-0003"].answer_variance.startswith("0.00")
     # the telemetry is off design-stage and carries the battery's name as provenance
     for t in result.telemetry.values():
@@ -79,20 +80,21 @@ def test_the_battery_scores_decoy_rejection_and_computes_telemetry(store):
     # the scorer facts are a series named <evaluation>/<scorer>, landed with the run as source
     assert set(result.facts) == {"decoy_rejection", "signal_caught"}
     assert result.facts["decoy_rejection"].series == f"{lb.LENS_BATTERY}/decoy_rejection"
-    assert result.facts["decoy_rejection"].value == 1.0  # 6/6 decoys rejected across the three lenses
-    assert round(result.facts["signal_caught"].value, 6) == round(4 / 6, 6)  # L-0004 and L-0009 catch both, L-0003 misses both
+    assert result.facts["decoy_rejection"].value == 1.0  # 8/8 decoys rejected across the four lenses
+    assert result.facts["signal_caught"].value == 0.75  # L-0004, L-0009 and L-0010 catch both; L-0003 misses both (6/8)
 
 
 def test_the_battery_attaches_signal_caught_per_lens(store):
     result = lb.run_battery(store)
 
     # the per-lens signal-caught cell is populated off design-stage and carries the battery's name as provenance
-    for lens_id in ("L-0003", "L-0004", "L-0009"):
+    for lens_id in ("L-0003", "L-0004", "L-0009", "L-0010"):
         assert "design-stage" not in result.telemetry[lens_id].signal_caught
         assert lb.LENS_BATTERY in result.telemetry[lens_id].signal_caught
-    # L-0004 and L-0009 file their noticing on both genuine signals; L-0003's honest stub files nothing, so it misses every signal
+    # L-0004, L-0009 and L-0010 file their noticing on both genuine signals; L-0003's honest stub files nothing, so it misses every signal
     assert result.telemetry["L-0004"].signal_caught.startswith("1.00")
     assert result.telemetry["L-0009"].signal_caught.startswith("1.00")
+    assert result.telemetry["L-0010"].signal_caught.startswith("1.00")
     assert result.telemetry["L-0003"].signal_caught.startswith("0.00")
     # a lens missing its signals reads a fraction strictly below one — the partial signal-miss the decoy axis alone hides
     fraction = float(result.telemetry["L-0003"].signal_caught.split(" ", 1)[0])
@@ -111,26 +113,39 @@ def test_l0009_rejects_its_transient_decoys_and_catches_its_recovered_misses(sto
     assert result.telemetry["L-0009"].decoy_rejection.startswith("1.00") and result.telemetry["L-0009"].signal_caught.startswith("1.00")
 
 
+def test_l0010_rejects_a_consulted_failure_and_catches_the_off_map_pass(store):
+    result = lb.run_battery(store)
+    l0010 = [o for o in result.outputs if o["lens"] == "L-0010"]
+    decoys = [o for o in l0010 if o["is_decoy"]]
+    signals = [o for o in l0010 if not o["is_decoy"]]
+    # a failed pass that consulted a record is not off-map — a hook fired, so L-0010 files nothing
+    assert decoys and not any(o["filed"] for o in decoys)
+    # a failed pass that consulted nothing is off-map — the store held no rule, so L-0010 files a missing-rule noticing
+    assert signals and all(o["filed"] for o in signals)
+    assert result.telemetry["L-0010"].decoy_rejection.startswith("1.00") and result.telemetry["L-0010"].signal_caught.startswith("1.00")
+
+
 def test_the_signal_caught_cell_lands_on_the_lens_register(store):
     result = lb.run_battery(store)
     lb.populate_telemetry(store, result.telemetry)
     telemetry = {l.id: l.telemetry for l in Store(store.root).registry.lenses()}
     assert telemetry["L-0004"].signal_caught.startswith("1.00")
     assert telemetry["L-0009"].signal_caught.startswith("1.00")
+    assert telemetry["L-0010"].signal_caught.startswith("1.00")
     assert telemetry["L-0003"].signal_caught.startswith("0.00")
     assert telemetry["L-0001"].signal_caught == "design-stage"  # boot lenses untouched
 
 
 def test_boot_lenses_are_not_battered(store):
     result = lb.run_battery(store)
-    assert set(result.telemetry) == {"L-0003", "L-0004", "L-0009"}  # L-0001/L-0002 are boot lenses, no decoy dataset
+    assert set(result.telemetry) == {"L-0003", "L-0004", "L-0009", "L-0010"}  # L-0001/L-0002 are boot lenses, no decoy dataset
 
 
 def test_the_emission_runs_on_the_offline_tracing_path(store):
     # with no HGI_WEAVE_PROJECT the evaluation still runs; the run URI reads None, never a crash, and the facts are computed
     result = lb.run_battery(store)
     assert result.run is None
-    assert result.outputs and len(result.outputs) == 12  # three close lenses, four planted items each
+    assert result.outputs and len(result.outputs) == 16  # four close lenses, four planted items each
     assert all(f.as_of is not None for f in result.facts.values())
 
 
@@ -142,7 +157,7 @@ def test_populate_moves_the_lens_register_off_design_stage(store):
 
     result = lb.run_battery(store)
     updated = lb.populate_telemetry(store, result.telemetry)
-    assert set(updated) == {"L-0003", "L-0004", "L-0009"}
+    assert set(updated) == {"L-0003", "L-0004", "L-0009", "L-0010"}
 
     reloaded = Store(store.root)  # read the register back from disk
     telemetry = {l.id: l.telemetry for l in reloaded.registry.lenses()}
@@ -216,7 +231,7 @@ def test_the_examiner_control_lands_on_the_lens_register_and_leaves_the_boot_len
     assert set(updated) == {"L-0006", "L-0007"}
     telemetry = {l.id: l.telemetry for l in Store(store.root).registry.lenses()}
     assert telemetry["L-0006"].decoy_rejection.startswith("1.00") and telemetry["L-0001"].decoy_rejection == "design-stage"
-    assert lb.run_battery(store).telemetry.keys() == {"L-0003", "L-0004", "L-0009"}, "the close-lens battery is unchanged by the control"
+    assert lb.run_battery(store).telemetry.keys() == {"L-0003", "L-0004", "L-0009", "L-0010"}, "the close-lens battery is unchanged by the control"
 
 
 def test_the_coder_control_scores_the_term_and_the_escape_and_writes_controls_json(store):

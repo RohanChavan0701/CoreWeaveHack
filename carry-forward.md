@@ -1559,3 +1559,38 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     it files (the L-0004 counterfactual's overshoot, mirrored). The stub is a
     lexical proxy for the pass model's convention inference; a live re-score is
     what confirms the noticing groups on the convention, not the cause string.
+91. **L-0010, the off-map noticing lens: a failure the store had no hook for is
+    a rule that is missing, not just telemetry** (commit `40c85ea`). When work
+    fails and matches no hook, `dispose` records a bare `fired-off-map`
+    disposition (`record="none"`) — in one arm six such sessions produced only
+    telemetry, no proposition, and nothing turned the store's strongest
+    "a rule is missing" signal into a noticing. (Distinct from L-0002, which
+    asks after records that *exist* but were not reached; L-0010 is failure the
+    store had *no* hook for.) Because close lenses walk before `dispose`, L-0010
+    cannot read the disposition — it reads the raw off-map condition, the exact
+    predicate `dispose` files `fired-off-map` on: `not session.consulted and
+    any(r.get("error") for r in rows)`. It is a close generative lens (host
+    `close`, contact `record`) with a whole-pass subject carrying that off-map
+    flag and the failed rows a missing-rule noticing anchors on (a failed row's
+    call); it is added to `OBSERVATION_LENSES`, so its `{noticed, anchor}`
+    findings file as observations too. The stub's `_off_map_noticings` files a
+    missing-coverage noticing when the subject is off-map and nothing when a
+    record was consulted; the battery plants two decoys (a failed pass that
+    consulted a record — a hook fired, not off-map) and two signals (a failed
+    pass that consulted nothing), reading `1.00` on both axes. *Right:* the
+    off-map failure now reaches the observation ledger where it fed only the
+    detection matrix's bottom-right cell before — and that cell shrinks as a
+    consequence: `hgi.index.true_misses` counts a failed, unconsulted row only
+    when the session filed no observation from it, so an off-map row L-0010
+    anchors a noticing on (`observed_from` matches the call) is no longer a
+    silent true-miss but a filed lesson. *Risk:* the off-map cut is coarse — it
+    fires on *any* failed row when nothing was consulted, so a pass that failed
+    for a reason a rule could never cover (a flaky environment, a
+    mis-specified task) files a missing-rule noticing the backward pass must
+    still judge; the observation is at the floor, never a rule, and the
+    counterfactual (a pass that *did* consult is not off-map) is the only guard.
+    The anchor rides a failed row's call, so an off-map pass whose rows carry no
+    call files nothing — the same count-and-provenance floor the other
+    observation lenses answer to. index.py was read but not edited (another
+    change owns it); the `true_misses`/matrix interaction above is behavioral,
+    through the observation L-0010 now files, not a code change here.

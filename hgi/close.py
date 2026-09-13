@@ -35,9 +35,10 @@ from hgi.types import Decision, Disposition, Draft, Fire, LedgerEntry, Observati
 NO_HOOK = "none"
 """The record a fired-off-map disposition names when the work matched no hook at all."""
 
-OBSERVATION_LENSES = ("L-0004", "L-0009")
+OBSERVATION_LENSES = ("L-0004", "L-0009", "L-0010")
 """The close generative lenses whose product is observations: each finding's {noticed, anchor} files as one. L-0004 reads
-the failed rows; L-0009 reads their complement — the passed rows that recovered from a non-transient fault."""
+the failed rows; L-0009 reads their complement — the passed rows that recovered from a non-transient fault; L-0010 reads
+the whole pass for the off-map condition, the failure the store had no hook for."""
 
 
 def _decision_view(store: Store, record: str) -> dict[str, Any]:
@@ -206,7 +207,9 @@ def lens_subjects(store: Store, session: Session, lens) -> dict[str, Any] | list
     """What a close lens reads. A lens whose contact is the artifact touches the item — one context per row, with that row's
     presentation, output and tool errors, never its scores: L-0004 is walked once per failed row; L-0009 reads the
     complement — each passed row that carries a non-transient tool error, the miss the pass corrected on the way to the
-    score. The other close lenses read the whole pass at once."""
+    score. L-0010 reads the whole pass for the off-map condition — nothing consulted and the work failed, the store's
+    ``fired-off-map`` signal read from the raw pass before ``dispose`` files it — carrying the failed rows a missing-rule
+    noticing anchors on. The other close lenses read the whole pass at once."""
     rows = session.evaluation.rows if session.evaluation else []
     consulted = [_decision_view(store, c.record) for c in session.consulted]
     if lens.externality.contact == "artifact":
@@ -216,6 +219,9 @@ def lens_subjects(store: Store, session: Session, lens) -> dict[str, Any] | list
         else:  # L-0004: one context per failed row
             selected = [row for row in rows if not _index.row_passed(row)]
         return [_artifact_subject(world, row, consulted) for row in selected]
+    if lens.id == "L-0010":
+        return {"off_map": not session.consulted and any(r.get("error") for r in rows), "consulted": consulted,
+                "failed": [{"task": r["task"], "row": _world_facts(r)} for r in rows if not _index.row_passed(r)]}
     return {"consulted": consulted, "rows": rows, "failed": [r["task"] for r in rows if not _index.row_passed(r)], "fires": session.fires_seen,
             "scores": {k: f.value for k, f in session.evaluation.scores.items()} if session.evaluation else {}}
 

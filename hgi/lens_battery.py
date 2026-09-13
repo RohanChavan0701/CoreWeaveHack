@@ -89,8 +89,13 @@ def _l0003_subject(*, consulted: list[dict], rows: list[dict], failed: list[str]
 
 
 def _l0004_subject(row: dict) -> dict[str, Any]:
-    """The single-row subject L-0004 reads: one artifact, its output and tool errors."""
+    """The single-row subject L-0004 (and L-0009) reads: one artifact, its output and tool errors."""
     return {"task": row["task"], "prompt": f"the presentation for {row['task']}", "row": row, "consulted": []}
+
+
+def _l0010_subject(*, off_map: bool, consulted: list[dict], failed: list[dict]) -> dict[str, Any]:
+    """The whole-pass subject L-0010 reads: whether the pass fired off-map, and the failed rows a missing-rule noticing anchors on."""
+    return {"off_map": off_map, "consulted": consulted, "failed": failed}
 
 
 def battery_items(lens_id: str) -> list[dict[str, Any]]:
@@ -157,6 +162,22 @@ def battery_items(lens_id: str) -> list[dict[str, Any]]:
              "subject": _l0004_subject({"task": "signal/route-versioned", "error": None,
                                         "tool_errors": [{"cause": "HTTP 410 Gone: this API serves /v2/…", "transient": False}],
                                         "scores": {"task_pass_rate": {"value": 1.0}}, "call": "weave:///battery/call/g2"})},
+        ]
+    if lens_id == "L-0010":
+        record = [{"id": "D-battery", "decision": "retry only transient tool faults", "premises": []}]
+        return [
+            {"kind": "decoy", "why": "a failed pass that DID consult a record — a hook fired, so this is not off-map",
+             "subject": _l0010_subject(off_map=False, consulted=record,
+                                       failed=[{"task": "t/consulted", "row": {"task": "t/consulted", "error": {"message": "failed with a record in context"}, "call": "weave:///battery/call/m1"}}])},
+            {"kind": "decoy", "why": "a failed pass that consulted a record on another shape — a hook fired, still not off-map",
+             "subject": _l0010_subject(off_map=False, consulted=record,
+                                       failed=[{"task": "t/consulted2", "row": {"task": "t/consulted2", "error": {"message": "failed with a record in context"}, "call": "weave:///battery/call/m2"}}])},
+            {"kind": "signal", "why": "a failed pass that consulted nothing — off-map, the store held no hook for this work",
+             "subject": _l0010_subject(off_map=True, consulted=[],
+                                       failed=[{"task": "t/offmap", "row": {"task": "t/offmap", "error": {"message": "unmatched failure"}, "call": "weave:///battery/call/o1"}}])},
+            {"kind": "signal", "why": "a failed pass that consulted nothing on another shape — off-map, a missing rule",
+             "subject": _l0010_subject(off_map=True, consulted=[],
+                                       failed=[{"task": "t/offmap2", "row": {"task": "t/offmap2", "error": {"message": "unmatched failure"}, "call": "weave:///battery/call/o2"}}])},
         ]
     return []
 

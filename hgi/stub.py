@@ -106,6 +106,8 @@ def _lens(req):
     if lens["id"] == "L-0009":
         rows = subject.get("rows") or ([subject["row"]] if "row" in subject else [])
         return {"answer": "read from the passed rows' recovered faults", "findings": _recovered_misses(rows)}
+    if lens["id"] == "L-0010":
+        return {"answer": "read from the off-map condition", "findings": _off_map_noticings(subject)}
     return {"answer": "nothing found on this reading", "findings": []}
 
 
@@ -143,6 +145,18 @@ def _recovered_misses(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         out.append({"noticed": f"task {row['task']} passed only after its first attempt failed on {cause} — the convention the pass corrected on, not a transient it retried past",
                     "anchor": {"call": row.get("call"), "path": "suite/tools.py:54"}, "recheck_when": "a passed task whose first attempt hit a non-transient fault"})
     return out
+
+
+def _off_map_noticings(subject: dict[str, Any]) -> list[dict[str, Any]]:
+    """A pass that failed and matched no hook: the store held no rule for this work, named on a failed row's call. Empty when
+    the pass is not off-map — it did consult a record, so a hook fired and this is not the missing-coverage signal."""
+    if not subject.get("off_map"):
+        return []
+    failed = subject.get("failed", [])
+    call = next((f["row"].get("call") for f in failed if isinstance(f.get("row"), dict) and f["row"].get("call")), None)
+    tasks = ", ".join(f.get("task", "?") for f in failed) or "this pass"
+    return [{"noticed": f"work failed and matched no hook: the store holds no rule for {tasks}",
+             "anchor": {"call": call, "path": None}, "recheck_when": "work that fails and consults nothing"}]
 
 
 @handles("dispose")
