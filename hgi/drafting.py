@@ -15,6 +15,7 @@ draft. A sketch is not a record: it has no envelope and is never stored.
 
 from __future__ import annotations
 
+import operator
 from typing import Any, Literal
 
 from pydantic import Field
@@ -25,6 +26,41 @@ from hgi.types import Option, Strict, Term
 EVALUATION = "suite-v1"
 WATCH_PERSISTENCE = 2
 """Runs a watch predicate must hold over before it fires; the bar for a revisit."""
+
+IDEAL_SCORE = 1.0
+FAILURE_SCORE = 0.0
+"""The oracle's scorers are success rates in ``[0, 1]``: ``1.0`` is the ideal, ``0.0`` is total failure (``suite/scorers.py``)."""
+
+_COMPARATORS = {"<": operator.lt, "<=": operator.le, ">": operator.gt, ">=": operator.ge, "==": operator.eq, "!=": operator.ne}
+
+
+def _holds(comparator: str, observed: float, value: float) -> bool:
+    return _COMPARATORS[comparator](observed, value)
+
+
+def fires_on_success(comparator: str, value: float, *, ideal: float = IDEAL_SCORE, failure: float = FAILURE_SCORE) -> bool:
+    """Whether a revisit watch on a higher-is-better scorer would fire when the record *works*.
+
+    A decision's stakes are a failure the record forestalls, so its revisit
+    latch must fire when the oracle shows that failure returning — a low
+    score — never when the record succeeds. A watch fires on success when the
+    ideal score satisfies its predicate but a failing score does not: the
+    latch would then re-adjudicate a record that is working and stay silent
+    when it regresses (``task_pass_rate == 1.0`` is the case seen in a
+    nominate try). A predicate a failing score also satisfies (``>= 0.0``,
+    ``!= 1.0``) still catches the regression and is not a success-watch.
+    """
+    return _holds(comparator, ideal, value) and not _holds(comparator, failure, value)
+
+
+def revisit_watch(body: dict[str, Any]) -> dict[str, Any] | None:
+    """The world-state watch predicate on a draft body, as the examiner reads it off the revisit latch; ``None`` when the draft sets none."""
+    for latch in body.get("latches", []) or []:
+        if latch.get("type") == "revisit" and latch.get("key_space") == "world-state":
+            predicate = (latch.get("edge") or {}).get("predicate")
+            if isinstance(predicate, dict) and predicate.get("comparator") in _COMPARATORS and predicate.get("value") is not None:
+                return predicate
+    return None
 
 
 class PremiseSketch(Strict):
