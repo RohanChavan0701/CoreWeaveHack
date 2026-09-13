@@ -9,6 +9,7 @@ backward pass (:mod:`hgi.consolidate`), never by the pass that produced it.
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from hgi import tracing
@@ -42,11 +43,32 @@ def notes_for(session: Session) -> list[dict[str, Any]]:
         return []
 
 
+SLOT_WORDS = {"activation": ("hook", "fire", "fired", "activation", "recall", "not_this", "not-this"), "warrant": ("premise", "warrant", "anchor", "falsif"),
+              "enforcement": ("floor", "lint", "residue", "enforcement"), "lifecycle": ("retire", "moot", "lifecycle", "consumer")}
+"""What a human's note says about which slot it indicts; the payload is the slot a correction lands on when it names none."""
+
+
+def indictment(store: Store, note: str) -> dict[str, str] | None:
+    """The credit assignment a human steer performs: the record its note names, and the slot its words indict.
+
+    A steer decides which artifact absorbs the lesson (doctrine § 7.1); a note naming no record in the store is a
+    correction with its credit unassigned, and the backward pass reads it without an indictment.
+    """
+    ids = [rid for rid in re.findall(r"\b[A-Z]-\d{4,}\b", note) if store.find(rid) is not None]
+    if not ids:
+        return None
+    lower = note.lower()
+    slot = next((slot for slot, words in SLOT_WORDS.items() if any(w in lower for w in words)), "payload")
+    return {"record": ids[0], "slot": slot, "signature": "human-corrected"}
+
+
 def capture(store: Store, session: Session) -> list[Steer]:
     steers = []
     for n in notes_for(session):
-        steer = Steer(id=store.mint("steer"), at=now(), source={"kind": "human", "anchor": n["call"]}, correction=n["note"],
-                      matrix_cell="system-misses/human-catches")
+        indicts = indictment(store, n["note"])
+        fired = indicts is not None and any(store.read("fire", f).latch.record == indicts["record"] for f in session.fires_seen if store.exists("fire", f))  # type: ignore[attr-defined]
+        steer = Steer(id=store.mint("steer"), at=now(), source={"kind": "human", "anchor": n["call"]}, correction=n["note"], indicts=indicts,
+                      matrix_cell="system-catches/human-catches" if fired else "system-misses/human-catches")
         store.append(steer)
         steers.append(steer)
         session.steers_filed.append(steer.id)
