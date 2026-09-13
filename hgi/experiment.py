@@ -274,7 +274,7 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         _write(where / "arm.json", record)
 
     try:
-        _commit_arm(where, store, commit, f"Genesis for {exp.name}/{arm}: priced for {roster['pass']}, {spec.rounds} rounds of {spec.passes_per_round}")
+        _commit_arm(where, store, commit, _genesis_message(exp, arm, spec, store, roster))
         if spec.mode == "attached":
             for n in range(1, spec.passes + 1):
                 session = store.mint("session")
@@ -323,6 +323,14 @@ def _detached_passes(spec: ArmSpec, store, hgi, progress) -> None:
             f.result()
             progress()
     _index.regenerate(store)
+
+
+def _genesis_message(exp: Experiment, arm: str, spec: ArmSpec, store, roster: dict[str, str]) -> str:
+    """The arm's genesis commit subject, naming the constitution ids it admits as a range, so
+    ``hgi lineage C-0003`` resolves this commit as the article's admission (decision 28)."""
+    ids = sorted(a.id for a in store.articles())
+    span = f", constitution {ids[0]}..{ids[-1]}" if len(ids) > 1 else (f", constitution {ids[0]}" if ids else "")
+    return f"Genesis for {exp.name}/{arm}: priced for {roster['pass']}, {spec.rounds} rounds of {spec.passes_per_round}{span}"
 
 
 def _commit_arm(where: Path, store, commit: bool, message: str) -> None:
