@@ -20,6 +20,8 @@ settlement-authority         write          fails a settled latch whose settleme
                                             dispositive fire or admitted successor
 ports                        write          fails a latch off its port declaration without a warrant; fails a         whether the declaration is right
                                             required latch type that is absent
+key-space                    write          fails a neighbour latch naming a record that does not exist; fails a       whether the referent is the right quantity to watch
+                                            world-state watch naming a scorer or evaluation the oracle does not run
 constitution-cap             write          fails a store exceeding max_articles or max_bytes                         the ranking
 disposition-completeness     close          fails a closed session with a consulted record lacking a disposition      whether the disposition was honest
 fire-completeness            close          fails a closed session that saw a fire owed to the working pass and left   whether the discharge was honest
@@ -280,6 +282,35 @@ def check_ports(store: Store) -> list[Finding]:
         for l in live:
             if store.registry.port("decision", d.status, l.type) == "forbidden" and not l.warrant:
                 out.append(fail("ports", d.id, f"a live {l.type} latch is forbidden on a {d.status} decision without a warrant on the latch"))
+    return out
+
+
+# --- key-space governance --------------------------------------------------------
+
+@check("key-space", "write", "whether the referent is the right quantity to watch")
+def check_key_space(store: Store) -> list[Finding]:
+    """A latch is worth exactly as much as the governance of its key-space (doctrine § 9): a neighbour key resolves to a
+    record, a world-state key names a series the oracle runs — watch referents, never aliases (§ 16.7). Work-shape terms
+    are checked at parse by the registry; the two key-spaces whose vocabularies live outside it are checked here."""
+    from suite import EVALUATION
+    from suite.scorers import SERIES
+
+    out = []
+    hosts = [(d.id, d.all_latches()) for d in store.decisions()] + [(p.name, p.all_latches()) for p in store.drafts()]
+    for host, latches in hosts:
+        for i, latch in enumerate(latches):
+            if latch.lifecycle.status != "live":
+                continue
+            if latch.key_space == "neighbor":
+                for rid in latch.guard.records:
+                    if store.host(rid) is None:
+                        out.append(fail("key-space", host, f"latch {i} watches neighbour {rid}, which is no record in this store; a key that resolves to nothing rots on rename"))
+            elif latch.key_space == "world-state" and latch.edge.predicate:
+                p = latch.edge.predicate
+                if p.evaluation != EVALUATION:
+                    out.append(fail("key-space", host, f"latch {i} watches evaluation {p.evaluation!r}; the oracle runs {EVALUATION!r}"))
+                if p.scorer not in SERIES:
+                    out.append(fail("key-space", host, f"latch {i} watches scorer {p.scorer!r}, which the oracle does not run; its series are {SERIES}"))
     return out
 
 
