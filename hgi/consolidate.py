@@ -345,6 +345,20 @@ def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draf
 EDIT_RUNGS = {"counterfactual-edit": ("counterfactual", "not_this"), "hook-edit": ("terms", "not_this")}
 """The slot-local rungs of the ladder (§ 10.3, rungs 1 and 4): each names the fields of ``edit`` it may change."""
 
+OPERATED_RUNGS = frozenset({*EDIT_RUNGS, "new-decision"})
+"""The rungs this roster has an operator for. The case leg drafts decisions and their successors; ``adoption-row`` and
+``rule-enrollment`` need the rule tier, ``floor`` a lint check authored by hand, ``article`` an eviction under the cap —
+none of which a sketch can stand for. A nomination at a rung with no operator is refused and recorded, never drafted
+as a decision wearing the rung's name: refusal is a first-class outcome, and the refusal is the datum that the roster
+is short a tier."""
+
+
+def unoperated(rung: str) -> str | None:
+    """Why a nomination at ``rung`` cannot be drafted in this roster, or ``None`` when the rung has an operator."""
+    if rung in OPERATED_RUNGS:
+        return None
+    return f"refused: the rung {rung} has no operator in this roster (decisions only); nothing is drafted under a rung the store cannot execute"
+
 
 def sketch_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
     """A draft's body derived from the consolidator's sketch under the store's bars.
@@ -594,6 +608,10 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
         for raw in nominate(store, record, brief):
             nomination = nomination_from(store, raw)
             adopted = adoptable(store, raw)
+            if adopted is None and (why := unoperated(nomination.rung)) is not None:
+                nomination.outcome = why
+                record.nominations.append(nomination)
+                continue
             if adopted is not None:
                 nomination.adopts = adopted.uid
                 draft = adopted
