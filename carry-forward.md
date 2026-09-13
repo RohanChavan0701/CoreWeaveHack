@@ -7,9 +7,13 @@ work left for the full implementation and the decisions taken along the way
 ## Where it stands
 
 - Slices 0–3 of spec § 13 ship with their acceptance tests green
-  (`uv run pytest`, 60 tests). Slice 4 ships the dashboard, the analyst
+  (`uv run pytest`, 95 tests). Slice 4 ships the dashboard, the analyst
   mirror and the retirement leg; the rule tier and the grown floor do not
-  exist because the roster is decisions only. Slice 5 (the demo) has run on
+  exist because the roster is decisions only. Slice 6(e) — split and fold
+  as executed operators — ships, with the other backward-pass legs that
+  were nominators without a consumer: deferral latches, propagation over
+  wiring latches, the structural-zero audit and the edit rungs, genesis
+  anchoring, and vocabulary growth (README, *The backward pass*). Slice 5 (the demo) has run on
   the repository store and is recorded in the README's acceptance table.
 - The demonstration ran on the deterministic stub (`hgi/stub.py`), because
   no CoreWeave inference endpoint credentials were available.
@@ -74,21 +78,35 @@ work left for the full implementation and the decisions taken along the way
    the brief it drafts is recorded by URI with `hgi consolidate
    --analyst-report`. A programmatic surface would replace `build_brief`'s
    local derivation with the analyst's report as the primary input.
-7. **Split and fold** (§ 10.6) as executed operators; today `lineage.split_from`
-   and `folded_from` exist on the envelope and nothing writes them.
+7. **Split and fold nominations on a real model.** The operators execute
+   (`tests/test_lineage_ops.py`); the stub's leaves share the parent's payload
+   with the hook narrowed per sub-shape, which is a hook-edit wearing a
+   split's lineage. A real consolidator drafts distinct leaf payloads; the
+   `nominate` request carries the whole body of every record `fusion` or
+   `convergence` names, and neither row has yet appeared on a real-model
+   arm.
 8. **The lens battery** (§ 9.2, slice 6a): decoy rejection scored in Weave;
    `LensTelemetry` fields are all `design-stage`.
-9. **Genesis anchoring.** All seven articles are past the three-consolidation
-   deadline without an anchor (the lint warns). The consolidator needs a
-   nomination that anchors an article to an instance, or evicts it.
-10. **The `defer` verdict** is accepted by the vocabulary but nothing turns its
-   condition into a latch; the draft simply stays in `store/proposals/`.
-11. **Wiring latches** are written on supersedure but nothing consumes them:
-    propagation (`re-derive` / `check` on a neighbour's status change) is not
-    run at consolidation.
-12. **Structural-zero audit and escape recurrence** are projected but not
-    nominated on; vocabulary growth by the route-before-mint ladder is
-    `Registry.add_term` with no caller.
+9. **The demonstration store's seven articles are still unanchored.** The
+   anchoring review exists and runs at every consolidation, and the stub
+   anchors all seven from the demo's own ledgers (`tests/test_genesis.py`),
+   but `store/` has not been consolidated since the review shipped: a
+   `hgi consolidate --force` on it with no `HGI_WEAVE_PROJECT` would leave
+   untraced ledger entries beside the traced demonstration's, so the next
+   consolidation is left to a traced run. Until then the lint's seven
+   `genesis-anchor` warnings stand.
+10. **Genesis term retirement.** Appendix A.2 retires a work-shape term
+    unused across three consolidation passes; nothing does. A retired term
+    still parses on the records that carry it, so retirement is a register
+    mark (`retired: <date>`) the hook index skips, not a removal.
+11. **Propagation's `re-derive` act** has no derived field to recompute in
+    a decisions-only roster; every wiring latch is written with `check`.
+    The rule tier's adoption cells and a belief's evidence state are the
+    fields `re-derive` is for.
+12. **Escape recurrence counts only the sessions' work-shape escapes.**
+    Escapes in other closed vocabularies (a latch key-space, a verdict) are
+    parsed and kept but not clustered; the review takes a vocabulary name
+    and is called for `work-shape` alone.
 13. **The pass's own proposals** (close step 6) parse and file but the stub
     never drafts any; the real model may.
 14. **Re-authoring on a re-price.** `hgi price --restamp` moves the stamp and
@@ -226,6 +244,49 @@ work left for the full implementation and the decisions taken along the way
     indefinitely priced for a model nothing was authored for, behind a
     warning nobody reads, which is exactly what `hgi genesis --force`
     avoided by making a price a fresh seed.
+23. **A tombstone's `superseded_by` is a list**, not the scalar the spec's
+    envelope example shows, because a split leaves one retiree with several
+    heirs and a scalar cannot name them. A record written with a scalar or
+    `null` reads as the list it means; `store/decisions/D-0001.json` still
+    carries the scalar it was written with. *Risk:* a reader of the spec's
+    example expects a string.
+24. **A deferral is a latch on the draft itself**, in the pre-admission
+    tier, and only that latch is exposed to the watch evaluator — the
+    draft's own fan is not yet live. An adjudicator that defers without a
+    condition, or returns an escape verdict, re-queues the draft at the
+    next backward pass rather than leaving it without a condition that can
+    fire. *Risk:* the adjudicator's `until` is read from a fixed shape
+    (scorer, comparator, value, persistence — or passes); a condition it
+    phrases otherwise becomes the schedule default.
+25. **Observations a pending draft rests on are claimed** until the draft
+    is disposed, so a deferred draft is not nominated twice from the same
+    instances. *Risk:* a declined draft frees them, and the same fork is
+    nominated again at the next consolidation from the same observations.
+26. **A wiring latch's guard remembers the status it saw**, and the fire
+    ledger carries every later observation, so the latch stays immutable
+    and one departure fires once. A warrant that cites a record is wired to
+    it at admission, excluding the records the draft retires (the lineage
+    edge already carries those, and citing a predecessor would otherwise
+    close a wiring cycle the lint refuses). *Risk:* a wiring latch written
+    before guards remembered statuses reads its successor as `accepted`.
+27. **The edit rungs are successor records** derived from the one record
+    they supersede with the named fields replaced — never an edit in
+    place, because a decision is frozen after acceptance. The retirement
+    review's nomination still names `counterfactual-edit` as its rung for
+    want of a `retire` rung in the ladder vocabulary.
+28. **Genesis anchoring is a currency question**, not an attack: the
+    consolidator proposes an instance, the adjudicator reads the instance
+    itself, and the ledger entry's species is `currency` with `still-holds`
+    meaning the instance exemplifies the article. No examiner sits between
+    them, because the claim is one instance and one article, not a five-slot
+    draft. *Risk:* proposer and adjudicator without a contradictor is a
+    weaker separation than the protocol of § 10.9; the adjudicator is handed
+    the record, never the proposer's `why`.
+29. **Vocabulary growth files as a `coding` entry** whose contradictor is
+    the blind coder and whose verdict is `agree` | `disagree`; the
+    adjudicator's own token (`admit` | `decline(<why>)`) is the entry's
+    outcome. A declined term is re-nominated only by escapes from passes
+    after the verdict.
 
 ## Housekeeping
 
