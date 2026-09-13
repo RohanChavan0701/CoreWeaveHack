@@ -135,7 +135,7 @@ class ArmSpec(BaseModel):
 
     mode: Literal["attached", "detached"] = "attached"
     """Attached: boot, evaluate, close every pass, consolidate every round. Detached: the ablation — the same agent and suite
-    with no store, so its passes are independent draws of one evaluation and are drawn concurrently."""
+    with no store, so its passes are independent draws of one evaluation and (unless ``serial_detached``) are drawn concurrently."""
     rounds: int = Field(default=3, ge=1)
     """Consolidation cycles. A detached arm has no consolidation; its rounds only size the run."""
     passes_per_round: int = Field(default=2, ge=1)
@@ -151,6 +151,12 @@ class ArmSpec(BaseModel):
     """A stream arm's pool and deal (:class:`suite.stream.StreamSpec`); when set, ``suite`` is unused and ``rounds`` is derived."""
     concurrency: int = Field(default=4, ge=1)
     """Tasks the oracle evaluates at once — W&B Inference answers 429 past its concurrency limit."""
+    serial_detached: bool = True
+    """A detached arm's passes are drawn one at a time, not concurrently. The safe default: each pass already
+    runs its tasks ``concurrency`` at a time, and a thread pool of passes on top of that multiplies it —
+    running several arms together this way put 429s past the client's retries into the detached rows on
+    a real endpoint (decision 36). ``False`` restores the old concurrent draw, sound alone or with headroom
+    under the endpoint's ceiling."""
     description: str = ""
 
     model_config = ConfigDict(extra="forbid")
@@ -353,27 +359,36 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
 
 
 DETACHED_AT_ONCE = 3
-"""Detached passes evaluated concurrently; each already runs its tasks ``concurrency`` at a time."""
+"""Detached passes drawn concurrently when ``serial_detached`` is off; each already runs its tasks ``concurrency`` at a time."""
 
 
 def _detached_passes(spec: ArmSpec, store, hgi, progress, suite_for) -> None:
-    """A detached arm's passes are draws of one evaluation — no boot, no close, nothing carried between them — so they are
-    drawn concurrently, each in a copy of the runner's context with its own suite in scope (a stream arm's pass draws its
-    batch), and written without a commit each; the arm commits once."""
-    import contextvars
-    from concurrent.futures import ThreadPoolExecutor
-
+    """A detached arm's passes are draws of one evaluation — no boot, no close, nothing carried between them.
+    ``spec.serial_detached`` (the default) draws them one at a time in this thread, the way an experiment's
+    other arms and an attached arm's own passes run — safe to run several arms of an experiment together
+    under one endpoint's concurrency ceiling (decision 36). Off, they are drawn concurrently instead, each in
+    a copy of the runner's context with its own suite in scope (a stream arm's pass draws its batch) — faster
+    alone, or with headroom under the ceiling. Either way each pass is written without a commit; the arm
+    commits once."""
     from hgi import index as _index
 
     def draw(n: int) -> None:
         _suite.use(suite_for(n))
         hgi("evaluate", "--detached", "--pass", str(n), "--no-commit")  # the detached command mints its own session
 
-    with ThreadPoolExecutor(max_workers=min(DETACHED_AT_ONCE, spec.passes)) as pool:
-        futures = [pool.submit(contextvars.copy_context().run, draw, n) for n in range(1, spec.passes + 1)]
-        for f in futures:
-            f.result()
+    if spec.serial_detached:
+        for n in range(1, spec.passes + 1):
+            draw(n)
             progress()
+    else:
+        import contextvars
+        from concurrent.futures import ThreadPoolExecutor
+
+        with ThreadPoolExecutor(max_workers=min(DETACHED_AT_ONCE, spec.passes)) as pool:
+            futures = [pool.submit(contextvars.copy_context().run, draw, n) for n in range(1, spec.passes + 1)]
+            for f in futures:
+                f.result()
+                progress()
     _index.regenerate(store)
 
 
