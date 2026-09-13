@@ -1528,3 +1528,34 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     The miss stream is written only for the lenses `populate_telemetry`
     touches (the battered ones), so a boot lens no battery reaches keeps its
     static literal until a run writes it.
+90. **L-0009, the recovered-miss lens: a passed row that self-corrected on a
+    non-transient convention is a lesson, not a discard** (commit `9ccf21b`).
+    Across `runs/`, 375 rows passed but 87 recovered from a non-transient fault
+    on the first attempt — 37× a `route-guarded` 401 (`/secure` needs
+    `?token=`), ~15× a `route-versioned` 410 (the API serves `/v2/…`), plus
+    awk/traceback/call-budget faults — real conventions the pass learned and
+    self-corrected on, discarded today because the row scored 1.0: L-0004's
+    failed-row filter never sees them. L-0009 is a close generative lens, host
+    `close`, contact `artifact`, walked once per row that is the *complement*
+    of L-0004's — a passed row (`_index.row_passed`) carrying at least one
+    non-transient tool error (`_recovered_nontransient`) — its subject shape
+    identical to L-0004's per-row subject, so `_artifact_subject` is shared and
+    L-0004's read is byte-for-byte unchanged. `file_observations` no longer
+    hard-codes `L-0004`; it walks `OBSERVATION_LENSES`, the module constant
+    naming the observation-producing close lenses, and the same
+    `{noticed, anchor}` → `Observation` logic files for all of them. The stub's
+    `_recovered_misses` files a noticing that carries the fault's cause (so the
+    blind coder groups it on `route-guarded`/`route-versioned` through the
+    convention keywords) and files nothing when the only fault was transient.
+    The battery plants two decoys (a 502/503 that cleared on retry) and two
+    signals (the 401 token, the 410 route-version); the lens rejects the
+    decoys and catches the signals, reading `1.00` on both axes. *Right:* the
+    recovered convention now reaches the observation ledger, where before it
+    left only a green score — the pass's strongest evidence of a rule the store
+    still lacks a hook for, filed at the floor as an observation, never a rule.
+    *Risk:* the "non-transient" cut is only as good as the `transient` flag the
+    tool layer stamps on a `tool_error`; a fault mislabeled transient is a
+    signal L-0009 silently drops, and one mislabeled non-transient is a decoy
+    it files (the L-0004 counterfactual's overshoot, mirrored). The stub is a
+    lexical proxy for the pass model's convention inference; a live re-score is
+    what confirms the noticing groups on the convention, not the cause string.

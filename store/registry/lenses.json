@@ -112,6 +112,34 @@
     }
   },
   {
+    "angle": "A row passed, but its first attempt was wrong — a non-transient fault the pass corrected on the way to the score. Name the convention that first attempt missed.",
+    "consumer": "the observation ledger; the backward pass",
+    "counterfactual": "The overshoot: filing the transient fault that cleared on retry — a recovered 502 is loud but non-causal; file only a non-transient miss the pass corrected.",
+    "externality": {
+      "contact": "artifact",
+      "terminates_in": "the trace: a call URI per finding"
+    },
+    "host": "close",
+    "id": "L-0009",
+    "kind": "lens",
+    "priced_for": {
+      "model_id": "stub"
+    },
+    "product": "a list of {noticed, anchor}; each becomes an observation",
+    "purpose": "generative",
+    "status": "live",
+    "telemetry": {
+      "answer_variance": "design-stage",
+      "decoy_rejection": "design-stage",
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
+    },
+    "warrant": {
+      "anchors": [],
+      "evidence": "genesis"
+    }
+  },
+  {
     "angle": "Do the draft's anchored observations come from independent passes, or is one context counted twice? Read the sessions the evidence names and land `warrant:independence` when they are fewer than the bar.",
     "claims": [
       "warrant:independence"

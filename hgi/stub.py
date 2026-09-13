@@ -103,6 +103,9 @@ def _lens(req):
     if lens["id"] == "L-0004":
         rows = subject.get("rows") or ([subject["row"]] if "row" in subject else [])
         return {"answer": "read from the rows' tool errors", "findings": _noticings(rows)}
+    if lens["id"] == "L-0009":
+        rows = subject.get("rows") or ([subject["row"]] if "row" in subject else [])
+        return {"answer": "read from the passed rows' recovered faults", "findings": _recovered_misses(rows)}
     return {"answer": "nothing found on this reading", "findings": []}
 
 
@@ -124,6 +127,21 @@ def _noticings(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         elif any("budget" in (e.get("cause") or "") for e in tool_errors):
             out.append({"noticed": f"task {row['task']} exceeded its shell budget: independent calls were issued one per input instead of batched",
                         "anchor": anchor, "recheck_when": "a budgeted tool over several independent inputs"})
+    return out
+
+
+def _recovered_misses(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """A passed row that recovered from a non-transient first attempt: the noticing names the convention the first attempt
+    missed, carrying the fault's cause so a later pass can group on it. A row whose only fault was transient — a 502 that
+    cleared on retry — is loud but non-causal, and nothing is filed."""
+    out = []
+    for row in rows:
+        nontransient = next((e for e in row.get("tool_errors", []) if not e.get("transient")), None)
+        if nontransient is None:
+            continue
+        cause = nontransient.get("cause") or nontransient.get("message") or "an unstated fault"
+        out.append({"noticed": f"task {row['task']} passed only after its first attempt failed on {cause} — the convention the pass corrected on, not a transient it retried past",
+                    "anchor": {"call": row.get("call"), "path": "suite/tools.py:54"}, "recheck_when": "a passed task whose first attempt hit a non-transient fault"})
     return out
 
 

@@ -209,6 +209,11 @@ LENSES = [
      "externality": {"contact": "artifact", "terminates_in": "the trace: a call URI per finding"},
      "product": "for the failed task in the subject, at most one {noticed, anchor, recheck_when}: `noticed` names the task, what its first attempt did, and what would have passed — the convention of this world it missed — in one or two sentences; `anchor` is {call: the row's call URI, path: null}; `recheck_when` says when to look for the same miss again; empty when the failure was not the pass's to avoid",
      "consumer": "the observation ledger; the backward pass"},
+    {"id": "L-0009", "host": "close", "purpose": "generative",
+     "angle": "A row passed, but its first attempt was wrong — a non-transient fault the pass corrected on the way to the score. Name the convention that first attempt missed.",
+     "counterfactual": "The overshoot: filing the transient fault that cleared on retry — a recovered 502 is loud but non-causal; file only a non-transient miss the pass corrected.",
+     "externality": {"contact": "artifact", "terminates_in": "the trace: a call URI per finding"},
+     "product": "a list of {noticed, anchor}; each becomes an observation", "consumer": "the observation ledger; the backward pass"},
     # the examiner fan: the attack's angles, one context each (the fan law), hosted where independence is structural (the host law).
     # L-0005 and L-0008 are seeded retired through the crystallization door: their questions became gates the code reads
     # (hgi.lint.independence, hgi.consolidate.drop_success_watch), and the register keeps them as the evidence of that.

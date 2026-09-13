@@ -139,6 +139,25 @@ def battery_items(lens_id: str) -> list[dict[str, Any]]:
                                         "tool_errors": [{"cause": "timeout", "transient": True}],
                                         "scores": {"task_pass_rate": {"value": 0.0}}, "call": "weave:///battery/call/s2"})},
         ]
+    if lens_id == "L-0009":
+        return [
+            {"kind": "decoy", "why": "a passed row whose only fault was a 502 that cleared on retry — transient, non-causal",
+             "subject": _l0004_subject({"task": "decoy/retried-502", "error": None,
+                                        "tool_errors": [{"cause": "502 Bad Gateway", "transient": True}],
+                                        "scores": {"task_pass_rate": {"value": 1.0}}, "call": "weave:///battery/call/r1"})},
+            {"kind": "decoy", "why": "a passed row whose only fault was a 503 that cleared on retry — transient, non-causal",
+             "subject": _l0004_subject({"task": "decoy/retried-503", "error": None,
+                                        "tool_errors": [{"cause": "503 Service Unavailable", "transient": True}],
+                                        "scores": {"task_pass_rate": {"value": 1.0}}, "call": "weave:///battery/call/r2"})},
+            {"kind": "signal", "why": "a passed row recovered from a route-guard convention: a 401 the first attempt missed, corrected with a token",
+             "subject": _l0004_subject({"task": "signal/route-guarded", "error": None,
+                                        "tool_errors": [{"cause": "HTTP 401 Unauthorized: routes under /secure require ?token=", "transient": False}],
+                                        "scores": {"task_pass_rate": {"value": 1.0}}, "call": "weave:///battery/call/g1"})},
+            {"kind": "signal", "why": "a passed row recovered from a route-version convention: a 410 the first attempt missed, corrected on the /v2 successor",
+             "subject": _l0004_subject({"task": "signal/route-versioned", "error": None,
+                                        "tool_errors": [{"cause": "HTTP 410 Gone: this API serves /v2/…", "transient": False}],
+                                        "scores": {"task_pass_rate": {"value": 1.0}}, "call": "weave:///battery/call/g2"})},
+        ]
     return []
 
 
