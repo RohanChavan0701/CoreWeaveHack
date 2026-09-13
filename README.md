@@ -110,8 +110,8 @@ carries the cause*), superseding D-0001. Passes 5–6 pass every task.
 | 3. One retirement on telemetry | yes | D-0001 superseded by D-0003; the nominating evidence is the credit table on K-0002 (applied ÷ considered 1.0, `task_pass_rate` on its applied tasks 0.0 → 0.0) and steer T-0001 |
 | 4. Dispositions complete; no fire owed to the working pass undischarged | yes | every consulted record in every attached pass has a `U-` record; `store/index/fires.json` is empty |
 | 5. Calibration over four settled beliefs | no | the belief store is not instantiated in this roster |
-| 6. Floor green; projections equal regeneration | yes | `hgi lint` is green with fifteen warnings, all `genesis-anchor`: the seven genesis articles and the eight genesis lenses passed three consolidation passes without earning an anchor and are due for eviction, retirement or anchoring |
-| 7. Matrix populated: a steer cell and a system-catches cell | yes | `store/index/matrix.json`: one event in `system-misses/oracle-catches` (T-0001), six in `system-catches/none-catches` (applied dispositions on passing tasks) |
+| 6. Floor green; projections equal regeneration | yes | `hgi lint` is green with fifteen warnings, all `genesis-anchor`: the seven genesis articles and the eight genesis lenses passed three consolidation passes without earning an anchor and are due for eviction, retirement or anchoring; every counterfactual's anchor resolves |
+| 7. Matrix populated: a steer cell and a system-catches cell | yes | `store/index/matrix.json`: one event in `system-misses/oracle-catches` (T-0001), six in `system-catches/none-catches` (applied dispositions on passing tasks); the true-miss cell is empty because passes 1 and 2 filed an observation from every failed row — a floor, not a clean bill |
 | 8. Roles separate on every ledger entry | yes | H-0001…H-0003 carry a consolidator, an examiner and an adjudicator call, three distinct Weave calls with distinct `hgi.role` attributes |
 
 ### What the demonstration does not show
@@ -150,6 +150,7 @@ hgi consolidate                             # the backward pass over the ledgers
 hgi lint                                    # the floor
 hgi index                                   # regenerate projections
 hgi price       --model <id>                # the size of a model swap over the conditioning records
+hgi lens-battery                            # the lens battery and the seeded controls; lens telemetry and index/controls.json
 hgi lineage     D-0007                      # the admitting commit, and the path query over the lineage DAG
 hgi suite       show | tasks | fetch <fam>  # the task suite in scope; transcribe a dataset family
 hgi roles       try <request> --store <arm> # one role request against a copy of a store; how the reply parsed
@@ -179,13 +180,13 @@ the committer alone writes. In order:
 | Leg | Nominates on | Executes as |
 |---|---|---|
 | triage | every observation group at the independence bar, with the rows its anchors name | the adjudicator classifies the recurrence `reducible` (a duty the loop missed) or `irreducible` (nothing a record could have prevented) on a `reality` entry; an irreducible group is dismissed with a pointer to the entry and leaves the brief before any slot can update on it |
-| nominations | the brief: observations grouped by the blind coder's shapes under the independence bar; `fusion` (dispositions bimodal across matched sub-shapes → split); `convergence` (identical hooks applied together → fold); `structural_zero` (a record no registered hook reaches → hook-edit); `recall` (a record the boot lens probed for unconsulted, or a steer indicting activation → hook-edit re-keying on what was presented) | a draft per nomination through attack and verdict; a `hook-edit` or `counterfactual-edit` is a successor derived from the one record it supersedes; a leaf names `split_from`, a fold `folded_from`, and admission writes the DAG move with reciprocal pointers; a nomination at a rung this roster has no operator for (`adoption-row`, `rule-enrollment`, `floor`, `article`) is carried as a decision — the cheapest available home — with the rung it meant recorded on the nomination and stamped on the admitted record as `admission.displaced_from`, so a later tier can re-home it |
+| nominations | the brief: observations grouped by the blind coder's shapes under the independence bar; `precision` (fired-but-not-applicable dominating a record's considered count at the bar `precision.not_applicable_over_considered_above`, with the dispositions' notes from independent passes → counterfactual-edit growing `not_this` by the presentations they name); `fusion` (dispositions bimodal across matched sub-shapes → split); `convergence` (identical hooks applied together → fold); `structural_zero` (a record no registered hook reaches → hook-edit); `recall` (a record the boot lens probed for unconsulted, or a steer indicting activation → hook-edit re-keying on what was presented) | a draft per nomination through attack and verdict; a `hook-edit` or `counterfactual-edit` is a successor derived from the one record it supersedes; a leaf names `split_from`, a fold `folded_from`, and admission writes the DAG move with reciprocal pointers; a nomination at a rung this roster has no operator for (`adoption-row`, `rule-enrollment`, `floor`, `article`) is carried as a decision — the cheapest available home — with the rung it meant recorded on the nomination and stamped on the admitted record as `admission.displaced_from`, so a later tier can re-home it |
 | attack | the draft, verbatim | the examiner fan: one call per examiner-hosted lens (independence, premise kill, abstraction, watch direction), each contributing only the claims of its own class; the adjudicator, never an angle, joins them |
 | deferrals | a `defer(<until>)` verdict | the condition becomes a latch on the draft — a watch predicate the oracle's next runs fire, or passes to wait — and the fire, owed to the backward pass, re-adjudicates the draft in fresh contexts |
 | fires owed | revisit latches whose predicate held; deferral latches | a decision's by a currency verdict on its warrant; a draft's by re-adjudication; the disposition and any flip land in one commit. A fire owed to the working pass instead is discharged by that pass at close, or the close is refused |
 | pending contradictions | a `currency` entry a pass filed at close (the close lens named a premise or hook the pass made false), still pending | the adjudicator re-checks the warrant against the finding; the verdict lands on a new entry citing the pending one, and a `reversed` flips the premise |
 | credit | the task-level credit table, each fraction with the counts it is computed from | oracle-attributed steers, credit assigned by the adjudicator |
-| retirement | applied ÷ considered under the record's retirement guard over the window | mootness by the adjudicator's killer-item check |
+| retirement | applied ÷ considered under the record's retirement guard over the window; or a record accepted before the window opened that no pass considered across the whole of it — the domain no longer entered | mootness by the adjudicator's killer-item check, through the same `currency` request with the window's evidence; a never-considered record is kept unless its `moot_when` condition is met, and nothing retires by count alone |
 | genesis anchoring | a seed article with no anchor | the consolidator names an instance from the ledgers, the adjudicator says whether it exemplifies the article, the committer appends the anchor; past the deadline in the bars an article still unanchored is evicted |
 | lenses | a lens's products that reached a consumer; a seed lens unanchored past the deadline; a product that stopped varying over the review window | anchors are derived and appended to the lens's warrant; a lens at a door — genesis-deadline or variance-collapse — goes to the adjudicator, and `moot` retires it (kept in the register as evidence, walked by nothing) |
 | vocabulary | the same `other(<what>)` from independent occasions — a pass's work-shape, a latch's key-space, a species' verdict | revision routing first reads the pile against the axis's members: a missing peer or a partition of one member is horizontal and proceeds; a distinction that cross-cuts several members is vertical — the axis conflated two questions — and is surfaced, never minted. Then the blind coder recodes the presentations with the candidate withheld, the adjudicator admits or declines, the registry grows in place |
@@ -195,11 +196,39 @@ the committer alone writes. In order:
 The projections under `store/index/` show each leg's live state: `hooks`,
 `summaries` (each record's watch, or `unwatched` when no world-state latch
 can send its warrant back), `triggers`, `deferred`, `wiring`, `fires`,
-`competence`, `fusion`, `convergence`, `structural_zero`, `recall` (the
-should-have-fired stream: boot-lens probes and activation steers per
-record), `attacker` (attacker precision per angle, the landings the
-adjudicator upheld or overruled, and the should-have-been-caught-by
-stream — every count a floor), `lineage`, `matrix`.
+`competence` (applied, not-applicable, guard-failed and off-map counts per
+record over the window, and the ratio), `fusion`, `convergence`,
+`structural_zero`, `recall` (the should-have-fired stream: boot-lens probes
+and activation steers per record), `attacker` (attacker precision per
+angle, the landings the adjudicator upheld or overruled, and the
+should-have-been-caught-by stream — every count a floor), `lineage`,
+`matrix` (steers, fires and applied dispositions by cell, and in the
+`system-misses/none-catches` cell the rows nothing caught: a task failed in
+a closed attached pass that consulted no record and filed no observation
+from the row, keyed `session/task` — a floor, since the store cannot see a
+miss the world has not yet voted on). One more file sits beside them and is
+not a projection: `controls.json`, the blind coder's seeded-control
+telemetry, written by `hgi lens-battery` and regenerated by nothing.
+
+### Telemetry
+
+Every instrument reports a floor, never a rate. `hgi lens-battery` runs the
+three that are scored as traced Weave evaluations, each item walked in its
+own context, and writes what they find:
+
+| Instrument | Plants | Scores | Written to |
+|---|---|---|---|
+| the lens battery | two decoys and two genuine signals per close lens (L-0003, L-0004) | `decoy_rejection` (filed nothing for the plant) and `signal_caught`; `answer_variance` across the battery | `telemetry` on each close lens in `store/registry/lenses.json` |
+| the examiner control | per examiner-hosted lens (L-0005…L-0008), a draft carrying a fault of that lens's class and a plausible draft with none, attacked through the fan one angle at a time under a fixed evidence pack | the landing on the fault as `signal_caught`, the non-landing on the clean draft as `decoy_rejection` | `telemetry` on each examiner lens in the same register |
+| the coder control | an observation of a known work-shape, and one that fits no term | whether the blind coder returns the term, and whether it escapes with `other(<what>)` on the misfit | `store/index/controls.json` |
+
+The rest are projections: the detection matrix (with the true-miss floor),
+`competence` (with the not-applicable count), `attacker`, `recall` and
+`structural_zero` above. The committed demonstration store carries the
+battery and the controls at `design-stage` and no `controls.json`: on the
+stub every control passes by the stub's own keyword rules, which measures
+the mechanism and not a model, so the run that records telemetry is left to
+a traced one on a real endpoint.
 
 ## The world
 
@@ -358,5 +387,7 @@ and fold on the lineage DAG, the structural-zero audit and the edit rungs,
 deferral latches and propagation, genesis anchoring, and vocabulary growth;
 and the doctrine's disciplines over them: the noise filter, the examiner fan,
 attacker precision, the recall stream, the lens lifecycle, revision routing,
-the port miss stream, the key-space floor, and the refusal of a rung with
-no operator.
+the port miss stream, the key-space floor, the refusal of a rung with no
+operator, the true-miss floor, the precision slot, the second retirement
+key, anchor resolution, the late steer sweep, the antichain flag, and the
+seeded controls.

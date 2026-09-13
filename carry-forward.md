@@ -1,13 +1,16 @@
 # Carry-forward
 
-State of the build as of 2026-09-12, after the world run and the review
-pass, with the work left for the full implementation and the decisions
-taken along the way — each with why it may be right and why it may not.
+State of the build as of 2026-09-12, after the world run, the review
+pass and the instruments pass (the true-miss floor, the precision slot, the
+second retirement key, anchor resolution, the late steer sweep, the antichain
+flag and the seeded controls), with the work left for the full implementation
+and the decisions taken along the way — each with why it may be right and why
+it may not.
 
 ## Where it stands
 
 - Slices 0–3 of spec § 13 ship with their acceptance tests green
-  (`uv run pytest`, 237 tests). Slice 4 ships the dashboard, the analyst
+  (`uv run pytest`, 263 tests). Slice 4 ships the dashboard, the analyst
   mirror and the retirement leg; the rule tier and the grown floor do not
   exist because the roster is decisions only. Slice 6(e) — split and fold
   as executed operators — ships, with the other backward-pass legs that
@@ -41,6 +44,14 @@ taken along the way — each with why it may be right and why it may not.
   The new requests — `triage`, `ports`, the `lens`-bearing `attack` and
   `currency` — have been read back on the stub only; their reply shapes
   are not yet priced for `openai/gpt-oss-120b` (see item 18).
+- The instruments pass landed as decisions 53–59 below: the matrix's
+  true-miss cell counts rows, the precision slot signature is live, a record
+  never considered across a full window reaches the adjudicator, a
+  counterfactual's anchor must resolve, a late note is swept at the next
+  close, the antichain is flagged on the plan, and the examiner fan and the
+  blind coder have seeded-positive controls. Every one is proven on the stub;
+  none has been run on `store/` or read back on a real model (items 8, 18,
+  23, 24).
 - `experiments/baseline.toml` (the six genesis tasks, one 502) is saturated
   for gpt-oss-120b: 1.00 on every pass of both arms. Its three
   consolidations wrote one file, K-0001, three times (the id-minting bug,
@@ -141,11 +152,18 @@ taken along the way — each with why it may be right and why it may not.
    `weave.Evaluation` (`hgi lens-battery`); `telemetry_from` computes
    `decoy_rejection` and `answer_variance` and `populate_telemetry` writes
    them onto `registry/lenses.json`, off `design-stage`
-   (`tests/test_lens_battery.py`). Left for a run: with `HGI_WEAVE_PROJECT`
-   and the real model as the pass backend, confirm the `lens-battery-v1/*`
-   scorer series appear in Weave with a non-null run URI, and commit the
-   demonstration store's real-model telemetry — the committed
-   `store/registry/lenses.json` is deliberately left at `design-stage`.
+   (`tests/test_lens_battery.py`). The seeded-positive controls ship beside it
+   (decision 59): the examiner control scores each examiner lens's landing on
+   a planted fault of its class and its non-landing on a plausible draft, onto
+   the same register; the coder control scores the blind coder's term on a
+   known shape and its escape on a misfit, to `index/controls.json`. Left for
+   a run: with `HGI_WEAVE_PROJECT` and the real model as the backend, confirm
+   the `lens-battery-v1/*` scorer series appear in Weave with a non-null run
+   URI for all three evaluations, and commit the demonstration store's
+   real-model telemetry — the committed `store/registry/lenses.json` is
+   deliberately left at `design-stage` and no `controls.json` is committed,
+   because on the stub every control passes by the stub's own keyword rules
+   (verified end to end on a scratch copy of `store/`: 1.00 on every axis).
 9. **The demonstration store's seven articles are still unanchored.** The
    anchoring review exists and runs at every consolidation, and the stub
    anchors all seven from the demo's own ledgers (`tests/test_genesis.py`),
@@ -217,9 +235,11 @@ taken along the way — each with why it may be right and why it may not.
 
 18. **The new role requests are unpriced for the real model.** `triage`
     (the noise filter), `ports` (the port miss stream), the `lens`-bearing
-    `attack` (one angle per call) and the `lens`- and `finding`-bearing
-    `currency` requests parse on the stub and have not been read back through
-    `hgi roles try` on `openai/gpt-oss-120b`; `role-pricing` will not warn,
+    `attack` (one angle per call), the `lens`-, `finding`- and
+    `domain_entered`-bearing `currency` requests, the `precision` row on
+    `nominate` and the `co_applying` content on `dispose` parse on the stub
+    and have not been read back through `hgi roles try` on
+    `openai/gpt-oss-120b`; `role-pricing` will not warn,
     because the prompt files still list the model. A live run's first
     consolidation now costs four examiner calls per draft instead of one,
     plus one triage call per group at the bar.
@@ -236,15 +256,34 @@ taken along the way — each with why it may be right and why it may not.
     instance — a test author deriving expectations blind from committed
     artifacts — has no analogue in the loop yet. The blind coder is coded as
     `coding`, which is its own species.
-21. **The antichain is displayed as a list, not as a conflict.** Two
-    decisions co-applying to one task with no specificity order enter
-    context side by side (never tiebroken, which the doctrine requires), but
-    nothing marks them as a conflict for the pass or the human; the leaf
-    lattice that would give them regions is a split nomination only.
+21. ~~**The antichain is displayed as a list, not as a conflict.**~~ *Done
+    (this build; decision 58).* `boot.co_applying` reads the consulted records
+    whose hooks share every term with no lineage edge between them; the plan
+    prints them on one `co-applying:` line and the dispose request carries the
+    same reading. Still left: the leaf lattice that would give them regions is
+    a split nomination only, and a real pass's disposition notes have not been
+    read to see whether they say which applied where.
 22. **Yield per steer is not instrumented.** The matrix counts steers and
     the credit table attributes them; nothing reads how much each steer
     moved — the quantity the doctrine says to maximize, against steer count,
     which it says never to target.
+23. **The precision slot on a real model is unverified.** The stub's
+    disposition note names the pass's tasks after a fixed marker and the
+    stub consolidator reads them back as `not_this` entries; a real pass's
+    note is prose ("which rows it bore on, or why it did not") and a real
+    consolidator must turn it into a presentation exclusion — the prompt says
+    so, no reply has been read. And the stub's guard matches `not_this` by
+    substring over the prompts, so a task-name exclusion excludes nothing at
+    the stub's guard: on the stub the successor is proven admitted, not
+    proven quieter.
+24. **The true-miss join reads the row's call, or the task name in the
+    noticing when the row carries none.** A pass whose lens files an
+    observation anchored on a path alone and naming no task hides its failed
+    row from the cell — the count stays a floor, but one that a lens's
+    anchoring habit can lower. The late steer sweep re-reads every earlier
+    closed session's calls at every close: one trace-store query per earlier
+    session per close, which on a long run is a cost the channel's
+    best-effort clause hides rather than prices.
 ## Decisions taken, and their risk
 
 1. **Decision-only roster.** Beliefs and rules were dropped by instruction;
@@ -620,6 +659,96 @@ taken along the way — each with why it may be right and why it may not.
     ship the counts their fractions are computed from (itemized, never net).
     *Risk:* the slot words are a keyword table; a note that says "hook" about
     a payload indicts activation.
+
+53. **The true-miss cell counts rows, keyed `session/task`, and stays a
+    floor.** A task that failed in a closed attached pass that consulted no
+    record and filed no observation from the row is the event nothing caught:
+    no latch fired, no floor refused, no noticing was made. *Right:* the cell
+    was always written as a fixed empty list with a note calling it a "floor
+    of zero", which is the one reading a floor forbids — an observed zero
+    read as a measurement; now the store counts what it can see. *Wrong if*
+    "consulted nothing" is too strict a key: a pass that consulted a record
+    on another hook and still failed a row nothing bore on is also a miss
+    nothing caught, and the cell does not count it — the applied disposition
+    puts that pass in the top row even for the rows it did not touch.
+54. **Fired-but-not-applicable is its own column, and precision is a brief
+    row that nominates a `counterfactual-edit`**, at a bar of its own
+    (`precision.not_applicable_over_considered_above`, 0.5), from the
+    not-applicable dispositions' notes across independent passes. Two finer
+    diagnoses outrank it in the derivation: a bimodal record is fused (a
+    split, not an exclusion) and a record at its retirement door — never
+    applied over a full window — is the retirement leg's. *Right:* the first
+    slot signature of § 10.5 was a table row in the consolidator's prompt and
+    nothing in the brief; the successor keeps the hook and grows `not_this`,
+    which is the authoring register's own rule. *Wrong if* the bar is the
+    wrong quantity: a record considered twice and not applicable once is at
+    0.5 and nominated, and the independence bar on the notes' sessions is
+    the only damper; and the stub adds every presentation the notes name,
+    which on a real pass could grow `not_this` toward "every task".
+55. **Never considered across a full window is the second retirement key,
+    through the same currency request.** The record must have been accepted
+    before the window opened (its `committed_at` against the first session's
+    `started_at`), the window must be full, and the adjudicator sees the
+    window's domain evidence — the terms its passes presented, the fault
+    rate over its rows — against the record's `moot_when`; the stub keeps
+    the record unless that condition is met by keyword (a fault condition
+    with a zero fault rate, a budget condition with no budgeted presentation).
+    *Right:* § 10.5's lifecycle row named "domain no longer entered" and the
+    leg only read the ratio, which is `None` at zero considered; and never
+    fired is a count, so the killer-item check sits between the count and
+    the flip. *Wrong if* the stub's keyword reading of `moot_when` is taken
+    as evidence of anything: it is the stub's, and a real adjudicator handed
+    prose and a fault rate may retire a record whose domain would re-enter
+    next pass. The nomination's rung is still `counterfactual-edit` for want
+    of a `retire` rung (decision 34).
+56. **A counterfactual's anchor must resolve, and an unresolved one warns.**
+    The complement-law check resolves every id-shaped anchor through one
+    store method (`lookup`: a file record, an observation by name or uid, a
+    ledger line) that the anchoring review derives from too; a URI, a commit
+    and a path are not resolved. *Right:* an anchor that matched the pattern
+    and named nothing passed as anchored, which is priming wearing an anchor.
+    *Wrong if* warn is too soft: a draft citing an invented observation is
+    admitted with a warning nobody reads. Fail was not chosen because a
+    conftest draft cites `O-0001` before the test has filed it, and because
+    an anchor may name what a later admission holds; the demonstration store
+    shows no unresolved anchor (its fifteen warnings are all
+    `genesis-anchor`).
+57. **The late steer sweep files a note once, keyed on its call URI, and the
+    steer names its session.** At close, every earlier closed attached
+    session's calls are re-read and a note whose call no steer's
+    `source.anchor` carries is filed, stamped with the session it belongs to
+    and listed on the closing session's `steers_filed`. *Right:* a note left
+    after a close was lost for good, and the channel's whole point is
+    capture before the context that understood it is gone. *Wrong if* the
+    call URI is not a stable key across trace-store reads, or if re-reading
+    every earlier session each close is the cost item 24 names; the sweep
+    could be bounded to the review window.
+58. **The antichain is printed as one conflict line and travels on the
+    dispose request.** Records whose consultation hooks share every term
+    with no lineage edge between them (no supersedure, leaf or fold) are
+    read as co-applying with no specificity order; nothing ranks or drops
+    one. *Right:* § 16.17 — a join over nothing is displayed, never
+    tiebroken — and the pass is now told to dispose each on its own rows.
+    *Wrong if* "share every term" is too narrow a reading of co-application:
+    two hooks that overlap on the term that fired, and differ elsewhere, also
+    co-apply on that pass and are not flagged.
+59. **The seeded controls reuse the battery's scorers, evaluation and
+    writer, one item per context.** Per examiner lens, a signal draft
+    carrying a fault of that lens's class (one pass counted twice; a
+    transient-fault premise under a zero fault rate; a task id in the
+    payload; a watch on success) and a decoy draft with none, attacked
+    through `consolidate.attack` with the one angle named; for the coder, a
+    known-shape observation and a misfit. The stub passes both by the rules
+    it already had (`_attack`, `_coding`) — no special case was added — and
+    the examiner telemetry lands on the lens register while the coder's goes
+    to `index/controls.json`, a telemetry file beside the projections that
+    regeneration leaves alone. *Right:* a decoy-only battery cannot tell a
+    lens that never fires from one that discriminates, and the controls give
+    each angle a positive it must land on. *Wrong if* one plant per class is
+    read as a rate: it is one item, and a lens that lands on it proves it can
+    land, not that it does; and `controls.json` under `index/` bends the
+    projection law (regenerated, never hand-edited) for the sake of one file
+    a reader would look for there.
 
 ## Housekeeping
 
