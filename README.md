@@ -268,6 +268,29 @@ outcome, or whose error (or any tool error in its trace) is of the naive
 error's class, is a **naive-shape** failure: the lesson missed the way first
 contact misses it, decided by the task's own construction and no judge.
 
+### Quality
+
+Correctness saturates where a model passes a lesson at first contact, and
+the memory's value is then the cost, not the pass: a pass that knows a
+convention spends the knowing policy's calls, and its method carries; one
+that discovers it spends the discovery, and its method may fit the
+instance. Every curriculum task declares the knowing policy's calls
+(`Task.knowing`) and carries a **metamorphic twin** (`Task.twin`) — the
+same names, columns and routes over different data, from a second seed,
+with its own gold — and every row records its shell commands and model
+turns. Three scorers grade a solution's quality beside its correctness,
+each a success rate in `[0, 1]` like the rest:
+
+| Series | Grades | Evaluable on |
+|---|---|---|
+| `solution_economy` | the knowing policy's calls over the calls the pass spent on budgeted tools; zero on a failed row | a task with a knowing floor |
+| `turn_economy` | the same over model turns, the floor being one turn per knowing call and one to answer | a task with a knowing floor and a row that records turns |
+| `method_transfer` | the pass's last shell command replayed in the twin world: its last line of output names the twin's gold, or not | a passed row of a task with a twin whose pass issued a shell command |
+
+A method that transfers reads the convention; one that fits the instance —
+or a pass that read the file and computed in its head, leaving no
+replayable command — does not.
+
 The fault profile says how many leading HTTP calls of a faulted task fail,
 whether HTTP calls are budgeted, and whether shell output truncates. An
 experiment file carries the suite as `[suite]` (families, a seeded sample
@@ -307,6 +330,7 @@ hgi experiment models                                # the ids the endpoint serv
 | `experiments/world.toml` | `gpt-oss-120b` and `gpt-oss-20b` attached, `gpt-oss-120b` detached, the split roles; 52 tasks from five families, first two HTTP calls faulted | a world with conventions the model cannot already know: does the attached curve separate |
 | `experiments/transfer.toml` | `gpt-oss-120b` attached and detached, `gpt-oss-20b` attached; `genesis`, `conventions`, `api` and `transfer`, first two HTTP calls faulted | a convention held twice in different clothes: does a record admitted on one family score on the same convention re-dressed as another |
 | `experiments/stream.toml` | `gpt-oss-120b` attached and detached, `gpt-oss-20b` attached, on the `curriculum` pool; `gpt-oss-120b` attached and detached on `curriculum-strict`; ten batches of eight, consolidation every two, batches 1 and 2 revisited | the stream: first-sight performance on unseen tasks as the store grows, paired per batch and per lesson, with the same-shape recurrence per lesson; on the strict pool, whether the memory saves the discovery call |
+| `experiments/economy.toml` | `gpt-oss-120b` attached and detached on the `curriculum` pool, ten batches of eight, a different deal | the stream graded on quality: economy of calls and turns, and method transfer to the twin world, where correctness saturates |
 | `experiments/stream-probe.toml` | `gpt-oss-120b` attached and detached, two batches of five | a stream arm end to end on the endpoint |
 | `experiments/stream-smoke.toml` | stub, attached and detached, four batches of four | the stream runner end to end offline; the tests run it |
 
@@ -348,7 +372,10 @@ observations filed and what the consolidation after the pass admitted,
 declined, retired or dismissed; per lesson, the first-sight series as a
 grid of symbols, and the naive-shape failures before and after the first
 pass that had a record mentioning the lesson in context — the same-shape
-recurrence the memory exists to stop. Every count is a floor from one run.
+recurrence the memory exists to stop; and beside every pass rate the
+quality means, `economy / turns / transfer` (economy derived from the
+row's call counts and the task's floor, so it reads on runs scored before
+the series existed). Every count is a floor from one run.
 
 ### The baseline on `openai/gpt-oss-120b`
 

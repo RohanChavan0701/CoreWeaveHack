@@ -335,6 +335,21 @@ be right and why it may not.
     the applied dispositions of the record on rows of that lesson — is in
     the store (`rows[].applied`, keyed to the task) and not yet read by the
     log.
+30. **The economy run.** `experiments/economy.toml` — 120b attached and
+    detached on the plain pool under a different deal (seed 2) — is the
+    stream graded on quality (`solution_economy`, `turn_economy`,
+    `method_transfer`); it had not run when this was written, and no real
+    model has yet scored the three series (the stub's smoke scores them
+    zero and unevaluable on its failed rows). The two runs are additive:
+    the stream run's evolution log already shows `economy`, derived from
+    the counts, and only `turns` and `transfer` need the new envelope.
+31. **Quality beyond the shell lessons.** `method_transfer` replays a
+    shell command, so it grades the three shell lessons only; the API
+    lessons' method is the walk and transfers trivially, and `bom` has no
+    budget so no economy floor. A hidden-assert variant of `mbpp` (one
+    assert shown, two held out) with a lint or complexity column would be
+    the lesson-free family with a graded quality metric, for a mixed
+    stream; not built.
 29. **Public continual-learning suites.** SWE-Bench-CL, AgentMemoryBench,
     AgentCL and the procedural-memory-retrieval benchmark were surveyed
     (2026-09-13) as the scale-up path for the stream shape — repository
@@ -890,4 +905,33 @@ be right and why it may not.
     revisit. *Risk:* the revisit passes are closed on — observations filed,
     proposals drafted — so a second revisit reads a store the first one
     touched, and the lint's per-pass checks run on them like any pass.
+
+66. **Quality is graded by derived floors and a twin world, not by a
+    judge.** Economy divides the knowing policy's calls (declared on the
+    task; the budget is that plus the family's slack) by the calls spent,
+    turn economy the same over model turns, and method transfer replays
+    the pass's last shell command in a twin drawn from a second seed over
+    the same names and routes. *Right:* the hint's value shows where
+    correctness saturates — the probe passed five of seven lessons at
+    first contact — and none of it needs a rubric. *Wrong if* the floor is
+    gamed: a lucky one-call guess scores full economy, which is why
+    transfer stands beside it; and a solution computed in the model's head
+    after a `cat` scores zero transfer though it passed, which is the
+    scorer's reading (no replayable method) and not the model's.
+67. **A failed row's economy is zero, its transfer unevaluable.** Zero
+    because a failed pass has no solution to be economical about and the
+    series must not reward a cheap failure; unevaluable because a method
+    that produced the wrong answer has nothing to transfer. *Risk:* the two
+    conventions differ, so the two means over a batch are over different
+    denominators; the log prints both with `—` where nothing was
+    evaluable.
+68. **The twin shares structure and varies data; the structural draw is
+    separated from the data draw.** The generator's first seed fixes how
+    many files, pages and which route, the second the counts, items and
+    rows; the twin reseeds only the second. *Right:* a command replayed in
+    the twin meets the same names and shapes and only its arithmetic is
+    tested. *Risk:* separating the draws changed the pool since the probe
+    ran (the evolution log rebuilds an old arm's batches from recorded task
+    ids and says so); and six twins — the moved routes that answer `ok` —
+    carry no data to vary and are identical to their tasks.
 
