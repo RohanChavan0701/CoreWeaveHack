@@ -1,0 +1,81 @@
+# The incidents stream: the loop meets unseen diagnoses in progression. The pool is the nine tenant-incident bundles
+# worn four ways each — 36 tasks — dealt into twelve batches of three, balanced over the three decoy shapes the bundles
+# turn on (`decoy-dependency`, `decoy-saturation`, `decoy-state`); pass k meets batch k at first sight, closes on it,
+# and consolidates every two batches, so every batch is a validation set once and training afterwards. The detached arm
+# meets the same batches with no store, so the comparison is paired per batch and per lesson. Two batches are met again
+# after the stream, which measures retention against transfer. The clothes of one scenario are spread across the deal,
+# so a re-dressed bundle arrives after its source and a record that memorised `pool-debug` or `orders` or port `8080`
+# transfers to none of them while one that learned the convention transfers to all.
+#
+# The lesson of this world is the shape of the decoy: the loud reading is the wrong one. `upstream-outage-b` is the
+# pool class's built-in look-alike control — a timeout storm with a genuinely saturated pool whose saturation is a
+# consequence of provider latency — so a record admitted as "saturated pool ⇒ pool exhaustion" fires there and must be
+# set aside; that disposal is what splits the generic record from the convention.
+#
+# `solution_economy` here is the step count: the knowing floor is one call per cause reading, so the score is that
+# floor over the calls the pass actually spent — a pass that reads the two readings that settle it scores above one
+# that reads eight and happens to be right.
+#
+# The world faults nothing. The slack is one call, and a transient fault would eat the only spare probe, so the budget
+# must mean exactly one thing: one wrong turn, no more. The retry lesson belongs to `genesis`, not to this family.
+#
+# Ids are W&B Inference ids as listed on 2026-09-12; `hgi experiment models` lists today's.
+name = "incidents"
+description = "first-sight diagnosis of unseen incident bundles as the store grows, attached against detached, per decoy shape"
+weave_project = "hgi-experiments"
+
+[models.gpt-oss-120b]
+id = "openai/gpt-oss-120b"
+
+[models.gpt-oss-20b]
+id = "openai/gpt-oss-20b"
+
+[defaults]
+model = "gpt-oss-120b"
+passes_per_round = 2
+concurrency = 4
+
+[defaults.stream]
+families = ["incidents"]
+batch = 3
+batches = 12
+seed = 0
+revisit = [1, 2]
+
+[defaults.stream.faults]
+http_fault_fraction = 0.0
+
+[arms.120b-attached]
+mode = "attached"
+
+[arms.120b-detached]
+mode = "detached"
+description = "the ablation on the same batches; one run is the whole record"
+
+[arms.20b-attached]
+model = "gpt-oss-20b"
+description = "a weaker actor on the same stream, likelier to open the loud reading first"
+
+[arms.split-roles]
+model = "gpt-oss-20b"
+description = "the weak actor with the strong backward pass: does separation of powers let it learn from a stronger judge"
+[arms.split-roles.roles]
+consolidator = "gpt-oss-120b"
+examiner = "gpt-oss-120b"
+adjudicator = "gpt-oss-120b"
+coder = "gpt-oss-120b"
+
+# The strict pool: the same clothes budgeted at exactly the cause readings, so the one wrong turn costs a call the
+# budget does not hold. A pass that opens a decoy to rule it out is over budget; only a pass that already knows which
+# readings carry the cause — from the store, or from the model — stays in budget. The knowledge-base question directly.
+[arms.120b-strict]
+mode = "attached"
+description = "the strict pool: zero slack, only a pass that already knows which readings carry the cause stays in budget"
+[arms.120b-strict.stream]
+families = ["incidents-strict"]
+
+[arms.120b-strict-detached]
+mode = "detached"
+description = "the strict pool's ablation"
+[arms.120b-strict-detached.stream]
+families = ["incidents-strict"]

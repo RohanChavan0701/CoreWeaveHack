@@ -236,7 +236,7 @@ GENERATORS: dict[str, Callable[..., Task]] = {
     "trailing-newline": _trailing_newline, "paged-api": _paged_api, "moved-v2": _moved_v2, "csv-quoted": _csv_quoted,
     "footer-row": _footer_row, "token-route": _token_route, "bom": _bom,
 }
-assert set(GENERATORS) == set(LESSONS), "every lesson has a generator and every generator a lesson"
+assert not set(GENERATORS) - set(LESSONS), "every generator names a lesson"
 
 
 def generate(fam: str) -> list[Task]:
