@@ -569,6 +569,22 @@ be right and why it may not.
     object) so the conversation continues and the wasted turn still costs
     turn economy; and split the symptom so the two causes read apart.
 
+**Addressed (2026-09-13).** The gaps items 32–42 name are now built and on
+`main`, each as a decision below with its risk: parse floors (item 32
+gates 1–2, item 41) → decision 78; the hook seeded from the task's terms
+(item 39) → 79; folding restatements (item 33) → 80; the close eliciting
+the world's fact (item 40) → 81; the malformed tool call (item 42, decision
+76) → 82; the runner pinned and its draws serialized (items 34–36) → 83. The
+recurrence graded for the adjudicator → 84 and refused observations kept in
+the open pile → 85 are the further levers built on top. The shape-radius
+sweep (decision 77) found τ\*=1.0 — the coder's shapes already conflate
+lessons, so widening the grouping radius is not the lever and item 40's
+coding fix is; no `group_observations` change was made. The suite is green
+at 487. What remains untested is a rerun on the live endpoint — whether
+drafts now survive to adjudication, the seeded hook fires, and the fold
+collapses the restatements — and the coder shaping on the convention rather
+than the tool, the deeper reading decision 77 exposes.
+
 ## Decisions taken, and their risk
 
 1. **Decision-only roster.** Beliefs and rules were dropped by instruction;
@@ -1280,3 +1296,111 @@ be right and why it may not.
     would only change if fixing the coding first made the shapes
     lesson-specific. The number seeds a tunable registry bar default that a
     separate change wires into `group_observations`.
+78. **The two parse floors that refused every draft before adjudication are
+    relaxed** (commit `ceb51b6`, addressing item 32 gates 1–2 and item 41).
+    `Sketch.not_this` defaults to `[]` and the complement law warns rather
+    than fails on a consultation latch with no exclusions; an edit rung
+    (`hook-edit`, `counterfactual-edit`) that names no record on an empty
+    store is displaced to `new-decision` (keeping `rung_why`) instead of
+    refused, while one that names none when records exist is still refused.
+    *Right:* seven of nine 120b drafts and six more in the economy run died
+    here before any verdict; a floor refusal only kept the lesson out of the
+    store where it could be corrected, and the precision leg grows `not_this`
+    from `not_applicable` notes after a record fires wrongly. *Risk:* a
+    record with no exclusion fires on every presentation its terms match; the
+    retirement ratio bounds one that never applies, so the cost is a window,
+    not the store. The repair-turn alternative (re-ask the model with the
+    refusal, item 41) was left unbuilt — the floor relaxation is item 32's
+    prescribed cheaper first move.
+79. **A record's consultation hook is seeded from the anchor tasks' own
+    declared work-shape terms** (commit `f05eb7b`, addressing item 39). When
+    a draft is assembled from a group of observations, the union of the
+    tasks' `shapes` (resolved through each observation's anchor call to the
+    row that names its task) joins the terms the drafter chose. *Right:* the
+    economy run's one admitted record never fired because its hook carried
+    only the blind coder's coding of how the failure presented, which the
+    next task's classification did not share; the task's own term (`http-tool`)
+    is on the anchor and matches the boot index. *Risk:* the seed broadens
+    the hook toward whatever the task declares, so a record can be consulted
+    on a task that shares the tool but not the fault — the same generic-shape
+    problem decision 77 measures, here on the hook rather than the group; the
+    not-this exclusions and retirement are what bound it.
+80. **Near-verbatim restatements that never co-applied are folded** (commit
+    `54635f6`, addressing item 33). `index.restatements` filters the
+    shared-hook pairs to those with no lineage relation (connected components
+    over the DAG's supersedure/split/fold edges) whose decision payloads
+    overlap at or above a token-Jaccard threshold (0.6), and the
+    consolidation brief surfaces them as convergence-shaped rows so each is
+    drafted as a fold and adjudicated behind the floor. *Right:* the strict
+    arm admitted D-0004/5/6 restating D-0001/D-0002, and every boot carried
+    all of them; nothing nominated two lineage-unrelated records with the
+    same latch and alike payload. *Risk:* the alikeness is a token-overlap
+    heuristic that only *proposes* the merge — a threshold too low folds
+    distinct records, too high misses restatements; 0.6 separated the run's
+    cases but is a tunable parameter, and the floor and adjudicator are the
+    real gate.
+81. **The close elicits the world's fact, not the score it failed** (commit
+    `3131406`, addressing item 40). The observation lens's brief drops the
+    row's scores and every series-named field, and the pass is asked to name
+    the convention the attempt turned on (a footer row, a missing newline, a
+    quoted comma), never the check it scored against. *Right:* in the economy
+    run none of forty observations named the convention in words the blind
+    coder could group on, so two silent lessons stayed 24/24 naive; grouping
+    starved before any bar. *Wrong if* the coder shapes on the tool anyway —
+    decision 77 shows the shapes are generic even with better `noticed` text,
+    so this fixes the observation's words but not yet the coder's vocabulary;
+    making the coder shape on the convention is the unbuilt next lever.
+82. **A malformed tool call no longer poisons the conversation, and its
+    symptom reads apart from a genuine endpoint fault** (commit `c22f147`,
+    addressing item 42 and decision 76). A tool call whose arguments are not
+    valid JSON is replayed into history wrapped as a valid object
+    (`{"_raw": …}`) so the endpoint accepts the next request and the model
+    reads the bad-call result and retries; the wasted turn still costs turn
+    economy. `error:model-call` splits into `error:endpoint` and
+    `error:malformed-tool-call`. *Right:* one row of 96 was lost outright
+    because the raw string made the endpoint refuse the next request, and the
+    symptom conflated the model's fault with the endpoint's. *Risk:* the
+    malformed flag is sticky for the row, so a later endpoint fault after a
+    malformed call reads as `malformed-tool-call` — a retrospective grouping
+    choice, defensible since the poisoning mode should no longer recur.
+83. **The experiment runner is pinned and its detached draws serialized**
+    (commits `0c3e659`, `941a6ef`, `f815546`, addressing items 35, 36, 34).
+    The evolution writer imports eagerly with the runner and `arm.json`
+    records the tree's commit; detached passes run serially by default
+    (`ArmSpec.serial_detached = True`), with the concurrent thread-pool path
+    behind the flag and the Weave client re-entered per worker thread when it
+    is used. *Right:* quality commits moved the code under a running arm and
+    changed a log; five concurrent arms drove the endpoint past its
+    concurrency ceiling into 429s on the detached rows; the detached threads
+    lost their Weave traces. *Risk:* serial detached draws are slower — a run
+    that had headroom under the ceiling now pays wall-clock it need not; the
+    flag restores concurrency, and Fix 3's `rejoin` is moot under the serial
+    default (no worker threads spawn).
+84. **The recurrence count is graded for the adjudicator** (commit `bd5df03`).
+    `recurrence_reading` bands the distinct-session count N against the bar
+    (below the floor / modest small-N / strong at ≥ 2×bar, mirroring the
+    vocabulary nominator's small-N reading) and enters the adjudicator's
+    request as context beside the draft, attack and oracle. *Right:* above
+    the floor the count was discarded, so N=2 and N=10 read alike; a stronger
+    recurrence is corroboration that a pattern is a real world-fact and bears
+    on whether a premise refutation holds and on defer-versus-escalate.
+    *Risk:* it is adjudicator-facing context only — the floor and the
+    premise-kill logic are byte-for-byte unchanged, so N cannot mechanically
+    admit a draft; a model that over-weights it could lean toward admitting a
+    thinly-founded draft, which the premise checks and the floor still catch.
+    Post-elegant-faraday a soft decline is already overridden to admit, so
+    the count's remaining room is the adjudicator's reasoning, not a verdict
+    override; whether N should ever soften a premise kill was left as the
+    owner's call (it does not today).
+85. **A refused draft's observations stay in the open pile** (commit
+    `5db9358`, a regression lock, addressing the owner's requirement on
+    item 39). Only `store.admit` promotes an observation; decline/drop, a
+    floor refusal and escalate call only `drop_draft`, which touches no
+    observation, and a deferral's claim on a live draft's evidence is the
+    intended exception. *Right:* a lesson refused at N=2 must be able to
+    regroup with a third instance at N=3 rather than be discarded; the test
+    proves a premise-killed decline leaves its two observations open and they
+    regroup at N=3. *Risk:* the open observations re-nominate the same lesson
+    every pass until it is admitted, deferred or its observations retire —
+    churn that decision 84's grading and the retirement ratio, not a
+    suppression, are meant to resolve.
