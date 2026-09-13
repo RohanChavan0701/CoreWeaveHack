@@ -24,10 +24,12 @@ def test_a_deferral_keyed_on_the_oracle_fires_at_evaluate_and_is_readjudicated(s
     k1 = _consolidate.consolidate(store)
     assert k1.admitted == [] and len(k1.deferred) == 1 and store.queue() == []
     (p,) = store.drafts()
-    assert p.deferral and p.deferral.ledger_entry == "H-0001" and p.deferral.until.key_space == "world-state"
+    attack = next(e for e in store.all("hypothesis") if e.species == "attack")
+    assert p.deferral and p.deferral.ledger_entry == attack.id and p.deferral.until.key_space == "world-state"
     assert p.deferral.until.edge.predicate.scorer == "error_cause_present" and p.deferral.until.consumer == _latches.BACKWARD_PASS
     assert k1.nominations[0].outcome.startswith("deferred; re-queued with its condition as a latch: error_cause_present >= 0.0 over 2 run(s)")
-    assert store.all("hypothesis")[0].verdict == "pending" or store.all("hypothesis")[0].outcome.startswith("deferred")
+    first_attack = next(e for e in store.all("hypothesis") if e.species == "attack")
+    assert first_attack.verdict == "pending" or first_attack.outcome.startswith("deferred")
     trig = _index.triggers(store)
     assert [t["record"] for t in trig] == [p.uid] and _index.deferred(store)[0]["draft"] == p.uid
     _index.regenerate(store)

@@ -722,6 +722,8 @@ class Consolidation(Strict):
     """Vocabulary terms minted in this pass, as ``<vocabulary>/<term>``."""
     expired: list[str] = Field(default_factory=list)
     """Pass proposals dropped unadopted at the bar ``proposal_ttl_consolidations``."""
+    dismissed: list[str] = Field(default_factory=list)
+    """Observations the noise filter dismissed as irreducible, each pointing at its reality entry (§ 10.2)."""
 
 
 # --- kind table ---------------------------------------------------------------

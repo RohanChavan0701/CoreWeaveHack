@@ -23,7 +23,8 @@ def test_articles_earn_anchors_from_the_history_the_loop_wrote(store):
     assert record.admitted == ["D-0001"]
     anchored = {a.id: a.warrant.anchors for a in store.articles() if a.warrant.anchors}
     assert set(anchored) == set(record.anchored) and {"C-0001", "C-0003", "C-0004", "C-0005", "C-0006", "C-0007"} <= set(anchored)
-    assert anchored["C-0003"] == ["O-0001"] and anchored["C-0001"] == ["H-0001"] and anchored["C-0006"] == ["D-0001"]
+    attack = next(e for e in store.all("hypothesis") if e.species == "attack")
+    assert anchored["C-0003"] == ["O-0001"] and anchored["C-0001"] == [attack.id] and anchored["C-0006"] == ["D-0001"]
     assert all(a.warrant.evidence == "genesis" for a in store.articles()), "an anchor is earned; the evidence stays genesis"
     for n in (n for n in record.nominations if n.rung == "article"):
         entry = next(e for e in store.all("hypothesis") if e.id == n.ledger_entry) if n.ledger_entry else None

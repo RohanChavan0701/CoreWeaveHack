@@ -303,6 +303,20 @@ def _exemplifies(req):
     return {"verdict": "moot", "why": "the anchor names nothing"}
 
 
+IRREDUCIBLE = ("model call failed", "endpoint ", "turn limit", "hidden test raised", "no scripted policy", "final reply was not json")
+"""What the stub adjudicator reads as a failure no record could have prevented: the harness or the model's own turn failing, not the world's convention missed."""
+
+
+@handles("triage")
+def _triage(req):
+    texts = [str(o.get("noticed", "")).lower() for o in req.get("observations", [])]
+    texts += [str((r.get("error") or {}).get("message", "")).lower() + " " + str((r.get("error") or {}).get("cause", "")).lower() for r in req.get("rows", [])]
+    texts = [t for t in texts if t.strip()]
+    if texts and all(any(m in t for m in IRREDUCIBLE) for t in texts):
+        return {"verdict": "irreducible", "why": "every row failed in the harness or the model's own turn; no duty a record carries reaches it"}
+    return {"verdict": "reducible", "why": "the rows show a convention of the world missed, which a record could carry"}
+
+
 # --- the examiner ---------------------------------------------------------------------------
 
 @handles("attack")

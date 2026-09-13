@@ -232,6 +232,83 @@ def proposals(store: Store) -> list[dict[str, Any]]:
              "evidence": list(d.evidence), "supersedes": list(d.supersedes)} for d in store.drafts()]
 
 
+# --- the noise filter -------------------------------------------------------------------------
+
+TRIAGE = route_table("triage", "reality-verdict", {"reducible": "route", "irreducible": "dismiss", "pending": "route", "other": "route"})
+"""What the noise filter does with the adjudicator's reality verdict on a recurrence: an irreducible group is dismissed
+before any slot can update on it; a reducible one — and a verdict the adjudicator could not give — goes on to nomination,
+where the four-role protocol judges it again."""
+
+IRREDUCIBLE_ROUTE = "detection"
+"""Where an irreducible recurrence's lesson goes: never to authoring — the record tier — but to the detection side, which
+here is the disclosure the reality entry itself carries; a scorer or a fault profile that keeps producing it is the oracle's to fix."""
+
+
+def group_evidence(store: Store, group: dict[str, Any]) -> dict[str, Any]:
+    """The oracle's evidence on a group: the rows its observations anchor — error, cause, tool errors — read off the sessions, never the noticing's narrative."""
+    names = [o["name"] if isinstance(o, dict) else o for o in group.get("observations", [])]
+    obs = [store.observation(n) for n in names]
+    calls = {o.anchor.call for o in obs if o is not None and o.anchor.call}
+    rows = [{"session": s.id, "task": row.get("task"), "error": row.get("error"), "tool_errors": row.get("tool_errors", []), "call": row.get("call")}
+            for s in store.all("session") if s.attached and s.evaluation  # type: ignore[attr-defined]
+            for row in s.evaluation.rows if row.get("call") in calls]  # type: ignore[attr-defined]
+    return {"rows": rows, "anchors": sorted(calls), "observations": [{"name": o.name, "session": o.session, "noticed": o.noticed, "anchor": o.anchor.model_dump(exclude_none=True)}
+                                                                    for o in obs if o is not None]}
+
+
+def triage(store: Store, record: Consolidation, brief: dict[str, Any]) -> list[dict[str, Any]]:
+    """Noise-filter before updating process (§ 10.2, I11): every recurrence at the bar is classified before it can nominate.
+
+    The adjudicator, in its own context, reads the group's observations and the rows they anchor and says whether the
+    failure was **reducible** — a duty the loop missed, which the ladder may route — or **irreducible** — nothing any
+    record could have prevented: the endpoint failed the turn, the turn limit fell, a hidden test raised. An
+    irreducible group is dismissed with a pointer to its reality entry and leaves the brief, so no slot updates on it;
+    its recurrence tunes detection, never authoring. The verdict is the adjudicator's, never the consolidator's, and the
+    entry is the reality species: the observations' passes proposed the lesson, the oracle's rows contradict or bear it.
+    """
+    bar = store.registry.bars["decision"]["independent_observations"]
+    rows = []
+    kept = []
+    for group in brief.get("groups", []):
+        sessions = group.get("sessions") or sorted({o.get("session") for o in group.get("observations", []) if isinstance(o, dict)})
+        if len(sessions) < bar:
+            kept.append(group)
+            continue
+        evidence = group_evidence(store, group)
+        c = _model.complete("adjudicator", roles.request("triage", shape=group.get("shape"), observations=evidence["observations"], rows=evidence["rows"],
+                                                         vocabulary=store.registry.terms("reality-verdict")), session=record.id)
+        out = c.json() if isinstance(c.json(), dict) else {}
+        v = str(out.get("verdict") or "pending")
+        try:
+            store.registry.check("reality-verdict", v)
+        except ValueError:
+            v = f"other({v[:60]})"
+        act = store.registry.route("reality-verdict", v, TRIAGE)
+        names = [o["name"] for o in evidence["observations"]]
+        entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="reality", subject="group/" + "+".join(group.get("shape") or ["uncoded"]),
+                            claim=f"the recurrence {group.get('shape')} across {sessions} is a duty the loop missed",
+                            proposer=RoleCall(role="pass", model_id=None, call=None),
+                            contradiction={"source": {"role": "oracle", "model_id": None, "call": evidence["anchors"][0] if evidence["anchors"] else None},
+                                           "coding": {"shape": group.get("shape"), "observations": names, "sessions": sessions, "after_pass": record.after_pass, "route": act}},
+                            verdict=v, adjudicator=RoleCall(role="adjudicator", model_id=c.model_id, call=c.call),
+                            outcome=(out.get("why") or "") + (f"; dismissed {', '.join(names)}: routed to {IRREDUCIBLE_ROUTE}" if act == "dismiss" else "; routed to nomination"))
+        store.append(entry)
+        rows.append({"shape": group.get("shape"), "observations": names, "sessions": sessions, "verdict": v, "ledger_entry": entry.id, "act": act})
+        if act == "dismiss":
+            for name in names:
+                o = store.observation(name)
+                if o is not None and o.disposition.state == "open":
+                    o.disposition.state = "dismissed"
+                    o.disposition.pointer = entry.id
+                    o.disposition.at = now()
+                    store.write(o)
+            record.dismissed += names
+        else:
+            kept.append(group)
+    brief["groups"] = kept
+    return rows
+
+
 # --- the four roles ------------------------------------------------------------------------
 
 def nominate_content(store: Store, brief: dict[str, Any]) -> dict[str, Any]:
@@ -640,6 +717,7 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
     record = Consolidation(id=store.mint("consolidation"), started_at=now(), after_pass=max((s.pass_ for s in sessions), default=last),
                            sessions_read=[s.id for s in sessions], analyst_report=analyst_report)
     brief = consolidation_brief(store, record, sessions, analyst_report)
+    brief["triage"] = triage(store, record, brief)
     record.brief = {k: v for k, v in brief.items() if k != "groups"} | {"groups": [{k: v for k, v in g.items() if k != "observations"} | {"observations": [o["name"] if isinstance(o, dict) else o for o in g.get("observations", [])]} for g in brief["groups"]]}
 
     with tracing.attributes(session=record.id, role="consolidator"):
@@ -680,6 +758,7 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
 
 def report(record: Consolidation, steers: list[Steer]) -> str:
     lines = [f"== {record.id} after pass {record.after_pass} — read {', '.join(record.sessions_read) or 'nothing'} ==",
+             "triage: " + ("; ".join(f"{t['shape']} {t['verdict']} → {t['ledger_entry']}" for t in record.brief.get("triage", [])) or "no group at the bar"),
              "groups: " + ("; ".join(f"{g['shape']} ← {', '.join(g['observations'])}" for g in record.brief.get("groups", [])) or "none")]
     for n in record.nominations:
         lines.append(f"nominated {n.rung} on {n.subject} ({', '.join(n.evidence)})" + (f" adopting {n.adopts}" if n.adopts else "") + f" → {n.ledger_entry}: {n.outcome}")
@@ -687,7 +766,8 @@ def report(record: Consolidation, steers: list[Steer]) -> str:
     lines.append(f"fires discharged: {', '.join(record.fires_discharged) or 'none'}; admitted: {', '.join(record.admitted) or 'none'}; "
                  f"flipped: {', '.join(record.flipped) or 'none'}; deferred: {', '.join(record.deferred) or 'none'}; anchored: {', '.join(record.anchored) or 'none'}; "
                  f"minted: {', '.join(record.minted) or 'none'}"
-                 + (f"; proposals expired: {', '.join(record.expired)}" if record.expired else ""))
+                 + (f"; proposals expired: {', '.join(record.expired)}" if record.expired else "")
+                 + (f"; dismissed as irreducible: {', '.join(record.dismissed)}" if record.dismissed else ""))
     if record.analyst_report:
         lines.append(f"analyst report: {record.analyst_report}")
     return "\n".join(lines)

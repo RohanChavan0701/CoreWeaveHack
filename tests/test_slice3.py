@@ -46,7 +46,8 @@ def test_two_independent_observations_promote_to_an_abstracted_decision(store):
     assert record.admitted == ["D-0001"]
     d = store.read("decision", "D-0001")
     assert d.status == "accepted" and "sum_numbers" not in d.decision and d.decision.startswith("Errors that wrap")
-    assert d.admission.ledger_entry == "H-0001" and d.admission.adjudicator.role == "adjudicator"
+    attack = next(e for e in store.all("hypothesis") if e.species == "attack")
+    assert d.admission.ledger_entry == attack.id and d.admission.adjudicator.role == "adjudicator"
     promoted = {o.name: o for o in store.observations(state=None)}
     assert all(promoted[n].disposition.state == "promoted" and promoted[n].disposition.pointer == "D-0001" for n in (o1.name, o2.name))
     assert all(o.shape for o in promoted.values()), "the consolidation pass filled the shapes, not the noticing session"
@@ -72,7 +73,7 @@ def test_a_killed_premise_declines_and_drops_the_draft(store):
     _observe(store, s1, NOT_RETRIED), _observe(store, s2, NOT_RETRIED)
     record = _consolidate.consolidate(store)
     assert record.admitted == [] and store.drafts() == [] and store.queue() == []
-    entry = store.all("hypothesis")[0]
+    entry = next(e for e in store.all("hypothesis") if e.species == "attack")
     assert entry.verdict == "premise-killed" and entry.outcome == "declined; draft dropped"
     assert any(c.landed and c.target == "premise:p1" for c in entry.contradiction.attack.claims)
     assert all(o.disposition.state == "open" for o in store.observations(state=None))
