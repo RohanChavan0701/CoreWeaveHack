@@ -67,11 +67,12 @@ def sessions_since_last(store: Store) -> tuple[list[Session], int]:
 def group_observations(store: Store, record: Consolidation) -> list[dict[str, Any]]:
     """Blind coding fills each open observation's ``shape``; equal shapes group, with the independence qualifier applied later.
 
-    An observation a draft in the pre-admission tier already rests on is
-    claimed until that draft is disposed — a deferred draft is not nominated
-    twice from the same instances.
+    An observation a deferred draft already rests on is claimed until that
+    draft is disposed — a deferred draft is not nominated twice from the same
+    instances. A pass proposal is left unclaimed: its instances still group,
+    which is how a nomination comes to adopt it.
     """
-    claimed = {e for p in store.drafts() for e in p.evidence}
+    claimed = {e for p in store.drafts() if p.deferral for e in p.evidence}
     open_obs = [o for o in store.observations("open") if o.name not in claimed and o.uid not in claimed]
     if not open_obs:
         return []
@@ -136,9 +137,17 @@ def build_brief(store: Store, record: Consolidation, sessions: list[Session]) ->
         "accepted": [{"id": d.id, "decision": d.decision, "terms": d.consultation_terms}
                      | ({"body": d.body().model_dump(by_alias=True, mode="json")} if d.id in named else {})
                      for d in store.decisions("accepted")],
+        "proposals": proposals(store),
         "steers": [t.id for t in store.all("steer")],
         "fires_owed": [f for f in _index.undischarged_fires(store) if f["disposer"] == BACKWARD_PASS],
     }
+
+
+def proposals(store: Store) -> list[dict[str, Any]]:
+    """The pre-admission tier as the consolidator sees it: every open draft, the pass's own included, by uid."""
+    return [{"uid": d.uid, "name": d.name, "proposed_by": d.proposed_by, "drafted_at": d.drafted_at.isoformat(), "rung": d.rung,
+             "decision": d.body.decision, "terms": d.consultation_terms if hasattr(d, "consultation_terms") else d.body.consultation_terms,
+             "evidence": list(d.evidence), "supersedes": list(d.supersedes)} for d in store.drafts()]
 
 
 # --- the four roles ------------------------------------------------------------------------
@@ -336,6 +345,30 @@ def draft_from(store: Store, record: Consolidation, raw: dict[str, Any]) -> Draf
                                   "split_from": raw.get("split_from") or None, "folded_from": list(raw.get("folded_from") or [])})
 
 
+def adoptable(store: Store, raw: dict[str, Any]) -> Draft | None:
+    """The open draft a nomination adopts, when it names one that exists; a name that matches nothing is not an adoption."""
+    uid = raw.get("adopts")
+    if not isinstance(uid, str) or not uid:
+        return None
+    return next((d for d in store.drafts() if d.uid == uid), None)
+
+
+def expire_proposals(store: Store, record: Consolidation) -> list[str]:
+    """A pass proposal no consolidation adopted is dropped once ``proposal_ttl_consolidations`` consolidations have run since it was drafted."""
+    ttl = store.registry.bars.get("proposal_ttl_consolidations")
+    if ttl is None:
+        return []
+    started = [k.started_at for k in store.all("consolidation")] + [record.started_at]  # type: ignore[attr-defined]
+    expired = []
+    for d in store.drafts():
+        if not d.proposed_by.startswith("S-"):
+            continue  # a deferred draft of the backward pass is kept by its own condition
+        if sum(1 for at in started if at > d.drafted_at) >= ttl:
+            store.drop_draft(d.uid)
+            expired.append(d.uid)
+    return expired
+
+
 def nomination_from(store: Store, raw: dict[str, Any]) -> Nomination:
     """The nomination as the consolidator stated it; a rung outside the ladder is kept as an escape so the refusal is recorded, not lost."""
     rung = str(raw.get("rung") or "")
@@ -465,17 +498,23 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
     with tracing.attributes(session=record.id, role="consolidator"):
         for raw in nominate(store, record, brief):
             nomination = nomination_from(store, raw)
-            try:
-                draft = draft_from(store, record, raw)
-            except ValueError as e:
-                nomination.outcome = f"draft refused at parse: {roles.refusal(e)}"
-                record.nominations.append(nomination)
-                continue
-            store.write_draft(draft)
+            adopted = adoptable(store, raw)
+            if adopted is not None:
+                nomination.adopts = adopted.uid
+                draft = adopted
+            else:
+                try:
+                    draft = draft_from(store, record, raw)
+                except ValueError as e:
+                    nomination.outcome = f"draft refused at parse: {roles.refusal(e)}"
+                    record.nominations.append(nomination)
+                    continue
+                store.write_draft(draft)
             nomination.draft = draft.uid
             adjudicate(store, record, nomination, draft, brief)
             record.nominations.append(nomination)
     discharge_fires(store, record, brief)
+    record.expired = expire_proposals(store, record)
     steers = credit(store, record, brief, sessions)
     record.nominations += _reviews.retirement(store, record)
     record.nominations += _reviews.genesis_anchors(store, record)
@@ -491,11 +530,12 @@ def report(record: Consolidation, steers: list[Steer]) -> str:
     lines = [f"== {record.id} after pass {record.after_pass} — read {', '.join(record.sessions_read) or 'nothing'} ==",
              "groups: " + ("; ".join(f"{g['shape']} ← {', '.join(g['observations'])}" for g in record.brief.get("groups", [])) or "none")]
     for n in record.nominations:
-        lines.append(f"nominated {n.rung} on {n.subject} ({', '.join(n.evidence)}) → {n.ledger_entry}: {n.outcome}")
+        lines.append(f"nominated {n.rung} on {n.subject} ({', '.join(n.evidence)})" + (f" adopting {n.adopts}" if n.adopts else "") + f" → {n.ledger_entry}: {n.outcome}")
     lines.append(f"steers: {', '.join(f'{t.id} {t.indicts.record if t.indicts else ''} [{t.matrix_cell}]' for t in steers) or 'none'}")
     lines.append(f"fires discharged: {', '.join(record.fires_discharged) or 'none'}; admitted: {', '.join(record.admitted) or 'none'}; "
                  f"flipped: {', '.join(record.flipped) or 'none'}; deferred: {', '.join(record.deferred) or 'none'}; anchored: {', '.join(record.anchored) or 'none'}; "
-                 f"minted: {', '.join(record.minted) or 'none'}")
+                 f"minted: {', '.join(record.minted) or 'none'}"
+                 + (f"; proposals expired: {', '.join(record.expired)}" if record.expired else ""))
     if record.analyst_report:
         lines.append(f"analyst report: {record.analyst_report}")
     return "\n".join(lines)

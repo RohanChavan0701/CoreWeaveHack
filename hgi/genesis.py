@@ -145,6 +145,7 @@ BARS = {
     "vocabulary": {"independent_escapes": 2, "independence": "escapes from distinct sessions; two from one pass are one datum"},
     "consolidation_every_passes": 2,
     "genesis_anchor_deadline_consolidations": 3,
+    "proposal_ttl_consolidations": 2,
 }
 
 CONSTITUTION_CAP = {"max_articles": 7, "max_bytes": 4096}

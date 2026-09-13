@@ -693,6 +693,8 @@ class Nomination(Strict):
     evidence: list[str]
     draft: str | None = None
     """The draft uid, when the nomination produced one."""
+    adopts: str | None = None
+    """The uid of a pass proposal the nomination adopted as its draft, instead of sketching one."""
     ledger_entry: str | None = None
     outcome: str | None = None
 
@@ -718,6 +720,8 @@ class Consolidation(Strict):
     """Genesis articles that earned an anchor in this pass."""
     minted: list[str] = Field(default_factory=list)
     """Vocabulary terms minted in this pass, as ``<vocabulary>/<term>``."""
+    expired: list[str] = Field(default_factory=list)
+    """Pass proposals dropped unadopted at the bar ``proposal_ttl_consolidations``."""
 
 
 # --- kind table ---------------------------------------------------------------

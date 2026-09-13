@@ -178,9 +178,9 @@ LESSONS: dict[str, dict[str, Any]] = {
 
 def lesson_key(texts: list[str]) -> str | None:
     joined = " ".join(texts).lower()
-    if "named no cause" in joined:
+    if "named no cause" in joined or "carry the underlying cause" in joined:
         return "cause"
-    if "not retried" in joined:
+    if "not retried" in joined or "retried once" in joined:
         return "retry"
     if "budget" in joined:
         return "batch"
@@ -256,12 +256,14 @@ def _nominate(req):
         terms = [t for t in group["shape"] if not t.startswith("other(")] or ["error-wrapping"]
         names = [o["name"] for o in obs]
         supersedes = [d["id"] for d in accepted if key == "retry" and "cause" in d["decision"].lower()]
+        proposal = next((p for p in brief.get("proposals", []) if lesson_key([p["decision"]]) == key and set(p["evidence"]) & set(names)), None)
         nominations.append({
             "rung": "new-decision",
             "rung_why": ("payload indicted: the superseded record was recalled and applied and the oracle still regressed on task_pass_rate; a re-derived payload supersedes it"
                          if supersedes else "no existing record's counterfactual, hook or register absorbs this fork; the fork is undecided"),
             "subject": key, "evidence": names, "supersedes": supersedes, "split_from": None, "folded_from": [],
-            "sketch": sketch(key, terms, names),
+            "adopts": proposal["uid"] if proposal else None,
+            "sketch": None if proposal else sketch(key, terms, names),
         })
     return {"nominations": nominations}
 

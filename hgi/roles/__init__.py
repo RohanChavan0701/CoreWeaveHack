@@ -50,6 +50,7 @@ REPLIES: dict[str, Any] = {
                                   "edit": {"terms": ["<for hook-edit: the registered work-shape terms the successor's consultation hook keys on>"],
                                            "not_this": ["<for hook-edit or counterfactual-edit: the successor's exclusions>"],
                                            "counterfactual": "<for counterfactual-edit: the successor's counterfactual, anchored; else null>"},
+                                  "adopts": "<the uid of a proposal from the brief's `proposals` whose draft this nomination adopts as its own, else null>",
                                   "sketch": SKETCH_REPLY}]},
     "attack": {"claims": [{"target": "<premise:<id> | payload:<aspect> | activation | warrant:independence>", "refutation": "<what reading of the evidence would show it false>",
                            "reading_taken": "<true if you took that reading>", "landed": "<true if the reading showed it false>", "evidence": ["<what you read>"]}]},
