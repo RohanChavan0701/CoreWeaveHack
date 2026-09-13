@@ -1,0 +1,21 @@
+[
+  {
+    "applied_on": [
+      "shell-tool",
+      "tool-budget"
+    ],
+    "bimodal": false,
+    "by_term": {
+      "shell-tool": {
+        "applied": 4,
+        "considered": 4
+      },
+      "tool-budget": {
+        "applied": 4,
+        "considered": 4
+      }
+    },
+    "never_on": [],
+    "record": "D-0002"
+  }
+]

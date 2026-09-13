@@ -100,7 +100,16 @@ def credit_table(store: Store, sessions: list[Session]) -> list[dict[str, Any]]:
 
 
 def build_brief(store: Store, record: Consolidation, sessions: list[Session]) -> dict[str, Any]:
+    """The consolidation brief: every nominator's row, and the whole body of each record a row names.
+
+    A split's leaves and a fold's successor are derived from the bodies they
+    leave, so a record named by ``fusion`` or ``convergence`` travels whole;
+    every other accepted record travels as its cheap cue.
+    """
     scores = {s.id: {k: f.value for k, f in s.evaluation.scores.items()} for s in sessions if s.evaluation}
+    fusion = [row for row in _index.fusion(store) if row["bimodal"]]
+    convergence = [row for row in _index.convergence(store) if row["co_applied"] >= 2]
+    named = {row["record"] for row in fusion} | {r for row in convergence for r in row["records"]}
     return {
         "after_pass": record.after_pass,
         "sessions": [s.id for s in sessions],
@@ -108,8 +117,12 @@ def build_brief(store: Store, record: Consolidation, sessions: list[Session]) ->
         "competence": _index.competence(store),
         "groups": group_observations(store, record),
         "credit": credit_table(store, sessions),
+        "fusion": fusion,
+        "convergence": convergence,
         "escapes": sorted({e for s in sessions for e in s.work_shape.escapes}),
-        "accepted": [{"id": d.id, "decision": d.decision, "terms": d.consultation_terms} for d in store.decisions("accepted")],
+        "accepted": [{"id": d.id, "decision": d.decision, "terms": d.consultation_terms}
+                     | ({"body": d.body().model_dump(by_alias=True, mode="json")} if d.id in named else {})
+                     for d in store.decisions("accepted")],
         "steers": [t.id for t in store.all("steer")],
         "fires_owed": [f for f in _index.undischarged_fires(store) if f["disposer"] == BACKWARD_PASS],
     }
@@ -180,7 +193,7 @@ def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draf
         else:
             admission_entry = entry.model_copy(update={"verdict": v})
             decision = store.admit(draft, admission_entry, role, amendment={"decision": amendment} if head == "admit-amended" and amendment else None)
-            record.flipped += list(draft.supersedes)
+            record.flipped += [r for r in draft.retires if r not in record.flipped]
             record.admitted.append(decision.id)
             entry.outcome = f"admitted {decision.id}"
     elif head == "decline":
@@ -201,7 +214,8 @@ def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draf
 def draft_from(store: Store, record: Consolidation, raw: dict[str, Any]) -> Draft:
     return store.parse_as(Draft, {"uid": store.new_uid(), "name": store.next_name("P"), "kind": "decision", "drafted_at": now().isoformat(),
                                   "proposed_by": record.id, "rung": raw["rung"], "rung_why": raw["rung_why"], "body": roles.body_of(raw),
-                                  "evidence": list(raw.get("evidence", [])), "supersedes": list(raw.get("supersedes", []))})
+                                  "evidence": list(raw.get("evidence", [])), "supersedes": list(raw.get("supersedes", [])),
+                                  "split_from": raw.get("split_from") or None, "folded_from": list(raw.get("folded_from") or [])})
 
 
 # --- credit, fires, retirement --------------------------------------------------------------
@@ -230,7 +244,7 @@ def discharge_fires(store: Store, record: Consolidation) -> list[LedgerEntry]:
         if f.disposition.discharged or f.disposer != BACKWARD_PASS:
             continue
         d = store.find(f.latch.record)
-        successor = d.lineage.superseded_by if isinstance(d, Decision) else None
+        successor = ", ".join(d.lineage.superseded_by) if isinstance(d, Decision) and d.lineage.superseded_by else None
         c = _model.complete("adjudicator", roles.request("currency", record=f.latch.record, fire=f.model_dump(by_alias=True, mode="json"), successor=successor),
                             session=record.id)
         out = c.json()

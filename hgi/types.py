@@ -25,6 +25,7 @@ from pydantic import (
     ConfigDict,
     Field,
     ValidationInfo,
+    field_validator,
     model_validator,
 )
 
@@ -78,10 +79,27 @@ class Strict(BaseModel):
 # --- the envelope -------------------------------------------------------------
 
 class Lineage(Strict):
+    """The corpus graph's edges at this vertex. Successor edges compose into a DAG, not a chain.
+
+    A supersedure is one retiree, one successor. A **fold** (edge contraction)
+    is one successor with several predecessors, named in ``folded_from``. A
+    **split** (vertex split) is one retiree with several heirs, each naming
+    the parent in ``split_from``; the parent's ``superseded_by`` therefore
+    lists every heir — a scalar back-pointer cannot represent a fan-out.
+    """
+
     supersedes: list[str] = Field(default_factory=list)
-    superseded_by: str | None = None
+    superseded_by: list[str] = Field(default_factory=list)
     split_from: str | None = None
     folded_from: list[str] = Field(default_factory=list)
+
+    @field_validator("superseded_by", mode="before")
+    @classmethod
+    def _scalar_pointer(cls, v):
+        """A record written before the fan-out named one successor or ``null``; both read as the list they mean."""
+        if v is None:
+            return []
+        return [v] if isinstance(v, str) else v
 
 
 class RoleCall(Strict):
@@ -153,6 +171,8 @@ class Guard(Strict):
     not_this: list[str] = Field(default_factory=list)
     records: list[str] = Field(default_factory=list)
     """For the ``neighbor`` key-space: the record ids whose status change is the edge."""
+    statuses: dict[str, str] = Field(default_factory=dict)
+    """For the ``neighbor`` key-space: each record's status when the latch was written; the edge is a departure from it."""
     applied_over_considered_below: float | None = None
     over_passes: int | None = None
 
@@ -304,6 +324,10 @@ class DecisionBody(Strict):
 class Decision(Envelope, DecisionBody):
     kind: Literal["decision"] = "decision"
     status: Term("decision-status")
+
+    def body(self) -> DecisionBody:
+        """The content without the envelope — what a successor, a leaf or a fold derives from; never a second copy."""
+        return DecisionBody.model_validate(self.model_dump(by_alias=True, include=set(DecisionBody.model_fields)))
 
 
 # --- observation (pre-admission stratum) -------------------------------------
@@ -574,6 +598,26 @@ class Draft(Strict):
     """The observation uids, steer ids and Weave URIs the draft rests on."""
     supersedes: list[str] = Field(default_factory=list)
     """Decisions this draft retires on admission; the committer writes the reciprocal lineage pointers."""
+    split_from: str | None = None
+    """The fused record this draft is a leaf of (§ 10.6): the parent retires when its first heir lands and lists every heir."""
+    folded_from: list[str] = Field(default_factory=list)
+    """The records whose payloads this draft contracts into one (§ 10.6): each retires on admission, superseded by the fold."""
+
+    @model_validator(mode="after")
+    def _lineage_operators(self):
+        if len(self.folded_from) == 1:
+            raise ValueError("a fold contracts at least two records; one predecessor is a supersedure")
+        if self.split_from and self.split_from in self.folded_from:
+            raise ValueError("a record is split from or folded from, not both")
+        return self
+
+    @property
+    def retires(self) -> list[str]:
+        """Every record this draft's admission flips to ``superseded``."""
+        out = [*self.supersedes, *self.folded_from]
+        if self.split_from:
+            out.append(self.split_from)
+        return list(dict.fromkeys(out))
 
 
 class QueueEntry(Strict):

@@ -70,6 +70,23 @@ def dump(record: BaseModel) -> dict[str, Any]:
     return record.model_dump(mode="json", by_alias=True)
 
 
+def wiring_latch(records: list[str], store: "Store", act: str = "check") -> dict[str, Any]:
+    """A neighbour-keyed latch on ``records``: the edge is any of them changing status, the consumer is propagation.
+
+    The guard remembers each neighbour's status as of the write, so the edge is
+    a departure from what was seen — the latch stays immutable and the fire
+    ledger carries every later observation.
+    """
+    seen = {}
+    for rid in records:
+        neighbour = store.find(rid)
+        if neighbour is not None:
+            seen[rid] = neighbour.status  # type: ignore[attr-defined]
+    return {"type": "wiring", "slot": "lifecycle", "key_space": "neighbor", "edge": {"kind": "edge"},
+            "guard": {"records": list(records), "statuses": seen}, "consumer": "propagation",
+            "owed_act": {"class": act, "role": "corroborating"}, "lifecycle": {"status": "live"}}
+
+
 class Store:
     def __init__(self, root: Path | str | None = None, registry: _registry.Registry | None = None):
         self.root = Path(root) if root else _registry.default_root()
@@ -214,12 +231,18 @@ class Store:
 
     # --- the committer ------------------------------------------------------
     def admit(self, draft: Draft, entry: LedgerEntry, adjudicator: RoleCall, amendment: dict[str, Any] | None = None) -> Decision:
-        """Admit an adjudicated draft: mint the eternal id, stamp admission, write, flip the observations it promotes.
+        """Admit an adjudicated draft: mint the eternal id, stamp admission, write, retire what it supersedes, flip the observations it promotes.
 
         The floor runs before this is called (``hgi.lint.check_draft``); the
         commit that lands the record is the caller's. Only ``admit`` and
         ``admit-amended`` reach here — the verdict is read off the ledger
         entry, never supplied by the proposer.
+
+        The lineage operators of § 10.6 are executed here and nowhere else: a
+        draft that ``supersedes``, is a leaf ``split_from`` a fused record, or
+        is ``folded_from`` several records lands with its own edges written
+        and every retiree flipped to ``superseded`` with the reciprocal
+        pointer — one commit, one DAG move.
         """
         from hgi.registry import term_head
 
@@ -227,6 +250,9 @@ class Store:
             raise PermissionError(f"the committer admits only on admit or admit-amended, not {entry.verdict!r}")
         if entry.adjudicator is None:
             raise PermissionError("an entry with no adjudicator call carries no verdict the committer may act on")
+        for rid in draft.retires:
+            if not self.exists("decision", rid):
+                raise ValueError(f"{draft.name} retires {rid}, which is not a decision in this store")
         body = draft.body.model_dump(by_alias=True)
         if amendment:
             body.update(amendment)
@@ -234,13 +260,13 @@ class Store:
         stamp = now()
         decision = self.parse_as(Decision, {
             "id": id, "kind": "decision", "status": "accepted", "created_at": draft.drafted_at.isoformat(),
-            "lineage": {"supersedes": list(draft.supersedes), "superseded_by": None, "split_from": None, "folded_from": []},
+            "lineage": {"supersedes": list(draft.supersedes), "superseded_by": [], "split_from": draft.split_from, "folded_from": list(draft.folded_from)},
             "admission": {"proposed_by": draft.proposed_by, "ledger_entry": entry.id, "verdict": entry.verdict,
                           "adjudicator": adjudicator.model_dump(), "committed_at": stamp.isoformat()},
             **body,
         })
         self.write(decision)
-        for pred in draft.supersedes:
+        for pred in draft.retires:
             self.flip_status(self.read("decision", pred), "superseded", successor=id)  # type: ignore[arg-type]
         for ev in draft.evidence:
             obs = self._observation_by_uid_or_name(ev)
@@ -255,26 +281,26 @@ class Store:
     def flip_status(self, record: Decision, status: str, successor: str | None = None, by: str | None = None) -> Decision:
         """The only in-place change a frozen record receives.
 
-        A retiring flip (``superseded`` | ``moot``) settles every live latch in
-        the same write — a settled latch is kept as evidence, never removed —
-        and a supersedure names its successor and wires the record to it so
-        propagation can re-derive what referenced the retiree.
+        A retiring flip (``superseded`` | ``moot``) settles every live latch of
+        the record's own fan in the same write — a settled latch is kept as
+        evidence, never removed. A supersedure names its successor: the
+        pointer is appended (a split's parent collects one per heir) and a
+        wiring latch keyed on the successor is added, so propagation can check
+        the tombstone when the successor itself changes status. Wiring latches
+        are the one type a flip leaves live: they are the edges propagation
+        walks after the flip, not the fan the flip retires.
         """
         data = dump(record)
         data["status"] = status
         stamp = now().isoformat()
-        if successor:
-            data["lineage"]["superseded_by"] = successor
         if status in ("superseded", "moot"):
             for latch in [*data["latches"], data["lifecycle"]["retirement"]]:
-                if latch["lifecycle"]["status"] == "live":
+                if latch["lifecycle"]["status"] == "live" and latch["type"] != "wiring":
                     latch["lifecycle"] = {"status": "settled", "settled_at": stamp, "settled_by": successor or by}
-            if successor:
-                data["latches"].append({
-                    "type": "wiring", "slot": "lifecycle", "key_space": "neighbor", "edge": {"kind": "edge"},
-                    "guard": {"records": [successor]}, "consumer": "propagation",
-                    "owed_act": {"class": "check", "role": "corroborating"}, "lifecycle": {"status": "live"},
-                })
+        if successor:
+            if successor not in data["lineage"]["superseded_by"]:
+                data["lineage"]["superseded_by"].append(successor)
+            data["latches"].append(wiring_latch([successor], self, act="check"))
         flipped = self.parse_as(Decision, data)
         self.write(flipped)
         return flipped

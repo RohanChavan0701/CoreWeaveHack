@@ -44,6 +44,8 @@ REPLIES: dict[str, Any] = {
     "coding": {"<observation name>": ["<work-shape term or other(<what>)>"]},
     "nominate": {"nominations": [{"rung": "<a ladder rung from `rungs`>", "rung_why": "<why the cheaper rungs do not suffice>", "subject": "<one word naming the lesson>",
                                   "evidence": ["<observation names from the brief's groups>"], "supersedes": ["<accepted decision ids this retires>"],
+                                  "split_from": "<the fused accepted decision this draft is one leaf of (a row of the brief's `fusion`), or null>",
+                                  "folded_from": ["<the accepted decisions whose payloads this draft contracts into one (a row of the brief's `convergence`); empty unless folding>"],
                                   "body": _DRAFT_BODY}]},
     "attack": {"claims": [{"target": "<premise:<id> | payload:<aspect> | activation | warrant:independence>", "refutation": "<what reading of the evidence would show it false>",
                            "reading_taken": "<true if you took that reading>", "landed": "<true if the reading showed it false>", "evidence": ["<what you read>"]}]},

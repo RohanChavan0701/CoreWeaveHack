@@ -215,11 +215,40 @@ def decision_body(key: str, terms: list[str], not_this_extra: list[str], anchors
     }
 
 
+def _leaf(parent: dict[str, Any], terms: list[str], context: str) -> dict[str, Any]:
+    """A draft body derived from an accepted record's body with its consultation hook replaced — never a second copy."""
+    body = json.loads(json.dumps(parent["body"]))
+    for latch in body["latches"]:
+        if latch["type"] == "consultation":
+            latch["guard"]["terms"] = terms
+    body["context"] = context
+    return body
+
+
 @handles("nominate")
 def _nominate(req):
     brief, bars = req["brief"], req["bars"]
     accepted = brief.get("accepted", [])
+    bodies = {d["id"]: d for d in accepted if d.get("body")}
     nominations = []
+    for row in brief.get("fusion", []):  # § 10.6 split: one leaf per sub-shape, the parent retiring by coverage migration
+        parent = bodies.get(row["record"])
+        if parent is None:
+            continue
+        for terms in (row["applied_on"], row["never_on"]):
+            nominations.append({"rung": "new-decision", "rung_why": f"dispositions on {row['record']} are bimodal across sub-shapes: applied on {row['applied_on']}, never on {row['never_on']}; a fused record splits into leaves",
+                                "subject": f"split:{row['record']}", "evidence": parent["body"]["warrant"]["anchors"], "supersedes": [], "split_from": row["record"], "folded_from": [],
+                                "body": _leaf(parent, terms, f"leaf of {row['record']} on the sub-shape {terms}")})
+    for row in brief.get("convergence", []):  # § 10.6 fold: identical hooks applied together contract into one successor
+        a, b = (bodies.get(r) for r in row["records"])
+        if not (row["identical_hooks"] and a and b):
+            continue
+        body = _leaf(a, a["terms"], f"fold of {row['records'][0]} and {row['records'][1]}: applied together in {row['co_applied']} passes on {row['shared_terms']}")
+        body["decision"] = f"{a['decision'].rstrip('.')}; {b['decision'][0].lower()}{b['decision'][1:]}"
+        nominations.append({"rung": "new-decision", "rung_why": f"{row['records']} were applied together in {row['co_applied']} passes on the same hook; their payloads entail one another and one record carries both",
+                            "subject": "fold:" + "+".join(row["records"]), "evidence": a["body"]["warrant"]["anchors"] + b["body"]["warrant"]["anchors"],
+                            "supersedes": [], "split_from": None, "folded_from": list(row["records"]),
+                            "body": body})
     for group in brief.get("groups", []):
         obs = group["observations"]
         sessions = {o["session"] for o in obs}
@@ -238,7 +267,7 @@ def _nominate(req):
             "rung": "new-decision",
             "rung_why": ("payload indicted: the superseded record was recalled and applied and the oracle still regressed on task_pass_rate; a re-derived payload supersedes it"
                          if supersedes else "no existing record's counterfactual, hook or register absorbs this fork; the fork is undecided"),
-            "subject": key, "evidence": names, "supersedes": supersedes,
+            "subject": key, "evidence": names, "supersedes": supersedes, "split_from": None, "folded_from": [],
             "body": decision_body(key, terms, [], names, bars, req.get("model_id", "stub")),
         })
     return {"nominations": nominations}
