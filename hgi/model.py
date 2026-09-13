@@ -78,16 +78,20 @@ class OpenAICompatible(Backend):
     """
 
     def __init__(self, base_url: str, api_key: str, model_id: str, *, temperature: float = 0.0,
-                 project: str | None = None, max_retries: int = 5, timeout: float = 120.0):
+                 project: str | None = None, max_retries: int = 5, timeout: float = 120.0,
+                 reasoning_effort: str | None = None):
         from openai import OpenAI
 
         self.client = OpenAI(base_url=base_url, api_key=api_key, project=project, max_retries=max_retries, timeout=timeout)
         self.base_url = base_url
         self.model_id = model_id
         self.temperature = temperature
+        self.reasoning_effort = reasoning_effort
 
     def chat(self, messages, *, json_mode, tools=None):
         kwargs: dict[str, Any] = {"model": self.model_id, "messages": messages, "temperature": self.temperature}
+        if self.reasoning_effort:
+            kwargs["reasoning_effort"] = self.reasoning_effort
         if json_mode:
             kwargs["response_format"] = {"type": "json_object"}
         if tools:

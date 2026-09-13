@@ -112,6 +112,8 @@ class ModelSpec(BaseModel):
     """The ``OpenAI-Project`` header; on W&B Inference, ``entity/project`` for usage attribution, defaulting to the Weave project."""
     stub: bool = False
     """The deterministic stub under this alias's ``id`` — for offline arms and for telling two stub roles apart."""
+    reasoning_effort: str | None = None
+    """``low`` | ``medium`` | ``high``, sent as ``reasoning_effort`` on every call to this model; only models that accept the parameter should set it — gpt-oss does."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -125,7 +127,8 @@ class ModelSpec(BaseModel):
         if not key:
             raise SystemExit(f"model {self.id!r}: ${self.api_key_env} is not set" + (" and wandb holds no key" if on_wandb else ""))
         project = self.project or (_wandb_project() if on_wandb else None)
-        return _model.OpenAICompatible(self.base_url, key, self.id, temperature=self.temperature, project=project)
+        return _model.OpenAICompatible(self.base_url, key, self.id, temperature=self.temperature, project=project,
+                                       reasoning_effort=self.reasoning_effort)
 
 
 STUB = ModelSpec(id="stub", stub=True)

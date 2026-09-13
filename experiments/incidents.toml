@@ -19,6 +19,21 @@
 # The world faults nothing. The slack is one call, and a transient fault would eat the only spare probe, so the budget
 # must mean exactly one thing: one wrong turn, no more. The retry lesson belongs to `genesis`, not to this family.
 #
+# The sweep is three actors on the same twelve batches, each attached against its own detached ablation, so every
+# comparison is paired per batch and per lesson inside one actor and no arm's curve is read against another model's:
+# `gpt-oss-120b` is the reference, `Llama-3.3-70B-Instruct` the closest same-class peer to it, and `gpt-oss-20b` at
+# `reasoning_effort = "low"` the weak actor — the one likeliest to open the loud reading first, which is the failure
+# this family is built to catch. The seventh arm asks the separation-of-powers question on top of the weak actor:
+# the same 20b pass with `DeepSeek-V4-Pro` on the whole backward pass, so what a strong judge teaches a weak actor
+# is read against `student-attached`, which differs from it in nothing but the judge.
+#
+# `120b-strict` and `120b-strict-detached` are dropped. The strict pool budgets exactly the cause readings, which
+# only separates passes that spend the slack — and the detached run showed no actor spends it: every failure was the
+# naive walk dying on the budget it already had, not a pass that opened one decoy and ran one call over. With no
+# actor spending the slack, taking the slack away cannot separate anything, so the pair bought two arms of run time
+# and no reading. The `incidents-strict` family stays, and the seeded strict twin below is the only arm that runs it —
+# there the question is not whether slack separates but whether an injected shape keeps the walk inside the budget.
+#
 # Ids are W&B Inference ids as listed on 2026-09-12; `hgi experiment models` lists today's.
 name = "incidents"
 description = "first-sight diagnosis of unseen incident bundles as the store grows, attached against detached, per decoy shape"
@@ -27,8 +42,15 @@ weave_project = "hgi-experiments"
 [models.gpt-oss-120b]
 id = "openai/gpt-oss-120b"
 
-[models.gpt-oss-20b]
+[models.gpt-oss-20b-low]
 id = "openai/gpt-oss-20b"
+reasoning_effort = "low"
+
+[models.llama-70b]
+id = "meta-llama/Llama-3.3-70B-Instruct"
+
+[models.deepseek-v4]
+id = "deepseek-ai/DeepSeek-V4-Pro-0813"
 
 [defaults]
 model = "gpt-oss-120b"
@@ -52,33 +74,34 @@ mode = "attached"
 mode = "detached"
 description = "the ablation on the same batches; one run is the whole record"
 
-[arms.20b-attached]
-model = "gpt-oss-20b"
-description = "a weaker actor on the same stream, likelier to open the loud reading first"
-
-[arms.split-roles]
-model = "gpt-oss-20b"
-description = "the weak actor with the strong backward pass: does separation of powers let it learn from a stronger judge"
-[arms.split-roles.roles]
-consolidator = "gpt-oss-120b"
-examiner = "gpt-oss-120b"
-adjudicator = "gpt-oss-120b"
-coder = "gpt-oss-120b"
-
-# The strict pool: the same clothes budgeted at exactly the cause readings, so the one wrong turn costs a call the
-# budget does not hold. A pass that opens a decoy to rule it out is over budget; only a pass that already knows which
-# readings carry the cause — from the store, or from the model — stays in budget. The knowledge-base question directly.
-[arms.120b-strict]
+[arms.peer-attached]
+model = "llama-70b"
 mode = "attached"
-description = "the strict pool: zero slack, only a pass that already knows which readings carry the cause stays in budget"
-[arms.120b-strict.stream]
-families = ["incidents-strict"]
+description = "the closest same-class peer to gpt-oss-120b"
 
-[arms.120b-strict-detached]
+[arms.peer-detached]
+model = "llama-70b"
 mode = "detached"
-description = "the strict pool's ablation"
-[arms.120b-strict-detached.stream]
-families = ["incidents-strict"]
+description = "the closest same-class peer to gpt-oss-120b, ablated"
+
+[arms.student-attached]
+model = "gpt-oss-20b-low"
+mode = "attached"
+description = "a weaker actor at low reasoning effort, likelier to open the loud reading first"
+
+[arms.student-detached]
+model = "gpt-oss-20b-low"
+mode = "detached"
+description = "a weaker actor at low reasoning effort, likelier to open the loud reading first, ablated"
+
+[arms.student-strong-judge]
+model = "gpt-oss-20b-low"
+description = "does a strong judge teach a weak actor"
+[arms.student-strong-judge.roles]
+consolidator = "deepseek-v4"
+examiner = "deepseek-v4"
+adjudicator = "deepseek-v4"
+coder = "deepseek-v4"
 
 # The seeded twins: the same arms started from experiments/seeds/incidents — the three decoy shapes already admitted —
 # against the unseeded arms above on the same batches. What the injected shapes buy, paired per batch.

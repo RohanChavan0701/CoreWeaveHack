@@ -5,6 +5,7 @@ curves back from the stores."""
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -191,3 +192,26 @@ def test_wandb_inference_needs_an_entity_and_project(monkeypatch):
         _experiment.ModelSpec(id="openai/gpt-oss-120b").backend()
     monkeypatch.setenv("WANDB_ENTITY", "someone")
     assert _experiment.ModelSpec(id="openai/gpt-oss-120b").backend().client.project == "someone/hgi"
+
+
+def test_reasoning_effort_rides_every_call_to_the_model_that_declares_it(monkeypatch):
+    """The knob is per model, not per call: a spec that sets it sends it on every completion, one that leaves it unset sends nothing."""
+    monkeypatch.setenv("WANDB_API_KEY", "not-checked-here")
+    monkeypatch.setenv("WANDB_ENTITY", "someone")
+    monkeypatch.setenv("HGI_WEAVE_PROJECT", "hgi")
+
+    def sent(**spec) -> dict:
+        backend = _experiment.ModelSpec(**spec).backend()
+        seen: dict = {}
+
+        def create(**kwargs):
+            seen.update(kwargs)
+            message = SimpleNamespace(content="{}", tool_calls=None)
+            return SimpleNamespace(choices=[SimpleNamespace(message=message)])
+
+        backend.client = SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=create)))
+        backend.chat([{"role": "user", "content": "hi"}], json_mode=True)
+        return seen
+
+    assert sent(id="openai/gpt-oss-20b", reasoning_effort="low")["reasoning_effort"] == "low"
+    assert "reasoning_effort" not in sent(id="openai/gpt-oss-120b")
