@@ -178,7 +178,7 @@ LENSES = [
      "angle": "The store holds a record this task needs and no hook reached it — which?",
      "counterfactual": "The overshoot: inventing a need to have a finding; an answer with no record id is not filed.",
      "externality": {"contact": "record", "terminates_in": "the decision store's summary lines"},
-     "product": "a list of {record, why}; empty is a legal answer", "consumer": "the working pass; the structural-zero audit"},
+     "product": "a list of {record, why}; empty is a legal answer", "consumer": "the backward pass: the brief's recall rows nominate a hook-edit; the structural-zero audit"},
     {"id": "L-0003", "host": "close", "purpose": "adjudicative",
      "angle": "What did this pass make false in the store — which premise, which hook?",
      "counterfactual": "The overshoot: manufacturing a falsification; empty is a legal answer.",

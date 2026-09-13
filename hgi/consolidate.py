@@ -116,7 +116,7 @@ def credit_table(store: Store, sessions: list[Session]) -> list[dict[str, Any]]:
     return out
 
 
-ANALYSIS_FIELDS = ("competence", "groups", "credit", "fusion", "convergence", "structural_zero", "escapes")
+ANALYSIS_FIELDS = ("competence", "groups", "credit", "fusion", "convergence", "structural_zero", "escapes", "recall")
 """The nominator's analytical rows — what ARIA produces over the mirrored runs, and what the local pass derives when no analyst report resolves."""
 
 
@@ -136,6 +136,7 @@ def local_analysis(store: Store, record: Consolidation, sessions: list[Session])
         "structural_zero": [{"record": d.id, "terms": d.consultation_terms, "latch": d.summary.latch, "presented": presented}
                             for d in store.decisions("accepted") if d.id in _index.structural_zero(store)],
         "escapes": sorted({e for s in sessions for e in s.work_shape.escapes}),
+        "recall": _index.recall(store),
     }
 
 
@@ -162,6 +163,7 @@ def assemble_brief(store: Store, record: Consolidation, sessions: list[Session],
         "convergence": convergence,
         "structural_zero": analysis.get("structural_zero") or [],
         "escapes": analysis.get("escapes") or [],
+        "recall": analysis.get("recall") or [],
         "accepted": [{"id": d.id, "decision": d.decision, "terms": d.consultation_terms}
                      | ({"body": d.body().model_dump(by_alias=True, mode="json")} if d.id in named else {})
                      for d in store.decisions("accepted")],
@@ -328,7 +330,7 @@ def nominate(store: Store, record: Consolidation, brief: dict[str, Any]) -> list
 def evidence_pack(store: Store, draft: Draft, brief: dict[str, Any]) -> dict[str, Any]:
     """What the examiner and adjudicator see: the oracle's evidence, never the proposer's narrative."""
     obs = [store.observation(e) for e in draft.evidence]
-    sessions = [o.session for o in obs if o]
+    sessions = [o.session for o in obs if o] + [e for e in draft.evidence if store.exists("session", e)]  # a re-key's evidence is the probing passes themselves
     faults = [e for s in store.all("session") if s.attached and s.evaluation for row in s.evaluation.rows for e in row.get("tool_errors", []) if e.get("transient")]  # type: ignore[attr-defined]
     rows = sum(len(s.evaluation.rows) for s in store.all("session") if s.attached and s.evaluation)  # type: ignore[attr-defined]
     watch = next((l.edge.predicate.scorer for l in draft.body.latches if l.type == "revisit" and l.edge.predicate), None)

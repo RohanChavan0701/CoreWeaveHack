@@ -273,6 +273,43 @@ def matrix(store: Store) -> dict[str, Any]:
     return {cell: sorted(ids) for cell, ids in sorted(cells.items())} | {"note": "system-misses/none-catches is detection-limited; its count is a floor of zero"}
 
 
+def recall(store: Store) -> list[dict[str, Any]]:
+    """Should-have-fired (§ 10.5, activation — recall): the boot recall lens's probes and the steers' archaeology, per record.
+
+    L-0002 asks each pass which record the store holds that this work needed and no hook reached; a finding naming an
+    accepted record the pass did not consult is a recall probe against that record's hook. Joined with the steers that
+    indict a record's activation slot, the rows are the should-have-fired stream — a floor, never complete, and a
+    nominator for re-keying (``hook-edit``), never a verdict. ``presented`` is what the probing passes classified their
+    work as: the terms a re-key may add.
+    """
+    sessions, _ = _window(store)
+    probes: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    presented: dict[str, set[str]] = defaultdict(set)
+    accepted = {d.id: d for d in store.decisions("accepted")}
+    for s in sessions:
+        consulted = {c.record for c in s.consulted}
+        for answer in s.lens_answers:
+            if answer.lens != "L-0002":
+                continue
+            for f in answer.findings:
+                rid = f.get("record")
+                if rid in accepted and rid not in consulted:
+                    probes[rid].append({"session": s.id, "why": str(f.get("why", "")), "call": answer.call})
+                    presented[rid].update(s.work_shape.terms)
+    steers = defaultdict(list)
+    for t in store.all("steer"):
+        if t.indicts and t.indicts.slot == "activation":  # type: ignore[attr-defined]
+            steers[t.indicts.record].append(t.id)  # type: ignore[attr-defined]
+    rows = []
+    for rid in sorted(set(probes) | set(steers)):
+        if rid not in accepted:
+            continue
+        hook = accepted[rid].consultation_terms
+        rows.append({"record": rid, "hook": hook, "probes": probes.get(rid, []), "sessions": sorted({p["session"] for p in probes.get(rid, [])}),
+                     "presented": sorted(presented.get(rid, set())), "missing": sorted(presented.get(rid, set()) - set(hook)), "steers": steers.get(rid, [])})
+    return rows
+
+
 def attacker(store: Store) -> dict[str, Any]:
     """The instruments are instrumented (I16): attacker precision as a tracked floor, and the attacker's misses as a stream.
 
@@ -333,6 +370,7 @@ PROJECTIONS: dict[str, Callable[[Store], Any]] = {
     "lineage": lineage,
     "matrix": matrix,
     "attacker": attacker,
+    "recall": recall,
 }
 
 

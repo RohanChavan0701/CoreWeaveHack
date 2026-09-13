@@ -1,0 +1,30 @@
+{
+  "claims": 11,
+  "dispatched": 3,
+  "entries_with_landing": 0,
+  "floor": "every count is a floor: an attack the synthesis absorbed before the ledger saw it is not here",
+  "landed": 0,
+  "misses": [
+    {
+      "caught_by": [
+        "T-0001"
+      ],
+      "record": "D-0001",
+      "survived": [
+        "H-0001"
+      ]
+    }
+  ],
+  "notes": [
+    "zero landings over 3 dispatches: interrogate the dispatch bar before declaring any target clean"
+  ],
+  "overruled": 0,
+  "per_angle": {
+    "single-context": {
+      "claims": 11,
+      "landed": 0
+    }
+  },
+  "precision": null,
+  "upheld": 0
+}

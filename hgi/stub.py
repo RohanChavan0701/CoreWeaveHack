@@ -236,6 +236,12 @@ def _nominate(req):
         nominations.append({"rung": "hook-edit", "rung_why": f"{row['record']} is a structural zero: its consultation hook names {row['terms']}, which no boot classifies into; its cue names {terms}, which the window presented",
                             "subject": f"zero:{row['record']}", "evidence": [], "supersedes": [row["record"]], "split_from": None, "folded_from": [],
                             "edit": {"terms": terms}, "body": None})
+    for row in brief.get("recall", []):  # activation — recall: a record the passes needed and no hook reached is re-keyed on what they presented
+        if len(row.get("sessions", [])) < bars["decision"]["independent_observations"] or not row.get("missing"):
+            continue
+        nominations.append({"rung": "hook-edit", "rung_why": f"{row['record']} should have fired: {len(row['sessions'])} independent passes probed for it unconsulted; its hook names {row['hook']} and the passes presented {row['presented']}",
+                            "subject": f"recall:{row['record']}", "evidence": [p["session"] for p in row["probes"]], "supersedes": [row["record"]], "split_from": None, "folded_from": [],
+                            "edit": {"terms": sorted(set(row["hook"]) | set(row["missing"]))}, "body": None})
     for row in brief.get("convergence", []):  # § 10.6 fold: identical hooks applied together contract into one successor
         a, b = (bodies.get(r) for r in row["records"])
         if not (row["identical_hooks"] and a and b):
