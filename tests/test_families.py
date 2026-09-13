@@ -12,11 +12,15 @@ import pytest
 from suite.families import FAMILIES
 from suite.families.api import PAGE_SIZE, pages
 from suite.families.tables import _number, matches, records
+from suite.families import text2sql as _t2s
 from suite.tasks import SuiteSpec, build
 
 MBPP_ROWS = 257
 TABLE_ROWS = 200
 """The pinned TableBench records; `tables` takes the even half and `api` the odd half."""
+T2S_GRADED = 10
+T2S_HOLDOUT = 6
+"""The pinned text2sql records: the graded group `text2sql` and its strict twin carry, the holdout group `text2sql-holdout` carries."""
 
 SQUARE_PERIMETER = "mbpp/17"
 """One pinned task with a solution short enough to write by hand: ``square_perimeter(side) == 4 * side``."""
@@ -129,6 +133,69 @@ def test_an_api_task_pages_its_whole_table_and_budgets_exactly_the_pages_it_serv
 ])
 def test_the_normalizer_reads_a_number_through_its_noise_and_a_string_through_its_case(result, gold, ok):
     assert matches(result, gold) is ok
+
+
+def test_the_three_text2sql_families_split_the_pinned_questions_by_group():
+    counts = {name: len(FAMILIES[name].tasks()) for name in ("text2sql", "text2sql-strict", "text2sql-holdout")}
+    assert counts == {"text2sql": T2S_GRADED, "text2sql-strict": T2S_GRADED, "text2sql-holdout": T2S_HOLDOUT}
+    graded = {t.id.rsplit("/q", 1)[1] for t in FAMILIES["text2sql"].tasks()}
+    strict = {t.id.rsplit("/q", 1)[1] for t in FAMILIES["text2sql-strict"].tasks()}
+    holdout = {t.id.rsplit("/q", 1)[1] for t in FAMILIES["text2sql-holdout"].tasks()}
+    assert graded == strict, "the strict twin carries the same questions as the graded family"
+    assert not (graded & holdout), "the held-out questions are disjoint from the graded ones"
+    world = build(SuiteSpec(families=["text2sql", "text2sql-strict", "text2sql-holdout"]))
+    assert len(world.by_id) == sum(counts.values()), "id-prefixing keeps the slack and strict twins from colliding"
+
+
+def test_a_text2sql_task_ships_the_database_and_grades_by_re_executing_the_gold_query(tmp_path):
+    gold_of = {r["id"]: r["gold"] for r in FAMILIES["text2sql"].records()}
+    spec = {t.id: t for t in FAMILIES["text2sql"].tasks()}["text2sql/q117"]
+    assert spec.shapes == ("shell-tool", "file-tool", "tool-budget") and spec.shell_budget == 3 and spec.knowing == {"shell": 1}
+    assert _t2s.DB_FILENAME in spec.blobs and not spec.files, "the database ships as a binary blob, not a text file"
+    spec.setup(tmp_path)
+    assert (tmp_path / _t2s.DB_FILENAME).exists()
+
+    gold = gold_of[117]
+    assert spec.check(gold, tmp_path), "the gold query must grade as a pass"
+    assert not spec.check("SELECT 1 WHERE 1=0", tmp_path), "a query that returns the wrong rows must fail"
+    assert not spec.check("SELECT * FROM no_such_table", tmp_path), "a query that will not run must fail"
+    assert not spec.check("not sql at all", tmp_path) and not spec.check("", tmp_path)
+    # a ratio without CAST integer-divides in SQLite: it executes cleanly and returns the wrong number, and must fail —
+    # the "valid but semantically wrong" case the credit correction grades as a failure, never a string comparison
+    no_cast = "SELECT (SUM(CASE WHEN status = 'A' THEN amount ELSE 0 END) * 100) / SUM(amount) FROM loan"
+    assert _t2s.run_sql(tmp_path / _t2s.DB_FILENAME, no_cast), "the no-CAST query executes"
+    assert not spec.check(no_cast, tmp_path), "but returns the wrong rows, so it fails the hidden check"
+
+
+def test_every_text2sql_gold_passes_its_own_check_and_the_gold_never_leaks(tmp_path):
+    for name in ("text2sql", "text2sql-strict", "text2sql-holdout"):
+        gold_of = {f"{name}/q{r['id']}": r["gold"] for r in FAMILIES["text2sql"].records()}
+        for spec in FAMILIES[name].tasks():
+            spec.setup(tmp_path)
+            gold = gold_of[spec.id]
+            assert spec.check(gold, tmp_path), f"{spec.id}: the gold query must pass"
+            assert gold not in spec.prompt, f"{spec.id}: the gold SQL must not appear in the prompt"
+            assert "gold" not in spec.row() and gold not in str(spec.row()), f"{spec.id}: the gold SQL must not appear in Task.row"
+
+
+def test_the_strict_twin_budgets_the_knowing_floor_the_slack_family_leaves_room():
+    strict = FAMILIES["text2sql-strict"].tasks()[0]
+    slack = FAMILIES["text2sql"].tasks()[0]
+    assert strict.shell_budget == strict.knowing["shell"] == _t2s.KNOWING_SHELL
+    assert slack.shell_budget == _t2s.SHELL_BUDGET > slack.knowing["shell"]
+
+
+@pytest.mark.parametrize("agent, gold, ok", [
+    ([(18,)], [(18.0155,)], False),               # a ratio integer-divided to 18 is not the gold 18.02
+    ([(18.02,)], [(18.0155,)], True),             # rounded to two decimals, the percentages match
+    ([(69,)], [(69,)], True),
+    ([(47.0,)], [(47,)], True),                   # a float that equals the gold int
+    ([("Brno", 75), ("Praha", 324)], [("Praha", 324), ("Brno", 75)], True),   # order-insensitive
+    ([("D",), ("D",)], [("D",)], False),          # duplicates are kept: a multiset, not a set
+    ([(" Sokolov ",)], [("Sokolov",)], True),     # a string trimmed
+])
+def test_rows_match_compares_as_a_float_rounded_multiset(agent, gold, ok):
+    assert _t2s.rows_match(agent, gold) is ok
 
 
 def test_a_union_of_types_validates_against_any_of_them():
