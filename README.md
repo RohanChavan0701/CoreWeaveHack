@@ -656,6 +656,118 @@ the row met, the malformed assistant turn replayed with arguments the
 endpoint accepts. The rerun that would show whether any of them changes
 this table has not been run. Every count here is a floor from one run.
 
+### The incidents pool on `openai/gpt-oss-120b` and `gpt-oss-20b`
+
+`experiments/incidents.toml`, run on 2026-09-13 over W&B Inference and traced
+to
+[`rohanpchavan0701/hgi-experiments`](https://wandb.ai/rohanpchavan0701/hgi-experiments/weave):
+36 tasks — nine hearth bundles worn four ways each — over three decoy lessons,
+`decoy-dependency`, `decoy-saturation` and `decoy-state`, each bundle a set of
+readings whose loudest signal names a cause that is not the cause. Seed 0 deals
+them into twelve batches of three, one pass per batch, batches 1 and 2 met
+again after the stream, so every pass is first sight and the two revisits are
+the only rows a store could have taught. The arms run today, the stream rate
+being the pass rate over all 36 first-sight rows:
+
+| arm | actor | judge roster | stream | admitted |
+|---|---|---|---|---|
+| 120b-detached | `gpt-oss-120b` | — | 0.47 (17/36) | — |
+| 120b-attached | `gpt-oss-120b` | `gpt-oss-120b` | still running at ten of twelve passes, 0.47 (14/30) | D-0001 after pass 4 |
+| student-detached | `gpt-oss-20b`, low effort | — | 0.33 (12/36) | — |
+| student-attached | `gpt-oss-20b` | `gpt-oss-20b` | 0.42 (15/36) | nothing |
+| student-strong-judge | `gpt-oss-20b` | `DeepSeek-V4-Pro` | 0.36 (13/36) | D-0001, D-0002 |
+| student-120b-judge | `gpt-oss-20b` | `gpt-oss-120b` | 0.47 (17/36) | nothing |
+| peer-detached | `Llama-3.3-70B` | — | 0.00 (0/36) | — |
+
+Three of those rows are not results. The 120b-detached 0.47 is at the current
+prompt hash; an earlier run of the same arm at the previous hash, before
+`ruled_out` was asked for, scored 0.64 (23/36), and 120b-attached at that same
+earlier hash scored 0.56 with the store never once in context — the pair is a
+prompt change and not a memory effect, and neither number belongs in the same
+column as the others. student-120b-judge died at pass 2 on a `None` evaluation
+summary twice before the third attempt completed, so its curve is the survivor
+of three starts. And peer-detached's 0.00 is a protocol mismatch, not a
+diagnosis result: Llama-3.3-70B reports its answer by shelling `echo` and never
+returns the final JSON, so 32 of its 36 rows end at the turn limit with nothing
+the grader can read. The student-attached arm admitted nothing at all — three
+pass proposals expired unadopted — and the two records student-strong-judge did
+admit are tooling hygiene, not diagnosis: *retry an HTTP read with bounded
+backoff* and *a reply that is not valid JSON fails the task*, both flipped at
+the next consolidation and never consulted by any row.
+
+The control says the same thing from the other side. `upstream-outage-b` is the
+bundle whose readings look like saturation and are not, and every detached arm
+scored 0/4 on it, every miss answering `pool-exhaustion`. Across 120b-detached's
+thirteen misses the shape is: 0 rows over budget, 7 rows naming the right class
+while citing a decoy reading, 6 rows naming the wrong class, all six
+`pool-exhaustion`. The pool is not hard because the models run out of calls. It
+is hard because the loud reading is believed.
+
+What was admitted, and when. In every attached arm, on every pass, `in context`
+is empty — not a record declined, a record never reached. The boot classifier
+codes an incident brief as work-shape `[]` with the escape `other(incident
+brief)`, so every record's guard fails on an empty term intersection and the
+store sits there logged as considered. The fix — `8c7cd80`, making the tasks'
+declared shapes the floor of the pass's work-shape, mirroring `anchor_terms` on
+the write side — landed after the sweep had started, so none of the sweep arms
+ran with it. The rest of the chain shows the same fault one link further up: all
+thirteen observations filed in the first 120b run named the loop and not the
+world ("did not consult the detection record"), the blind coder escaped 41 of 41
+noticings under the old vocabulary, and the three convention terms the domain
+actually needs — `pool-exhausted`, `dependency-stalled`, `release-regressed` —
+landed on 1 of 4 shapes on the student arm and 2 of 4 on the judge arm. A lens
+diagnostic over the detached failures, 45 calls, isolates the last link:
+appending one sentence to the L-0004 angle moves world-naming noticings from 42%
+to 88% of rows, dropping `consulted` from the brief makes it worse rather than
+better (15%), and the lens restates the attempt's own class because the row it
+is given never carries what the readings said.
+
+**The seeded run.** Because nothing the loop wrote could reach context, the
+records were written by hand: four decisions — pool-exhausted, dependency-
+stalled, release-regressed, and citation discipline — placed into fresh stores
+for each model, then the same 36 tasks run twice, pass 1 with the boot bug in
+place (records present, unreachable) and pass 2 after the fix:
+
+| | 20b p1 | 20b p2 | 120b p1 | 120b p2 |
+|---|---|---|---|---|
+| task_pass_rate | 0.50 | 0.44 | 0.47 | 0.69 |
+| in context | none | D-0002 | none | D-0001, D-0003 |
+| bad-deploy (release-regressed) | 5/8 | 3/8 | 1/8 | 8/8 |
+| upstream-outage (dependency-stalled) | 5/8 | 6/8 | 4/8 | 6/8 |
+| pool-exhaustion (pool-exhausted) | 5/12 | 1/12 | 7/12 | 5/12 |
+| poison-message (no record) | 3/8 | 6/8 | 5/8 | 6/8 |
+| control upstream-outage-b | 2/4 | 3/4 | 0/4 | 2/4 |
+
+Each store took a second pass-2 run: 20b 0.47 with D-0001 and D-0003 in
+context, 120b 0.56 with D-0001 alone. After the boot fix all four records are
+reached through the index and the model-based guard — `_coder.guard`, the
+`not_this` check against the presentations — admits one or two of them per boot,
+nondeterministically, which is why the two runs of a cell differ in what they
+saw. D-0004 was never in context on any of them.
+
+The honest reading. The strong actor moves in the direction the records teach:
+0.47 to 0.69 overall, bad-deploy 1/8 to 8/8, and the control 0/4 to 2/4 with
+`ruled_out` now naming the pool readings it set aside rather than answering
+with them — and the lift tracks which record reached context, 0.56 with one and
+0.69 with two. The weak actor reads the same records, applies them, and does not
+convert: flat to slightly down across both of its pass-2 runs, its one gain the
+control at 2/4 to 3/4. And in both actors the genuine `pool-exhaustion` family
+falls, 5/12 to 1/12 and 7/12 to 5/12, which is the finding rather than a blemish
+on it: the dependency record shifts the prior away from pool-exhaustion instead
+of teaching the discriminator that separates the two, so what the run
+demonstrates is a shifted prior and not acquired discrimination. Thirty-six rows
+per cell, single samples, no repeats. The larger caveat is upstream of the
+table: the automatic chain — observation to coder to record to hook — produced
+none of these four records today, they were written by hand, and the three links
+it is missing are now named rather than guessed at: the row must carry what the
+tool returned, the lens must be asked for the world's fact and not the attempt's
+account of itself, and the vocabulary must hold the domain's own terms. The
+runner itself died on validation errors three times over the day — a verdict
+token, a `None` evaluation summary twice, a minted term — all of them in shared
+code and all listed in PR #7. The arms and rosters are in
+`experiments/incidents.toml`; every call behind these numbers is in the Weave
+project above.
+
 ### The baseline on `openai/gpt-oss-120b`
 
 Run on 2026-09-12 over W&B Inference, six passes attached and six detached,
