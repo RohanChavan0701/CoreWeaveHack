@@ -11,6 +11,7 @@ import pytest
 from hgi import experiment as _experiment
 from hgi import model as _model
 from hgi import registry as _registry
+from hgi.store import Store, admitting_commit, git
 
 EXPERIMENTS = Path(__file__).resolve().parents[1] / "experiments"
 
@@ -92,6 +93,33 @@ def test_rerunning_an_arm_needs_force(tmp_path, monkeypatch):
     with pytest.raises(SystemExit, match="--force"):
         _experiment.run_arm(exp, "detached", tmp_path, commit=False)
     assert _experiment.run_arm(exp, "detached", tmp_path, commit=False, force=True)["finished_at"]
+
+
+def test_the_arm_genesis_commit_anchors_the_constitution_articles(tmp_path):
+    """The seed's articles are named as a range on the arm's genesis commit, so `hgi lineage C-0003`
+    resolves an admitting commit inside an arm's store, as it does in the demonstration store."""
+    exp = _experiment.Experiment(name="lineage", arms={"a": {}})
+    spec = exp.resolve("a")
+    roster = _experiment.install(exp, spec)
+    where = tmp_path / "lineage" / "a"
+    where.mkdir(parents=True)
+    store_root = where / "store"
+    reg = _experiment.seed_arm(exp, "a", spec, store_root, roster)
+    token = _registry.use(reg)
+    try:
+        git("init", "-q", cwd=where)
+        git("config", "user.email", "committer@example.invalid", cwd=where)
+        git("config", "user.name", "the committer", cwd=where)
+        store = Store(store_root, registry=reg)
+        message = _experiment._genesis_message(exp, "a", spec, store, roster)
+        assert "constitution C-0001..C-0007" in message
+        _experiment._commit_arm(where, store, True, message)
+
+        at = admitting_commit(store, "C-0003")
+        assert at is not None and at["subject"] == message
+        assert admitting_commit(store, "C-0007") == at
+    finally:
+        _registry.reset(token)
 
 
 def test_show_names_every_arms_plan_without_touching_a_store(tmp_path, monkeypatch):
