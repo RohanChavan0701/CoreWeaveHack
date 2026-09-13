@@ -568,12 +568,35 @@ def orphaned_edit(store: Store, rung: str, raw: dict[str, Any]) -> bool:
     return rung in EDIT_RUNGS and not (raw.get("supersedes") or []) and not store.decisions()
 
 
+def anchor_terms(store: Store, evidence: list[str]) -> list[str]:
+    """The task-declared work-shape terms of the tasks the evidence observations were noticed on.
+
+    A record's hook is the drafter's reading of the group's coded shape — the blind coder's coding of how the work
+    presented (``test-failure-triage``), which need not name what the task is about (``http-tool``). The boot index
+    matches a record to a task only where their work-shape terms intersect, so a record learned from an http-tool task
+    but hooked on the coder's shape never fires on the next http-tool task. The task's own terms are its declared
+    ``shapes`` (``suite.Task.shapes``); an observation's anchor call resolves to the evaluation row it was noticed on,
+    and that row names the task. Seed the hook with those shapes so a record is retrievable for the tasks it was
+    learned from (economy-run item 39). Only registered work-shape terms are returned, so the derived body still parses."""
+    calls = {o.anchor.call for e in evidence if (o := store.observation(e)) is not None and o.anchor.call}
+    if not calls:
+        return []
+    tasks = {row.get("task") for s in store.all("session") if s.attached and s.evaluation  # type: ignore[attr-defined]
+             for row in s.evaluation.rows if row.get("call") in calls and row.get("task")}  # type: ignore[attr-defined]
+    registered = set(store.registry.terms("work-shape"))
+    by_id = {t.id: t for t in _suite.current().tasks}
+    return sorted({sh for tid in tasks for sh in getattr(by_id.get(tid), "shapes", ()) if sh in registered})
+
+
 def sketch_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
     """A draft's body derived from the consolidator's sketch under the store's bars.
 
     A lineage move (split or fold) instead carries a body derived mechanically from the records it
     leaves — that derived body is used as given; it is the code's, not a role writing mechanism by hand.
     A nomination with neither a sketch nor a derived body is a failing field, never a placeholder.
+
+    The consultation hook is seeded with the tasks' own declared work-shape terms (:func:`anchor_terms`), on top of the
+    terms the drafter chose, so the record is retrievable for the tasks it was learned from.
     """
     from hgi.drafting import body as _body_from_sketch
     from hgi.drafting import sketch_of
@@ -581,6 +604,9 @@ def sketch_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
     if raw.get("sketch") is not None:
         sketch = sketch_of(raw.get("sketch"), store.registry)
         evidence = [e for e in raw.get("evidence", []) if isinstance(e, str)]
+        seeded = list(dict.fromkeys([*sketch.terms, *anchor_terms(store, evidence)]))
+        if seeded != list(sketch.terms):
+            sketch = sketch.model_copy(update={"terms": seeded})
         return _body_from_sketch(sketch, evidence, store.registry.bars, _model.model_id("pass"))
     if raw.get("split_from") or raw.get("folded_from"):  # a lineage move derives its body from the records it leaves, not from a sketch
         derived = raw.get("body")
