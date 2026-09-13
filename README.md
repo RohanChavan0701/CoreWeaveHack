@@ -514,6 +514,117 @@ lessons in every arm — and the drafting contract, the examiner and the
 adjudicator deciding which of those lessons became a record (the
 carry-forward, items 25 and 32).
 
+### The economy run on `openai/gpt-oss-120b`
+
+`experiments/economy.toml`, run on 2026-09-13 over W&B Inference from the
+tree of `claude/nervous-rubin-e8e759` and brought over with its arm stores:
+the same 84 `curriculum` tasks, dealt by seed 2 into a different ten
+batches of eight, a consolidation every two batches, batches 1 and 2 met
+again after the stream; `openai/gpt-oss-120b` attached and detached, faults
+off. It asks the stream graded on quality rather than correctness alone —
+where a model passes a lesson at first contact the memory's value is the
+cost, not the pass, so `solution_economy`, `turn_economy` and
+`method_transfer` run beside `task_pass_rate`, paired per batch and per
+lesson. The logs are derived from the arm stores
+(`experiments/results/economy/`), traced to the same project as the stream,
+[`slavazinevich-worldvue/hgi-experiments`](https://wandb.ai/slavazinevich-worldvue/hgi-experiments/weave).
+
+First sight per batch, both arms on the same eight tasks, the pass rate
+then `economy / turns / transfer`:
+
+| batch | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | stream |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| attached | 0.50 | 0.62 | 0.38 | 0.38 | 0.50 | 0.50 | 0.50 | 0.38 | 0.62 | 0.38 | 0.47 |
+| detached | 0.50 | 0.50 | 0.38 | 0.62 | 0.75 | 0.50 | 0.62 | 0.25 | 0.62 | 0.50 | 0.53 |
+| attached quality | 0.26 / 0.27 / 0.00 | 0.36 / 0.38 / — | 0.21 / 0.21 / — | 0.14 / 0.17 / — | 0.17 / 0.22 / 1.00 | 0.21 / 0.24 / 1.00 | 0.21 / 0.24 / 0.00 | 0.12 / 0.13 / 0.00 | 0.36 / 0.38 / — | 0.21 / 0.21 / — | 0.23 / 0.25 / 0.40 |
+| detached quality | 0.29 / 0.29 / 0.00 | 0.26 / 0.27 / 0.00 | 0.21 / 0.21 / — | 0.36 / 0.40 / — | 0.42 / 0.44 / 0.00 | 0.19 / 0.22 / 1.00 | 0.43 / 0.40 / 0.00 | 0.07 / 0.07 / — | 0.36 / 0.38 / — | 0.29 / 0.31 / — | 0.29 / 0.30 / 0.20 |
+| in context, attached | — | — | — | — | — | — | — | — | — | — | |
+| consolidation after | | K-0001: nothing | | K-0002: D-0001 | | K-0003: nothing | | K-0004: D-0002 | | K-0005: D-0003 | |
+
+First sight per lesson, with the naive-shape failures of the attached arm
+before and after the first pass that had a record mentioning the lesson in
+context — no first-sight pass had a record in context at all, so the after
+column is empty on every row:
+
+| lesson | tier | attached | detached | attached quality | detached quality | attached: naive before / after first mention |
+|---|---|---|---|---|---|---|
+| bom | loud | 1.00 (11/11) | 1.00 (11/11) | — / — / — | — / — / — | 0/11 / — |
+| moved-v2 | loud | 0.55 (6/11) | 0.64 (7/11) | 0.28 / 0.37 / — | 0.30 / 0.40 / — | 5/11 / — |
+| token-route | loud | 0.92 (11/12) | 0.92 (11/12) | 0.45 / 0.45 / — | 0.47 / 0.47 / — | 0/12 / — |
+| csv-quoted | visible | 0.45 (5/11) | 0.45 (5/11) | 0.19 / 0.22 / 0.40 | 0.22 / 0.21 / 0.20 | 6/11 / — |
+| footer-row | visible | 0.00 (0/12) | 0.00 (0/12) | 0.00 / 0.00 / — | 0.00 / 0.00 / — | 12/12 / — |
+| paged-api | visible | 0.45 (5/11) | 0.73 (8/11) | 0.50 / 0.50 / — | 0.80 / 0.80 / — | 4/11 / — |
+| trailing-newline | invisible | 0.00 (0/12) | 0.00 (0/12) | 0.00 / 0.00 / — | 0.00 / 0.00 / — | 12/12 / — |
+
+Revisits: the attached arm met batch 1 again at 0.50 (0.50 at first sight)
+and batch 2 at 0.62 (0.62) with D-0003 in context, the only record the
+stream left standing that the boot retrieved at all — it was applied on
+twelve of the sixteen revisit rows, and on the two `moved-v2` rows, the
+lesson its text mentions, both failed, one a wrong answer and one the naive
+410.
+
+What was admitted, and when. The attached arm filed 34 observations over
+the ten first-sight passes and 40 over the twelve including the revisits;
+the detached arm filed none, having no store to file into. K-0001 after
+pass 2 shaped them into 5 groups with none at the two-session bar and
+nominated nothing. K-0002 after pass 4 had 5 groups, 2 at the bar, and
+admitted D-0001 from the `http-tool` group — *retry HTTP 410 Gone up to two
+attempts before declaring failure*, a retry on a permanent status, which is
+the lesson misread: the 410 names `/v2` and the route has moved, so no
+number of attempts on the old one succeeds — and declined an
+output-schema draft. K-0003 after pass 6 had 8 groups, 4 at the bar, and
+admitted nothing: 2 declined, 3 refused at parse on an empty `not_this`,
+1 hook-edit refused for naming no record to supersede, and D-0001,
+nominated at the counterfactual-edit rung, went `moot`. K-0004 after pass 8
+had 8 groups, 6 at the bar, and admitted D-0002 — *every paged query
+include an `active:true` filter before counting results*, which is one
+clothing's filter and not the paging convention the lesson turns on —
+declined 7, saw 1 hook-edit refused at parse, and retired L-0001, L-0002
+and L-0003 through the genesis-deadline door. K-0005 after pass 10 had 9
+groups, 5 at the bar, and admitted D-0003 at the hook-edit rung — *a hook
+that checks for HTTP 410 responses and aborts further tool calls for the
+affected task* — declining 3 and seeing 1 more hook-edit refused at parse.
+Six drafts refused at parse across three consolidations, and the count is
+exact because every refusal is on the ledger. The detached arm's pass 10
+carries the other kind of loss: `curriculum/footer_08` failed
+`error:model-call`, the model having emitted a shell call whose arguments
+string was not valid JSON, after which the endpoint refused the next
+request outright and the model never got the turn to read the harness's
+*bad tool call* answer — the row is the one `E` in that arm's footer-row
+series, beside a `csv-quoted` row lost to `error:budget` on pass 8.
+
+The honest reading. The pass rate did not separate — 0.47 (38/80) attached
+against 0.53 (42/80) detached, better on two batches, equal on four, worse
+on four — and the quality series could not have, because no record was in
+context on any first-sight pass: D-0001 sat behind a guard the boot failed
+and went `moot` at the next consolidation; D-0002's consultation latch was
+scoped to `test-failure-triage`, the shape the blind coder gave the
+observations rather than the task's own terms, so the boot index matched it
+to no task; and D-0003 landed after the last consolidation and failed both
+rows of the lesson it mentions when the revisits applied it. What the run
+does give is the three series read on a real model for the first time:
+`solution_economy` 0.23 attached against 0.29 detached and `turn_economy`
+0.25 against 0.30, each evaluable on 69 of the 80 first-sight rows — the
+eleven `bom` rows carry no knowing floor — and `method_transfer` 0.40
+against 0.20, which is 2 of 5 rows against 1 of 5, since transfer is
+evaluable only on a passed shell-lesson row whose pass left a replayable
+command and the two silent shell lessons passed nothing: every evaluable
+row in both arms is `csv-quoted`. Those two lessons are the run's flat
+floor — footer-row and trailing-newline 0/12 each on both arms, 24 of 24
+rows the naive shape attached and 23 of 24 detached, the missing row the
+malformed tool call — and the observations the close filed named the check
+and not the world ("the `method_transfer` check was missed", "did not fire
+a check record to verify the total"): none of the forty named a footer row,
+a missing newline or a quoted comma in words the coder could group on. The
+run's four findings are the carry-forward's items 39–42 — the latch scoped
+to the coder's term, the close naming scores not world-facts, the drafts
+refused at parse, the malformed tool call — and the fixes that answer them
+are on `main` as decisions 78, 79, 81 and 82: the parse floors relaxed, the
+hook seeded from the task's own terms, the close asked for the world's fact
+the row met, the malformed assistant turn replayed with arguments the
+endpoint accepts. The rerun that would show whether any of them changes
+this table has not been run. Every count here is a floor from one run.
+
 ### The baseline on `openai/gpt-oss-120b`
 
 Run on 2026-09-12 over W&B Inference, six passes attached and six detached,
