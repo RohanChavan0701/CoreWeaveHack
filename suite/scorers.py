@@ -74,6 +74,8 @@ class OutputSchemaValid(weave.Scorer):
 
 def _matches(value: Any, spec: dict) -> bool:
     t = spec.get("type")
+    if isinstance(t, list):  # a union of types: any of them satisfies the schema
+        return any(_matches(value, {**spec, "type": one}) for one in t)
     if t == "integer":
         return isinstance(value, int) and not isinstance(value, bool)
     if t == "number":
