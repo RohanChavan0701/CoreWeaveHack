@@ -39,7 +39,16 @@ def _():
     from hgi import index as hindex
     from hgi.cli import load_env
     from hgi.store import Store
+    from hgi.tracing import weave_project_url, weave_url
     from suite import lessons as slessons
+
+    def wlink(uri, text="trace"):
+        """One Weave call URI as markdown into the trace store; an untraced run reads `—`."""
+        return f"[{text}]({weave_url(uri)})" if weave_url(uri) else "—"
+
+    def wcell(uri):
+        """The same as a table cell — `mo.ui.table` renders an Html value and prints a markdown string raw."""
+        return mo.md(wlink(uri))
 
     load_env()
     stores = {"store — the demonstration": Path("store")} | {
@@ -61,6 +70,9 @@ def _():
         refresh,
         slessons,
         subprocess,
+        wcell,
+        weave_project_url,
+        wlink,
     )
 
 
@@ -70,15 +82,18 @@ def _(Store, picker, refresh):
     root = picker.value
     store = Store(root)
     sessions = sorted(store.all("session"), key=lambda s: (s.pass_, not s.attached))
-    return root, sessions, store
+    trace_root = next((s.trace_root for s in sessions if s.trace_root), None)  # the store's Weave project, or None untraced
+    return root, sessions, store, trace_root
 
 
 @app.cell
-def _(fires, lint_out, mo, off, on, picker, refresh, root, sessions, store):
+def _(fires, lint_out, mo, off, on, picker, refresh, root, sessions, store, trace_root, weave_project_url):
     _last = lambda pts: next((f"{v:.2f}" for _, v in reversed(pts) if v is not None), "—")
+    _weave = mo.md(f"[Weave traces]({weave_project_url(trace_root)}) · [Weave evaluations]({weave_project_url(trace_root, 'evaluations')})"
+                   if trace_root else "_untraced run (no HGI_WEAVE_PROJECT)_")
     mo.vstack([
         mo.md(f"# HGI — `{root}`"),
-        mo.hstack([picker, refresh], justify="start"),
+        mo.hstack([picker, refresh, _weave], justify="start"),
         mo.hstack([
             mo.stat(sum(s.attached for s in sessions), label="passes run", caption="attached", bordered=True),
             mo.stat(_last(on), label="task_pass_rate", caption="attached, latest", bordered=True),
@@ -165,7 +180,7 @@ def _(curve_svg, log, mo, sessions):
 
 
 @app.cell
-def _(curve_svg, exp, hexperiment, json, mo):
+def _(curve_svg, exp, hexperiment, json, mo, trace_root, weave_project_url):
     overlay = mo.md("")
     if exp is not None:
         try:  # `hexperiment.report` resolves every arm, and a refusal there is a SystemExit
@@ -173,7 +188,8 @@ def _(curve_svg, exp, hexperiment, json, mo):
             _series = {f"{a} · {r['roster']['pass']}" + (" (detached)" if r["spec"]["mode"] == "detached" else ""):
                        [(int(p), v) for p, v in r["curve"].items()] for a, r in _arms.items()}
             overlay = mo.vstack([mo.md(f"## Experiment `{exp.name}` — every arm on one chart" + (f": {exp.description}" if exp.description else "")),
-                                 curve_svg(_series), mo.md(hexperiment.report(exp).split("\n", 2)[2])])
+                                 curve_svg(_series), mo.md(hexperiment.report(exp).split("\n", 2)[2])]
+                                + ([mo.md(f"[compare the arms' evaluations in Weave]({weave_project_url(trace_root, 'evaluations')})")] if trace_root else []))
         except (Exception, SystemExit) as _e:
             overlay = mo.md(f"⚠️ the experiment overlay did not read: `{type(_e).__name__}: {_e}`")
     return (overlay,)
@@ -246,15 +262,17 @@ def _(log, mo):
 
 
 @app.cell
-def _(log, mo, pass_pick, store):
+def _(log, mo, pass_pick, sessions, store, wcell, wlink):
     passes_view = mo.md("")
     if log is not None and pass_pick.value is not None:
         _p = next(x for x in log["passes"] if x["pass"] == pass_pick.value)
+        _s = next((s for s in sessions if s.id == _p["session"]), None)
+        _run = (_s.evaluation.run if _s and _s.evaluation else None)
         _rows = [{"task": r["task"], "lesson": r["lesson"], "symptom": r["symptom"], "applied": " ".join(r["applied"]) or "—",
                   "http": r["calls"]["http"], "shell": r["calls"]["shell"], "turns": r["calls"]["turns"],
                   "economy": "—" if r["economy"] is None else f"{r['economy']:.2f}",
                   "error": ((r["error"] or {}).get("message") or "")[:80],
-                  "trace": f"[trace]({r['call']})" if r["call"] else ""} for r in _p["rows"]]
+                  "trace": wcell(r["call"])} for r in _p["rows"]]
         _ctx = [f"**{i}** — {store.read('decision', i).decision}" for i in _p["in_context"] if store.exists("decision", i)]
         _k = _p["consolidation"]
         _kv = mo.md("_no consolidation after this pass_") if _k is None else mo.md("\n".join(
@@ -266,7 +284,8 @@ def _(log, mo, pass_pick, store):
             or ["", "_nothing grouped, nothing nominated_"]))
         passes_view = mo.vstack([
             mo.md(f"## Pass {_p['pass']} — batch {_p['batch']} (`{_p['hash']}`), session `{_p['session']}`, {_p['kind']}; "
-                  f"work shape {', '.join(_p['work_shape']) or '—'}"),
+                  f"work shape {', '.join(_p['work_shape']) or '—'}"
+                  + (f" · {wlink(_run, 'evaluation in Weave')}" if _run else "")),
             pass_pick, mo.ui.table(_rows),
             mo.accordion({
                 f"records in context ({len(_p['in_context'])})": mo.md("\n\n".join(_ctx) or "_nothing was in context_"),
@@ -278,9 +297,10 @@ def _(log, mo, pass_pick, store):
 
 
 @app.cell
-def _(hindex, mo, store):
+def _(hindex, mo, store, wcell):
     hooks = hindex.read(store, "hooks")
-    competence = hindex.read(store, "competence")
+    _adjudicator = {d.id: d.admission.adjudicator.call if d.admission.adjudicator else None for d in store.decisions("accepted")}
+    competence = [{**r, "adjudicator": wcell(_adjudicator.get(r["record"]))} for r in hindex.read(store, "competence")]
     fires = hindex.read(store, "fires")
     zero = hindex.read(store, "structural_zero")
     deferred = hindex.read(store, "deferred")
@@ -291,7 +311,7 @@ def _(hindex, mo, store):
         mo.md("## Projections"),
         mo.md("### Hook-major index — a cell carries what a reader cannot obey without opening the record"),
         mo.ui.table([{"term": t, **c} for t, cells in hooks.items() for c in cells]) if hooks else mo.md("_no live consultation hook_"),
-        mo.md("### Competence — applied ÷ considered; a nominator, never a verdict"),
+        mo.md("### Competence — applied ÷ considered; a nominator, never a verdict. `adjudicator` is the call that admitted the record"),
         mo.ui.table(competence) if competence else mo.md("_no accepted decision_"),
         mo.md(f"### Undischarged fires: {len(fires)} · structural zero: {zero or 'none'}"),
         mo.ui.table(fires) if fires else mo.md("_none_"),
@@ -305,6 +325,22 @@ def _(hindex, mo, store):
         if fusion or convergence else mo.md("_none_"),
     ])
     return fires, projections
+
+
+@app.cell
+def _(mo, store, wcell):
+    _entries = store.all("hypothesis")
+    ledger = mo.vstack([
+        mo.md("## Ledger — every entry three distinct role calls"),
+        mo.ui.table([{
+            "entry": e.id, "species": e.species, "subject": e.subject, "verdict": e.verdict,
+            "proposer": e.proposer.role, "proposer call": wcell(e.proposer.call),
+            "contradiction": e.contradiction.source.role, "contradiction call": wcell(e.contradiction.source.call),
+            "adjudicator": e.adjudicator.role if e.adjudicator else "—",
+            "adjudicator call": wcell(e.adjudicator.call if e.adjudicator else None),
+        } for e in _entries]) if _entries else mo.md("_the ledger is empty_"),
+    ])
+    return (ledger,)
 
 
 @app.cell
@@ -376,13 +412,13 @@ def _(mo, root, subprocess):
 
 
 @app.cell
-def _(curve, escalations, evolution_view, floor, lessons_view, lineage, log, matrix, mo, overlay, passes_view, projections, verdicts):
+def _(curve, escalations, evolution_view, floor, ledger, lessons_view, lineage, log, matrix, mo, overlay, passes_view, projections, verdicts):
     _not_stream = mo.md("not a stream arm; the Loop tab has the curve")
     mo.ui.tabs({
         "Loop": mo.vstack([curve, overlay, evolution_view]),
         "Lessons": lessons_view if log is not None else _not_stream,
         "Passes": passes_view if log is not None else _not_stream,
-        "Store": mo.vstack([projections, lineage, matrix]),
+        "Store": mo.vstack([projections, ledger, lineage, matrix]),
         "Queue": mo.vstack([escalations, verdicts]),
         "Floor": floor,
     })
