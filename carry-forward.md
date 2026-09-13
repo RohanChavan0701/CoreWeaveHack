@@ -76,10 +76,25 @@ each with why it may be right and why it may not.
 5. **TypeSafe System1.** `hgi/coder.py` assumes an OpenAI-compatible surface
    behind `TYPESAFE_BASE_URL`; the real API shape is unverified (waitlist as
    of 2026-09-12). The role is the invariant; only the adapter changes.
-6. **ARIA.** Interactive only. `hgi mirror` publishes the datasets it needs;
-   the brief it drafts is recorded by URI with `hgi consolidate
-   --analyst-report`. A programmatic surface would replace `build_brief`'s
-   local derivation with the analyst's report as the primary input.
+6. **ARIA.** The programmatic surface is now wired: `hgi consolidate
+   --analyst-report <uri>` resolves the URI through `hgi.mirror.read_report`
+   and the backward pass reads the report as the consolidation brief's
+   primary input (`consolidate.consolidation_brief` → `analyst_brief`),
+   replacing `build_brief`'s local derivation of the nominator's rows; the
+   analyst's coding is stamped onto the open observations exactly where the
+   local grouping would write it. A URI that resolves to no machine-readable
+   report — an interactive chat report recorded only as provenance, or a
+   Weave ref that cannot be fetched — falls back to the local derivation, so
+   the interactive path is unchanged and the URI is still recorded. What is
+   *not* here: nothing yet **produces** an ARIA report programmatically —
+   `read_report` reads a Weave ref or a JSON file (a hand-exported or offline
+   report), and no code publishes the brief as a fetchable object, so a live
+   run still drafts the report interactively and records its URI. The report
+   is trusted whole: a field it omits is empty, not re-derived per-field, and
+   the score facts, accepted bodies, proposals and owed fires stay the
+   store's (the analyst never authors a record or a fact). `read_report`'s
+   Weave branch is offline-untested (guarded by try/except); the file and
+   None branches are covered in `tests/test_analyst.py`.
 7. **Split and fold nominations on a real model.** The operators execute
    (`tests/test_lineage_ops.py`); the stub's leaves share the parent's payload
    with the hook narrowed per sub-shape, which is a hook-edit wearing a
