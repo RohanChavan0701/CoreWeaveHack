@@ -1,0 +1,213 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T09:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "Three of the nine bundles are this shape, in every clothing. The brief's Signal says the storm sets in as request volume climbs and the service is failing under load; the Surface names a datastore and no external provider. The cause readings are the service's own pool counters, its pool/client settings and its log; the decoys are the datastore probe, log and metrics, the network probe and the outbound dependency probe, all of which read healthy — few active sessions, fast queries, every dependency ok. Direction matters: this is the shape where the saturated pool is the cause and the dependency is the decoy; the look-alike control at suite/families/incidents.py:39 is the opposite, a saturated pool that is a consequence, and the brief tells them apart (volume climbing versus volume unchanged with a provider named). The dressings rename every reading and service (suite/families/incidents.py:172), so the record carries the shape of the readings, never a name.",
+  "counterfactual": "The overshoot is 'timeout storm, therefore the pool': applied to a storm under unchanged request volume on a service that calls an external provider, the pool counters are saturated too but the saturation is a consequence of provider latency, the pool readings are that bundle's decoys, and citing them fails in every clothing (suite/families/incidents.py:39). The signature is the brief's volume-climbing storm with no provider, not the storm alone.",
+  "created_at": "2026-09-13T09:00:00-07:00",
+  "decision": "A gateway timeout storm on a service backed by a datastore, where the brief says the service is failing under load and the storm sets in as request volume climbs, and the Surface names no external provider or vendor: the cause is the service's own connection pool, and the dependency readings are the decoy. Open the pool counters/gauges reading first — it shows the pool saturated, in_use at max with requests waiting; if a second reading is wanted, open the pool/client settings (a small pool max, a hold per request, an acquire timeout above the gateway's read timeout) or the service log (pool wait climbing toward the timeout while each query's own time stays flat). Name pool-exhaustion and cite the pool reading(s). Do not open or cite the datastore probe, the datastore log, the datastore metrics, the network probe or the outbound/downstream dependency probe: in this shape they read healthy, and any one of them cited fails the task however right the class is.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether the brief's Signal matches the signature is judgment; the floor checks the record's shape only"
+    ]
+  },
+  "id": "D-0002",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a failure the brief describes as an abrupt step rather than a gradual climb, or under unchanged request volume, or as a backlog growing with throughput near zero — there the capacity readings are a consequence and the decoy",
+          "an error spike where a steady fraction of requests fail with a server error while the rest succeed — there the data-shaped readings are the decoy and the release is the cause",
+          "a storm on a service whose Surface names an external provider or vendor and whose Signal says request volume did not change — a saturated pool there is a consequence, and this record must not fire on it",
+          "a backlog or queue stall; a service returning errors on a fraction of requests"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "http-tool",
+          "tool-budget",
+          "task-planning"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.5
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the family retires the pool-exhaustion bundles, or a bundle of this signature is admitted whose pool readings are decoys",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — open the pool counters first; name pool-exhaustion; cite the pool readings only",
+      "why": "the pool reading shows in_use at max with requests waiting, which settles the class in one call"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — open the datastore or dependency probe first to rule the dependency out",
+      "why": "it reads healthy, spends the spare call, and cited it fails the task"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — name pool-exhaustion from the brief alone",
+      "why": "the check needs a cause reading cited (suite/families/incidents.py:223)"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "incidents",
+    "incidents-strict"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a gateway timeout storm on a service backed by a datastore, the brief saying the service is failing under load and the storm setting in as request volume climbs; no external provider in the Surface; a saturated pool whose dependency readings are healthy",
+    "not_this": [
+      "a failure the brief describes as an abrupt step rather than a gradual climb, or under unchanged request volume, or as a backlog growing with throughput near zero — there the capacity readings are a consequence and the decoy",
+      "an error spike where a steady fraction of requests fail with a server error while the rest succeed — there the data-shaped readings are the decoy and the release is the cause",
+      "a storm on a service whose Surface names an external provider or vendor and whose Signal says request volume did not change — a saturated pool there is a consequence, and this record must not fire on it",
+      "a backlog or queue stall; a service returning errors on a fraction of requests"
+    ],
+    "stakes": "reaching for the datastore or dependency probe first spends the one spare call and reads healthy; a dependency reading cited fails the task with pool-exhaustion right; on incidents-strict the wrong turn is over budget"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/incidents.py:39",
+      "suite/families/incidents.py:172",
+      "suite/families/incidents.py:223"
+    ],
+    "premises": [
+      {
+        "falsifier": "a bundle with that brief whose datastore is genuinely slow or whose dependency probe is the cause reading",
+        "id": "p1",
+        "statement": "in every bundle whose brief describes a storm setting in as request volume climbs on a datastore-backed service with no external provider, the pool readings are the cause and the datastore, network and dependency probes are decoys",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a dressing that rewrites the Signal's volume sentence or drops the datastore from the Surface",
+        "id": "p2",
+        "statement": "the dressings rename readings and services but leave the brief's Signal and Surface prose, so the signature survives every clothing (suite/families/incidents.py:172)",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a check that scores the class alone",
+        "id": "p3",
+        "statement": "citing a decoy reading fails the task with the class right (suite/families/incidents.py:223)",
+        "status": "supported"
+      }
+    ]
+  }
+}

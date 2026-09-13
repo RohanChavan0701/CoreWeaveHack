@@ -1,0 +1,213 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T09:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "One of the nine bundles is this shape, in every clothing: a service returning a server error on a steady fraction of requests and succeeding on the rest, the rate stepping up abruptly. The failing fraction tracks the inputs — some records carry a field, some do not — so a naive read reaches for the input samples, the audit, the request samples or the change log; those are the decoys and show the data unchanged since long before the onset. The cause readings are the release: the deploy ledger shows a new build started at the onset, the diff shows a defensive default dropped, the known-good baseline shows the prior build tolerating the same records, the service log shows the build id flip and the first failing status together. The dressings rename readings and services (suite/families/incidents.py:172); the fraction-of-requests Signal survives them all.",
+  "counterfactual": "The overshoot is naming bad-deploy from the ledger alone on any error spike: the ledger in every bundle lists a recent deploy, and on a spike whose Surface names an external provider the release is not the cause — the class must be read with the diff, the baseline or the log confirming the regression, and the check fails a wrong class before it reads the citation (suite/families/incidents.py:220).",
+  "created_at": "2026-09-13T09:00:00-07:00",
+  "decision": "An error spike where a steady fraction of requests fail with a server error while the rest succeed, stepped up abruptly rather than climbing, on a surface with no timeout storm: it looks like bad input or bad data, and the data-shaped readings — payload or input samples, catalog/inventory audit, request or call samples, record/row change log — are the decoy. The data is unchanged; it is the release that regressed. Open the deploy/release/rollout ledger first (a new build started at the onset of the spike); if a second reading is wanted, open the build/artifact diff (a defensive default dropped or a lookup made strict), the known-good baseline (the prior build tolerating the same records) or the service log (the build id flips at the onset and the failing status begins). Name bad-deploy and cite the release reading(s). Do not open or cite any data-shaped reading, and do not cite one as corroboration beside the ledger: it is not the data, and a data reading cited fails the task however right the class is.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether the brief's fraction signature is present is judgment; the floor checks the record's shape only"
+    ]
+  },
+  "id": "D-0004",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a timeout storm on a datastore-backed service that the brief says is failing under load, the storm setting in as request volume climbs, with no external provider named in the Surface — there the saturated pool is the cause",
+          "a failure the brief describes as an abrupt step rather than a gradual climb, or under unchanged request volume, or as a backlog growing with throughput near zero — there the capacity readings are a consequence and the decoy",
+          "a timeout storm, a backlog or a stall; a failure of essentially every request rather than a steady fraction",
+          "an error spike whose change log shows the data changed at the onset — a data regression, not this record's shape"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "http-tool",
+          "tool-budget",
+          "task-planning"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.5
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the family retires the fraction-of-requests bundle, or admits one of that signature whose data readings are the cause",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — open the release ledger first; name bad-deploy; cite the release readings only",
+      "why": "a build started at the onset of the spike settles it in one call"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — open the input or request samples first to find the bad records",
+      "why": "the data is unchanged and the sample cited fails the task"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — name bad-deploy and cite the samples as corroboration beside the ledger",
+      "why": "a decoy cited beside a cause reading still fails (suite/families/incidents.py:223)"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "incidents",
+    "incidents-strict"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "an error spike where a steady fraction of requests fail with a server error while the rest succeed, stepped up abruptly; it looks like bad input or bad data but follows a release; payload samples, audits and change logs that show the data unchanged",
+    "not_this": [
+      "a timeout storm on a datastore-backed service that the brief says is failing under load, the storm setting in as request volume climbs, with no external provider named in the Surface — there the saturated pool is the cause",
+      "a failure the brief describes as an abrupt step rather than a gradual climb, or under unchanged request volume, or as a backlog growing with throughput near zero — there the capacity readings are a consequence and the decoy",
+      "a timeout storm, a backlog or a stall; a failure of essentially every request rather than a steady fraction",
+      "an error spike whose change log shows the data changed at the onset — a data regression, not this record's shape"
+    ],
+    "stakes": "the payload or request samples opened first spend the one spare call and show unchanged data; a data-shaped reading cited fails the task with bad-deploy right; on incidents-strict the wrong turn is over budget"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/incidents.py:172",
+      "suite/families/incidents.py:220",
+      "suite/families/incidents.py:223"
+    ],
+    "premises": [
+      {
+        "falsifier": "a bundle of that signature whose change log or input samples are the cause readings — a genuine data regression",
+        "id": "p1",
+        "statement": "in the bundle whose brief describes a steady fraction of requests failing after an abrupt step, the release readings are the cause and the input, audit, request-sample and change-log readings are decoys",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a dressing that rewrites the Signal",
+        "id": "p2",
+        "statement": "the dressings leave the brief's Signal prose, so the fraction-of-requests signature survives every clothing (suite/families/incidents.py:172)",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a check that tolerates a decoy beside a cause reading",
+        "id": "p3",
+        "statement": "a decoy cited beside a cause reading fails the task (suite/families/incidents.py:223)",
+        "status": "supported"
+      }
+    ]
+  }
+}

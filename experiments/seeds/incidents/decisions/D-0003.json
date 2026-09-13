@@ -1,0 +1,211 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T09:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "Five of the nine bundles carry this decoy shape, across three classes. In each the loud readings are capacity: host or node metrics, replica or instance status, traffic or load metrics, gateway or edge status, socket or connection stats, worker or consumer metrics, broker and datastore health and metrics, pool counters and pool/client settings, queue depth history, the producer log. They show CPU falling, a pool at max, a backlog climbing — all consequences. The cause is read elsewhere: the release ledger and build diff when the step follows a deploy; the provider status page and the outbound probe when the Surface names an external provider; the queue counters and queue head when one in-order worker stalls on one record. The look-alike control (suite/families/incidents.py:39) is the sharpest case: a pool genuinely at max that is a consequence of provider latency, whose pool readings are decoys in every clothing. The brief's Signal carries the discriminator across dressings: an abrupt step or unchanged volume, never a storm rising with load.",
+  "counterfactual": "The overshoot is reading every saturated pool as a consequence: on a storm that the brief says sets in as request volume climbs, on a datastore-backed service with no provider, the pool readings are the cause and the dependency probes the decoys (suite/families/incidents.py:39 names the control from the other side; the pool-exhaustion bundles are its complement), so a pass that skips the pool counters there opens a healthy dependency probe and fails. The discriminator is the brief's Signal, not the pool reading.",
+  "created_at": "2026-09-13T09:00:00-07:00",
+  "decision": "A brief whose capacity readings will be loud but are a consequence, not the cause: the Signal describes an abrupt step in errors or latency rather than a gradual climb, or says request volume did not change, or describes a backlog growing linearly with throughput near zero on a single worker draining in order. Do not open or cite host/node metrics, replica or instance status, traffic/load metrics, gateway/edge status, socket/connection stats, worker/consumer metrics, broker or datastore health and metrics, pool counters or pool/client settings, queue depth history or the producer log — a pool at max, an idle CPU or a climbing depth there is the symptom, and citing one fails the task however right the class is. Route on the brief before the first fetch: (1) an abrupt step with no external provider named in the Surface is the release — open the deploy/release/rollout ledger (a new build started at the onset), or the build/artifact diff, the known-good baseline or the service log (the build id flips at the onset); name bad-deploy. (2) a Surface that names an external provider or vendor, with the step in latency or in per-request errors after a fixed delay, is the provider — open the provider's status page, the outbound/egress/downstream probe or the service log (provider time climbing while query time stays flat); name upstream-outage, and treat a saturated pool as the consequence of provider latency it is. (3) a growing backlog on one in-order worker is a poison message — open the queue counters (one head id redelivered over and over with the same error), the queue head (a malformed record) or the worker log (the same id failing on every pass); name poison-message. One cause reading confirms the class; stop there.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "which of the three routes the brief takes is judgment; the floor checks the record's shape only"
+    ]
+  },
+  "id": "D-0003",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a timeout storm on a datastore-backed service that the brief says is failing under load, the storm setting in as request volume climbs, with no external provider named in the Surface — there the saturated pool is the cause",
+          "an error spike where a steady fraction of requests fail with a server error while the rest succeed — there the data-shaped readings are the decoy and the release is the cause",
+          "a storm the brief says sets in as request volume climbs — the saturated pool there is the cause, and this record must not turn the pass away from it"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "http-tool",
+          "tool-budget",
+          "task-planning"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.5
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the family retires the abrupt-step, provider and backlog bundles, or admits one of this signature whose capacity readings are the cause",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — treat every capacity reading as a consequence; route on the brief to the release, the provider or the queue head",
+      "why": "the brief's step, unchanged volume or backlog names the class family; one cause reading settles it"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — open host or pool metrics first to see whether the service is saturated",
+      "why": "it is, and that is the symptom; the call is spent and the reading cited fails"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — name upstream-outage on every storm with a pool at max",
+      "why": "the pool-exhaustion bundles have a pool at max that is the cause; the brief's volume sentence separates them"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "incidents",
+    "incidents-strict"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "capacity and resource readings that are a symptom, not the cause: an abrupt step in errors or latency rather than a gradual climb; request volume unchanged; a backlog growing with throughput near zero; a saturated pool, an idle or hot host, a stalled worker that is a consequence of a deploy, a provider outage or a poison message at the queue head",
+    "not_this": [
+      "a timeout storm on a datastore-backed service that the brief says is failing under load, the storm setting in as request volume climbs, with no external provider named in the Surface — there the saturated pool is the cause",
+      "an error spike where a steady fraction of requests fail with a server error while the rest succeed — there the data-shaped readings are the decoy and the release is the cause",
+      "a storm the brief says sets in as request volume climbs — the saturated pool there is the cause, and this record must not turn the pass away from it"
+    ],
+    "stakes": "the capacity reading opened first spends the one spare call and shows the symptom; a capacity reading cited fails the task with the class right; on incidents-strict the wrong turn is over budget"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/incidents.py:12",
+      "suite/families/incidents.py:39",
+      "suite/families/incidents.py:223"
+    ],
+    "premises": [
+      {
+        "falsifier": "a bundle with an abrupt-step brief whose host, pool or worker metrics are the cause readings",
+        "id": "p1",
+        "statement": "in every bundle whose brief describes an abrupt step, unchanged volume or a growing backlog, the capacity readings are decoys and the cause readings are the release, the provider or the queue head",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a bad-deploy bundle whose Surface names a provider, or a provider bundle whose Surface does not",
+        "id": "p2",
+        "statement": "the Surface names an external provider exactly in the bundles whose cause is that provider",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a dressing that rewrites the Signal or the Surface",
+        "id": "p3",
+        "statement": "the dressings leave the brief's Signal and Surface prose, so the step, the volume sentence and the provider mention survive every clothing (suite/families/incidents.py:172)",
+        "status": "supported"
+      }
+    ]
+  }
+}

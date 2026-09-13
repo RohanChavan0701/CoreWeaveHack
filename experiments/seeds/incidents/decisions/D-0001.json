@@ -1,0 +1,212 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T09:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "The incidents family serves a brief and a reading menu; fetching costs, listing is free, and the budget is the count of cause readings plus the family's slack — one call on incidents, none on incidents-strict (suite/families/incidents.py:63) — so the walk, not the prose, is what is graded (suite/families/incidents.py:6). The scripted first-contact policy walks the menu in listed order and dies on the budget on every bundle (suite/families/incidents.py:200); a model that opens the loud reading first to rule it out reproduces that shape one call later. The check needs the class, at least one cause reading cited and no decoy reading cited (suite/families/incidents.py:223), and the knowing floor is one call per cause reading (suite/families/incidents.py:15), so a walk that opens one cause reading and stops beats one that opens them all.",
+  "counterfactual": "The overshoot is answering from the brief alone, or citing a reading that was never opened: the check needs at least one cause reading cited (suite/families/incidents.py:223) and the trace shows the calls, so a class named with no cause reading opened fails and a cited reading not in the trace is a fabrication. The plan spends calls; it does not spend zero.",
+  "created_at": "2026-09-13T09:00:00-07:00",
+  "decision": "On an incident brief whose readings are served one per call under a call budget, plan the walk before the first fetch. Read the brief's Signal and Surface for the shape of the failure, take the reading menu from the prompt (listing it costs nothing), and rank the readings by how likely each shows the cause rather than the symptom. The budget is the number of cause readings plus at most one, the answer needs the class plus one cause reading cited, and a decoy reading cited fails the task however right the class is — so open the highest-ranked cause reading first, stop as soon as a reading confirms the class, and answer. Never spend the budget opening the loud capacity or resource reading first to rule it out; never walk the menu in listed order; never open a reading whose only role is to corroborate; cite only readings you actually opened, and cite the fewest that show the cause.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "which reading is likeliest is judgment on the brief; the floor checks the record's shape, not the ranking"
+    ]
+  },
+  "id": "D-0001",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a task with no call budget, where a walk down every reading is free",
+          "a brief that serves no readings over the API — the evidence inline in the prompt, nothing to plan a walk against",
+          "a reading opened because it is the likeliest cause reading; this record forbids the loud reading first, not a first reading"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "http-tool",
+          "tool-budget",
+          "task-planning"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "tool_budget_respected",
+          "value": 0.9
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the family serves every reading in the prompt, or budgets a walk down the whole menu",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — rank the menu against the brief before the first fetch, open the likeliest cause reading, stop on confirmation",
+      "why": "the budget holds at most one wrong turn and the check needs only one cause reading cited"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — open the loud reading first to rule it out, then the cause reading",
+      "why": "spends the one spare call on incidents and is over budget on incidents-strict; tempts citing the decoy"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — walk the menu in the order listed and answer from what was read",
+      "why": "the naive policy; every bundle holds more readings than the budget allows (suite/families/incidents.py:209)"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "incidents",
+    "incidents-strict"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "an incident brief served as readings over an API, one GET per reading, under a call budget; the reading names listed in the prompt; the answer a class and the readings that show the cause",
+    "not_this": [
+      "a task with no call budget, where a walk down every reading is free",
+      "a brief that serves no readings over the API — the evidence inline in the prompt, nothing to plan a walk against",
+      "a reading opened because it is the likeliest cause reading; this record forbids the loud reading first, not a first reading"
+    ],
+    "stakes": "the naive walk down the reading menu dies on the budget before any answer; a loud reading opened first to rule it out spends the one spare call on incidents and is over budget on incidents-strict; a decoy cited fails the task with the class right, and every extra call lowers solution_economy"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/incidents.py:6",
+      "suite/families/incidents.py:63",
+      "suite/families/incidents.py:200",
+      "suite/families/incidents.py:223"
+    ],
+    "premises": [
+      {
+        "falsifier": "a check that accepts the class alone, or that tolerates a decoy cited beside a cause reading",
+        "id": "p1",
+        "statement": "the check needs the class, at least one cause reading cited and no decoy reading cited (suite/families/incidents.py:223)",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a family slack of two or more, which would hold a rule-out call",
+        "id": "p2",
+        "statement": "the budget is the count of cause readings plus one on incidents and exactly the count on incidents-strict (suite/families/incidents.py:63)",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a menu served only by a GET, which would cost the plan a call before the first reading",
+        "id": "p3",
+        "statement": "the reading names are in the prompt and listing costs no call (suite/families/incidents.py:5)",
+        "status": "supported"
+      }
+    ]
+  }
+}
