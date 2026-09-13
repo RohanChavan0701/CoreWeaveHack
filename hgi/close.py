@@ -28,6 +28,7 @@ from hgi import roles
 from hgi import steers as _steers
 from hgi import tracing
 from hgi.store import Store, now
+from suite.scorers import SERIES
 from hgi.types import Decision, Disposition, Draft, Fire, LedgerEntry, Observation, RoleCall, Session
 
 NO_HOOK = "none"
@@ -131,17 +132,20 @@ def file_contradictions(store: Store, session: Session) -> list[LedgerEntry]:
     return out
 
 
+def propose_content(store: Store, session: Session) -> dict[str, Any]:
+    """The propose request's content: what the pass filed and scored, and what a draft must draw on."""
+    return {"observations": session.observations_filed, "rows": session.evaluation.rows if session.evaluation else [], "bars": store.registry.bars,
+            "rungs": store.registry.terms("ladder-rung"), "vocabularies": store.registry.vocabulary_terms(), "scorers": SERIES, "model_id": _model.model_id("pass"),
+            "empty_is_legal": roles.EMPTY_IS_LEGAL}
+
+
 def propose(store: Store, session: Session) -> list[Draft]:
     """Step 5. The pass proposes; nothing it proposes is yet true. A draft that fails to parse is not filed."""
-    rows = session.evaluation.rows if session.evaluation else []
-    c = _model.complete("pass", roles.request("propose", observations=session.observations_filed, rows=rows, bars=store.registry.bars,
-                                              rungs=store.registry.terms("ladder-rung"), vocabularies=store.registry.vocabulary_terms(), model_id=_model.model_id("pass"), empty_is_legal=roles.EMPTY_IS_LEGAL),
-                        session=session.id, pass_=session.pass_)
+    c = _model.complete("pass", roles.request("propose", **propose_content(store, session)), session=session.id, pass_=session.pass_)
     out = []
     for raw in roles.drafts_in(c.json(), "drafts"):
         try:
-            draft = store.parse_as(Draft, {**raw, "body": roles.body_of(raw), "uid": store.new_uid(), "name": store.next_name("P"),
-                                           "drafted_at": now().isoformat(), "proposed_by": session.id})
+            draft = roles.draft_of(store, raw, proposed_by=session.id, name=store.next_name("P"), model_id=_model.model_id("pass"))
         except ValueError as e:
             print(f"draft refused: {roles.refusal(e)}")
             continue
@@ -149,6 +153,12 @@ def propose(store: Store, session: Session) -> list[Draft]:
         session.proposals.append(draft.uid)
         out.append(draft)
     return out
+
+
+def _passed(row: dict[str, Any]) -> bool:
+    """Whether the oracle passed the row: its task_pass_rate score, read off the row; an unscored row reads as passed only when it carries no error."""
+    score = (row.get("scores") or {}).get("task_pass_rate") or {}
+    return score.get("value") == 1.0 if "value" in score else not row.get("error")
 
 
 def carry_forward(store: Store, session: Session, dispositions: list[Disposition]) -> str:
@@ -170,7 +180,7 @@ def close(store: Store, session_id: str) -> Session:
     rows = session.evaluation.rows
     session.lens_answers += _boot.walk_lenses(store, session, "close", lambda lens: {
         "consulted": [_decision_view(store, c.record) for c in session.consulted],
-        "rows": rows, "fires": session.fires_seen,
+        "rows": rows, "failed": [r["task"] for r in rows if not _passed(r)], "fires": session.fires_seen,
         "scores": {k: f.value for k, f in session.evaluation.scores.items()},
     })
     dispositions = dispose(store, session)

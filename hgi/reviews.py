@@ -212,7 +212,7 @@ def escape_clusters(store: Store, vocab: str = "work-shape") -> list[dict[str, A
 
 def vocabulary(store: Store, record: Consolidation, vocab: str = "work-shape") -> list[Nomination]:
     """Escape recurrence nominates a term; the blind coder contradicts; the adjudicator verdicts; the registry grows."""
-    from suite.tasks import presentations
+    import suite as _suite
 
     bar = store.registry.bars.get("vocabulary", {}).get("independent_escapes", 2)
     out = []
@@ -222,7 +222,7 @@ def vocabulary(store: Store, record: Consolidation, vocab: str = "work-shape") -
         what = cluster["term"]
         n = Nomination(rung="hook-edit", rung_why=f"escape recurrence: other({what}) from {len(cluster['sessions'])} independent passes; the route-before-mint ladder's last rung for a term",
                        subject=f"{vocab}/{what}", evidence=[e["session"] for e in cluster["escapes"]])
-        text = " ".join(p["prompt"] for p in presentations())
+        text = " ".join(p["prompt"] for p in _suite.current().presentations())
         coded, coder_call = _coder.code([{"name": what, "noticed": text}], store.registry.terms(vocab), session=record.id, records_in_context=[])
         coder_terms = coded.get(what, [])
         covered = [t for t in coder_terms if not is_escape(t)]

@@ -24,7 +24,8 @@ fire-completeness            close          fails a closed session that saw a fi
                                             it undischarged
 projection-coherence         commit         fails when index/ differs from regeneration                               nothing — total
 consumer-edge-acyclicity     commit         fails a cycle over wiring edges                                           undeclared edges
-model-pricing                boot           warns on a lens or decision priced for a model other than the session's   the size of the re-pricing
+model-pricing                boot           warns on a lens or decision priced for a model other than the session's,  the size of the re-pricing
+                                            and on a role prompt not priced for the model the role runs on
 oracle-honesty               runtime        fails a fact carrying both a zero value and an unevaluable reason         a scorer measuring the wrong quantity
 genesis-anchor               consolidation  warns on a genesis article past its anchor deadline with no anchor         whether the anchor exemplifies the article
 
@@ -399,6 +400,20 @@ def check_pricing(store: Store, model_id: str | None = None) -> list[Finding]:
     return out
 
 
+@check("role-pricing", "boot", "reading a role's replies on an unread model")
+def check_role_pricing(store: Store, model_id: str | None = None) -> list[Finding]:
+    """Warn when a role runs on a model its prompt is not priced for — its replies have not been read back there yet."""
+    from hgi import model as _model
+    from hgi import roles
+
+    out = []
+    for role in roles.ROLES:
+        runs = _model.model_id(role) if role != "pass" else model_id
+        if not roles.is_priced_for(role, runs):
+            out.append(warn("role-pricing", f"roles/{role}.md", f"priced for {roles.priced_for(role)!r}, the role runs {runs!r}"))
+    return out
+
+
 # --- oracle honesty -------------------------------------------------------------------
 
 @check("oracle-honesty", "runtime", "a scorer measuring the wrong quantity")
@@ -432,7 +447,7 @@ def run(store: Store, seams: tuple[str, ...] | None = None, model_id: str | None
         if seams and c.seam not in seams:
             continue
         try:
-            report.findings += c.fn(store, model_id) if c.name == "model-pricing" else c.fn(store)
+            report.findings += c.fn(store, model_id) if c.name in ("model-pricing", "role-pricing") else c.fn(store)
         except (ValidationError, ValueError) as e:
             # the schema check has already named the refused record; a later check cannot read past it
             report.findings.append(warn(c.name, None, f"skipped: a record was refused at parse ({_first_line(e)})"))

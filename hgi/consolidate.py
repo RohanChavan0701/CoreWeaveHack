@@ -33,8 +33,9 @@ from hgi import model as _model
 from hgi import reviews as _reviews
 from hgi import roles
 from hgi import tracing
-from hgi.registry import route_table
+from hgi.registry import route_table, term_head
 from hgi.store import Store, now
+from suite.scorers import SERIES
 from hgi.types import (
     Consolidation,
     Decision,
@@ -142,10 +143,14 @@ def build_brief(store: Store, record: Consolidation, sessions: list[Session]) ->
 
 # --- the four roles ------------------------------------------------------------------------
 
+def nominate_content(store: Store, brief: dict[str, Any]) -> dict[str, Any]:
+    """The nominate request's content: the brief, the bars, the ladder, the vocabularies a draft must draw on."""
+    return {"brief": brief, "bars": store.registry.bars, "rungs": store.registry.terms("ladder-rung"), "vocabularies": store.registry.vocabulary_terms(), "scorers": SERIES,
+            "model_id": _model.model_id("pass"), "empty_is_legal": roles.EMPTY_IS_LEGAL}
+
+
 def nominate(store: Store, record: Consolidation, brief: dict[str, Any]) -> list[dict[str, Any]]:
-    c = _model.complete("consolidator", roles.request("nominate", brief=brief, bars=store.registry.bars, rungs=store.registry.terms("ladder-rung"),
-                                                      vocabularies=store.registry.vocabulary_terms(), model_id=_model.model_id("pass"),
-                                                      empty_is_legal=roles.EMPTY_IS_LEGAL), session=record.id)
+    c = _model.complete("consolidator", roles.request("nominate", **nominate_content(store, brief)), session=record.id)
     record.brief["consolidator_call"] = c.call
     return roles.drafts_in(c.json(), "nominations")
 
@@ -166,18 +171,24 @@ def evidence_pack(store: Store, draft: Draft, brief: dict[str, Any]) -> dict[str
 
 def attack(store: Store, record: Consolidation, draft: Draft, evidence: dict[str, Any]) -> tuple[dict[str, Any], _model.Completion]:
     c = _model.complete("examiner", roles.request("attack", draft=draft.model_dump(by_alias=True, mode="json"), evidence=evidence), session=record.id)
-    return {"claims": c.json().get("claims", []), "verdict": "pending"}, c
+    out = c.json()
+    claims = [x for x in (out.get("claims", []) if isinstance(out, dict) else []) if isinstance(x, dict)]
+    return {"claims": claims, "verdict": "pending"}, c
 
 
 def verdict(store: Store, record: Consolidation, draft: Draft, attack_payload: dict[str, Any], evidence: dict[str, Any]) -> tuple[str, dict[str, Any], _model.Completion]:
-    """The adjudicator's one token, with the amendment an admit-amended names and the condition a defer names."""
+    """The adjudicator's token and its full reply — the amendment an admit-amended names, the condition a defer names, the
+    rationale weighing the attack. A token outside the vocabulary is an escalation, never a guess."""
     c = _model.complete("adjudicator", roles.request("verdict", draft=draft.model_dump(by_alias=True, mode="json"), attack=attack_payload,
                                                      oracle={"series": evidence["series"], "scores": evidence["scores"], "evaluation": evidence["evaluation"]},
                                                      watch_scorer=evidence["watch_scorer"], bars=store.registry.bars,
                                                      deferred=draft.deferral.model_dump(mode="json") if draft.deferral else None), session=record.id)
-    out = c.json()
-    v = str(out.get("verdict", "escalate(adjudicator returned no verdict)"))
-    store.registry.check("adjudicator-verdict", v)
+    out = c.json() if isinstance(c.json(), dict) else {}
+    v = str(out.get("verdict") or "escalate(adjudicator returned no verdict)")
+    try:
+        store.registry.check("adjudicator-verdict", v)
+    except ValueError:
+        v = f"escalate(adjudicator returned a token outside the vocabulary: {v[:80]})"
     return v, out, c
 
 
@@ -200,16 +211,18 @@ def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draf
     evidence = evidence_pack(store, draft, brief)
     attack_payload, examiner = attack(store, record, draft, evidence)
     v, out, adjudicator = verdict(store, record, draft, attack_payload, evidence)
-    amendment = out.get("amendment")
-    landed_premise = any(c["landed"] and c["target"].startswith("premise:") for c in attack_payload["claims"])
+    amendment = out.get("amendment") if isinstance(out.get("amendment"), str) else None
+    rationale = out.get("rationale") if isinstance(out.get("rationale"), str) else None
+    head = term_head(v)
+    landed_premise = any(c.get("landed") and str(c.get("target", "")).startswith("premise:") for c in attack_payload["claims"] if isinstance(c, dict))
     act = store.registry.route("adjudicator-verdict", v, ADJUDICATION)
     entry = LedgerEntry(
         id=store.mint("hypothesis"), at=now(), species="attack", subject=draft.uid, claim=draft.body.decision,
-        proposer=RoleCall(role="consolidator", model_id=_model.model_id(), call=record.brief.get("consolidator_call")),
+        proposer=RoleCall(role="consolidator", model_id=_model.model_id("consolidator"), call=record.brief.get("consolidator_call")),
         contradiction={"source": {"role": "examiner", "model_id": examiner.model_id, "call": examiner.call}, "attack": attack_payload},
-        verdict="premise-killed" if landed_premise else store.registry.route("adjudicator-verdict", v, ATTACK_VERDICTS),
+        verdict="premise-killed" if landed_premise and head == "decline" else store.registry.route("adjudicator-verdict", v, ATTACK_VERDICTS),
         adjudicator=RoleCall(role="adjudicator", model_id=adjudicator.model_id, call=adjudicator.call),
-        amendment=amendment, rung=nomination.rung,
+        amendment=amendment, rationale=rationale, rung=nomination.rung,
     )
     role = RoleCall(role="adjudicator", model_id=adjudicator.model_id, call=adjudicator.call)
     if act == "admit":
@@ -242,11 +255,36 @@ EDIT_RUNGS = {"counterfactual-edit": ("counterfactual", "not_this"), "hook-edit"
 """The slot-local rungs of the ladder (§ 10.3, rungs 1 and 4): each names the fields of ``edit`` it may change."""
 
 
+def sketch_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
+    """A draft's body derived from the consolidator's sketch under the store's bars.
+
+    A lineage move (split or fold) instead carries a body derived mechanically from the records it
+    leaves — that derived body is used as given; it is the code's, not a role writing mechanism by hand.
+    A nomination with neither a sketch nor a derived body is a failing field, never a placeholder.
+    """
+    from hgi.drafting import body as _body_from_sketch
+    from hgi.drafting import sketch_of
+
+    if raw.get("sketch") is not None:
+        sketch = sketch_of(raw.get("sketch"), store.registry)
+        evidence = [e for e in raw.get("evidence", []) if isinstance(e, str)]
+        return _body_from_sketch(sketch, evidence, store.registry.bars, _model.model_id("pass"))
+    derived = raw.get("body")
+    if isinstance(derived, str):
+        derived = json.loads(derived)
+    if isinstance(derived, dict):
+        return derived
+    raise ValueError("sketch: a drafting reply carries a `sketch` object")
+
+
 def edited_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
-    """A successor's body for an edit rung: the one superseded record's body with the rung's fields replaced — a refinement is a successor record, never a rewrite."""
+    """A successor's body for an edit rung: the one superseded record's body with the rung's fields replaced — a refinement is a successor record, never a rewrite.
+
+    A non-edit rung's body is derived from the sketch instead; the record's mechanism is the code's to derive, never the role's to write.
+    """
     rung, edit = raw.get("rung"), raw.get("edit") or {}
     if rung not in EDIT_RUNGS:
-        return roles.body_of(raw)
+        return sketch_body(store, raw)
     if len(raw.get("supersedes") or []) != 1:
         raise ValueError(f"a {rung} supersedes exactly one record; got {raw.get('supersedes')}")
     body = store.read("decision", raw["supersedes"][0]).body().model_dump(by_alias=True, mode="json")  # type: ignore[attr-defined]
@@ -288,12 +326,25 @@ def defer(store: Store, record: Consolidation, draft: Draft, entry: LedgerEntry,
 
 
 def draft_from(store: Store, record: Consolidation, raw: dict[str, Any]) -> Draft:
+    """A draft from a nomination: the body derived from the sketch (or the superseded record for an edit rung), the lineage
+    move recorded in ``split_from``/``folded_from``, and the anchors inherited from what it retires when it names none of its own."""
     retires = [*(raw.get("supersedes") or []), *(raw.get("folded_from") or []), *([raw["split_from"]] if raw.get("split_from") else [])]
     return store.parse_as(Draft, {"uid": store.new_uid(), "name": store.next_name("P"), "kind": "decision", "drafted_at": now().isoformat(),
-                                  "proposed_by": record.id, "rung": raw["rung"], "rung_why": raw["rung_why"], "body": edited_body(store, raw),
+                                  "proposed_by": record.id, "rung": raw.get("rung"), "rung_why": raw.get("rung_why") or "", "body": edited_body(store, raw),
                                   "evidence": list(raw.get("evidence") or []) or inherited_evidence(store, retires),
                                   "supersedes": list(raw.get("supersedes") or []),
                                   "split_from": raw.get("split_from") or None, "folded_from": list(raw.get("folded_from") or [])})
+
+
+def nomination_from(store: Store, raw: dict[str, Any]) -> Nomination:
+    """The nomination as the consolidator stated it; a rung outside the ladder is kept as an escape so the refusal is recorded, not lost."""
+    rung = str(raw.get("rung") or "")
+    try:
+        store.registry.check("ladder-rung", rung)
+    except ValueError:
+        rung = f"other({rung or 'no rung'})"
+    return Nomination(rung=rung, rung_why=str(raw.get("rung_why") or ""), subject=str(raw.get("subject") or "(unnamed)"),
+                      evidence=[e for e in raw.get("evidence", []) if isinstance(e, str)])
 
 
 # --- credit, fires, retirement --------------------------------------------------------------
@@ -413,7 +464,7 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
 
     with tracing.attributes(session=record.id, role="consolidator"):
         for raw in nominate(store, record, brief):
-            nomination = Nomination(rung=raw["rung"], rung_why=raw["rung_why"], subject=raw["subject"], evidence=list(raw.get("evidence", [])))
+            nomination = nomination_from(store, raw)
             try:
                 draft = draft_from(store, record, raw)
             except ValueError as e:

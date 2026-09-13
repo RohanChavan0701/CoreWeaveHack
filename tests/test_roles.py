@@ -20,10 +20,10 @@ def test_an_unknown_request_has_no_shape_and_is_refused():
         roles.request("oracle")
 
 
-def test_every_role_prompt_states_the_reply_rule_and_the_schemas():
+def test_every_role_prompt_states_the_reply_rule_and_the_shapes_it_reads():
     for role in roles.ROLES:
         text = roles.prompt(role)
-        assert roles.REPLY_RULE in text and "## Record shapes" in text
+        assert roles.REPLY_RULE in text and ("## Record shapes" in text) == bool(roles.role_models(role))
 
 
 def test_the_reply_shapes_cover_every_request_the_stub_answers():
@@ -32,17 +32,37 @@ def test_the_reply_shapes_cover_every_request_the_stub_answers():
     assert set(HANDLERS) - {"free"} == set(roles.REPLIES)
 
 
-def test_a_reply_wrapper_and_a_stringified_body_are_read():
+def test_a_reply_wrapper_and_a_stringified_sketch_are_read(store):
     from hgi.model import Completion
+    from hgi.stub import sketch
 
     assert Completion('{"reply": {"nominations": []}}', "m", None).json() == {"nominations": []}
     assert Completion('{"reply": 1, "other": 2}', "m", None).json() == {"reply": 1, "other": 2}
-    assert roles.body_of({"body": '{"decision": "x"}'}) == {"decision": "x"} and roles.body_of({"body": {"decision": "x"}}) == {"decision": "x"}
-    assert roles.body_of({}) == {}
+    raw = {"rung": "new-decision", "rung_why": "the fork is undecided", "subject": "cause", "evidence": ["O-0001"], "sketch": json.dumps(sketch("cause", ["http-tool"], ["O-0001"]))}
+    draft = roles.draft_of(store, raw, proposed_by="K-0001", name="P-0001", model_id="stub")
+    assert draft.body.decision.startswith("Errors that wrap") and draft.body.latches[0].guard.terms == ["http-tool"] and draft.body.priced_for.model_id == "stub"
+    assert draft.body.lifecycle.retirement.guard.over_passes == store.registry.bars["retirement"]["window_passes"]
+    with pytest.raises(ValueError, match="sketch"):
+        roles.draft_of(store, {"rung": "new-decision"}, proposed_by="K-0001", name="P-0002", model_id="stub")
+
+
+def test_a_sketch_missing_its_judgment_is_refused_field_by_field(store):
+    from hgi.drafting import sketch_of
+
+    with pytest.raises(ValueError) as e:
+        sketch_of({"decision": "x", "terms": [], "not_this": []}, store.registry)
+    text = roles.refusal(e.value)
+    assert "terms" in text and "not_this" in text and "counterfactual" in text and "premises" in text
+
+
+def test_each_role_receives_only_the_shapes_it_reads():
+    assert "Sketch" in roles.schemas("consolidator") and "DecisionBody" not in roles.schemas("consolidator")
+    assert "Draft" in roles.schemas("examiner") and "LedgerEntry" in roles.schemas("adjudicator")
+    assert roles.schemas("coder") == ""
 
 
 def test_the_schemas_keep_their_nested_definitions():
-    assert '"$defs"' in roles.schemas() and "DecisionBody" in roles.schemas()
+    assert '"$defs"' in roles.schemas("examiner") and "DecisionBody" in roles.schemas("examiner")
 
 
 def test_only_objects_count_as_drafts_and_no_placeholder_sits_inside_a_list():
@@ -70,4 +90,4 @@ def test_a_refusal_names_every_failing_field(store):
         store.parse_as(Draft, {"uid": "u", "name": "P-x", "drafted_at": "2026-09-12T00:00:00Z", "proposed_by": "K-1", "rung": "sideways", "rung_why": "", "body": {}})
     except ValueError as e:
         text = roles.refusal(e)
-    assert "rung: 'sideways' is not in the closed vocabulary" in text and "body." in text
+    assert "rung: 'sideways' is not in the closed vocabulary" in text and "body" in text
