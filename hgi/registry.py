@@ -57,6 +57,27 @@ def term_head(value: str) -> str:
     return value.split("(", 1)[0]
 
 
+class Unrouted(LookupError):
+    """A verdict the vocabulary admits but the seam has no act for — refused loud, never a silent fall-through."""
+
+
+ROUTE_TABLES: list[tuple[str, str, dict[str, str]]] = []
+"""Every declared route table as ``(seam, vocabulary, {head: act})``; the tests prove each covers its vocabulary."""
+
+
+def route_table(seam: str, vocab: str, table: dict[str, str]) -> dict[str, str]:
+    """Declare the act a seam takes on each head of a verdict vocabulary.
+
+    A table names every registered head and ``other`` (the escape is always
+    admitted, so it is always routed); a term added to the vocabulary without
+    a route is a test failure, and a verdict reaching the seam without one
+    raises :class:`Unrouted`. The act is a tag the seam dispatches on, so a
+    table can be read and checked without running the seam.
+    """
+    ROUTE_TABLES.append((seam, vocab, table))
+    return table
+
+
 @dataclass
 class Vocabulary:
     name: str
@@ -101,6 +122,20 @@ class Registry:
 
     def check(self, vocab: str, value: str) -> str:
         return self.vocab(vocab).check(value)
+
+    def route(self, vocab: str, verdict: str, table: dict[str, str]) -> str:
+        """The act ``table`` names for ``verdict``; the verdict is checked against ``vocab`` first."""
+        self.check(vocab, verdict)
+        head = "other" if is_escape(verdict) else term_head(verdict)
+        try:
+            return table[head]
+        except KeyError:
+            raise Unrouted(f"{vocab} verdict {verdict!r} has no route at this seam; routed heads are {sorted(table)}") from None
+
+    def unrouted(self, vocab: str, table: dict[str, str]) -> list[str]:
+        """The heads of ``vocab`` (and the escape) that ``table`` leaves without an act."""
+        heads = {term_head(t) for t in self.terms(vocab)} | {"other"}
+        return sorted(heads - set(table))
 
     def vocabulary_terms(self) -> dict[str, list[str]]:
         """Every closed vocabulary's terms by name — what a role drafting a record must draw its typed fields from."""

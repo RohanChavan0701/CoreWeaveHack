@@ -324,6 +324,20 @@ class Store:
         self.write(flipped)
         return flipped
 
+    def flip_premises(self, record: Decision, status: str, premise: str | None = None) -> Decision:
+        """The one in-place flip a warrant takes: a premise's status. One premise by id, or every premise when none is named."""
+        data = dump(record)
+        hit = False
+        for p in data["warrant"]["premises"]:
+            if premise is None or p["id"] == premise:
+                p["status"] = status
+                hit = True
+        if not hit:
+            raise ValueError(f"{record.id} has no premise {premise!r}")
+        flipped = self.parse_as(Decision, data)
+        self.write(flipped)
+        return flipped
+
     def anchor_article(self, article: ConstitutionArticle, anchor: str) -> ConstitutionArticle:
         """The one in-place change a genesis warrant takes: an anchor the adjudicator ratified, appended. ``evidence`` stays ``genesis``."""
         anchored = article.model_copy(update={"warrant": article.warrant.model_copy(update={"anchors": [*article.warrant.anchors, anchor]})})

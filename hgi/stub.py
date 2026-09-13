@@ -378,11 +378,11 @@ def _vocabulary(req):
 def _currency(req):
     if req.get("rotted"):
         if req.get("successor"):
-            return {"verdict": "still-holds", "why": f"the anchors {req['rotted']} retired into {req['successor']}, which stands for them"}
-        return {"verdict": "reversed", "why": f"the anchors {req['rotted']} retired with no successor; the warrant cites nothing that stands"}
+            return {"verdict": "still-holds", "why": f"the anchors {req['rotted']} retired into {req['successor']}, which stands for them", "premise": None}
+        return {"verdict": "reversed", "why": f"the anchors {req['rotted']} retired with no successor; the warrant cites nothing that stands", "premise": None}
     if req.get("successor"):
-        return {"verdict": "reversed", "why": f"the premise is superseded by {req['successor']}"}
+        return {"verdict": "reversed", "why": f"the premise is superseded by {req['successor']}", "premise": None}
     ratio = req.get("applied_over_considered")
     if ratio is not None and ratio < req.get("threshold", 0.1) and req.get("moot_evidence"):
         return {"verdict": "moot", "why": "the domain is no longer entered"}
-    return {"verdict": "still-holds", "why": "the premise stands; the fire is corroborating evidence against the payload, not the warrant"}
+    return {"verdict": "still-holds", "why": "the premise stands; the fire is corroborating evidence against the payload, not the warrant", "premise": None}

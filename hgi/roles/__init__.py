@@ -63,7 +63,8 @@ REPLIES: dict[str, Any] = {
     "exemplifies": {"verdict": "<still-holds if the instance exemplifies the article; reversed if it contradicts it; moot if it does not bear on it>", "why": "<one sentence>"},
     "vocabulary": {"verdict": "<admit if the escapes name one shape no registered term covers and the blind coder also escaped; else decline(<why>)>",
                    "means": "<for admit: one sentence defining the term, as the registry will carry it>"},
-    "currency": {"verdict": "<still-holds | reversed | moot>", "why": "<one sentence; a record whose cited anchor (`rotted`) retired still holds only if the anchor's successor stands for it>"},
+    "currency": {"verdict": "<still-holds | reversed | moot>", "why": "<one sentence; a record whose cited anchor (`rotted`) retired still holds only if the anchor's successor stands for it>",
+                 "premise": "<for reversed: the id of the premise the reading reversed; null when the warrant as a whole is disputed>"},
 }
 
 

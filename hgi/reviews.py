@@ -30,9 +30,15 @@ from hgi import coder as _coder
 from hgi import index as _index
 from hgi import model as _model
 from hgi import roles
-from hgi.registry import ESCAPE, is_escape
+from hgi.registry import ESCAPE, is_escape, route_table
 from hgi.store import Store, now
 from hgi.types import Consolidation, ConstitutionArticle, Decision, LedgerEntry, Nomination, RoleCall
+
+
+EXEMPLIFIES = route_table("genesis-anchor", "currency-verdict", {"still-holds": "anchor", "reversed": "refuse", "moot": "refuse", "pending": "refuse", "other": "refuse"})
+"""Whether an instance exemplifies an article: only a warrant that still holds against the instance earns the anchor."""
+VOCABULARY = route_table("vocabulary", "adjudicator-verdict", {"admit": "mint", "admit-amended": "mint", "decline": "decline", "defer": "wait", "escalate": "wait", "other": "wait"})
+"""A term nomination has no draft to amend, queue or latch: anything short of admit waits for new recurrence, which the ledger's ``after_pass`` counts from."""
 
 
 def _entry(store: Store, *, subject: str, claim: str, proposer: RoleCall, c: _model.Completion, verdict: str, coding: dict[str, Any],
@@ -61,14 +67,14 @@ def retirement(store: Store, record: Consolidation) -> list[Nomination]:
                                                          threshold=guard.applied_over_considered_below, moot_when=d.lifecycle.moot_when,
                                                          moot_evidence=row["considered"] > 0 and row["applied"] == 0), session=record.id)
         out_ = c.json()
-        v = out_.get("verdict", "still-holds")
+        v = str(out_.get("verdict", "pending"))
         entry = _entry(store, subject=d.id, claim=f"{d.id} applied ÷ considered = {row['applied_over_considered']:.2f} over {row['passes_in_window']} passes",
                        proposer=RoleCall(role="consolidator", model_id=None, call=None), c=c, verdict=v, coding=row, why=out_.get("why"), rung="counterfactual-edit")
+        from hgi.consolidate import settle_currency
+
         n = Nomination(rung="counterfactual-edit", rung_why="retirement leg: the nominating ratio fell below the guard", subject=d.id,
                        evidence=[f"applied_over_considered={row['applied_over_considered']}"], ledger_entry=entry.id, outcome=v)
-        if v == "moot":
-            store.flip_status(d, "moot", by=record.id)
-            record.flipped.append(d.id)
+        settle_currency(store, record, d, out_, entry)
         out.append(n)
     return out
 
@@ -148,7 +154,7 @@ def genesis_anchors(store: Store, record: Consolidation) -> list[Nomination]:
                            proposer=RoleCall(role="consolidator", model_id=c.model_id, call=c.call), c=v_call, verdict=v,
                            coding={"anchor": proposal["anchor"], "why": proposal.get("why")}, why=verdict.get("why"), rung="article")
             n.ledger_entry = entry.id
-            if v == "still-holds":
+            if store.registry.route("currency-verdict", v, EXEMPLIFIES) == "anchor":
                 store.anchor_article(article, str(proposal["anchor"]))
                 record.anchored.append(article.id)
                 n.outcome = f"anchored to {proposal['anchor']}"
@@ -224,8 +230,8 @@ def vocabulary(store: Store, record: Consolidation, vocab: str = "work-shape") -
                                                          existing=store.registry.terms(vocab), bar=bar), session=record.id)
         out_ = c.json()
         v = str(out_.get("verdict", "decline(adjudicator returned no verdict)"))
-        store.registry.check("adjudicator-verdict", v)
-        admitted = v == "admit"
+        act = store.registry.route("adjudicator-verdict", v, VOCABULARY)
+        admitted = act == "mint"
         entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="coding", subject=f"{vocab}/{what}",
                             claim=f"the presentations escaping to other({what}) are one shape no {vocab} term covers",
                             proposer=RoleCall(role="consolidator", model_id=None, call=None),
@@ -240,6 +246,6 @@ def vocabulary(store: Store, record: Consolidation, vocab: str = "work-shape") -
             record.minted.append(f"{vocab}/{what}")
             n.outcome = f"minted {vocab}/{what}"
         else:
-            n.outcome = v + (f"; the coder read the presentations as {covered}" if covered else "")
+            n.outcome = v + (f"; the coder read the presentations as {covered}" if covered else "") + ("; waits for new recurrence" if act == "wait" else "")
         out.append(n)
     return out

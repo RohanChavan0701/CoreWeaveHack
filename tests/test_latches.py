@@ -131,6 +131,8 @@ def test_a_warrant_citing_a_record_is_wired_to_it_and_a_rotted_anchor_goes_to_th
     assert fire.latch.record == c.id and "cites a retired record" in fire.disposition.outcome
     entry = [e for e in store.all("hypothesis") if e.species == "currency" and e.subject == c.id][-1]
     assert entry.verdict == "reversed" and entry.contradiction.coding == {"fire": fire.id, "rotted": [a.id]} and entry.adjudicator.role == "adjudicator"
-    assert fire.disposition.outcome.endswith(f"{entry.id}: reversed") and store.read("decision", c.id).status == "accepted"
+    assert fire.disposition.outcome.endswith(f"{entry.id}: reversed: every premise of {c.id} disputed")
+    disputed = store.read("decision", c.id)
+    assert disputed.status == "accepted" and {p.status for p in disputed.warrant.premises} == {"disputed"}, "reversed disputes the warrant; the record stands until superseded"
     _index.regenerate(store)
     assert _lint.run(store).green
