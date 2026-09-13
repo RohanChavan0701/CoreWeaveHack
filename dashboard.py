@@ -155,6 +155,7 @@ def _(hindex, mo, store):
 @app.cell
 def _(hindex, mo, store):
     m = hindex.read(store, "matrix")
+    a = hindex.read(store, "attacker")
     _cell = lambda k: len(m.get(k, []))
     mo.vstack([
         mo.md("## Detection matrix — every count is a floor"),
@@ -162,6 +163,11 @@ def _(hindex, mo, store):
             {"": "system catches", "oracle or human catches": _cell("system-catches/oracle-catches") + _cell("system-catches/human-catches"), "neither catches": _cell("system-catches/none-catches")},
             {"": "system misses", "oracle or human catches": _cell("system-misses/oracle-catches") + _cell("system-misses/human-catches"), "neither catches": f"≥ {_cell('system-misses/none-catches')} (detection-limited)"},
         ]),
+        mo.md(f"## Attacker precision — {a['dispatched']} dispatched, {a['landed']} claims landed, {a['upheld']} upheld, {a['overruled']} overruled"
+              + (f"; precision {a['precision']:.2f}" if a["precision"] is not None else "; precision unevaluable (no landing)")),
+        mo.ui.table([{"angle": k, **v} for k, v in a["per_angle"].items()]) if a["per_angle"] else mo.md("_no attack on the ledger_"),
+        mo.md("**Should-have-been-caught-by:** " + ("; ".join(f"{r['record']} survived {', '.join(r['survived'])}, caught by {', '.join(r['caught_by'])}" for r in a["misses"]) or "none")),
+        mo.md("\n".join(f"_{n}_" for n in a["notes"])) if a["notes"] else mo.md(""),
     ])
     return (m,)
 

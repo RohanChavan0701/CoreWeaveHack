@@ -273,6 +273,52 @@ def matrix(store: Store) -> dict[str, Any]:
     return {cell: sorted(ids) for cell, ids in sorted(cells.items())} | {"note": "system-misses/none-catches is detection-limited; its count is a floor of zero"}
 
 
+def attacker(store: Store) -> dict[str, Any]:
+    """The instruments are instrumented (I16): attacker precision as a tracked floor, and the attacker's misses as a stream.
+
+    Over the attack species: how many drafts the examiner was dispatched against, how many claims it landed, how many of
+    its landings the adjudicator upheld (``attack-landed`` | ``premise-killed``) against how many it overruled, per angle
+    where the claims name their lens. A persistently zero landing count interrogates the dispatch bar before any target is
+    declared clean, and a precision of one over zero overrulings is a ceiling artifact where the adjudicator absorbs the
+    attack — both read as notes here, never as verdicts. The misses are the should-have-been-caught-by stream: a record
+    that survived its attack and was later indicted by a steer, had a premise reversed, or went moot on its own warrant.
+    """
+    entries = [e for e in store.all("hypothesis") if e.species == "attack" and e.contradiction.attack]  # type: ignore[attr-defined]
+    claims = [c for e in entries for c in e.contradiction.attack.claims]  # type: ignore[attr-defined]
+    landed = [c for c in claims if c.landed]
+    with_landing = [e for e in entries if any(c.landed for c in e.contradiction.attack.claims)]  # type: ignore[attr-defined]
+    upheld = [e for e in with_landing if e.verdict in ("attack-landed", "premise-killed")]  # type: ignore[attr-defined]
+    per_angle: dict[str, dict[str, int]] = defaultdict(lambda: {"claims": 0, "landed": 0})
+    for c in claims:
+        per_angle[c.lens or "single-context"]["claims"] += 1
+        per_angle[c.lens or "single-context"]["landed"] += int(c.landed)
+    indicted = defaultdict(list)
+    for t in store.all("steer"):
+        if t.indicts:  # type: ignore[attr-defined]
+            indicted[t.indicts.record].append(t.id)  # type: ignore[attr-defined]
+    misses = []
+    for d in store.decisions():
+        survived = [e.id for e in entries if (e.outcome or "").startswith(f"admitted {d.id}")]  # type: ignore[attr-defined]
+        if not survived:
+            continue
+        caught_by = list(indicted.get(d.id, []))
+        caught_by += [f"premise {p.id} {p.status}" for p in d.warrant.premises if p.status in ("reversed", "disputed")]
+        if d.status == "moot":
+            caught_by.append("moot on its own warrant")
+        if caught_by:
+            misses.append({"record": d.id, "survived": survived, "caught_by": caught_by})
+    notes = []
+    if entries and not landed:
+        notes.append(f"zero landings over {len(entries)} dispatches: interrogate the dispatch bar before declaring any target clean")
+    if with_landing and len(upheld) == len(with_landing):
+        notes.append("every landing upheld: a precision of one over zero overrulings is a ceiling artifact where the adjudicator absorbs the attack, not a clean bill")
+    return {"dispatched": len(entries), "claims": len(claims), "landed": len(landed), "entries_with_landing": len(with_landing),
+            "upheld": len(upheld), "overruled": len(with_landing) - len(upheld),
+            "precision": (len(upheld) / len(with_landing)) if with_landing else None,
+            "per_angle": dict(sorted(per_angle.items())), "misses": misses, "notes": notes,
+            "floor": "every count is a floor: an attack the synthesis absorbed before the ledger saw it is not here"}
+
+
 PROJECTIONS: dict[str, Callable[[Store], Any]] = {
     "hooks": hooks,
     "summaries": summaries,
@@ -286,6 +332,7 @@ PROJECTIONS: dict[str, Callable[[Store], Any]] = {
     "structural_zero": structural_zero,
     "lineage": lineage,
     "matrix": matrix,
+    "attacker": attacker,
 }
 
 

@@ -168,6 +168,7 @@ def assemble_brief(store: Store, record: Consolidation, sessions: list[Session],
         "proposals": proposals(store),
         "steers": [t.id for t in store.all("steer")],
         "fires_owed": [f for f in _index.undischarged_fires(store) if f["disposer"] == BACKWARD_PASS],
+        "attacker": _index.attacker(store),
     }
 
 
