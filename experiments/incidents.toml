@@ -25,7 +25,10 @@
 # `reasoning_effort = "low"` the weak actor — the one likeliest to open the loud reading first, which is the failure
 # this family is built to catch. The seventh arm asks the separation-of-powers question on top of the weak actor:
 # the same 20b pass with `DeepSeek-V4-Pro` on the whole backward pass, so what a strong judge teaches a weak actor
-# is read against `student-attached`, which differs from it in nothing but the judge.
+# is read against `student-attached`, which differs from it in nothing but the judge. That question is split in two,
+# because the judge is a model and not an idea: `student-strong-judge` puts `DeepSeek-V4-Pro` on the backward pass and
+# `student-120b-judge` puts `gpt-oss-120b` there — the judge this endpoint has already admitted records under — so a
+# flat curve can be read as the teaching failing rather than as the judge admitting nothing.
 #
 # `120b-strict` and `120b-strict-detached` are dropped. The strict pool budgets exactly the cause readings, which
 # only separates passes that spend the slack — and the detached run showed no actor spends it: every failure was the
@@ -102,6 +105,15 @@ consolidator = "deepseek-v4"
 examiner = "deepseek-v4"
 adjudicator = "deepseek-v4"
 coder = "deepseek-v4"
+
+[arms.student-120b-judge]
+model = "gpt-oss-20b-low"
+description = "the weak actor at low effort with gpt-oss-120b as the whole backward pass: the judge that has admitted records on this endpoint"
+[arms.student-120b-judge.roles]
+consolidator = "gpt-oss-120b"
+examiner = "gpt-oss-120b"
+adjudicator = "gpt-oss-120b"
+coder = "gpt-oss-120b"
 
 # The seeded twins: the same arms started from experiments/seeds/incidents — the three decoy shapes already admitted —
 # against the unseeded arms above on the same batches. What the injected shapes buy, paired per batch.
