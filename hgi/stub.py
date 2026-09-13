@@ -376,3 +376,17 @@ def _currency(req):
     if ratio is not None and ratio < req.get("threshold", 0.1) and req.get("moot_evidence"):
         return {"verdict": "moot", "why": "the domain is no longer entered"}
     return {"verdict": "still-holds", "why": "the premise stands; the fire is corroborating evidence against the payload, not the warrant", "premise": None}
+
+
+# --- the re-author ------------------------------------------------------------------------------
+
+MARK = re.compile(r"^\[for [^\]]+\] ")
+
+
+@handles("reauthor")
+def _reauthor(req):
+    """Re-author each field for ``model_id``. The stub cannot write for a model it is not, so it marks the
+    conditioning it stands in for — enough to prove the text moved with the stamp; not evidence it reads better.
+    The mark is idempotent: a re-author over already-marked text re-keys it rather than stacking marks."""
+    model = req["model_id"]
+    return {"text": {field: f"[for {model}] {MARK.sub('', value)}" for field, value in req["text"].items()}}
