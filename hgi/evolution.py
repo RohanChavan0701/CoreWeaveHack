@@ -86,21 +86,12 @@ def arm_log(exp, arm: str, root: Path | None = None) -> dict[str, Any] | None:
     if spec.stream is None or not (where / "arm.json").exists() or not (where / "store" / "registry").exists():
         return None
     record = json.loads((where / "arm.json").read_text())
-    batches = spec.batches()
-    recorded = {b["batch"]: b["hash"] for b in record["stream"]["batches"]}
-    dealt = {n: b.hash for n, b in enumerate(batches, 1)}
-    warning = None
-    if recorded != dealt:
-        # the pool changed since the arm ran (a budget, a prompt): the batches are rebuilt from the task ids the arm recorded, so the
-        # log still reads the arm that ran, and says so
-        from suite.tasks import Suite, build
-
-        pool = build(spec.stream.pool_spec).by_id
-        missing = sorted({t for b in record["stream"]["batches"] for t in b["tasks"] if t not in pool})
-        if missing:
-            raise SystemExit(f"{exp.name}/{arm}: the pool has changed since the arm ran and no longer holds {', '.join(missing[:5])}")
-        batches = [Suite(spec=spec.stream.pool_spec, tasks=[pool[t] for t in b["tasks"]]) for b in record["stream"]["batches"]]
-        warning = "the pool has changed since the arm ran; batches rebuilt from the recorded task ids, hashes differ"
+    batches, warning = _experiment.recorded_batches(spec, record)
+    if r := record.get("retrofit"):
+        # the rows are the source arm's and the store today's backward pass over them (hgi.retrofit): the log reads the store, not a run
+        warning = (f"retrofitted from {r['source_experiment']}/{r['source_arm']} (store at {str(r.get('source_commit') or '?')[:7]}) on {r['date'][:10]}: "
+                   f"the rows are the source arm's, unchanged; the backward pass is today's code on {r['teacher']}; nothing was in context at any "
+                   f"pass — not a live run" + (f"; {warning}" if warning else ""))
     batch_of = {int(k): v for k, v in record["stream"]["passes"].items()}
     reg = _registry.load(where / "store")
     token = _registry.use(reg)
