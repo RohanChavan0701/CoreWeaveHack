@@ -30,7 +30,7 @@ from hgi import roles
 from hgi import tracing
 from hgi.store import Store, now
 from hgi.types import Considered, Consulted, Decision, LensAnswer, Session, WorkShape
-from suite.tasks import presentations
+import suite as _suite
 
 WORKING_PASS = "the working pass"
 
@@ -43,7 +43,7 @@ def previous_session(store: Store, pass_: int) -> Session | None:
 def classify(store: Store, session: Session) -> WorkShape:
     """Step 3: the pass names its work-shape in registry terms; anything the vocabulary lacks is an escape."""
     terms = store.registry.terms("work-shape")
-    c = _model.complete("pass", roles.request("classify", presentations=presentations(), terms=terms), session=session.id, pass_=session.pass_)
+    c = _model.complete("pass", roles.request("classify", presentations=_suite.current().presentations(), terms=terms), session=session.id, pass_=session.pass_)
     out = c.json()
     registered = [t for t in out.get("terms", []) if t in terms]
     escapes = [t for t in out.get("terms", []) if t not in terms and t.startswith("other(")] + list(out.get("escapes", []))
@@ -61,10 +61,10 @@ def select(store: Store, session: Session) -> list[Considered]:
             c.terms_matched.append(term)
     for c in considered.values():
         d: Decision = store.read("decision", c.record)  # type: ignore[assignment]
-        passed, why, _ = _coder.guard(shape, {"terms": d.consultation_terms, "not_this": d.consultation_not_this}, presentations(),
+        passed, why, _ = _coder.guard(shape, {"terms": d.consultation_terms, "not_this": d.consultation_not_this}, _suite.current().presentations(),
                                       session=session.id, pass_=session.pass_)
         c.guard_passed = passed
-    presented = _index.tokens(" ".join(p["prompt"] for p in presentations()))
+    presented = _index.tokens(" ".join(p["prompt"] for p in _suite.current().presentations()))
     for row in _index.read(store, "summaries"):
         if row["record"] in considered or row["status"] != "accepted":
             continue
@@ -104,7 +104,7 @@ def boot(store: Store, session_id: str | None, pass_: int) -> Session:
     consulted = [c for c in session.considered if c.guard_passed and c.via != "constitution"]
     session.lens_answers = walk_lenses(store, session, "boot", lambda lens: {
         "consulted": [{"record": c.record, "terms_matched": c.terms_matched, **_summary(store, c.record)} for c in consulted],
-        "presentations": presentations(),
+        "presentations": _suite.current().presentations(),
         "unreached": [row for row in _index.read(store, "summaries") if row["record"] not in {c.record for c in consulted}],
     })
     session.consulted = [Consulted(record=c.record) for c in consulted]

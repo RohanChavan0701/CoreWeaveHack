@@ -10,9 +10,9 @@ from hgi import index as _index
 from hgi import lint as _lint
 from hgi.store import now
 from hgi.types import Observation, Session
-from suite.tasks import TASKS
+import suite as _suite
 
-NAMES = [t.id for t in TASKS]
+NAMES = [t.id for t in _suite.current().tasks]
 
 
 def _session(store, pass_: int, rows: list[dict], scores: dict[str, float | None]) -> Session:
