@@ -1,0 +1,210 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T00:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "MBPP's sanitized split as write-and-run tasks: the prompt states the problem in one sentence, tests.py holds the imports, `from solution import *` and the asserts (suite/families/mbpp.py:82), the shell budget is three calls (suite/families/mbpp.py:50), and the hidden check reruns `python3 tests.py` after the pass (suite/families/mbpp.py:91). The asserts, not the prose, fix the function's name, arity and return type. The file tool is not budgeted (suite/tools.py:101).",
+  "counterfactual": "The overshoot is a solution written from the prose and answered without a run: the hidden check (suite/families/mbpp.py:91) reruns the asserts the pass never read, and a name the prose spells differently from the assert, or a list returned where the assert compares a tuple, fails a task the pass reported done. The opposite overshoot writes solution.py through the shell — a heredoc is a budgeted call (suite/tools.py:86) while the file tool is not (suite/tools.py:101) — and reaches the first failing run with one call left.",
+  "created_at": "2026-09-13T00:00:00-07:00",
+  "decision": "On a task whose working directory holds tests.py: read tests.py through the file tool before writing anything, and take the function's exact name, arity and return type from its asserts (a tuple is not a list, `==` on a float is exact, a name is case-sensitive, an import the tests make is one the solution may rely on). Write solution.py through the file tool as a plain module — the tested function at top level with every import and helper it needs, no code that runs on import, no `__all__`, no leading underscore on a tested name — then spend one shell call on `python3 tests.py` and answer only after it exits zero, with result a one-line string naming what was written and error null.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether the function the pass wrote is correct is the asserts' judgment; the floor checks shape only"
+    ]
+  },
+  "id": "D-0001",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a table question over a CSV or a paged API, where the shell computes an answer and no test file exists",
+          "a task with no tests.py in the working directory, where there is nothing to run before answering"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "file-tool",
+          "shell-tool",
+          "test-failure-triage",
+          "tool-budget"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.6
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the family no longer leaves tests.py in the working directory, or the hidden check stops rerunning it",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — read tests.py, write solution.py through the file tool, run the tests once, answer on exit zero",
+      "why": "the asserts are the specification the hidden check reruns, and the file tool costs no budget"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — write the solution from the prose and answer without running",
+      "why": "the name or the return type the asserts use is not in the prose; the hidden check is the run the pass skipped"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — write solution.py with a shell heredoc",
+      "why": "a heredoc is a budgeted shell call; the file tool writes the same bytes for free"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/mbpp"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a coding task whose working directory holds tests.py and whose hidden check runs python3 tests.py there; a solution to write to solution.py under a budget of three shell calls",
+    "not_this": [
+      "a table question over a CSV or a paged API, where the shell computes an answer and no test file exists",
+      "a task with no tests.py in the working directory, where there is nothing to run before answering"
+    ],
+    "stakes": "the grade is the dataset's own asserts rerun after the pass; a solution never run against them fails on a name, an arity or a return type the prose did not state, and a solution written through the shell spends a budgeted call on what the file tool does for free"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/mbpp.py:82",
+      "suite/families/mbpp.py:91",
+      "suite/families/mbpp.py:50",
+      "suite/tools.py:101"
+    ],
+    "premises": [
+      {
+        "falsifier": "a task whose hidden check runs asserts that are not in the working directory's tests.py",
+        "id": "p1",
+        "statement": "tests.py is in the working directory before the pass starts and holds the asserts the hidden check reruns",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a Tools.budgets that lists the file tool, or a read_file or write_file that increments a budgeted counter",
+        "id": "p2",
+        "statement": "the file tool is not budgeted; only shell and http calls count against a budget",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a tests.py that imports the solution by an explicit name or module path",
+        "id": "p3",
+        "statement": "`from solution import *` binds every top-level name of solution.py that does not start with an underscore",
+        "status": "supported"
+      }
+    ]
+  }
+}

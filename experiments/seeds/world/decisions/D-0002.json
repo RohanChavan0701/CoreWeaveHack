@@ -1,0 +1,209 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T00:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "The shell tool raises on a non-zero exit with the first 200 characters of stderr as the cause (suite/tools.py:93) — for tests.py, the head of the traceback: the file, the line of the assert that failed and the assert itself, or the exception the solution raised. The budget is three shell calls (suite/families/mbpp.py:50); a run past it is refused (suite/tools.py:86). The hidden check reruns the tests after the pass (suite/families/mbpp.py:91), so the last run's state is the graded state, and any error on the output envelope fails the row before the check runs (suite/scorers.py:44).",
+  "counterfactual": "The overshoot is a triage that changes nothing: a pass that rereads the prose, decides its solution is right and reruns — the run exits with the same assert, the third run is refused past the budget (suite/tools.py:86), and the row fails twice over. The opposite overshoot is a pass that recovered — rewrote and saw exit zero — and still reported the earlier failure as `error`, which fails the row on the scorer that reads error before the hidden check (suite/scorers.py:44).",
+  "created_at": "2026-09-13T00:00:00-07:00",
+  "decision": "When `python3 tests.py` exits non-zero, read the assert the cause names and treat the asserts as the specification over the prose: work out from that assert's inputs and expected value which semantics the prose left open — inclusive bounds, ordering, a rounding, a tuple versus a list, an exception the test expects — rewrite solution.py through the file tool, and rerun. When the cause is an exception rather than an assert, fix the exception. If the value the solution returns is not clear from the assert, fold a probe into the rerun's shell call (`python3 -c 'from solution import *; print(repr(f(...)))'; python3 tests.py`) rather than spending a call on the probe alone. Never rerun unchanged code. A rerun that exits zero is a recovered failure: answer with error null. Only when the last run the budget allows still fails is the task failed — then report error with the cause the tool gave (`exited 1: …`) verbatim.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "which semantics the assert reveals is judgment; the floor checks that a rerun follows a rewrite only in the trace"
+    ]
+  },
+  "id": "D-0002",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a shell command that failed for a reason other than the tests — a missing file, a typo in the command — which says nothing about the solution",
+          "a table computation whose script raised; that is a script to fix, not a test to triage"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "test-failure-triage",
+          "shell-tool",
+          "error-wrapping"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.6
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the shell tool stops returning stderr in its cause, or the budget no longer allows a rerun",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — read the named assert as the specification, rewrite, rerun; report error only on the budget's last failing run",
+      "why": "the assert names what the prose left open, and a pass that recovered has no error to report"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — rerun to see whether the failure repeats",
+      "why": "the tests are deterministic; the rerun shows the same assert and costs a third of the budget"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — spend a call probing the returned value before every rewrite",
+      "why": "the probe fits in the rerun's shell call; alone it leaves one run for the fix"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/mbpp"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a run of python3 tests.py that exited non-zero; a shell tool error whose cause opens with `exited`; a failing assert or an exception to diagnose with at most two runs left",
+    "not_this": [
+      "a shell command that failed for a reason other than the tests — a missing file, a typo in the command — which says nothing about the solution",
+      "a table computation whose script raised; that is a script to fix, not a test to triage"
+    ],
+    "stakes": "the cause carries only the first 200 characters of stderr; a rerun of unchanged code spends one of three calls and shows the same line; a recovered failure reported as the task's error fails a row whose tests pass"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/tools.py:93",
+      "suite/tools.py:86",
+      "suite/families/mbpp.py:50",
+      "suite/scorers.py:44"
+    ],
+    "premises": [
+      {
+        "falsifier": "a stderr head that ends before the assert line, or a tests.py long enough that the traceback head is only the frame list",
+        "id": "p1",
+        "statement": "the shell tool's cause on a non-zero exit is the first 200 characters of stderr, which for a short tests.py holds the failing assert line",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a task_pass_rate that runs the hidden check on a row carrying an error",
+        "id": "p2",
+        "statement": "any non-null error on the output envelope fails the row regardless of the working directory's state",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a task whose asserts contradict each other or its own reference solution — an id the family would have EXCLUDED",
+        "id": "p3",
+        "statement": "the asserts are consistent with one implementation the prose admits",
+        "status": "supported"
+      }
+    ]
+  }
+}

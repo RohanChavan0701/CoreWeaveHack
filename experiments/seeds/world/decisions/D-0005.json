@@ -1,0 +1,212 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T00:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "The instruction (suite/families/tables.py:61; suite/families/api.py:31) asks for a JSON number rounded to 2 decimals when not an integer, otherwise a short string; the check (suite/families/tables.py:89) reads a number through a percent sign and separators and compares within 0.011 absolute or 1% relative (suite/families/tables.py:56), and compares text casefolded with whitespace collapsed (suite/families/tables.py:98). A number against a text gold, or a text against a numeric gold, never matches; the pinned golds spell names as the table does, code in brackets included.",
+  "counterfactual": "The overshoot is a result of '1,234 MW' or [1234] where the gold is 1234 — the normalizer (suite/families/tables.py:89) reads neither as a number and the row fails — or 'Jamaica' where the table spells 'Jamaica (JAM)', which the text compare (suite/families/tables.py:98) refuses. The opposite overshoot rounds mid-computation: an average of per-row percentages each rounded first drifts past the 0.011 absolute slack (suite/families/tables.py:56) on a small value.",
+  "created_at": "2026-09-13T00:00:00-07:00",
+  "decision": "Return the answer as exactly one scalar in `result`: a JSON number — not a string — when the question's answer is a quantity: a count as an integer, a percentage as the bare number without the sign (37.64 for 37.64%), an average or a difference rounded to 2 decimals, a large total unrounded; otherwise the cell's text exactly as the table spells it, including any bracketed code or suffix it carries, with no unit, no explanation and no wrapping list or object. Keep full precision through the computation and round once at the end. When the question asks 'how many', answer the count; when it asks 'which', answer the cell.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether the quantity is the one the question asked is judgment; the floor checks the result's type only"
+    ]
+  },
+  "id": "D-0005",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a coding task, whose result is a string naming what was written",
+          "a question the families do not carry — one that wants a list, a ranking, a chart or a sentence"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "shell-tool",
+          "http-tool",
+          "file-tool",
+          "output-schema"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "output_schema_valid",
+          "value": 0.9
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the check stops normalizing, or the families' golds become lists or sentences",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — exactly one scalar: a JSON number for a quantity, else the cell's text as spelled",
+      "why": "it is the only shape the normalizer reads on both sides"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — a string with the unit or the sign, as a person would write it",
+      "why": "'1,234 MW' is not a number to the normalizer; a percent sign alone would be forgiven, a unit is not"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — the value wrapped in a list or an object, or with an explanation",
+      "why": "the schema admits a number or a string; a wrapper fails the schema and the check"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/tables",
+    "suite/families/api"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a question over a table that wants one value as result — a count, a total, an average, a difference, a percentage, or one cell's text",
+    "not_this": [
+      "a coding task, whose result is a string naming what was written",
+      "a question the families do not carry — one that wants a list, a ranking, a chart or a sentence"
+    ],
+    "stakes": "the check is a normalizer over the gold: a number returned as a string with a unit, a number wrapped in a list, an average rounded mid-computation, or a name abbreviated or expanded fails a row whose arithmetic was right"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/tables.py:89",
+      "suite/families/tables.py:98",
+      "suite/families/tables.py:56",
+      "suite/families/tables.py:61",
+      "suite/families/api.py:31"
+    ],
+    "premises": [
+      {
+        "falsifier": "a matches() that strips unit words or unwraps a one-element list",
+        "id": "p1",
+        "statement": "the check normalizes a number through percent and separators but never through a unit word or a list",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a gold that abbreviates or expands what the table holds",
+        "id": "p2",
+        "statement": "a string gold is the cell's text, compared casefolded with whitespace collapsed",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a RESULT_SCALAR that admits arrays or objects",
+        "id": "p3",
+        "statement": "the output schema admits a number or a string, never a wrapper",
+        "status": "supported"
+      }
+    ]
+  }
+}

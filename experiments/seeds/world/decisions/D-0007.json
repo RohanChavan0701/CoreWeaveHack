@@ -1,0 +1,209 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T00:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "The description at the table route names the columns, the row count and the first page path; each page carries at most eight rows and names the next page or null (suite/families/api.py:26; suite/families/api.py:50); the budget is the page count plus two (suite/families/api.py:28; suite/families/api.py:57) and the prompt states it. The pages carry rows only — no header — aligned by position to the description's columns. The shell is not budgeted on this family.",
+  "counterfactual": "The overshoot is a walk that fetches the description a second time to reread the columns, or page one again after a failure elsewhere, and is refused on the last page (suite/tools.py:70) — the pass then answers a total over all but the last page, which the 1% tolerance (suite/families/tables.py:58) does not forgive. The opposite overshoot gives up on a clean task: a pass that reads the budget as the pages alone stops one page short of a walk that fit (suite/families/api.py:28 allows two calls beyond the pages).",
+  "created_at": "2026-09-13T00:00:00-07:00",
+  "decision": "Walk a paged table in a fixed order and count as you go: the description once (columns, row count, first page path), then each page once, following each page's `next` until it is null, keeping every row. After the first page the page size is known: compute the pages remaining (the row count over the page size, rounded up, minus one) and compare it with the calls remaining under the stated budget after every call already spent, failed calls included. If the walk fits, finish it and compute the answer over the complete rows with the description's columns as the header — paste the rows into an unbudgeted shell script rather than sum in the head. If it does not fit, do not start a walk that cannot complete and do not answer from a partial walk: stop within the budget and report error with the cause the tool gave — the transient failures and the budget — verbatim. Never refetch a page or the description.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether the arithmetic over the complete rows is right is judgment; the floor checks the walk's call count only"
+    ]
+  },
+  "id": "D-0007",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a table in a CSV file, where the http tool is not involved",
+          "a listing under no budget, where an extra page fetch costs a turn and nothing else"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "http-tool",
+          "tool-budget",
+          "listing-paged"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "tool_budget_respected",
+          "value": 0.8
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the family serves the table in one response, or drops the budget",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — description once, each page once following next to null, the remaining calls checked after the first page; stop within the budget when the walk cannot fit",
+      "why": "it is the only order that fits the budget, and a partial walk answers nothing the check accepts"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — fetch the description again whenever the columns are needed",
+      "why": "the second fetch is the spare call; the last page is then refused"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — answer from the pages fetched when the budget refuses the next",
+      "why": "a total over all but the last page is wrong, and the row fails on the budget as well"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/api"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a table served as a description route and paged row routes, each page naming the next or null, under a budget of the pages plus two calls",
+    "not_this": [
+      "a table in a CSV file, where the http tool is not involved",
+      "a listing under no budget, where an extra page fetch costs a turn and nothing else"
+    ],
+    "stakes": "the budget is exactly the pages plus the description plus one spare; a page or the description fetched twice, or a walk begun when the calls left cannot reach the last page, ends in a refused call and an answer over partial rows, wrong on every total"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/api.py:28",
+      "suite/families/api.py:50",
+      "suite/families/api.py:57",
+      "suite/tools.py:70"
+    ],
+    "premises": [
+      {
+        "falsifier": "a page that omits next, or a next that points to a page already served",
+        "id": "p1",
+        "statement": "every page names the next page or null, and the last page's next is null",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a budget that excludes failed calls, or a family that hides the budget from the prompt",
+        "id": "p2",
+        "statement": "the budget the prompt states is the page count plus two, counted over every http call including failures",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a page whose rows carry their own header or a different column order",
+        "id": "p3",
+        "statement": "the rows on the pages align by position with the description's columns",
+        "status": "supported"
+      }
+    ]
+  }
+}

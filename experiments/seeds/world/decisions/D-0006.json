@@ -1,0 +1,211 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T00:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "The tool layer fails the leading calls of a faulted task with a transient 502 whatever the path (suite/tools.py:72), the count fixed by the profile (suite/faults.py:18) — two in the world experiment — and every call, failed or refused, counts against the budget (suite/tools.py:70). The fault is in the call count, not the path: retrying the same path clears it, and once a call has answered no later call of the task is faulted. The tool result marks the cause transient.",
+  "counterfactual": "The overshoot is a walk that stops at the second 502: the pass reports `HTTP 502 Bad Gateway (transient)` as the task's error after two calls of a budget that had room for the third (suite/tools.py:72 stops faulting after the profile's count). The opposite overshoot retries a 404 twice — the path was wrong, not faulted — and reaches the description with the budget already short by two (suite/tools.py:70).",
+  "created_at": "2026-09-13T00:00:00-07:00",
+  "decision": "When a GET fails with a cause marked transient (a 502), retry the same path at once, and retry it once more if the second call fails the same way: the leading calls of a faulted task fail by count, not by path, so the third call answers. Do not switch paths, do not fetch something else first, do not read two failures as the route being gone, and do not retry a cause that is not transient — a 404, a 410, a budget refusal. Count the failed calls against the budget when planning the walk that follows. A failure recovered this way is not the task's error.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether the second retry was worth its call is decided by the budget arithmetic of the walk, not by this record"
+    ]
+  },
+  "id": "D-0006",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a 404 or a 410 — a route that is missing or moved; retrying it wastes the budget",
+          "a call refused past the budget, whose cause says `call budget`: no retry answers it",
+          "a transient failure on a route that already answered earlier in the task — only the leading calls are faulted"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "http-tool",
+          "tool-call-retry",
+          "error-wrapping"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.6
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the fault profile faults no HTTP call, or faults by path rather than by count",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — retry the same path at once, up to twice, on a transient cause only",
+      "why": "the fault clears by count; the third call answers"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — stop after the second failure and report the 502",
+      "why": "the route was never down; the task fails with a budget that had room"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — retry every failure regardless of cause",
+      "why": "a 404 retried is two calls the pages needed"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/api",
+    "suite/tools"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "an HTTP GET that failed with a 502 marked transient on the first call of a task; a second failure of the same kind on the retry",
+    "not_this": [
+      "a 404 or a 410 — a route that is missing or moved; retrying it wastes the budget",
+      "a call refused past the budget, whose cause says `call budget`: no retry answers it",
+      "a transient failure on a route that already answered earlier in the task — only the leading calls are faulted"
+    ],
+    "stakes": "half the API tasks fault their first two calls; a pass that abandons the route after the second 502, or reads two failures as the route being down, fails a task whose third call would have answered, and a pass that retries a cause that is not transient spends the calls the pages need"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/tools.py:72",
+      "suite/tools.py:70",
+      "suite/faults.py:18"
+    ],
+    "premises": [
+      {
+        "falsifier": "a fault that recurs after a route has answered, or that keys on the path",
+        "id": "p1",
+        "statement": "a faulted task's transient failures are on its leading calls only, by count, whatever the path",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a 502 raised with transient false, or a permanent failure marked transient",
+        "id": "p2",
+        "statement": "the transient cause is marked transient on the tool result",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a tool layer that does not count failed calls",
+        "id": "p3",
+        "statement": "every failed call counts against the budget",
+        "status": "supported"
+      }
+    ]
+  }
+}

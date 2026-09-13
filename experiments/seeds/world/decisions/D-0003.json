@@ -1,0 +1,210 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T00:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "table.csv is written by Python's csv writer from the record's columns and rows (suite/families/tables.py:115) and is a few kilobytes at most; the instruction asks for the shell to compute the answer (suite/families/tables.py:61); the shell budget is three calls (suite/families/tables.py:54) and a non-zero exit costs a call (suite/tools.py:93). The file tool is unbudgeted (suite/tools.py:101).",
+  "counterfactual": "The overshoot is exploration by call: `head table.csv`, then `awk -F, '{print $3}'`, then a sum — three calls, the third shifted by a quoted comma (suite/families/tables.py:115 writes a field holding a comma quoted), and no call left to correct it (suite/tools.py:86). The opposite overshoot is a computation done in the head from the file the pass read: no shell command is issued against an instruction that asks for one (suite/families/tables.py:61), and the sum is off by a row.",
+  "created_at": "2026-09-13T00:00:00-07:00",
+  "decision": "On a question over table.csv: read the whole file through the file tool first (it is unbudgeted and the table is small), decide from the header and the rows which columns and rows the question names, then spend one shell call on a single python3 script — a quoted heredoc, `python3 - <<'EOF' … EOF` — that reads the file with the csv module, filters and aggregates, and prints only the answer on its last line. Write the script so it cannot raise on a cell: coerce numbers through a helper that returns None on failure and skip None. Keep the other two calls for a fix. Never inspect the file with head, wc or awk one call at a time, and never split a line on commas — a quoted field may hold one.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether the script computes what the question asks is judgment; the floor sees only that one shell call carried a script"
+    ]
+  },
+  "id": "D-0003",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a coding task with tests.py — the shell there runs tests, not a computation",
+          "a table reached through an HTTP API, where the rows arrive as JSON pages and the shell is unbudgeted"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "file-tool",
+          "shell-tool",
+          "tool-budget"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "tool_budget_respected",
+          "value": 0.8
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the family stops budgeting the shell, or the table arrives in a form the csv module cannot read",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — read the file through the file tool, then one python3 script through the shell, two calls in reserve",
+      "why": "the read is free, the csv module reads what the csv writer wrote, and one script holds the whole computation"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — explore with head, cut and awk one call at a time",
+      "why": "three calls of exploration leave none for the computation, and awk on commas shifts a quoted field"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — read the file and compute in the head, issuing no shell command",
+      "why": "forty rows of strings summed in the head are wrong more often than a script, and the instruction asks for the shell"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/tables"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a question over a CSV in the working directory, to be answered with the shell under a budget of three calls",
+    "not_this": [
+      "a coding task with tests.py — the shell there runs tests, not a computation",
+      "a table reached through an HTTP API, where the rows arrive as JSON pages and the shell is unbudgeted"
+    ],
+    "stakes": "three shell calls: a pass that explores the file with head, wc and awk one call at a time reaches the computation with no call left, and a script that raises on a cell it did not expect spends a call and returns nothing"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/tables.py:115",
+      "suite/families/tables.py:61",
+      "suite/families/tables.py:54",
+      "suite/tools.py:101",
+      "suite/tools.py:93"
+    ],
+    "premises": [
+      {
+        "falsifier": "a table larger than a prompt can hold, or a family that writes the table elsewhere than table.csv",
+        "id": "p1",
+        "statement": "table.csv is complete in the working directory and small enough to read whole through the file tool",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a Tools.budgets that names the file tool",
+        "id": "p2",
+        "statement": "the file tool is unbudgeted; only the shell counts against this family's budget",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a table written in a dialect the default reader misparses",
+        "id": "p3",
+        "statement": "the csv module reads back exactly what the csv writer wrote, quoted commas included",
+        "status": "supported"
+      }
+    ]
+  }
+}
