@@ -1482,3 +1482,66 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     radius sweep was meant to catch, now guarded only by τ\*=1.0 standing;
     the escape-to-vocabulary-bar path is the doctrine's answer if a
     convention the seed lacks recurs.
+88. **A text-to-SQL family whose convention is the database's own schema,
+    and the credit correction it exposes** (commits `9379d35`, `f22c079`,
+    `c6685d1`, `ae758f0`, addressing DATASET-EVAL-RESEARCH.md's BIRD
+    recommendation and its required evaluator correction). Three new
+    families — `text2sql`, `text2sql-strict`, `text2sql-holdout` — over
+    BIRD mini-dev's `financial` questions and one pinned SQLite database.
+    The agent inspects the schema with the shell tool and returns a
+    `SELECT`; the hidden check re-executes it against the shipped database
+    and compares its rows to the dataset's own gold query's rows (a
+    float-rounded, order-insensitive multiset), never a string comparison.
+    The gold SQL is the grading key: pinned in the record, re-executed by
+    the check, kept out of the prompt and `Task.row` so it cannot leak — the
+    way `mbpp` reruns `tests.py` rather than diffing source. The graded and
+    strict families carry the same ten questions and differ only in slack
+    (three shell calls vs the knowing floor of one), mirroring `curriculum`
+    vs `curriculum-strict`; the holdout six are a template-disjoint group
+    over the same schema, for transfer. *Right:* the transferable convention
+    is the schema's SQLite-dialect quirks the BIRD evidence never states —
+    text dates reached with `STRFTIME` (there is no `YEAR()`), a ratio
+    needing `CAST(... AS REAL)` or SQLite integer-divides, coded statuses, a
+    reserved-word `order` — so a decision learned on one question scores on
+    an unseen one over the same database, which is what the stream/transfer
+    experiments measure; the evidence stays in the prompt so a question is
+    answerable, but names the domain mapping, not the dialect. A ratio
+    without the CAST is the crisp case: it executes cleanly and returns the
+    wrong number, so `credit_table`'s old `not row.get("error")` would have
+    credited a wrong answer — `hgi.consolidate.row_passed` now reads the
+    oracle's per-row `task_pass_rate`, falling back to absence-of-error only
+    for a legacy row that carries no per-row score (which is why the
+    existing credit tests, whose rows carry none, are unchanged). The
+    database ships through a new general `Task.blobs` binary channel
+    (base64 in, bytes out), hashed by the digest of its bytes so a
+    megabyte-scale asset does not bloat the composition hash, and the
+    `blobs` key is absent when a task carries none so every existing suite
+    hashes as before. *Decisions and their risks:* (a) The full
+    `financial.sqlite` is 71 MB, all but 24k rows of it the `trans` table
+    (1M rows); the pinned `text2sql.sqlite` keeps every table whole except a
+    `trans` sample (accounts ≤ 20, for schema fidelity), 856 KB. No selected
+    question reads `trans` — `fetch` verifies each gold on the reduced
+    database before pinning, so every gold returns exactly the rows it
+    returns against the full database, and the four trans-touching financial
+    questions (#116/129/145/159) are simply not selected. *Risk:* a future
+    question added to `SELECTED` that reads `trans` would grade against the
+    sample, not the world; the fetch sanity pass catches a gold that fails
+    outright but not one whose rows the reduction merely changed, so any
+    trans-reading question needs the sample widened or the id left out. (b)
+    The pass-rate target (~0.5 first-sight) is a design goal, not measured
+    here — no model was run; the difficulty is a guess from BIRD's own
+    moderate/challenging mix under a three-call budget. *If it lands off
+    the band,* tune by question selection (the 32 financial questions, minus
+    the 4 trans ones, are the pool) or the slack budget, not by touching the
+    check. (c) The task shapes reuse the tool-major terms (`shell-tool`,
+    `file-tool`, `tool-budget`); no convention-major work-shape term names a
+    SQL-dialect quirk, so the blind coder groups these observations under
+    the tool cue or `other(...)` rather than one convention per quirk (the
+    decision-77/decision-87 granularity). *Risk:* transfer through the store
+    is coarser than it could be until such terms are minted; that is a
+    registry-vocabulary change (`hgi/genesis.py`), deliberately left out of
+    scope here. (d) `fetch` downloads BIRD's 346 MB dev bundle and verifies
+    `financial.sqlite` against a pinned SHA-256; `$HGI_BIRD_DEV_ZIP` caches
+    it. Re-fetching is rare (only to re-pin) and rewrites both the jsonl and
+    the committed 856 KB database, changing the suite hash — the same
+    contract as every transcribed family.
