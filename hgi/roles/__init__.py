@@ -52,10 +52,13 @@ REPLIES: dict[str, Any] = {
                                   "body": _DRAFT_BODY + " — or null for a hook-edit or counterfactual-edit, whose body is derived from the one record in `supersedes` with `edit` applied"}]},
     "attack": {"claims": [{"target": "<premise:<id> | payload:<aspect> | activation | warrant:independence>", "refutation": "<what reading of the evidence would show it false>",
                            "reading_taken": "<true if you took that reading>", "landed": "<true if the reading showed it false>", "evidence": ["<what you read>"]}]},
-    "verdict": {"verdict": "<admit | admit-amended(<amendment>) | decline(<why>) | defer(<until>) | escalate(<why>)>", "amendment": "<the amended decision text, or null>"},
+    "verdict": {"verdict": "<admit | admit-amended(<amendment>) | decline(<why>) | defer(<until>) | escalate(<why>)>", "amendment": "<the amended decision text, or null>",
+                "until": {"scorer": "<for defer keyed on the oracle: the scorer of `oracle.evaluation` whose next readings settle it; else null>",
+                          "comparator": "<one of < <= > >= == !=; else null>", "value": "<a number; else null>", "persistence": "<consecutive runs the reading must hold; else null>",
+                          "passes": "<for defer keyed on the schedule: passes to wait before re-adjudication; else null>"}},
     "credit": {"steers": [{"record": "<record id>", "slot": "<payload | activation | warrant>", "signature": "recalled-applied-still-corrected",
                            "correction": "<what the record got wrong>", "why_not_caught": "<why no floor caught it>"}]},
-    "currency": {"verdict": "<still-holds | reversed | moot>", "why": "<one sentence>"},
+    "currency": {"verdict": "<still-holds | reversed | moot>", "why": "<one sentence; a record whose cited anchor (`rotted`) retired still holds only if the anchor's successor stands for it>"},
 }
 
 

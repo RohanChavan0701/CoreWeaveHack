@@ -27,6 +27,7 @@ from typing import Any
 
 from hgi import coder as _coder
 from hgi import index as _index
+from hgi import latches as _latches
 from hgi import lint as _lint
 from hgi import model as _model
 from hgi import roles
@@ -62,8 +63,14 @@ def sessions_since_last(store: Store) -> tuple[list[Session], int]:
 
 
 def group_observations(store: Store, record: Consolidation) -> list[dict[str, Any]]:
-    """Blind coding fills each open observation's ``shape``; equal shapes group, with the independence qualifier applied later."""
-    open_obs = store.observations("open")
+    """Blind coding fills each open observation's ``shape``; equal shapes group, with the independence qualifier applied later.
+
+    An observation a draft in the pre-admission tier already rests on is
+    claimed until that draft is disposed — a deferred draft is not nominated
+    twice from the same instances.
+    """
+    claimed = {e for p in store.drafts() for e in p.evidence}
+    open_obs = [o for o in store.observations("open") if o.name not in claimed and o.uid not in claimed]
     if not open_obs:
         return []
     shapes, call = _coder.code([{"name": o.name, "noticed": o.noticed} for o in open_obs], store.registry.terms("work-shape"),
@@ -150,9 +157,10 @@ def evidence_pack(store: Store, draft: Draft, brief: dict[str, Any]) -> dict[str
     rows = sum(len(s.evaluation.rows) for s in store.all("session") if s.attached and s.evaluation)  # type: ignore[attr-defined]
     watch = next((l.edge.predicate.scorer for l in draft.body.latches if l.type == "revisit" and l.edge.predicate), None)
     series = {watch: [sc.get(watch) for sc in brief["scores"].values()]} if watch else {}
+    evaluation = next((s.evaluation.evaluation for s in store.all("session") if s.attached and s.evaluation), "suite-v1")  # type: ignore[attr-defined]
     return {"observation_sessions": sessions, "bar_independent": store.registry.bars["decision"]["independent_observations"],
             "fault_rate": (len(faults) / rows) if rows else None, "task_ids": [row["task"] for row in []],
-            "series": series, "watch_scorer": watch, "scores": brief["scores"]}
+            "series": series, "watch_scorer": watch, "scores": brief["scores"], "evaluation": evaluation}
 
 
 def attack(store: Store, record: Consolidation, draft: Draft, evidence: dict[str, Any]) -> tuple[dict[str, Any], _model.Completion]:
@@ -160,14 +168,16 @@ def attack(store: Store, record: Consolidation, draft: Draft, evidence: dict[str
     return {"claims": c.json().get("claims", []), "verdict": "pending"}, c
 
 
-def verdict(store: Store, record: Consolidation, draft: Draft, attack_payload: dict[str, Any], evidence: dict[str, Any]) -> tuple[str, str | None, _model.Completion]:
+def verdict(store: Store, record: Consolidation, draft: Draft, attack_payload: dict[str, Any], evidence: dict[str, Any]) -> tuple[str, dict[str, Any], _model.Completion]:
+    """The adjudicator's one token, with the amendment an admit-amended names and the condition a defer names."""
     c = _model.complete("adjudicator", roles.request("verdict", draft=draft.model_dump(by_alias=True, mode="json"), attack=attack_payload,
-                                                     oracle={"series": evidence["series"], "scores": evidence["scores"]},
-                                                     watch_scorer=evidence["watch_scorer"], bars=store.registry.bars), session=record.id)
+                                                     oracle={"series": evidence["series"], "scores": evidence["scores"], "evaluation": evidence["evaluation"]},
+                                                     watch_scorer=evidence["watch_scorer"], bars=store.registry.bars,
+                                                     deferred=draft.deferral.model_dump(mode="json") if draft.deferral else None), session=record.id)
     out = c.json()
     v = str(out.get("verdict", "escalate(adjudicator returned no verdict)"))
     store.registry.check("adjudicator-verdict", v)
-    return v, out.get("amendment"), c
+    return v, out, c
 
 
 ATTACK_VERDICTS = {"admit": "survived-with-attack-named", "admit-amended": "survived-with-attack-named", "decline": "attack-landed"}
@@ -177,7 +187,8 @@ def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draf
     """Proposal → attack → verdict → commit, each role in its own context; the entry is appended once, with the verdict."""
     evidence = evidence_pack(store, draft, brief)
     attack_payload, examiner = attack(store, record, draft, evidence)
-    v, amendment, adjudicator = verdict(store, record, draft, attack_payload, evidence)
+    v, out, adjudicator = verdict(store, record, draft, attack_payload, evidence)
+    amendment = out.get("amendment")
     head = term_head(v)
     landed_premise = any(c["landed"] and c["target"].startswith("premise:") for c in attack_payload["claims"])
     entry = LedgerEntry(
@@ -207,8 +218,15 @@ def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draf
         store.enqueue(QueueEntry(draft=draft, ledger_entry=entry.id, why=v, queued_at=now(), oracle_evidence={"series": evidence["series"], "attack": attack_payload}))
         store.drop_draft(draft.uid)
         entry.outcome = "escalated to the human queue"
-    else:
-        entry.outcome = "deferred; draft kept in the pre-admission tier"
+    else:  # defer(<until>), or an escape verdict: re-queued with the condition as a latch, never left without one
+        until = _latches.deferral_latch(out.get("until") if isinstance(out.get("until"), dict) else None, evaluation=evidence["evaluation"],
+                                        default_passes=store.registry.bars["consolidation_every_passes"])
+        _latches.settle(store, draft, by=entry.id)
+        store.defer(draft, entry, until, after_pass=record.after_pass)
+        record.deferred.append(draft.uid)
+        entry.outcome = "deferred; re-queued with its condition as a latch: " + (
+            f"{until.edge.predicate.scorer} {until.edge.predicate.comparator} {until.edge.predicate.value} over {until.edge.predicate.persistence} run(s)"
+            if until.edge.predicate else f"{until.guard.over_passes} pass(es)")
     store.append(entry)
     nomination.ledger_entry = entry.id
     nomination.outcome = entry.outcome
@@ -279,35 +297,80 @@ def credit(store: Store, record: Consolidation, brief: dict[str, Any], sessions:
     return out
 
 
-def discharge_fires(store: Store, record: Consolidation) -> list[LedgerEntry]:
-    """Every fire owed to the backward pass is re-adjudicated; the verdict, the fire's disposition and any flip land together."""
+def discharge_fires(store: Store, record: Consolidation, brief: dict[str, Any]) -> list[LedgerEntry]:
+    """Every fire owed to the backward pass is discharged by what it is on: a decision's revisit latch re-adjudicates the warrant
+    (currency); a deferred draft's latch re-adjudicates the draft. The verdict, the fire's disposition and any flip land together."""
     entries = []
+    _latches.emit_scheduled(store, record.after_pass, by=record.id)
     for f in store.all("fire"):
         f: Fire
         if f.disposition.discharged or f.disposer != BACKWARD_PASS:
             continue
-        d = store.find(f.latch.record)
-        successor = ", ".join(d.lineage.superseded_by) if isinstance(d, Decision) and d.lineage.superseded_by else None
-        c = _model.complete("adjudicator", roles.request("currency", record=f.latch.record, fire=f.model_dump(by_alias=True, mode="json"), successor=successor),
-                            session=record.id)
-        out = c.json()
-        v = out.get("verdict", "still-holds")
-        entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="currency", subject=f.latch.record,
-                            claim=f"the warrant of {f.latch.record} still holds against {f.edge_event.scorer}={f.edge_event.observed}",
-                            proposer=RoleCall(role="committer", model_id=None, call=None),
-                            contradiction={"source": {"role": "adjudicator", "model_id": c.model_id, "call": c.call}, "coding": {"fire": f.id}},
-                            verdict=v, adjudicator=RoleCall(role="adjudicator", model_id=c.model_id, call=c.call), outcome=out.get("why"))
-        store.append(entry)
-        f.disposition.outcome = v
-        f.disposition.at = now()
-        f.disposition.by = record.id
-        store.write(f)
+        host = store.host(f.latch.record)
+        if isinstance(host, Draft):
+            entries.append(readjudicate(store, record, host, f, brief))
+        elif isinstance(host, Decision):
+            entries.append(currency(store, record, host, f))
+        else:
+            _latches.discharge(store, f, f"no host carries the latch {f.latch.record}[{f.latch.index}]; the fire is void", by=record.id)
         record.fires_discharged.append(f.id)
-        if v == "moot" and isinstance(d, Decision) and d.status == "accepted":
-            store.flip_status(d, "moot", by=record.id)
-            record.flipped.append(d.id)
-        entries.append(entry)
     return entries
+
+
+def currency(store: Store, record: Consolidation, d: Decision, f: Fire) -> LedgerEntry:
+    """A revisit fire on a decision: the adjudicator re-checks the warrant's currency; ``moot`` flips the record."""
+    successor = ", ".join(d.lineage.superseded_by) if d.lineage.superseded_by else None
+    c = _model.complete("adjudicator", roles.request("currency", record=d.id, fire=f.model_dump(by_alias=True, mode="json"), successor=successor), session=record.id)
+    out = c.json()
+    v = out.get("verdict", "still-holds")
+    entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="currency", subject=d.id,
+                        claim=f"the warrant of {d.id} still holds against {f.edge_event.scorer}={f.edge_event.observed}",
+                        proposer=RoleCall(role="committer", model_id=None, call=None),
+                        contradiction={"source": {"role": "adjudicator", "model_id": c.model_id, "call": c.call}, "coding": {"fire": f.id}},
+                        verdict=v, adjudicator=RoleCall(role="adjudicator", model_id=c.model_id, call=c.call), outcome=out.get("why"))
+    store.append(entry)
+    _latches.discharge(store, f, v, by=record.id)
+    if v == "moot" and d.status == "accepted":
+        store.flip_status(d, "moot", by=record.id)
+        record.flipped.append(d.id)
+    return entry
+
+
+def readjudicate(store: Store, record: Consolidation, draft: Draft, f: Fire, brief: dict[str, Any]) -> LedgerEntry:
+    """A deferred draft whose condition fired goes through attack and verdict again, in fresh contexts."""
+    nomination = Nomination(rung=draft.rung, rung_why=draft.rung_why, subject=draft.name, evidence=list(draft.evidence), draft=draft.uid)
+    _latches.settle(store, draft, by=f.id)
+    entry = adjudicate(store, record, nomination, draft, brief)
+    _latches.discharge(store, f, entry.outcome or entry.verdict, by=record.id)
+    record.nominations.append(nomination)
+    return entry
+
+
+def propagate(store: Store, record: Consolidation) -> list[Fire]:
+    """Wiring latches whose neighbour moved fire and are checked in the same commit; a rotted anchor goes to the adjudicator."""
+    fires = _latches.emit_neighbour(store, record.after_pass, by=record.id)
+    for f in fires:
+        host: Decision = store.read("decision", f.latch.record)  # type: ignore[assignment]
+        result = _latches.check(store, host, f)
+        outcome = result["outcome"]
+        if result["rotted"]:
+            c = _model.complete("adjudicator", roles.request("currency", record=host.id, fire=f.model_dump(by_alias=True, mode="json"),
+                                                             rotted=result["rotted"], successor=", ".join(result.get("successors", [])) or None), session=record.id)
+            out = c.json()
+            v = out.get("verdict", "still-holds")
+            entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="currency", subject=host.id,
+                                claim=f"the warrant of {host.id} still holds with {', '.join(result['rotted'])} {f.edge_event.observed}",
+                                proposer=RoleCall(role="committer", model_id=None, call=None),
+                                contradiction={"source": {"role": "adjudicator", "model_id": c.model_id, "call": c.call}, "coding": {"fire": f.id, "rotted": result["rotted"]}},
+                                verdict=v, adjudicator=RoleCall(role="adjudicator", model_id=c.model_id, call=c.call), outcome=out.get("why"))
+            store.append(entry)
+            outcome += f"; {entry.id}: {v}"
+            if v == "moot" and host.status == "accepted":
+                store.flip_status(host, "moot", by=record.id)
+                record.flipped.append(host.id)
+        _latches.discharge(store, f, outcome, by=record.id)
+        record.fires_discharged.append(f.id)
+    return fires
 
 
 def retirement_review(store: Store, record: Consolidation) -> list[Nomination]:
@@ -366,9 +429,10 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
             nomination.draft = draft.uid
             adjudicate(store, record, nomination, draft, brief)
             record.nominations.append(nomination)
+    discharge_fires(store, record, brief)
     steers = credit(store, record, brief, sessions)
-    discharge_fires(store, record)
     record.nominations += retirement_review(store, record)
+    propagate(store, record)
     record.closed_at = now()
     store.write(record)
     print(report(record, steers))
@@ -381,7 +445,8 @@ def report(record: Consolidation, steers: list[Steer]) -> str:
     for n in record.nominations:
         lines.append(f"nominated {n.rung} on {n.subject} ({', '.join(n.evidence)}) → {n.ledger_entry}: {n.outcome}")
     lines.append(f"steers: {', '.join(f'{t.id} {t.indicts.record if t.indicts else ''} [{t.matrix_cell}]' for t in steers) or 'none'}")
-    lines.append(f"fires discharged: {', '.join(record.fires_discharged) or 'none'}; admitted: {', '.join(record.admitted) or 'none'}; flipped: {', '.join(record.flipped) or 'none'}")
+    lines.append(f"fires discharged: {', '.join(record.fires_discharged) or 'none'}; admitted: {', '.join(record.admitted) or 'none'}; "
+                 f"flipped: {', '.join(record.flipped) or 'none'}; deferred: {', '.join(record.deferred) or 'none'}")
     if record.analyst_report:
         lines.append(f"analyst report: {record.analyst_report}")
     return "\n".join(lines)
@@ -426,7 +491,8 @@ def _cmd(args, store_of, finish) -> int:
     store = store_of(args)
     record = consolidate(store, analyst_report=args.analyst_report, force=args.force)
     finish(store, args, f"Consolidate {record.id} after pass {record.after_pass}: admitted {' '.join(record.admitted) or 'nothing'}"
-           + (f", flipped {' '.join(record.flipped)}" if record.flipped else "") + (f", discharged {' '.join(record.fires_discharged)}" if record.fires_discharged else ""))
+           + (f", flipped {' '.join(record.flipped)}" if record.flipped else "") + (f", discharged {' '.join(record.fires_discharged)}" if record.fires_discharged else "")
+           + (f", deferred {len(record.deferred)}" if record.deferred else ""))
     return 0
 
 

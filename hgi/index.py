@@ -19,7 +19,7 @@ from typing import Any, Callable
 
 from hgi.registry import is_escape, read_json, write_json
 from hgi.store import Store
-from hgi.types import Decision, Disposition, Fire, Session
+from hgi.types import Decision, Disposition, Draft, Fire, Session
 
 FORBIDDEN_CELL_KEYS = frozenset({"decision", "duty", "then", "article", "context", "options"})
 """Fields whose content a reader could obey directly from a cell; the settlement test evicts them."""
@@ -79,14 +79,50 @@ def summaries(store: Store) -> list[dict[str, Any]]:
     ]
 
 
+def watch_hosts(store: Store) -> list[tuple[str, list]]:
+    """Every record the oracle's next run can move: accepted decisions and deferred drafts, with their latch fans.
+
+    A draft's own fan is not yet live — nothing a draft proposes is yet true —
+    so only its deferral latch is exposed, at the index a fire's ``latch.index``
+    reads; the body's positions are held by ``None``.
+    """
+    hosts: list[tuple[str, list]] = [(d.id, d.all_latches()) for d in store.decisions("accepted")]
+    hosts += [(p.uid, [None] * len(p.body.all_latches()) + [p.deferral.until]) for p in store.drafts() if p.deferral]
+    return hosts
+
+
 def triggers(store: Store) -> list[dict[str, Any]]:
-    """Live revisit latches keyed on world-state, with their predicates."""
+    """Live revisit latches keyed on world-state, with their predicates — on decisions and on deferred drafts alike."""
     out = []
-    for d in store.decisions("accepted"):
-        for i, latch in enumerate(d.all_latches()):
-            if latch.type == "revisit" and latch.lifecycle.status == "live" and latch.edge.predicate:
-                out.append({"record": d.id, "latch_index": i, "predicate": latch.edge.predicate.model_dump(),
+    for host, latches in watch_hosts(store):
+        for i, latch in enumerate(latches):
+            if latch is not None and latch.type == "revisit" and latch.lifecycle.status == "live" and latch.edge.predicate:
+                out.append({"record": host, "latch_index": i, "predicate": latch.edge.predicate.model_dump(),
                             "disposer": latch.consumer, "owed_act": latch.owed_act.class_})
+    return out
+
+
+def deferred(store: Store) -> list[dict[str, Any]]:
+    """Drafts re-queued on a ``defer(<until>)`` verdict, with the condition each waits on."""
+    out = []
+    for p in store.drafts():
+        if not p.deferral:
+            continue
+        until = p.deferral.until
+        out.append({"draft": p.uid, "name": p.name, "ledger_entry": p.deferral.ledger_entry, "after_pass": p.deferral.after_pass,
+                    "key_space": until.key_space, "predicate": until.edge.predicate.model_dump() if until.edge.predicate else None,
+                    "over_passes": until.guard.over_passes, "disposer": until.consumer})
+    return out
+
+
+def wiring(store: Store) -> list[dict[str, Any]]:
+    """Live neighbour-keyed latches: which record watches which, and the status each neighbour was last seen in."""
+    out = []
+    for d in store.decisions():
+        for i, latch in enumerate(d.all_latches()):
+            if latch.type == "wiring" and latch.lifecycle.status == "live":
+                out.append({"record": d.id, "status": d.status, "latch_index": i, "neighbours": latch.guard.records,
+                            "seen": latch.guard.statuses, "owed_act": latch.owed_act.class_, "disposer": latch.consumer})
     return out
 
 
@@ -241,6 +277,8 @@ PROJECTIONS: dict[str, Callable[[Store], Any]] = {
     "hooks": hooks,
     "summaries": summaries,
     "triggers": triggers,
+    "deferred": deferred,
+    "wiring": wiring,
     "fires": undischarged_fires,
     "competence": competence,
     "fusion": fusion,

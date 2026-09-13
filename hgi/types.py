@@ -374,7 +374,10 @@ class LatchRef(Strict):
 
 
 class EdgeEvent(Strict):
+    """What moved: for a world-state latch the evaluation's scorer; for a neighbour latch ``<id>.status``; for a schedule latch the passes elapsed."""
+
     evaluation: str
+    """The Weave evaluation for a world-state edge, else the key-space that moved: ``neighbor`` | ``competence``."""
     pass_: int = Field(alias="pass")
     scorer: str
     observed: float | str
@@ -582,6 +585,21 @@ class LedgerEntry(Strict):
 
 # --- proposals (the pre-admission tier) --------------------------------------
 
+class Deferral(Strict):
+    """A ``defer(<until>)`` verdict made concrete: the condition as a latch, re-queued to the backward pass.
+
+    The latch is keyed on the world (a watch predicate the oracle's next runs
+    settle) or on the schedule (passes to wait); its fire is owed to the
+    backward pass, which re-adjudicates the draft in fresh contexts.
+    """
+
+    ledger_entry: str
+    until: Latch
+    deferred_at: datetime
+    after_pass: int
+    """The pass the deferring consolidation had read up to; a schedule latch counts from here."""
+
+
 class Draft(Strict):
     """A candidate record. Eternal identity attaches at admission; a draft carries a non-recycled ``uid`` and a recyclable ``name``."""
 
@@ -602,6 +620,13 @@ class Draft(Strict):
     """The fused record this draft is a leaf of (§ 10.6): the parent retires when its first heir lands and lists every heir."""
     folded_from: list[str] = Field(default_factory=list)
     """The records whose payloads this draft contracts into one (§ 10.6): each retires on admission, superseded by the fold."""
+
+    deferral: Deferral | None = None
+    """Set by the committer on a ``defer(<until>)`` verdict; ``None`` for a draft awaiting its first adjudication."""
+
+    def all_latches(self) -> list[Latch]:
+        """The body's fan plus the deferral latch, indexed the way a fire's ``latch.index`` reads."""
+        return [*self.body.all_latches(), *([self.deferral.until] if self.deferral else [])]
 
     @model_validator(mode="after")
     def _lineage_operators(self):
@@ -685,6 +710,8 @@ class Consolidation(Strict):
     fires_discharged: list[str] = Field(default_factory=list)
     admitted: list[str] = Field(default_factory=list)
     flipped: list[str] = Field(default_factory=list)
+    deferred: list[str] = Field(default_factory=list)
+    """Draft uids re-queued with their condition as a latch."""
 
 
 # --- kind table ---------------------------------------------------------------

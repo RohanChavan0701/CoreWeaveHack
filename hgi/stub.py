@@ -315,8 +315,11 @@ def _verdict(req):
     scorer = req.get("watch_scorer")
     series = oracle.get("series", {}).get(scorer, [])
     if scorer and series and all(v is None for v in series):
-        return {"verdict": f"escalate(oracle evidence unevaluable for {scorer})", "amendment": None}
-    return {"verdict": "admit", "amendment": None}
+        return {"verdict": f"escalate(oracle evidence unevaluable for {scorer})", "amendment": None, "until": None}
+    if scorer and series and any(v is None for v in series):  # evidence partly missing and forthcoming: wait for two evaluable runs
+        return {"verdict": f"defer(until {scorer} is evaluable on two consecutive runs)", "amendment": None,
+                "until": {"scorer": scorer, "comparator": ">=", "value": 0.0, "persistence": 2, "passes": None}}
+    return {"verdict": "admit", "amendment": None, "until": None}
 
 
 @handles("credit")
@@ -333,6 +336,10 @@ def _credit(req):
 
 @handles("currency")
 def _currency(req):
+    if req.get("rotted"):
+        if req.get("successor"):
+            return {"verdict": "still-holds", "why": f"the anchors {req['rotted']} retired into {req['successor']}, which stands for them"}
+        return {"verdict": "reversed", "why": f"the anchors {req['rotted']} retired with no successor; the warrant cites nothing that stands"}
     if req.get("successor"):
         return {"verdict": "reversed", "why": f"the premise is superseded by {req['successor']}"}
     ratio = req.get("applied_over_considered")

@@ -32,7 +32,9 @@ from hgi.types import (
     Admission,
     ConstitutionArticle,
     Decision,
+    Deferral,
     Draft,
+    Envelope,
     LedgerEntry,
     Observation,
     QueueEntry,
@@ -214,6 +216,20 @@ class Store:
     def drafts(self) -> list[Draft]:
         return [self.parse_as(Draft, read_json(p)) for p in sorted(self.proposals_dir.glob("*.json"))]
 
+    def draft(self, uid: str) -> Draft | None:
+        path = self.proposals_dir / f"{uid}.json"
+        return self.parse_as(Draft, read_json(path)) if path.exists() else None
+
+    def host(self, id: str) -> BaseModel | None:
+        """Whatever carries the latch a fire names: a decision or article by id, or a deferred draft by uid."""
+        return self.find(id) or self.draft(id)
+
+    def defer(self, draft: Draft, entry: LedgerEntry, until: Latch, after_pass: int) -> Draft:
+        """The committer's act on ``defer(<until>)``: the condition becomes a latch on the draft, which stays in the pre-admission tier."""
+        deferred = draft.model_copy(update={"deferral": Deferral(ledger_entry=entry.id, until=until, deferred_at=now(), after_pass=after_pass)})
+        self.write_draft(deferred)
+        return deferred
+
     def drop_draft(self, uid: str) -> None:
         """A declined draft is dropped without a tombstone: a vertex with no in-edges breaks no path."""
         (self.proposals_dir / f"{uid}.json").unlink(missing_ok=True)
@@ -256,6 +272,9 @@ class Store:
         body = draft.body.model_dump(by_alias=True)
         if amendment:
             body.update(amendment)
+        neighbours = [a for a in body["warrant"]["anchors"] if a not in draft.retires and isinstance(self.find(a), Envelope)]
+        if neighbours:  # a warrant that cites a record is wired to it: its status change is this record's edge
+            body["latches"].append(wiring_latch(neighbours, self, act="check"))
         id = self.registry.mint(PREFIXES["decision"])
         stamp = now()
         decision = self.parse_as(Decision, {
