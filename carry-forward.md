@@ -1237,3 +1237,46 @@ be right and why it may not.
     call and lets the model recover, the endpoint does not, so the row
     measures the endpoint's contract as much as the model; item 42 carries
     the fix.
+77. **The shape-radius sweep: exact match already conflates lessons, so
+    widening the Jaccard radius cannot buy precision on this data — τ\*=1.0,
+    and the fix is the coding (item 40), not the radius.** A self-contained
+    analysis (`hgi/grouping_sweep.py`, `hgi grouping-radius`, scorer test
+    `tests/test_grouping_sweep.py`) sweeps τ over
+    `{1.0, 0.67, 0.5, 0.33, 0.25, ~0}`, clustering observations by
+    single-linkage connected components on `jaccard(shape_i, shape_j) >= τ`
+    and scoring each clustering against the curriculum lesson the
+    observation's anchor resolves to (the true label). *Dataset:* the
+    recorded attached stream arms on disk (`runs/stream/{120b-attached,
+    120b-strict, 20b-attached}`, not freshly generated), combined and
+    session-namespaced per arm — N=104 labeled observations over 27
+    sessions and 6 lessons (only `bom` drew none); the curve and table are
+    written to `experiments/results/grouping-radius/radius.{json,md}`.
+    *The curve* (τ → homogeneity / cross_lesson_clusters / lessons_at_bar):
+    1.0 → 0.45 / 9 / 0; 0.67 → 0.45 / 9 / 0; 0.5 → 0.09 / 3 / 0;
+    0.33 → 0.09 / 3 / 0; 0.25 → 0.09 / 3 / 0; ~0 → 0.00 / 1 / 0. *Reading:*
+    the win the widening was meant to buy (`lessons_at_bar` — a lesson
+    reaching the 2-distinct-session bar inside one pure cluster) is zero at
+    every τ, because the precision cost is already paid at τ=1.0: the blind
+    coder shapes on the tool or the triage, not the world's convention, so
+    one shape covers many lessons before any merge — `[http-tool]` →
+    {moved-v2, paged-api, token-route}, `[shell-tool]` → {csv-quoted,
+    footer-row, trailing-newline}, `[test-failure-triage]` → four lessons.
+    The recommendation rule (lowest τ with `cross_lesson_clusters == 0`,
+    max `lessons_at_bar`) has no admissible τ — even exact match is impure
+    — so it falls back to the baseline τ=1.0 with the caveat that widening
+    the radius cannot recover a precision the join never had. *Right:* this
+    is the same diagnosis as items 39 and 40 reached from the run logs, now
+    measured — the shapes are generic, so grouping is not the lever;
+    fixing the observation coding to name the convention (item 40) is.
+    *Caveat:* thin data (N=104, ~15 obs/lesson) combined across two models
+    and two families (curriculum, curriculum-strict), so the shape
+    vocabulary is heterogeneous; the conflation holds within each single
+    arm too, so it is not an artifact of combining. The scorer is trusted
+    independently: `test_grouping_sweep.py` builds a synthetic labeled
+    fixture whose Jaccard geometry is exact and whose τ\* (0.25) is known,
+    and asserts the whole curve and the rule. *Next:* widening the labeled
+    set with the real coder over the full 7×12 pool (needs a W&B inference
+    endpoint; not run here) would sharpen the curve, but the recommendation
+    would only change if fixing the coding first made the shapes
+    lesson-specific. The number seeds a tunable registry bar default that a
+    separate change wires into `group_observations`.
