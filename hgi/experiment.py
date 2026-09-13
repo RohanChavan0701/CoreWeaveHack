@@ -5,8 +5,10 @@ arm inherits, and its arms. An arm is one run of the loop with every
 decision fixed: which model serves which role, how many rounds, how many
 passes a round holds (the consolidation cadence, written into the arm's
 bars), whether the memory is attached or detached, which bars it overrides,
-and how many tasks the oracle evaluates at once. Nothing in the file is a
-secret: a model names the environment variable that holds its key.
+which suite it runs on (the task families, the sample size and the fault
+profile — :class:`suite.tasks.SuiteSpec`), and how many tasks the oracle
+evaluates at once. Nothing in the file is a secret: a model names the
+environment variable that holds its key.
 
 ::
 
@@ -20,6 +22,10 @@ secret: a model names the environment variable that holds its key.
     model = "gpt-oss-120b"
     rounds = 3
     passes_per_round = 2
+    [defaults.suite]
+    families = ["genesis", "conventions"]   # the task families; size samples each, seeded
+    [defaults.suite.faults]
+    http_fault_calls = 2                    # the world's fault profile, part of the suite hash
 
     [arms.attached]
     mode = "attached"
@@ -54,10 +60,12 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+import suite as _suite
 from hgi import model as _model
 from hgi import registry as _registry
 from hgi import tracing
 from hgi.roles import ROLES
+from suite.tasks import SuiteSpec, build
 
 RUNS = Path("runs")
 """Where arms run: ``$HGI_RUNS`` or ``./runs``, one directory per experiment, one per arm."""
@@ -119,6 +127,8 @@ class ArmSpec(BaseModel):
     roles: dict[str, str] = Field(default_factory=dict)
     bars: dict[str, Any] = Field(default_factory=dict)
     """Overrides merged over the seed's bars, nested tables deep-merged (``[arms.x.bars.retirement] window_passes = 4``)."""
+    suite: SuiteSpec = Field(default_factory=SuiteSpec)
+    """The world: task families, sample size and seed, fault profile. Deep-merged like ``bars``."""
     concurrency: int = Field(default=4, ge=1)
     """Tasks the oracle evaluates at once — W&B Inference answers 429 past its concurrency limit."""
     description: str = ""
@@ -234,11 +244,14 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         os.environ["HGI_WEAVE_PROJECT"] = exp.weave_project
     os.environ["WEAVE_PARALLELISM"] = str(spec.concurrency)
     roster = install(exp, spec)
+    world = build(spec.suite)
+    suite_token = _suite.use(world)
     reg = seed_arm(exp, arm, spec, store_root, roster)
     token = _registry.use(reg)
     store = Store(store_root, registry=reg)
     record: dict[str, Any] = {
         "experiment": exp.name, "arm": arm, "spec": spec.model_dump(), "passes": spec.passes, "roster": roster,
+        "suite": {"hash": world.hash, "tasks": len(world.tasks), "families": world.families()},
         "weave_project": tracing.project_name(), "started_at": _now(), "finished_at": None, "sessions": [], "curve": {},
     }
     _write(where / "arm.json", record)
@@ -273,6 +286,7 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         _commit_arm(where, store, commit, f"Arm {exp.name}/{arm} finished: {_curve_line(record['curve'])}")
         tracing.run()
         _registry.reset(token)
+        _suite.reset(suite_token)
         _model.reset()
         if previous_store is None:
             os.environ.pop("HGI_STORE", None)
@@ -361,6 +375,7 @@ def show(exp: Experiment) -> str:
         if spec.description:
             lines.append(f"  {spec.description}")
         lines.append("  roles: " + ", ".join(f"{r}={m}" for r, m in roster.items()))
+        lines.append("  " + build(spec.suite).describe())
         if spec.bars:
             lines.append(f"  bars: {json.dumps(spec.bars, sort_keys=True)}")
     return "\n".join(lines)

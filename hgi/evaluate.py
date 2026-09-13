@@ -17,16 +17,17 @@ from datetime import datetime
 from typing import Any
 
 import weave
+from pydantic import PrivateAttr
 
 from hgi import index as _index
 from hgi import model as _model
 from hgi import tracing
 from hgi.store import Store, now
+import suite as _suite
 from hgi.types import Decision, EvaluationResult, Fact, Fire, Session
 from suite import EVALUATION
 from suite.agent import Agent
 from suite.scorers import SCORERS
-from suite.tasks import TASKS, dataset_name, suite_hash
 
 COMPARATORS = {"<": operator.lt, "<=": operator.le, ">": operator.gt, ">=": operator.ge, "==": operator.eq, "!=": operator.ne}
 
@@ -43,7 +44,18 @@ def context_records(store: Store, session: Session) -> list[dict[str, Any]]:
 
 
 class Evaluation(weave.Evaluation):
-    """A Weave evaluation whose summary is the scorers' alone: task outputs are heterogeneous by design and carry no mean."""
+    """A Weave evaluation whose summary is the scorers' alone: task outputs are heterogeneous by design and carry no mean.
+
+    The per-row scores are kept aside (``row_scores``, by task id) so the
+    session's rows can carry the oracle's verdict on each task — the hidden
+    test's outcome is disclosed after the fact; the test itself is not.
+    """
+
+    _row_scores: dict[str, dict[str, Any]] = PrivateAttr(default_factory=dict)
+
+    @property
+    def row_scores(self) -> dict[str, dict[str, Any]]:
+        return self._row_scores
 
     @weave.op
     async def summarize(self, eval_table) -> dict:
@@ -51,6 +63,10 @@ class Evaluation(weave.Evaluation):
         from weave.flow.util import transpose
 
         rows = list(eval_table.rows)
+        for row in rows:
+            output = row.get("output") or {}
+            if isinstance(output, dict) and output.get("task"):
+                self._row_scores[output["task"]] = {k: v for k, v in (row.get("scores") or {}).items() if isinstance(v, dict)}
         scores = transpose(transpose(rows).get("scores", []))
         summary = {}
         for scorer in self.scorers or []:
@@ -82,7 +98,8 @@ def run(store: Store, session: Session) -> Session:
                   records=context_records(store, session) if session.attached else [],
                   articles=[a.article for a in store.articles()] if session.attached else [],
                   policy="stub" if isinstance(_model.backend("pass"), _model.Stub) else "model")
-    dataset = weave.Dataset(name=dataset_name(), rows=[t.row() for t in TASKS])
+    world = _suite.current()
+    dataset = weave.Dataset(name=world.dataset_name(), rows=world.rows())
     evaluation = Evaluation(name=EVALUATION, dataset=dataset, scorers=[s() for s in SCORERS],
                                   evaluation_name=f"{tracing.run_label()}{EVALUATION} pass {session.pass_} {'attached' if session.attached else 'detached'}")
     with tracing.attributes(session=session.id, pass_=session.pass_, role="pass", attached=session.attached,
@@ -90,8 +107,9 @@ def run(store: Store, session: Session) -> Session:
         summary, call = asyncio.run(_evaluate(evaluation, agent))
     stamp = now()
     session.model_id = _model.model_id("pass")
-    session.evaluation = EvaluationResult(evaluation=EVALUATION, run=tracing.call_uri(call), suite_hash=suite_hash(),
-                                          scores=facts_from(summary, stamp, tracing.call_uri(call)), rows=agent.outputs)
+    rows = [{**row, "scores": evaluation.row_scores.get(row["task"], {})} for row in agent.outputs]
+    session.evaluation = EvaluationResult(evaluation=EVALUATION, run=tracing.call_uri(call), suite_hash=world.hash,
+                                          scores=facts_from(summary, stamp, tracing.call_uri(call)), rows=rows)
     if session.trace_root is None:
         session.trace_root = tracing.call_uri(call)
     return session
