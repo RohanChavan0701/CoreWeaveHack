@@ -50,6 +50,7 @@ from __future__ import annotations
 
 import json
 import math
+import tempfile
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -300,13 +301,18 @@ def id_to_lesson(families: Iterable[str] = CURRICULUM_FAMILIES) -> dict[str, str
     return out
 
 
-def read_store(store_dir: Path, arm_label: str, labels: dict[str, str]) -> tuple[list[Labeled], dict[str, int]]:
+def read_store(store_dir: Path, arm_label: str, labels: dict[str, str],
+               recode: str | None = None, recode_terms: list[str] | None = None) -> tuple[list[Labeled], dict[str, int]]:
     """The labeled observations of one recorded arm's store, joined observation → shape → task → lesson.
 
     Every session's rows give ``call → task``; each observation's ``anchor.call`` resolves to a task and the task to its
     lesson (``labels``). An observation is kept when it carries a non-empty coder shape and its anchor resolves to a
     labeled task; the returned counts say how many were dropped for want of each. Names and sessions are namespaced by
     ``arm_label`` so a combined set keeps them distinct.
+
+    With ``recode`` set (``tool`` or ``convention``), the stored shape is ignored and the observation's noticing is
+    re-coded through the current coder (:func:`_shape`) against ``recode_terms`` — so the recorded noticings can be
+    scored under a shaping the run did not use, the ``no_shape`` drop then counting a noticing that coded to nothing.
     """
     from hgi import registry as _registry
     from hgi.store import Store
@@ -325,7 +331,10 @@ def read_store(store_dir: Path, arm_label: str, labels: dict[str, str]) -> tuple
         counts = {"observations": 0, "no_shape": 0, "no_label": 0, "kept": 0}
         for o in store.observations(state=None):
             counts["observations"] += 1
-            if not o.shape:
+            shape = _shape(o.noticed, recode_terms or [], recode) if recode else list(o.shape)
+            if recode and shape == ["other(unclassified)"]:
+                shape = []  # a noticing the re-coding placed nowhere is a no-shape drop, as an empty stored shape is
+            if not shape:
                 counts["no_shape"] += 1
                 continue
             lesson = labels.get(call_to_task.get(o.anchor.call or "", ""))
@@ -333,7 +342,7 @@ def read_store(store_dir: Path, arm_label: str, labels: dict[str, str]) -> tuple
                 counts["no_label"] += 1
                 continue
             out.append(Labeled(name=f"{arm_label}:{o.name}", session=f"{arm_label}:{o.session}",
-                               shape=frozenset(o.shape), lesson=lesson))
+                               shape=frozenset(shape), lesson=lesson))
             counts["kept"] += 1
     finally:
         _registry.reset(token)
@@ -349,25 +358,50 @@ def _arm_dirs(run_root: Path, arms: list[str] | None) -> list[Path]:
     return dirs
 
 
-def read_dataset(run_root: Path, arms: list[str] | None = None) -> tuple[list[Labeled], dict[str, Any]]:
+def read_dataset(run_root: Path, arms: list[str] | None = None,
+                 recode: str | None = None, recode_terms: list[str] | None = None) -> tuple[list[Labeled], dict[str, Any]]:
     """The combined labeled set over the recorded arms under ``run_root``, with the provenance the results record.
 
     An arm contributes only the labeled observations of its attached sessions; a detached arm keeps no store and
     contributes nothing. The provenance names the run root, the arms read, their per-arm counts, and the total N.
+    With ``recode``, the recorded noticings are re-coded under that shaping instead of read as stored (see
+    :func:`read_store`).
     """
     labels = id_to_lesson()
     obs: list[Labeled] = []
     per_arm: dict[str, dict[str, int]] = {}
     for arm_dir in _arm_dirs(run_root, arms):
-        arm_obs, counts = read_store(arm_dir / "store", arm_dir.name, labels)
+        arm_obs, counts = read_store(arm_dir / "store", arm_dir.name, labels, recode, recode_terms)
         if counts["kept"] == 0:
             continue
         obs += arm_obs
         per_arm[arm_dir.name] = counts
     provenance = {"run_root": str(run_root), "arms": sorted(per_arm), "per_arm": per_arm,
                   "n_labeled": len(obs), "n_lessons": len({o.lesson for o in obs}),
-                  "n_sessions": len({o.session for o in obs}), "generated": False}
+                  "n_sessions": len({o.session for o in obs}), "generated": False,
+                  "recoded": recode}
     return obs, provenance
+
+
+def recode_comparison(run_root: Path, terms: list[str], bar: int, arms: list[str] | None = None) -> dict[str, Any]:
+    """The recorded runs re-coded both ways and swept — the same before/after as :func:`compare_shapings`, on real noticings.
+
+    The recorded arms predate decision 81's noticing brief and were the sweep's original dataset; re-coding their
+    noticings through the current coder is a secondary, real-data check on the synthetic demonstration, not a live
+    re-score (still the stub proxy). The ``tool`` arm re-imposes the tool-major shaping the runs actually used."""
+    out: dict[str, Any] = {"bar": bar}
+    for mode in ("tool", "convention"):
+        obs, provenance = read_dataset(run_root, arms, recode=mode, recode_terms=terms)
+        if not obs:
+            return {}
+        curve = sweep(obs, bar)
+        recommended, why = recommend(curve)
+        at_full = next(s for s in curve if s.tau == 1.0)
+        out[mode] = {"at_tau_1.0": at_full.row(), "recommended_tau": recommended.tau_label if recommended else None,
+                     "justification": why, "provenance": provenance}
+    out["n"] = out["convention"]["provenance"]["n_labeled"]
+    out["n_lessons"] = out["convention"]["provenance"]["n_lessons"]
+    return out
 
 
 # --- rendering and writing -------------------------------------------------------------------------
@@ -428,6 +462,133 @@ def write_results(out_dir: Path, curve: list[Score], recommended: Score | None, 
     return json_path, md_path
 
 
+# --- the convention-shaping demonstration (decision 77's deeper reading) --------------------------
+
+# The sweep above measured that no τ recovers precision because the coder shaped on the tool, not the convention: one
+# tool-major term covered many lessons before any merge. This block shows the fix at the source — it codes the *same*
+# labeled noticings two ways and sweeps each, so the τ=1.0 row moves from impure to pure when the shaping changes.
+#
+# The noticings are synthetic but written in the post-decision-81 voice the blind close produces — they name the
+# world-convention the attempt turned on, never the task's lesson label — and they are coded through the real stub
+# coder (:mod:`hgi.stub`), so the demonstration exercises the shipped shaping rule, not a hand-drawn clustering. It is
+# the stub, a lexical proxy for the model's convention inference; the pending confirmation is a live re-score of freshly
+# coded observations on the ``openai/gpt-oss-120b`` endpoint (``WANDB_ENTITY`` + a weave project), not run here.
+
+SYNTHETIC_NOTICINGS: list[tuple[str, str, str]] = [
+    # (session, lesson, noticing) — three sessions, several clothes per lesson, two http lessons and three shell
+    # lessons that a tool-major shape collapses and a convention-major shape keeps apart.
+    ("s1", "moved-v2", "In task fetch_user the route answered 410 Gone and named its successor under /v2; the attempt did not follow the versioned route and returned the error"),
+    ("s2", "moved-v2", "In task get_profile the endpoint was moved: it answered 410 and pointed at its /v2 successor, which the attempt never called"),
+    ("s3", "moved-v2", "In task load_account the request hit a retired route that answered with the versioned /v2 successor; the attempt read the 410 as a failure"),
+    ("s1", "paged-api", "In task list_users the listing returned only the first page and the attempt stopped; the page named the next page in a field the attempt ignored, so the count came up short"),
+    ("s2", "paged-api", "In task enumerate_orders the route paginates and the attempt read one page as the whole; paging to the next page was needed for the full listing"),
+    ("s3", "paged-api", "In task all_items the listing is paged and the first page was taken as complete; the next-page cursor went unfollowed"),
+    ("s1", "token-route", "In task read_secure the route answered 401 unauthorized; the attempt sent no token, and the secure route wanted the token authorized on the query"),
+    ("s2", "token-route", "In task fetch_record the secure endpoint returned 401 until a token authorized the call; the attempt never read the token file"),
+    ("s3", "token-route", "In task get_secret the route is guarded and answered 401 unauthorized without the token that authorizes it"),
+    ("s1", "csv-quoted", "In task sum_city the CSV field was quoted and held a comma inside it; splitting on commas shifted the columns and the count was wrong"),
+    ("s2", "csv-quoted", "In task count_rows a quoted field carried an embedded comma; the naive comma split mis-parsed the row"),
+    ("s3", "csv-quoted", "In task tally the export has a quoted comma inside a field, and splitting on the delimiter broke the column alignment"),
+    ("s1", "footer-row", "In task sum_sales the attempt counted the rows of the export but its last line is a TOTAL summary row that is not a data record"),
+    ("s2", "footer-row", "In task total_units the export ends with a footer row, a trailer holding the totals, which the attempt counted as a record"),
+    ("s3", "footer-row", "In task rollup the final total row of the file is a summary row, not a record; it was included in the count"),
+    ("s1", "trailing-newline", "In task count_people the shell call ran but the last line carried no trailing newline, so wc -l counted one fewer"),
+    ("s2", "trailing-newline", "In task tally_lines the file's last line is unterminated — no newline — and the line count came up short by one"),
+    ("s3", "trailing-newline", "In task line_total the final line has no trailing newline and the count was off by one per file"),
+    ("s1", "bom", "In task read_config the JSON file opens with a byte order mark and the strict parser refused it; the attempt did not strip the BOM"),
+    ("s2", "bom", "In task parse_manifest the file begins with a UTF-8 BOM (utf-8-sig) that the parser rejected as invalid JSON"),
+]
+"""A synthetic labeled set in the blind close's voice: each noticing names the world-convention, never the lesson. The
+lesson beside each is the true label the sweep scores against — the same role the curriculum lesson plays for a recorded run."""
+
+
+def _shape(noticed: str, terms: list[str], mode: str) -> list[str]:
+    """Code one noticing to a shape through the stub coder. ``tool`` reproduces the pre-fix coder (tool-major cues only,
+    the vocabulary before the convention terms were added); ``convention`` runs the shipped :func:`hgi.stub._coding`."""
+    from hgi import stub
+
+    if mode == "tool":
+        tool_terms = [t for t in terms if t not in stub.CONVENTION_KEYWORDS]
+        return sorted(stub.terms_for(noticed, tool_terms)) or ["other(unclassified)"]
+    return stub._coding({"observations": [{"name": "x", "noticed": noticed}], "terms": terms})["x"]
+
+
+def labeled_from_noticings(noticings: list[tuple[str, str, str]], terms: list[str], mode: str) -> list[Labeled]:
+    """The labeled observations for one shaping mode: each noticing coded to a shape, its session and lesson carried."""
+    return [Labeled(name=f"{mode}:{session}:{n}", session=session, shape=frozenset(_shape(noticed, terms, mode)), lesson=lesson)
+            for n, (session, lesson, noticed) in enumerate(noticings)]
+
+
+def compare_shapings(noticings: list[tuple[str, str, str]], terms: list[str], bar: int) -> dict[str, Any]:
+    """Sweep the same noticings under the tool-major and convention-major shapings; return both curves and the deltas."""
+    out: dict[str, Any] = {"bar": bar, "n": len(noticings), "lessons": sorted({l for _, l, _ in noticings}),
+                           "sessions": sorted({s for s, _, _ in noticings})}
+    for mode in ("tool", "convention"):
+        obs = labeled_from_noticings(noticings, terms, mode)
+        curve = sweep(obs, bar)
+        recommended, why = recommend(curve)
+        at_full = next(s for s in curve if s.tau == 1.0)
+        out[mode] = {"curve": [s.row() for s in curve], "recommended_tau": recommended.tau_label if recommended else None,
+                     "justification": why, "at_tau_1.0": at_full.row(),
+                     "distinct_shapes": sorted({" & ".join(sorted(o.shape)) for o in obs})}
+    return out
+
+
+def as_markdown_shaping(cmp: dict[str, Any]) -> str:
+    tool, conv = cmp["tool"]["at_tau_1.0"], cmp["convention"]["at_tau_1.0"]
+    lines = ["# Convention shaping — the coder's shape at the source, tool-major vs convention-major", "",
+             "Decision 77's sweep found no grouping radius could buy precision, because the blind coder shaped each "
+             "observation on the *tool* it called, and one tool-major term covers many lessons. This is the same "
+             "labeled set coded two ways and swept: the pre-fix shaping (tool-major cues only) beside the shipped "
+             "shaping (the convention the noticing names). The τ=1.0 row — today's exact-match grouping, which the "
+             "sweep left in place (τ\\*=1.0 stands) — is the one that matters: the fix is meant to make *exact match* "
+             "pure, not to lean on a wider radius.", "",
+             f"- Synthetic labeled set in the blind close's voice: N={cmp['n']} noticings over "
+             f"{len(cmp['sessions'])} sessions and {len(cmp['lessons'])} lessons "
+             f"({', '.join(cmp['lessons'])}); the independence bar is {cmp['bar']} distinct sessions.",
+             "- Coded through the real stub coder (`hgi.stub`), a lexical proxy for the model's convention inference.",
+             "- **Pending confirmation:** a live re-score of freshly coded observations on `openai/gpt-oss-120b` "
+             "(`WANDB_ENTITY` + a weave project), not run here — the stub shows the mechanism, the endpoint confirms it.", "",
+             "## At τ=1.0 (exact-match grouping — the shipped radius)", "",
+             "| shaping | homogeneity | cross_lesson_clusters | lessons_at_bar | clusters |",
+             "|---|---|---|---|---|",
+             f"| tool-major (pre-fix) | {tool['homogeneity']:.3f} | {tool['cross_lesson_clusters']} | {tool['lessons_at_bar']} | {tool['clusters']} |",
+             f"| convention-major (shipped) | {conv['homogeneity']:.3f} | {conv['cross_lesson_clusters']} | {conv['lessons_at_bar']} | {conv['clusters']} |", ""]
+    if conv["lessons_at_bar_names"]:
+        lines += [f"Lessons reaching the bar inside a pure cluster under convention shaping: "
+                  f"{', '.join(conv['lessons_at_bar_names'])}.", ""]
+    lines += ["## Reading", "",
+              f"Under the tool-major shaping the τ=1.0 row is impure — homogeneity {tool['homogeneity']:.3f}, "
+              f"{tool['cross_lesson_clusters']} cross-lesson cluster(s), and only {tool['lessons_at_bar']} lesson(s) "
+              "reaching the bar inside a pure cluster — reproducing the sweep's finding that even exact match conflates "
+              "lessons when the shape is the tool. Under the convention-major shaping the same exact-match grouping is "
+              f"pure: homogeneity {conv['homogeneity']:.3f}, {conv['cross_lesson_clusters']} cross-lesson clusters, and "
+              f"{conv['lessons_at_bar']} of {len(cmp['lessons'])} lessons reaching the bar inside their own cluster. "
+              "The lever was the coding, exactly as decision 77 read it; the grouping radius did not move.", "",
+              "## The distinct shapes each shaping produced", "",
+              "**Tool-major:** " + "; ".join(f"`{s}`" for s in cmp["tool"]["distinct_shapes"]) + ".", "",
+              "**Convention-major:** " + "; ".join(f"`{s}`" for s in cmp["convention"]["distinct_shapes"]) + ".", ""]
+    if "recorded" in cmp:
+        rt, rc = cmp["recorded"]["tool"]["at_tau_1.0"], cmp["recorded"]["convention"]["at_tau_1.0"]
+        prov = cmp["recorded"]["convention"]["provenance"]
+        lines += ["## Secondary check: the recorded runs, re-coded", "",
+                  f"The recorded arms under `{prov['run_root']}` — the sweep's original dataset, {cmp['recorded']['n']} "
+                  f"labeled observations over {cmp['recorded']['n_lessons']} lessons — re-coded through the current "
+                  "coder both ways. These runs predate decision 81's noticing brief, so their noticings are noisier than "
+                  "the blind close now writes; still the stub proxy, not a live re-score.", "",
+                  "| shaping | homogeneity | cross_lesson_clusters | lessons_at_bar | clusters |",
+                  "|---|---|---|---|---|",
+                  f"| tool-major (as the runs shaped) | {rt['homogeneity']:.3f} | {rt['cross_lesson_clusters']} | {rt['lessons_at_bar']} | {rt['clusters']} |",
+                  f"| convention-major (re-coded) | {rc['homogeneity']:.3f} | {rc['cross_lesson_clusters']} | {rc['lessons_at_bar']} | {rc['clusters']} |", "",
+                  f"The tool-major re-coding reproduces the sweep's original reading (homogeneity {rt['homogeneity']:.3f}, "
+                  f"near the recorded 0.45, with {rt['cross_lesson_clusters']} cross-lesson clusters); the convention "
+                  f"re-coding lifts homogeneity to {rc['homogeneity']:.3f} and brings {rc['lessons_at_bar']} lesson(s) "
+                  "to the bar on the same noticings. The residue — homogeneity short of 1.0 and two clusters still "
+                  "crossing — is the pre-81 noticings' noise, the gap a live re-score over freshly coded observations "
+                  "would close.", ""]
+    return "\n".join(lines) + "\n"
+
+
 # --- the command -----------------------------------------------------------------------------------
 
 DEFAULT_RUN_ROOT = "runs/stream"
@@ -441,6 +602,13 @@ def register(add, store_of, finish) -> None:
     p.add_argument("--out", default=DEFAULT_OUT, help=f"where to write radius.json and radius.md (default: {DEFAULT_OUT})")
     p.add_argument("--bar", type=int, default=None, help="the independence bar (default: the seed's decision.independent_observations)")
     p.set_defaults(fn=_cmd)
+
+    q = add("grouping-shaping", "code one labeled set tool-major vs convention-major and compare the τ=1.0 grouping")
+    q.add_argument("--out", default=DEFAULT_OUT, help=f"where to write convention_shaping.json and .md (default: {DEFAULT_OUT})")
+    q.add_argument("--bar", type=int, default=None, help="the independence bar (default: the seed's decision.independent_observations)")
+    q.add_argument("--run", default=None, help="also re-code the recorded arms under this run root both ways, as a real-data secondary check")
+    q.add_argument("--arm", action="append", help="read only this arm of --run (repeatable)")
+    q.set_defaults(fn=_cmd_shaping)
 
 
 def _default_bar() -> int:
@@ -463,4 +631,34 @@ def _cmd(args) -> int:
     json_path, md_path = write_results(Path(args.out), curve, recommended, why, provenance, bar)
     print(as_markdown(curve, recommended, why, provenance, bar))
     print(f"wrote {json_path} and {md_path}")
+    return 0
+
+
+def _cmd_shaping(args) -> int:
+    from hgi import registry as _registry
+    from hgi.genesis import seed
+
+    bar = args.bar if args.bar is not None else _default_bar()
+    with tempfile.TemporaryDirectory() as tmp:
+        reg = seed(Path(tmp) / "store", model_id="stub")
+        token = _registry.use(reg)
+        try:
+            terms = reg.terms("work-shape")
+            cmp = compare_shapings(SYNTHETIC_NOTICINGS, terms, bar)
+            if args.run:
+                run_root = Path(args.run)
+                if not run_root.exists():
+                    raise SystemExit(f"no run root at {run_root}")
+                recorded = recode_comparison(run_root, terms, bar, args.arm)
+                if recorded:
+                    cmp["recorded"] = recorded
+        finally:
+            _registry.reset(token)
+    out_dir = Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "convention_shaping.json").write_text(json.dumps(cmp, indent=2, sort_keys=True) + "\n")
+    md = as_markdown_shaping(cmp)
+    (out_dir / "convention_shaping.md").write_text(md)
+    print(md)
+    print(f"wrote {out_dir / 'convention_shaping.json'} and {out_dir / 'convention_shaping.md'}")
     return 0

@@ -1,0 +1,384 @@
+{
+  "bar": 2,
+  "convention": {
+    "at_tau_1.0": {
+      "ari": 1.0,
+      "clusters": 7,
+      "completeness": 1.0,
+      "cross_lesson_clusters": 0,
+      "homogeneity": 1.0,
+      "lessons_at_bar": 7,
+      "lessons_at_bar_names": [
+        "bom",
+        "csv-quoted",
+        "footer-row",
+        "moved-v2",
+        "paged-api",
+        "token-route",
+        "trailing-newline"
+      ],
+      "tau": "1.0",
+      "tau_value": 1.0,
+      "v_measure": 1.0
+    },
+    "curve": [
+      {
+        "ari": 1.0,
+        "clusters": 7,
+        "completeness": 1.0,
+        "cross_lesson_clusters": 0,
+        "homogeneity": 1.0,
+        "lessons_at_bar": 7,
+        "lessons_at_bar_names": [
+          "bom",
+          "csv-quoted",
+          "footer-row",
+          "moved-v2",
+          "paged-api",
+          "token-route",
+          "trailing-newline"
+        ],
+        "tau": "1.0",
+        "tau_value": 1.0,
+        "v_measure": 1.0
+      },
+      {
+        "ari": 1.0,
+        "clusters": 7,
+        "completeness": 1.0,
+        "cross_lesson_clusters": 0,
+        "homogeneity": 1.0,
+        "lessons_at_bar": 7,
+        "lessons_at_bar_names": [
+          "bom",
+          "csv-quoted",
+          "footer-row",
+          "moved-v2",
+          "paged-api",
+          "token-route",
+          "trailing-newline"
+        ],
+        "tau": "0.67",
+        "tau_value": 0.666667,
+        "v_measure": 1.0
+      },
+      {
+        "ari": 1.0,
+        "clusters": 7,
+        "completeness": 1.0,
+        "cross_lesson_clusters": 0,
+        "homogeneity": 1.0,
+        "lessons_at_bar": 7,
+        "lessons_at_bar_names": [
+          "bom",
+          "csv-quoted",
+          "footer-row",
+          "moved-v2",
+          "paged-api",
+          "token-route",
+          "trailing-newline"
+        ],
+        "tau": "0.5",
+        "tau_value": 0.5,
+        "v_measure": 1.0
+      },
+      {
+        "ari": 1.0,
+        "clusters": 7,
+        "completeness": 1.0,
+        "cross_lesson_clusters": 0,
+        "homogeneity": 1.0,
+        "lessons_at_bar": 7,
+        "lessons_at_bar_names": [
+          "bom",
+          "csv-quoted",
+          "footer-row",
+          "moved-v2",
+          "paged-api",
+          "token-route",
+          "trailing-newline"
+        ],
+        "tau": "0.33",
+        "tau_value": 0.333333,
+        "v_measure": 1.0
+      },
+      {
+        "ari": 1.0,
+        "clusters": 7,
+        "completeness": 1.0,
+        "cross_lesson_clusters": 0,
+        "homogeneity": 1.0,
+        "lessons_at_bar": 7,
+        "lessons_at_bar_names": [
+          "bom",
+          "csv-quoted",
+          "footer-row",
+          "moved-v2",
+          "paged-api",
+          "token-route",
+          "trailing-newline"
+        ],
+        "tau": "0.25",
+        "tau_value": 0.25,
+        "v_measure": 1.0
+      },
+      {
+        "ari": 0.0,
+        "clusters": 1,
+        "completeness": 1.0,
+        "cross_lesson_clusters": 1,
+        "homogeneity": 0.0,
+        "lessons_at_bar": 0,
+        "lessons_at_bar_names": [],
+        "tau": "~0",
+        "tau_value": 0.0,
+        "v_measure": 0.0
+      }
+    ],
+    "distinct_shapes": [
+      "byte-order-mark",
+      "field-quoted",
+      "line-unterminated",
+      "listing-paged",
+      "route-guarded",
+      "route-versioned",
+      "summary-row"
+    ],
+    "justification": "\u03c4*=0.25: the widest radius that keeps every cluster within a single lesson (cross_lesson_clusters=0, homogeneity=1.0), bringing 7 lesson(s) to the independence bar \u2014 bom, csv-quoted, footer-row, moved-v2, paged-api, token-route, trailing-newline.",
+    "recommended_tau": "0.25"
+  },
+  "lessons": [
+    "bom",
+    "csv-quoted",
+    "footer-row",
+    "moved-v2",
+    "paged-api",
+    "token-route",
+    "trailing-newline"
+  ],
+  "n": 20,
+  "recorded": {
+    "bar": 2,
+    "convention": {
+      "at_tau_1.0": {
+        "ari": 0.7054,
+        "clusters": 16,
+        "completeness": 0.7018,
+        "cross_lesson_clusters": 2,
+        "homogeneity": 0.9577,
+        "lessons_at_bar": 5,
+        "lessons_at_bar_names": [
+          "csv-quoted",
+          "footer-row",
+          "moved-v2",
+          "paged-api",
+          "trailing-newline"
+        ],
+        "tau": "1.0",
+        "tau_value": 1.0,
+        "v_measure": 0.81
+      },
+      "justification": "no \u03c4 keeps every cluster within one lesson \u2014 the blind coder's shape vocabulary already gives two lessons the same shape, so exact match itself conflates them; \u03c4=1.0 is named as the baseline, and widening the radius cannot recover a precision the join never had. Fix the coding, not the radius.",
+      "provenance": {
+        "arms": [
+          "120b-attached",
+          "120b-strict",
+          "20b-attached"
+        ],
+        "generated": false,
+        "n_labeled": 118,
+        "n_lessons": 6,
+        "n_sessions": 33,
+        "per_arm": {
+          "120b-attached": {
+            "kept": 41,
+            "no_label": 0,
+            "no_shape": 2,
+            "observations": 43
+          },
+          "120b-strict": {
+            "kept": 52,
+            "no_label": 0,
+            "no_shape": 0,
+            "observations": 52
+          },
+          "20b-attached": {
+            "kept": 25,
+            "no_label": 0,
+            "no_shape": 1,
+            "observations": 26
+          }
+        },
+        "recoded": "convention",
+        "run_root": "/Users/slavazinevich/GenDev/CoreWeaveHack/runs/stream"
+      },
+      "recommended_tau": "1.0"
+    },
+    "n": 118,
+    "n_lessons": 6,
+    "tool": {
+      "at_tau_1.0": {
+        "ari": 0.1329,
+        "clusters": 20,
+        "completeness": 0.3457,
+        "cross_lesson_clusters": 10,
+        "homogeneity": 0.4794,
+        "lessons_at_bar": 1,
+        "lessons_at_bar_names": [
+          "token-route"
+        ],
+        "tau": "1.0",
+        "tau_value": 1.0,
+        "v_measure": 0.4017
+      },
+      "justification": "no \u03c4 keeps every cluster within one lesson \u2014 the blind coder's shape vocabulary already gives two lessons the same shape, so exact match itself conflates them; \u03c4=1.0 is named as the baseline, and widening the radius cannot recover a precision the join never had. Fix the coding, not the radius.",
+      "provenance": {
+        "arms": [
+          "120b-attached",
+          "120b-strict",
+          "20b-attached"
+        ],
+        "generated": false,
+        "n_labeled": 104,
+        "n_lessons": 6,
+        "n_sessions": 33,
+        "per_arm": {
+          "120b-attached": {
+            "kept": 38,
+            "no_label": 0,
+            "no_shape": 5,
+            "observations": 43
+          },
+          "120b-strict": {
+            "kept": 46,
+            "no_label": 0,
+            "no_shape": 6,
+            "observations": 52
+          },
+          "20b-attached": {
+            "kept": 20,
+            "no_label": 0,
+            "no_shape": 6,
+            "observations": 26
+          }
+        },
+        "recoded": "tool",
+        "run_root": "/Users/slavazinevich/GenDev/CoreWeaveHack/runs/stream"
+      },
+      "recommended_tau": "1.0"
+    }
+  },
+  "sessions": [
+    "s1",
+    "s2",
+    "s3"
+  ],
+  "tool": {
+    "at_tau_1.0": {
+      "ari": 0.1185,
+      "clusters": 4,
+      "completeness": 0.6509,
+      "cross_lesson_clusters": 2,
+      "homogeneity": 0.3675,
+      "lessons_at_bar": 1,
+      "lessons_at_bar_names": [
+        "moved-v2"
+      ],
+      "tau": "1.0",
+      "tau_value": 1.0,
+      "v_measure": 0.4698
+    },
+    "curve": [
+      {
+        "ari": 0.1185,
+        "clusters": 4,
+        "completeness": 0.6509,
+        "cross_lesson_clusters": 2,
+        "homogeneity": 0.3675,
+        "lessons_at_bar": 1,
+        "lessons_at_bar_names": [
+          "moved-v2"
+        ],
+        "tau": "1.0",
+        "tau_value": 1.0,
+        "v_measure": 0.4698
+      },
+      {
+        "ari": 0.1185,
+        "clusters": 4,
+        "completeness": 0.6509,
+        "cross_lesson_clusters": 2,
+        "homogeneity": 0.3675,
+        "lessons_at_bar": 1,
+        "lessons_at_bar_names": [
+          "moved-v2"
+        ],
+        "tau": "0.67",
+        "tau_value": 0.666667,
+        "v_measure": 0.4698
+      },
+      {
+        "ari": 0.1185,
+        "clusters": 4,
+        "completeness": 0.6509,
+        "cross_lesson_clusters": 2,
+        "homogeneity": 0.3675,
+        "lessons_at_bar": 1,
+        "lessons_at_bar_names": [
+          "moved-v2"
+        ],
+        "tau": "0.5",
+        "tau_value": 0.5,
+        "v_measure": 0.4698
+      },
+      {
+        "ari": 0.1185,
+        "clusters": 4,
+        "completeness": 0.6509,
+        "cross_lesson_clusters": 2,
+        "homogeneity": 0.3675,
+        "lessons_at_bar": 1,
+        "lessons_at_bar_names": [
+          "moved-v2"
+        ],
+        "tau": "0.33",
+        "tau_value": 0.333333,
+        "v_measure": 0.4698
+      },
+      {
+        "ari": 0.1185,
+        "clusters": 4,
+        "completeness": 0.6509,
+        "cross_lesson_clusters": 2,
+        "homogeneity": 0.3675,
+        "lessons_at_bar": 1,
+        "lessons_at_bar_names": [
+          "moved-v2"
+        ],
+        "tau": "0.25",
+        "tau_value": 0.25,
+        "v_measure": 0.4698
+      },
+      {
+        "ari": 0.0,
+        "clusters": 1,
+        "completeness": 1.0,
+        "cross_lesson_clusters": 1,
+        "homogeneity": 0.0,
+        "lessons_at_bar": 0,
+        "lessons_at_bar_names": [],
+        "tau": "~0",
+        "tau_value": 0.0,
+        "v_measure": 0.0
+      }
+    ],
+    "distinct_shapes": [
+      "error-wrapping",
+      "file-tool",
+      "other(unclassified)",
+      "shell-tool"
+    ],
+    "justification": "no \u03c4 keeps every cluster within one lesson \u2014 the blind coder's shape vocabulary already gives two lessons the same shape, so exact match itself conflates them; \u03c4=1.0 is named as the baseline, and widening the radius cannot recover a precision the join never had. Fix the coding, not the radius.",
+    "recommended_tau": "1.0"
+  }
+}
