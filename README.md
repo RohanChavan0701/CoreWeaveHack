@@ -173,6 +173,31 @@ The dashboard's store picker lists every arm; choosing one shows its
 projections, its escalation queue and every arm of its experiment on one
 chart, refreshing while the arm runs.
 
+### The baseline on `openai/gpt-oss-120b`
+
+Run on 2026-09-12 over W&B Inference, six passes attached and six detached,
+consolidation every two passes, traced to
+[`slavazinevich-worldvue/hgi-experiments`](https://wandb.ai/slavazinevich-worldvue/hgi-experiments/weave):
+
+| pass | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|
+| memory attached | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| detached (ablation) | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+
+The honest reading: this suite is saturated for this model. gpt-oss-120b
+retries a transient 502 unprompted, batches the budgeted shell calls and
+names causes, so every lesson the stub demonstration learned is behaviour
+the model already has, and the store has nothing to teach it. The attached
+run filed eight observations (every one a recovered transient fault) and
+admitted nothing: the consolidator's drafts were refused at the floor. A
+separation needs either a world with faults the model does not already
+handle or a model that does not already handle them; both are one arm in
+an experiment file. An earlier run of the same arms, before the role
+requests stated their reply shapes, scored 0.67–0.83 on both curves with two
+tasks failing on a double-wrapped result and no observation filed; that run
+is recorded in `carry-forward.md`, not here, because its numbers measured
+the contract and not the model.
+
 ## Tests
 
 ```bash

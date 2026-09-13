@@ -12,17 +12,28 @@ work left for the full implementation and the decisions taken along the way
   exist because the roster is decisions only. Slice 5 (the demo) has run on
   the repository store and is recorded in the README's acceptance table.
 - The demonstration ran on the deterministic stub (`hgi/stub.py`), because
-  no CoreWeave inference endpoint credentials were available. The model
-  path (`hgi/model.py` OpenAICompatible; `suite/agent.py` tool loop; every
-  role prompt) is written; as of 2026-09-12 one `classify`-shaped JSON-mode
-  completion on `openai/gpt-oss-120b` over W&B Inference has returned the
-  expected shape, and nothing more has been run against a real model.
-- The experiment surface (`hgi/experiment.py`, `experiments/*.toml`,
-  `hgi experiment show|run|report|models`) exists and its smoke experiment
-  has run through the command surface with a commit per step in each arm's
-  own repository. `experiments/baseline.toml`, `model-sweep.toml` and
-  `cadence.toml` are written and have not been run; every model id they
-  name is one `hgi experiment models` listed on 2026-09-12.
+  no CoreWeave inference endpoint credentials were available.
+- `experiments/baseline.toml` has run twice on `openai/gpt-oss-120b` over
+  W&B Inference (2026-09-12). The first run, before the role requests
+  stated their reply shapes: attached 0.67 0.83 0.67 0.67 0.67 0.83,
+  detached 0.67 0.67 0.83 0.67 0.67 0.83, no observation filed, nothing
+  admitted — the model answered classify and every lens in JSON of its own
+  shape, and double-wrapped `result` on two tasks. The second run, after the
+  contract: 1.00 on every pass of both arms; eight observations filed, all
+  recovered transient faults; nothing admitted. The README reports the
+  second. The first run's arms are kept at `runs/baseline-precontract/` on
+  this machine.
+- State of the role contracts on the real model: `classify`, `lens`
+  (L-0001, L-0004) verified; `dispose`, `guard`, `coding` ran inside the
+  arm without refusal; `nominate` parses about half the time — the other
+  half is a floor-rung or retirement latch in the work-shape key space,
+  which the floor refuses, correctly; `attack`, `verdict`, `credit`,
+  `currency` and `propose` have not yet received a parseable draft on the
+  real model and are unverified. Each refusal now names every failing field
+  on the nomination's outcome.
+- `experiments/model-sweep.toml` and `cadence.toml` are written and have
+  not been run; every model id they name is one `hgi experiment models`
+  listed on 2026-09-12.
 - Weave: traces, evaluations, attributes, feedback → steer, and the mirror
   are verified live in `slavazinevich-worldvue/hgi-dev` and used in
   `slavazinevich-worldvue/hgi`.
@@ -40,45 +51,49 @@ work left for the full implementation and the decisions taken along the way
    that leads with the residue, demotion on applied ÷ considered, coverage
    migration, and the ladder rungs `adoption-row` and `rule-enrollment` as
    executed operators. `registry/ports.json` needs the rule declarations.
-3. **Run the loop on a real frozen model.** `hgi experiment run
-   experiments/baseline.toml` with `WANDB_ENTITY` set (W&B Inference refuses
-   a call with no entity/project header). Expect to iterate on the JSON
-   contracts of each role request (`classify`, `guard`, `lens`, `dispose`,
-   `propose`, `coding`, `nominate`, `attack`, `verdict`, `credit`,
-   `currency`) — the stub defines them by example; the role prompts state
-   them in prose only. The arm's seed prices the lenses and articles for
-   the pass model; the role prompt files still say `priced_for: stub` and
-   nothing lints that header. Then `model-sweep.toml` (§ 14.4's model swap;
-   the split-roles arm) and `cadence.toml`; the report goes into the README
-   by hand, because the arm stores live outside the code repository
-   (decision 15).
-4. **TypeSafe System1.** `hgi/coder.py` assumes an OpenAI-compatible surface
+3. **A world the model cannot already handle.** The baseline is saturated:
+   gpt-oss-120b scores 1.00 from pass 1 (README, *The baseline*). Two
+   routes, both one arm each: a weaker pass model (`model-sweep.toml`'s
+   `20b-attached` and the `split-roles` arm are the first to run), or
+   harder faults — a 502 on the first two calls rather than one, a shell
+   budget of one, a route that changes shape between passes. The suite is
+   pinned by hash (spec § 14.1), so harder faults are a suite parameter
+   the experiment file would have to carry (`FAULT_FRACTION` and the
+   first-call rule in `suite/tools.py`), and a different suite hash per
+   arm; the report already keys on the arm, not the hash.
+4. **Finish the role contracts on the real model.** `nominate` still yields
+   a refused draft about half the time; `attack`, `verdict`, `credit`,
+   `currency` and `propose` are unverified (see *Where it stands*). The
+   role prompt files still say `priced_for: stub` and nothing lints that
+   header. Then `cadence.toml`; the report goes into the README by hand,
+   because the arm stores live outside the code repository (decision 15).
+5. **TypeSafe System1.** `hgi/coder.py` assumes an OpenAI-compatible surface
    behind `TYPESAFE_BASE_URL`; the real API shape is unverified (waitlist as
    of 2026-09-12). The role is the invariant; only the adapter changes.
-5. **ARIA.** Interactive only. `hgi mirror` publishes the datasets it needs;
+6. **ARIA.** Interactive only. `hgi mirror` publishes the datasets it needs;
    the brief it drafts is recorded by URI with `hgi consolidate
    --analyst-report`. A programmatic surface would replace `build_brief`'s
    local derivation with the analyst's report as the primary input.
-6. **Split and fold** (§ 10.6) as executed operators; today `lineage.split_from`
+7. **Split and fold** (§ 10.6) as executed operators; today `lineage.split_from`
    and `folded_from` exist on the envelope and nothing writes them.
-7. **The lens battery** (§ 9.2, slice 6a): decoy rejection scored in Weave;
+8. **The lens battery** (§ 9.2, slice 6a): decoy rejection scored in Weave;
    `LensTelemetry` fields are all `design-stage`.
-8. **Genesis anchoring.** All seven articles are past the three-consolidation
+9. **Genesis anchoring.** All seven articles are past the three-consolidation
    deadline without an anchor (the lint warns). The consolidator needs a
    nomination that anchors an article to an instance, or evicts it.
-9. **The `defer` verdict** is accepted by the vocabulary but nothing turns its
+10. **The `defer` verdict** is accepted by the vocabulary but nothing turns its
    condition into a latch; the draft simply stays in `store/proposals/`.
-10. **Wiring latches** are written on supersedure but nothing consumes them:
+11. **Wiring latches** are written on supersedure but nothing consumes them:
     propagation (`re-derive` / `check` on a neighbour's status change) is not
     run at consolidation.
-11. **Structural-zero audit and escape recurrence** are projected but not
+12. **Structural-zero audit and escape recurrence** are projected but not
     nominated on; vocabulary growth by the route-before-mint ladder is
     `Registry.add_term` with no caller.
-12. **The pass's own proposals** (close step 6) parse and file but the stub
+13. **The pass's own proposals** (close step 6) parse and file but the stub
     never drafts any; the real model may.
-13. **`admission.commit`** is not stored (see decision 4 below); `hgi lineage`
+14. **`admission.commit`** is not stored (see decision 4 below); `hgi lineage`
     does not yet read the admitting commit from git history.
-14. **Model-pricing** warns only; nothing re-prices.
+15. **Model-pricing** warns only; nothing re-prices.
 
 ## Decisions taken, and their risk
 
@@ -173,6 +188,20 @@ work left for the full implementation and the decisions taken along the way
     *Risk:* the session record carries one `model_id` (the pass's); the
     per-role ids are on the ledger entries' role calls and on `arm.json`.
 
+19. **The reply shape travels with the request, not in the prompt**
+    (`hgi.roles.REPLIES`, `roles.request`). *Right:* one table, the stub
+    and the model read the same contract, and a shape change is one edit.
+    *Risk:* the model echoes what it is shown — a placeholder inside a list
+    came back as a literal element, and a `reply` key came back as a
+    wrapper; both are now read defensively, and the test on `REPLIES`
+    forbids a string beside an object in any list.
+20. **Every role receives the whole JSON schema of Observation, Draft and
+    LedgerEntry**, definitions included (about three thousand tokens a
+    call), and the drafting requests carry every closed vocabulary. *Right:*
+    the body's typed fields stopped carrying invented terms. *Risk:* cost
+    per call, and the vocabularies are validated at runtime only — the
+    schema still says `string`.
+
 ## Housekeeping
 
 - `smoke_test.py` is the original W&B/Weave connectivity check and is not
@@ -181,5 +210,6 @@ work left for the full implementation and the decisions taken along the way
   `HGI_MODEL_ID=<model> uv run hgi genesis --force` before a hand-run on a
   real model (this resets the store). An experiment arm seeds its own store
   and needs no reseed.
-- `runs/smoke/` on this machine is the smoke experiment's output from
-  2026-09-12; it is ignored by git and safe to delete.
+- `runs/smoke/`, `runs/baseline/` and `runs/baseline-precontract/` on this
+  machine are the 2026-09-12 runs; they are ignored by git. The first two
+  are regenerable; the third is the only record of the pre-contract run.
