@@ -36,7 +36,7 @@ from typing import Any
 
 from suite.families import family
 from suite.families.genesis import result_object
-from suite.families.incidents import BUDGET_SLACK, SHAPES, check_for, prompt, routes
+from suite.families.incidents import BUDGET_SLACK, SHAPES, check_for, naive_for, prompt, routes
 from suite.tasks import Task
 
 READINGS = {
@@ -94,5 +94,6 @@ def tasks() -> list[Task]:
         assert not set(pinned["readings"]) - set(READINGS), f"unmapped readings: {sorted(set(pinned['readings']) - set(READINGS))}"
         r = record_of(pinned)
         out.append(Task(f"incidents-transfer/{r['id']}", prompt(r), SHAPES, result_object("class", "cause_readings"),
-                        check_for(r), http_budget=len(r["cause_readings"]) + BUDGET_SLACK, routes=routes(r)))
+                        check_for(r), http_budget=len(r["cause_readings"]) + BUDGET_SLACK, routes=routes(r),
+                        stub=naive_for(r), lesson=f"decoy-{r['decoy']}", knowing={"http": len(r["cause_readings"])}))
     return out

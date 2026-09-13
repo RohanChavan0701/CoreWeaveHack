@@ -10,6 +10,10 @@ prose: the answer must name the class *and* cite a cause reading, and citing
 any of the bundle's decoy readings — the readings keyed on the louder shape a
 naive read reaches for first — fails the task however right the class is.
 The decoy is the convention of this world: the loud reading is the wrong one.
+Which loud reading it is, is the bundle's **lesson** — ``decoy-<shape>`` from
+its ``shape.yml`` (:data:`suite.lessons.LESSONS`), the thing a stream deals
+the pool over and a record could carry to the next bundle. The knowing floor
+is one call per cause reading, so ``solution_economy`` here is the step count.
 
 Source: ``hearth/tenant-incident/scenarios``, hand-authored; the brief, the
 ``evidence/`` readings and the ``shape.yml`` cause/decoy lists are read from
@@ -24,11 +28,14 @@ policy that has learned "timeout storm ⇒ pool exhaustion" fails it.
 from __future__ import annotations
 
 import re
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from suite.families import DATA, family
 from suite.families.genesis import result_object
 from suite.tasks import Task
+
+if TYPE_CHECKING:
+    from suite.agent import Script
 
 SCENARIOS = DATA.parents[1] / "hearth" / "tenant-incident" / "scenarios"
 CLASSES = ["pool-exhaustion", "bad-deploy", "poison-message", "upstream-outage"]
@@ -42,9 +49,15 @@ INSTRUCTION = ('Return as result an object {"class": one of [' + ", ".join(CLASS
 
 
 def _list(shape: str, key: str) -> list[str]:
-    """The ``key: [a, b, c]`` line of a ``shape.yml`` — the only two lines of it this family reads."""
+    """The ``key: [a, b, c]`` line of a ``shape.yml`` — one of the three lines of it this family reads."""
     m = re.search(rf"^{key}: \[(.*)\]\s*$", shape, re.M)
     return [n.strip() for n in m.group(1).split(",")] if m else []
+
+
+def _scalar(shape: str, key: str) -> str:
+    """The ``key: value`` line of a ``shape.yml``; ``decoy`` is the shape the bundle's decoy readings are keyed on."""
+    m = re.search(rf"^{key}: (\S+)\s*$", shape, re.M)
+    return m.group(1) if m else ""
 
 
 def fetch(n: int) -> list[dict[str, Any]]:
@@ -59,7 +72,8 @@ def fetch(n: int) -> list[dict[str, Any]]:
         shape = (d / "shape.yml").read_text()
         out.append({"id": d.name, "class": re.sub(r"-[a-z]$", "", d.name), "brief": brief.read_text(),
                     "readings": {p.name: p.read_text() for p in sorted((d / "evidence").iterdir()) if p.is_file()},
-                    "cause_readings": _list(shape, "cause_readings"), "decoy_readings": _list(shape, "decoy_readings")})
+                    "cause_readings": _list(shape, "cause_readings"), "decoy_readings": _list(shape, "decoy_readings"),
+                    "decoy": _scalar(shape, "decoy")})
     return out
 
 
@@ -76,6 +90,21 @@ def routes(record: dict[str, Any]) -> dict[str, Any]:
     out: dict[str, Any] = {"/readings": {"readings": sorted(record["readings"])}}
     out.update({f"/readings/{name}": {"name": name, "text": text} for name, text in record["readings"].items()})
     return out
+
+
+def naive_for(record: dict[str, Any]):
+    """First contact: walk the readings in the order the prompt lists them, one call each, then answer from the first
+    cause reading. Every bundle holds more readings than the budget allows, so the walk dies on the budget — the naive
+    outcome of every task here is that error, and a pass that over-probes reproduces it."""
+    names = sorted(record["readings"])
+    answer = {"class": record["class"], "cause_readings": record["cause_readings"][:1]}
+
+    def policy(s: "Script"):
+        for name in names:
+            s.get(f"/readings/{name}")
+        return answer
+
+    return policy
 
 
 def check_for(record: dict[str, Any]):
@@ -98,5 +127,6 @@ def tasks() -> list[Task]:
 
     return [Task(f"incidents/{r['id']}", prompt(r), SHAPES,
                  result_object("class", "cause_readings"), check_for(r),
-                 http_budget=len(r["cause_readings"]) + BUDGET_SLACK, routes=routes(r))
+                 http_budget=len(r["cause_readings"]) + BUDGET_SLACK, routes=routes(r), stub=naive_for(r),
+                 lesson=f"decoy-{r['decoy']}", knowing={"http": len(r["cause_readings"])})
             for r in FAMILIES["incidents"].records()]

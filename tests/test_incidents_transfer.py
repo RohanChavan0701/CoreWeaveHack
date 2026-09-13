@@ -43,6 +43,8 @@ def test_each_pair_shares_its_shape_and_shares_no_names(world, scenario, tmp_pat
     assert redressed.check({"class": klass, "cause_readings": gold}, tmp_path), "the re-dressed gold answer must pass"
     assert original.check({"class": klass, "cause_readings": record["cause_readings"]}, tmp_path)
     assert redressed.shapes == original.shapes and redressed.http_budget == original.http_budget
+    assert redressed.lesson == original.lesson == f"decoy-{record['decoy']}", "the lesson is the bundle's, not the clothes'"
+    assert redressed.knowing == original.knowing == {"http": len(record["cause_readings"])}
     assert len(gold) == len(record["cause_readings"])
     assert len(record_of(record)["decoy_readings"]) == len(record["decoy_readings"])
     assert len(redressed.routes) == len(original.routes)  # one reading each, plus the free listing

@@ -1,15 +1,24 @@
-# The incident bundles alone: eighteen diagnoses, each a walk through an operator's readings under a budget of
-# the cause readings plus two, where the loud reading is the decoy and citing it fails the task however right
-# the class. A narrow world on purpose — nine bundles and their re-dressed halves, every task of both families,
-# so a pass is the whole battery and a record learned on one class is tested against the look-alike control
-# (`upstream-outage-b`) in the same pass. The transfer half is in the suite so a record admitted on `incidents`
-# is scored again re-dressed — different reading names, services, ports and clock times, the same convention —
-# and a record that memorised a name rather than the convention shows it in the same run.
-# The first two HTTP calls of a faulted task fail, so the budget's slack is the retry the walk must pay for.
+# The incidents stream: eighteen diagnoses met three at a time, none of them seen before. The pool is the nine
+# tenant-incident bundles and their nine re-dressed halves, dealt into six batches of three balanced over the decoy
+# shapes the bundles turn on (`decoy-dependency`, `decoy-saturation`, `decoy-state`); pass k evaluates batch k at
+# first sight, closes on it, and consolidates each round, so every batch is a validation set once and training
+# afterwards. The transfer half is in the same pool, so a re-dressed scenario can arrive before or after its source:
+# when it arrives after, the pass is asked whether the convention transferred; when it arrives first, the source is.
+# `upstream-outage-b` is the pool class's control — a timeout storm with a genuinely saturated pool whose saturation
+# is a consequence — and fails any record that learned "timeout storm ⇒ pool exhaustion" rather than the convention.
+# Two batches are met again after the stream, which measures retention against transfer.
+#
+# Unlike the curriculum stream this world still faults: half the tasks lose their first HTTP call. The budget is the
+# cause readings plus two and the naive walk down the whole bundle dies on it, so the slack must pay for the retry —
+# with the faults off the budget would stop biting and the walk would be free to wander.
+#
+# `solution_economy` here is the step count: the knowing floor is one call per cause reading, so the score is that
+# floor over the calls the pass actually spent — a pass that reads the two readings that settle it scores above one
+# that reads eight and happens to be right.
 #
 # Ids are W&B Inference ids as listed on 2026-09-12; `hgi experiment models` lists today's.
 name = "incidents"
-description = "memory attached against detached on the tenant-incident evidence bundles"
+description = "first-sight diagnosis of unseen incident bundles as the store grows, attached against detached, per decoy shape"
 weave_project = "hgi-experiments"
 
 [models.gpt-oss-120b]
@@ -20,27 +29,30 @@ id = "openai/gpt-oss-20b"
 
 [defaults]
 model = "gpt-oss-120b"
-rounds = 3
 passes_per_round = 2
 concurrency = 4
 
-[defaults.suite]
+[defaults.stream]
 families = ["incidents", "incidents-transfer"]
+batch = 3
+batches = 6
 seed = 0
+revisit = [1, 2]
 
-[defaults.suite.faults]
-http_fault_calls = 2
+[defaults.stream.faults]
+http_fault_fraction = 0.5
+http_fault_calls = 1
 
 [arms.120b-attached]
 mode = "attached"
 
 [arms.120b-detached]
 mode = "detached"
-description = "the ablation on this suite; one run is the whole record"
+description = "the ablation on the same batches; one run is the whole record"
 
 [arms.20b-attached]
 model = "gpt-oss-20b"
-description = "a weaker actor on the same bundles"
+description = "a weaker actor on the same stream, likelier to reach for the loud reading on first contact"
 
 [arms.split-roles]
 model = "gpt-oss-20b"

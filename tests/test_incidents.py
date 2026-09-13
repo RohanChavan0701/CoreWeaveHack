@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import pytest
 
+import suite as _suite
+from suite.faults import FaultProfile
 from suite.families import FAMILIES
+from suite.lessons import LESSONS, naive_outcome
+from suite.stream import StreamSpec, lessons_of, partition
 from suite.tasks import SuiteSpec, build
 
 INCIDENT_TASKS = 9
@@ -45,3 +49,30 @@ def test_the_pool_look_alike_control_grades_as_upstream_outage(world):
     record = next(r for r in FAMILIES["incidents"].records() if r["id"] == "upstream-outage-b")
     assert record["class"] == "upstream-outage"
     assert "pool-debug" in record["decoy_readings"]
+
+
+def test_every_task_names_its_decoy_shape_as_a_lesson_and_declares_the_cause_count_as_its_floor(world):
+    for record in FAMILIES["incidents"].records():
+        task = world.by_id[f"incidents/{record['id']}"]
+        assert task.lesson == f"decoy-{record['decoy']}" and task.lesson in LESSONS
+        assert task.knowing == {"http": len(record["cause_readings"])}
+
+
+def test_the_naive_walk_down_the_bundle_dies_on_the_budget():
+    """First contact reads every reading in the order the prompt lists them; every bundle holds more than the budget."""
+    world = build(SuiteSpec(families=["incidents"], faults=FaultProfile(http_fault_fraction=0.0)))
+    token = _suite.use(world)
+    try:
+        for task in world.tasks:
+            naive = naive_outcome(task.id)
+            assert "call budget" in (naive["error"]["cause"] or ""), f"{task.id}: the naive walk must die on the budget, got {naive}"
+    finally:
+        _suite.reset(token)
+
+
+def test_the_stream_deals_the_whole_pool_over_the_decoy_shapes():
+    batches = partition(StreamSpec(families=["incidents", "incidents-transfer"], batch=3, batches=6))
+    assert len(batches) == 6 and all(len(b.tasks) == 3 for b in batches)
+    assert len({t.id for b in batches for t in b.tasks}) == 6 * 3, "no task is dealt twice"
+    dealt = {k for b in batches for k in lessons_of(b)}
+    assert dealt == {f"decoy-{r['decoy']}" for r in FAMILIES["incidents"].records()}, "every decoy shape is in the pool"

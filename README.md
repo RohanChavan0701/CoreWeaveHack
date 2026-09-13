@@ -279,8 +279,8 @@ family is hand-written or transcribed once from a public dataset into
 | `transfer` | 6 | hand-written | the `conventions` conventions re-dressed — the same no-trailing-newline files, paging API and `/v2` move worn as different file names, a different API surface and different endpoints — so a record whose hook reads the convention scores here and one that memorised a path or a filename does not |
 | `curriculum` | 84 | generated (`suite/families/curriculum.py`) | seven lessons of the world in twelve clothes each — the five `conventions` lessons, an export that ends with a `TOTAL` row, a route under `/secure` that answers 401 until the token in `token.txt` is passed — each clothing a different instance from a seeded generator, disjoint from the hand-written families' names and routes, budgeted with one call to spare for discovering the convention; the pool a stream experiment deals from |
 | `curriculum-strict` | 84 | generated, the same clothes | the same tasks budgeted at exactly the knowing policy's calls, so the convention costs a call the budget does not hold: only a pass that already knows it — from the store, or from the model — stays within budget |
-| `incidents` | 9 | `hearth/tenant-incident` scenarios, hand-authored | one incident brief per bundle, the operator's readings served at `/readings/<name>` under a budget of the cause readings plus two: the class must be named and a cause reading cited, and citing the bundle's decoy reading — the loud one a naive read reaches for — fails the task however right the class is |
-| `incidents-transfer` | 9 | derived from `incidents` | the same nine bundles and the same convention worn in different clothes — the readings renamed, the services renamed, the host ports shifted by a thousand and the clock by three hours — so a record that learned *the loud reading is the decoy* scores here and one that memorised `pool-debug` or `orders` does not |
+| `incidents` | 9 | `hearth/tenant-incident` scenarios, hand-authored | one incident brief per bundle, the operator's readings served at `/readings/<name>` under a budget of the cause readings plus two: the class must be named and a cause reading cited, and citing the bundle's decoy reading — the loud one a naive read reaches for — fails the task however right the class is; each bundle's lesson is the shape of its decoy (`decoy-dependency`, `decoy-saturation`, `decoy-state`) and its `knowing` floor the count of its cause readings |
+| `incidents-transfer` | 9 | derived from `incidents` | the same nine bundles and the same convention worn in different clothes — the readings renamed, the services renamed, the host ports shifted by a thousand and the clock by three hours — so a record that learned *the loud reading is the decoy* scores here and one that memorised `pool-debug` or `orders` does not; each task carries its source bundle's lesson and the same `knowing` floor of one call per cause reading |
 
 ### Lessons
 
@@ -298,7 +298,7 @@ a policy that does not know the lesson produces — is derived by running it
 against a fault-free world. A failed row whose result equals the naive
 outcome, or whose error (or any tool error in its trace) is of the naive
 error's class, is a **naive-shape** failure: the lesson missed the way first
-contact misses it, decided by the task's own construction and no judge.
+contact misses it, decided by the task's own construction and no judge. The `incidents` lessons are tiered *visible* and keyed on the shape of the bundle's decoy readings, the one thing the nine bundles and their re-dressed halves share.
 
 ### Quality
 
@@ -363,6 +363,7 @@ hgi experiment models                                # the ids the endpoint serv
 | `experiments/transfer.toml` | `gpt-oss-120b` attached and detached, `gpt-oss-20b` attached; `genesis`, `conventions`, `api` and `transfer`, first two HTTP calls faulted | a convention held twice in different clothes: does a record admitted on one family score on the same convention re-dressed as another |
 | `experiments/stream.toml` | `gpt-oss-120b` attached and detached, `gpt-oss-20b` attached, on the `curriculum` pool; `gpt-oss-120b` attached and detached on `curriculum-strict`; ten batches of eight, consolidation every two, batches 1 and 2 revisited | the stream: first-sight performance on unseen tasks as the store grows, paired per batch and per lesson, with the same-shape recurrence per lesson; on the strict pool, whether the memory saves the discovery call |
 | `experiments/economy.toml` | `gpt-oss-120b` attached and detached on the `curriculum` pool, ten batches of eight, a different deal | the stream graded on quality: economy of calls and turns, and method transfer to the twin world, where correctness saturates |
+| `experiments/incidents.toml` | `gpt-oss-120b` attached and detached, `gpt-oss-20b` attached, the split roles; the 18 incident tasks as a stream, six batches of three, batches 1 and 2 revisited | first-sight diagnosis of unseen bundles balanced over the three decoy shapes, the transfer half dealt into the same pool so a re-dressed scenario may arrive before or after its source; `solution_economy` here is the step count — the cause readings over the calls the walk spent |
 | `experiments/stream-probe.toml` | `gpt-oss-120b` attached and detached, two batches of five | a stream arm end to end on the endpoint |
 | `experiments/stream-smoke.toml` | stub, attached and detached, four batches of four | the stream runner end to end offline; the tests run it |
 
