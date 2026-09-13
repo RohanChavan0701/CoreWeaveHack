@@ -14,7 +14,6 @@ import json
 import re
 from typing import Any, Callable
 
-from hgi import drafting as _drafting
 
 HANDLERS: dict[str, Callable[[dict[str, Any]], Any]] = {}
 
@@ -352,11 +351,7 @@ def _triage(req):
 @handles("attack")
 def _attack(req):
     draft, ev = req["draft"], req["evidence"]
-    claims = []
-    sessions = ev.get("observation_sessions", [])
-    independent = len(set(sessions)) >= ev.get("bar_independent", 2)
-    claims.append({"target": "warrant:independence", "refutation": "the anchored observations come from one pass, which is one datum",
-                   "reading_taken": True, "landed": not independent, "evidence": [f"sessions {sorted(set(sessions))}"]})
+    claims = []  # independence and the watch's direction are the code's readings (hgi.types.MECHANICAL), not the stub examiner's
     for p in draft["body"]["warrant"]["premises"]:
         landed = ("transient" in p["statement"] or "fault" in p["statement"]) and ev.get("fault_rate") == 0
         claims.append({"target": f"premise:{p['id']}", "refutation": p["falsifier"], "reading_taken": True, "landed": landed,
@@ -365,13 +360,6 @@ def _attack(req):
     copied = any(t in decision for t in ev.get("task_ids", []))
     claims.append({"target": "payload:abstraction", "refutation": "the payload names a task instead of the transferable shape",
                    "reading_taken": True, "landed": copied, "evidence": ["the payload text"]})
-    watch = _drafting.revisit_watch(draft["body"])
-    if watch is not None:
-        wrong_way = _drafting.fires_on_success(watch["comparator"], float(watch["value"]))
-        claims.append({"target": "warrant:watch-direction",
-                       "refutation": "the revisit watch fires when the record succeeds; a revisit must fire on the failure or regression the stakes name, not on a passing score",
-                       "reading_taken": True, "landed": wrong_way,
-                       "evidence": [f"{watch['scorer']} {watch['comparator']} {watch['value']}"]})
     lens = req.get("lens")
     if lens:  # one angle per context: the stub answers the lens's claim classes and nothing else
         claims = [c for c in claims if any(c["target"].startswith(prefix) for prefix in lens.get("claims", []))]
@@ -386,12 +374,8 @@ def _verdict(req):
     for c in attack["claims"]:
         if c["landed"] and c["target"].startswith("premise:"):
             return {"verdict": f"decline(premise killed: {c['target']})", "amendment": None}
-        if c["landed"] and c["target"] == "warrant:independence":
-            return {"verdict": "decline(bar unmet: observations are not independent)", "amendment": None}
         if c["landed"] and c["target"] == "payload:abstraction":
             return {"verdict": "decline(payload is a copied instance; promotion raises abstraction)", "amendment": None}
-        if c["landed"] and c["target"] == "warrant:watch-direction":
-            return {"verdict": "decline(the revisit watch fires on success; it must fire on the failure or regression the stakes name)", "amendment": None}
     scorer = req.get("watch_scorer")
     series = oracle.get("series", {}).get(scorer, [])
     if scorer and series and all(v is None for v in series):

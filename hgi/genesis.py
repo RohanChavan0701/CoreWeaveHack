@@ -194,8 +194,11 @@ LENSES = [
      "externality": {"contact": "artifact", "terminates_in": "the trace: a call URI per finding"},
      "product": "for the failed task in the subject, at most one {noticed, anchor, recheck_when}: `noticed` names the task, what its first attempt did, and what would have passed — the convention of this world it missed — in one or two sentences; `anchor` is {call: the row's call URI, path: null}; `recheck_when` says when to look for the same miss again; empty when the failure was not the pass's to avoid",
      "consumer": "the observation ledger; the backward pass"},
-    # the examiner fan: the attack's angles, one context each (the fan law), hosted where independence is structural (the host law)
-    {"id": "L-0005", "host": "examiner", "purpose": "adjudicative", "claims": ["warrant:independence"],
+    # the examiner fan: the attack's angles, one context each (the fan law), hosted where independence is structural (the host law).
+    # L-0005 and L-0008 are seeded retired through the crystallization door: their questions became gates the code reads
+    # (hgi.lint.independence, hgi.consolidate.drop_success_watch), and the register keeps them as the evidence of that.
+    {"id": "L-0005", "host": "examiner", "purpose": "adjudicative", "claims": ["warrant:independence"], "status": "retired",
+     "warrant": {"evidence": "crystallized: the distinct-session count against the bar is the floor's (hgi.lint independence)", "anchors": []},
      "angle": "Do the draft's anchored observations come from independent passes, or is one context counted twice? Read the sessions the evidence names and land `warrant:independence` when they are fewer than the bar.",
      "counterfactual": "The overshoot: landing independence on every draft whose observations share a task — independence is by session, never by task; two passes meeting the same fault are the recurrence the bar asks for.",
      "externality": {"contact": "record", "terminates_in": "the observations' session ids, as the evidence lists them"},
@@ -210,7 +213,8 @@ LENSES = [
      "counterfactual": "The overshoot: reading every concrete noun as an instance — a payload about the HTTP tool may name HTTP; what it may not name is the one task or file it was seen in.",
      "externality": {"contact": "record", "terminates_in": "the payload text against the task ids in the evidence"},
      "product": "a claim on `payload:abstraction`", "consumer": "the adjudicator"},
-    {"id": "L-0008", "host": "examiner", "purpose": "adjudicative", "claims": ["warrant:watch-direction"],
+    {"id": "L-0008", "host": "examiner", "purpose": "adjudicative", "claims": ["warrant:watch-direction"], "status": "retired",
+     "warrant": {"evidence": "crystallized: a watch that fires on success is dropped from the draft by the code (hgi.consolidate drop_success_watch)", "anchors": []},
      "angle": "Does the revisit watch fire on the failure the stakes name — a low score on a higher-is-better scorer — or on success? A predicate a passing score satisfies and a failing score does not (`task_pass_rate == 1.0`, `>= 0.9`) fires when the record works and stays silent when it regresses: land `warrant:watch-direction`.",
      "counterfactual": "The overshoot: landing on a watch a failing score also satisfies (`!= 1.0`, `>= 0.0`) — it fires on the regression too, so it still returns the loop to the record.",
      "externality": {"contact": "oracle", "terminates_in": "the watch predicate against the scorers' convention: success rates in [0, 1], 1.0 ideal"},
@@ -228,7 +232,7 @@ def seed(root: Path | str, model_id: str | None = None, now: datetime | None = N
     write_json(reg_dir / "bars.json", BARS)
     write_json(reg_dir / "constitution.json", CONSTITUTION_CAP)
     write_json(reg_dir / "lenses.json", [
-        {**lens, "kind": "lens", "status": "live", "warrant": {"evidence": "genesis", "anchors": []}, "priced_for": {"model_id": model_id},
+        {"status": "live", "warrant": {"evidence": "genesis", "anchors": []}, **lens, "kind": "lens", "priced_for": {"model_id": model_id},
          "telemetry": {"answer_variance": "design-stage", "decoy_rejection": "design-stage", "miss_stream": "steers/ citing this lens"}}
         for lens in LENSES
     ])

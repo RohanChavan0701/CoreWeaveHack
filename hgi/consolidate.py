@@ -28,6 +28,7 @@ from collections import defaultdict
 from typing import Any
 
 from hgi import coder as _coder
+from hgi import drafting as _drafting
 from hgi import index as _index
 from hgi import latches as _latches
 from hgi import lint as _lint
@@ -333,8 +334,7 @@ def nominate(store: Store, record: Consolidation, brief: dict[str, Any]) -> list
 
 def evidence_pack(store: Store, draft: Draft, brief: dict[str, Any]) -> dict[str, Any]:
     """What the examiner and adjudicator see: the oracle's evidence, never the proposer's narrative."""
-    obs = [store.observation(e) for e in draft.evidence]
-    sessions = [o.session for o in obs if o] + [e for e in draft.evidence if store.exists("session", e)]  # a re-key's evidence is the probing passes themselves
+    sessions = store.draft_sessions(draft)
     faults = [e for s in store.all("session") if s.attached and s.evaluation for row in s.evaluation.rows for e in row.get("tool_errors", []) if e.get("transient")]  # type: ignore[attr-defined]
     rows = sum(len(s.evaluation.rows) for s in store.all("session") if s.attached and s.evaluation)  # type: ignore[attr-defined]
     watch = next((l.edge.predicate.scorer for l in draft.body.latches if l.type == "revisit" and l.edge.predicate), None)
@@ -343,6 +343,43 @@ def evidence_pack(store: Store, draft: Draft, brief: dict[str, Any]) -> dict[str
     return {"observation_sessions": sessions, "bar_independent": store.registry.bars["decision"]["independent_observations"],
             "fault_rate": (len(faults) / rows) if rows else None, "task_ids": [t.id for t in _suite.current().tasks],
             "series": series, "watch_scorer": watch, "scores": brief["scores"], "evaluation": evaluation}
+
+
+def drop_success_watch(store: Store, draft: Draft) -> tuple[Draft, dict[str, Any]]:
+    """The code's reading of ``warrant:watch-direction``. A sketched watch that fires when the record works
+    (:func:`hgi.drafting.fires_on_success`) is dropped from the draft — the watch is optional, the draft is not — and the
+    claim lands with the predicate and the drop as its evidence. The stripped draft is written back, so the examiner and
+    the adjudicator read the draft that will be admitted, unwatched."""
+    body = draft.body.model_dump(by_alias=True, mode="json")
+    watch = _drafting.revisit_watch(body)
+    claim = {"target": "warrant:watch-direction", "reading_taken": True, "landed": False, "lens": None, "call": None,
+             "refutation": "the revisit watch fires when the record succeeds; a revisit must fire on the failure or regression the stakes name"}
+    if watch is None:
+        return draft, {**claim, "evidence": ["no world-state watch on the draft"]}
+    predicate = f"{watch['scorer']} {watch['comparator']} {watch['value']}"
+    if not _drafting.fires_on_success(watch["comparator"], float(watch["value"])):
+        return draft, {**claim, "evidence": [f"{predicate} fires on the failure"]}
+    body["latches"] = [l for l in body["latches"] if not (l.get("type") == "revisit" and l.get("key_space") == "world-state")]
+    stripped = store.parse_as(Draft, {**draft.model_dump(by_alias=True, mode="json"), "body": body})
+    store.write_draft(stripped)
+    return stripped, {**claim, "landed": True, "evidence": [f"{predicate} fires on success", "the watch was dropped; the draft is judged and admitted unwatched"]}
+
+
+def independence_claim(store: Store, draft: Draft, evidence: dict[str, Any]) -> dict[str, Any]:
+    """The code's reading of ``warrant:independence``: the distinct sessions of the draft's evidence against the bar — the
+    same count the floor refuses on (:func:`hgi.lint.independence`), so a landing here is a refusal at admission."""
+    unmet = _lint.independence(store, draft)
+    return {"target": "warrant:independence", "reading_taken": True, "landed": unmet is not None, "lens": None, "call": None,
+            "refutation": "the anchored observations come from fewer distinct passes than the bar; one context counted twice is one datum",
+            "evidence": [unmet.message if unmet else f"sessions {sorted(set(evidence['observation_sessions']))} meet the bar {evidence['bar_independent']}"]}
+
+
+def settle(attack_payload: dict[str, Any], mechanical: list[dict[str, Any]]) -> dict[str, Any]:
+    """The mechanical claims join the examiner's, first. An examiner claim on a mechanical class that contradicts the
+    computed reading is discarded: the count is the code's, and a register still walking such a lens is advisory."""
+    decided = {c["target"]: c["landed"] for c in mechanical}
+    kept = [c for c in attack_payload["claims"] if c.get("target") not in decided or bool(c.get("landed")) == decided[c["target"]]]
+    return {**attack_payload, "claims": [*mechanical, *kept]}
 
 
 def attack(store: Store, record: Consolidation, draft: Draft, evidence: dict[str, Any], lenses: list[Any] | None = None) -> tuple[dict[str, Any], _model.Completion]:
@@ -404,9 +441,15 @@ CURRENCY = route_table("currency", "currency-verdict", {"still-holds": "stand", 
 
 
 def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draft: Draft, brief: dict[str, Any]) -> LedgerEntry:
-    """Proposal → attack → verdict → commit, each role in its own context; the entry is appended once, with the verdict."""
+    """Proposal → attack → verdict → commit, each role in its own context; the entry is appended once, with the verdict.
+
+    The two mechanical classes (:data:`hgi.types.MECHANICAL`) are read by the code before any context opens: a watch that
+    fires on success is dropped from the draft, and the independence count is the floor's."""
+    draft, watch = drop_success_watch(store, draft)
     evidence = evidence_pack(store, draft, brief)
+    mechanical = [independence_claim(store, draft, evidence), watch]
     attack_payload, examiner = attack(store, record, draft, evidence)
+    attack_payload = settle(attack_payload, mechanical)
     v, out, adjudicator = verdict(store, record, draft, attack_payload, evidence)
     amendment = out.get("amendment") if isinstance(out.get("amendment"), str) else None
     rationale = out.get("rationale") if isinstance(out.get("rationale"), str) else None
