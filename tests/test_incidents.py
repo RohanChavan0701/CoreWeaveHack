@@ -71,6 +71,8 @@ def test_the_check_takes_the_gold_answer_and_refuses_the_decoy(world, scenario, 
         assert not check({"class": klass, "cause_readings": decoy[:1]}, tmp_path)
         assert not check({"class": klass, "cause_readings": cause + decoy[:1]}, tmp_path), "the gold class with a decoy cited fails"
         assert not check(f"{klass}: {cause[0]}", tmp_path)
+        # `ruled_out` is a disposal, not a citation: the decoy set aside there is what a right answer does with it
+        assert check({"class": klass, "cause_readings": cause, "ruled_out": decoy[:1]}, tmp_path)
 
 
 @pytest.mark.parametrize("fam,slack", SLACK.items())

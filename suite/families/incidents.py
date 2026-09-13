@@ -8,7 +8,11 @@ family's slack, so there is no room for a walk down the whole bundle. What
 the family grades is therefore the route, not the prose: the answer must
 name the class *and* cite a cause reading, and citing any of the bundle's
 decoy readings — the readings keyed on the louder shape a naive read
-reaches for first — fails the task however right the class is. The decoy is
+reaches for first — fails the task however right the class is. The answer
+carries an optional third key, ``ruled_out``, because a failed row that
+names the readings the attempt opened and set aside states which reading it
+trusted and which it disposed of, and that disposal is the world-fact the
+close lens can notice — a bare wrong answer names neither. The decoy is
 the convention of this world: the loud reading is the wrong one. Which loud
 reading it is, is the bundle's **lesson** — ``decoy-<shape>`` from its
 ``shape.yml`` (:data:`suite.lessons.LESSONS`), the thing a stream deals the
@@ -66,7 +70,16 @@ SHAPES = ("http-tool", "tool-budget", "task-planning")
 """How a bundle presents to a boot: readings over the API, a budget to plan the walk against."""
 
 INSTRUCTION = ('Return as result an object {"class": one of [' + ", ".join(CLASSES) +
-               '], "cause_readings": [the reading names that show the cause]}.')
+               '], "cause_readings": [the reading names that show the cause], '
+               '"ruled_out": [the readings you opened and set aside]}.')
+
+def answer_schema() -> dict:
+    """``class`` and ``cause_readings`` are required; ``ruled_out`` is optional, so an answer that names no disposal is
+    still well formed and the check is unchanged."""
+    schema = result_object("class", "cause_readings")
+    schema["properties"]["result"]["properties"] = {"ruled_out": {"type": "array"}}
+    return schema
+
 
 READINGS = {
     "broker-health": ("bus-probe", "mq-probe", "relay-check"),
@@ -202,7 +215,7 @@ def naive_for(record: dict[str, Any]):
     cause reading. Every bundle holds more readings than the budget allows, so the walk dies on the budget — the naive
     outcome of every task here is that error, and a pass that over-probes reproduces it."""
     names = sorted(record["readings"])
-    answer = {"class": record["class"], "cause_readings": record["cause_readings"][:1]}
+    answer = {"class": record["class"], "cause_readings": record["cause_readings"][:1], "ruled_out": []}
 
     def policy(s: "Script"):
         for name in names:
@@ -234,7 +247,7 @@ def generate(fam: str) -> list[Task]:
         assert not set(pinned["readings"]) - set(READINGS), f"unmapped readings: {sorted(set(pinned['readings']) - set(READINGS))}"
         for i in range(CLOTHES):
             r = redress(pinned, i)
-            out.append(Task(f"{fam}/{r['id']}_{i}", prompt(r), SHAPES, result_object("class", "cause_readings"), check_for(r),
+            out.append(Task(f"{fam}/{r['id']}_{i}", prompt(r), SHAPES, answer_schema(), check_for(r),
                             http_budget=len(r["cause_readings"]) + SLACK[fam], routes=routes(r), stub=naive_for(r),
                             lesson=f"decoy-{r['decoy']}", knowing={"http": len(r["cause_readings"])}))
     return out

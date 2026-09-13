@@ -56,6 +56,34 @@ def test_two_text2sql_misses_over_one_schema_share_the_schema_convention_shape(s
     assert coded["o-status"] == coded["o-date"] == ["schema-coded-value"]
 
 
+DECOY_SHAPES = {"pool-exhausted", "dependency-stalled", "release-regressed"}
+
+
+def test_the_three_incident_world_facts_get_three_shapes(store):
+    """The incidents family's transfer story: the decoy is the loud reading, so the shape must be the world-fact the
+    bundle actually turned on. A saturated pool the world caused itself, a pool filled by a stalled dependency, and a
+    spike that started at a deploy are three conventions, not one 'slow database' — a record admitted on the first
+    fires on the second and must be set aside there, which only holds if the three code apart."""
+    coded = _code(store, [
+        {"name": "o-pool", "noticed": "in task tenant-slow the pool readings showed every backend busy and callers waiting for a connection under the tenant's own load; the attempt answered before reading them"},
+        {"name": "o-dependency", "noticed": "in task checkout-latency the queries themselves ran fast but the backends sat idle in transaction while the third-party provider held the caller's connections open through the slow dependency; the attempt read the filling pool as the fault"},
+        {"name": "o-release", "noticed": "in task orders-5xx the error rate stepped up at 14:02 exactly when the new version rolled out, the payload samples unchanged; the attempt read the samples and never opened the release history"},
+    ])
+    assert coded["o-pool"] == ["pool-exhausted"]
+    assert coded["o-dependency"] == ["dependency-stalled"]
+    assert coded["o-release"] == ["release-regressed"]
+    assert len({tuple(coded[o]) for o in ("o-pool", "o-dependency", "o-release")}) == 3
+
+
+def test_a_noticing_about_the_loop_names_no_incident_world_fact(store):
+    """Loop talk is not a world-fact: a noticing about how the attempt used its own store names nothing the world did,
+    so none of the three decoy shapes may claim it — that is what keeps the shapes about the incident."""
+    coded = _code(store, [
+        {"name": "o-loop", "noticed": "in task tenant-slow the attempt did not consult the detection record it was given in context before it answered"},
+    ])
+    assert not (DECOY_SHAPES & set(coded["o-loop"]))
+
+
 def test_two_misses_of_one_convention_share_a_shape_across_wordings(store):
     """Different clothes, one convention: the shapes must be equal so exact-match grouping joins them."""
     coded = _code(store, [

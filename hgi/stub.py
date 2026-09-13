@@ -75,6 +75,12 @@ CONVENTION_KEYWORDS: dict[str, tuple[str, ...]] = {
     "schema-coded-value": ("coded value", "coded literal", "coded status", "status char", "single-letter code", "categorical code",
                            "stored as text", "text date", "date is text", "strftime", "date function", "integer division",
                            "integer-divide", "cast to real", "needs a cast", "reserved word", "backtick"),
+    "pool-exhausted": ("pool exhaust", "pool is exhausted", "in_use", "backends busy", "waiting for a connection",
+                       "undersized pool", "pool max", "pool saturated by load"),
+    "dependency-stalled": ("provider", "upstream", "dependency latency", "idle in transaction", "held across",
+                           "status page", "geocod", "third-party", "slow dependency"),
+    "release-regressed": ("deploy", "release", "regression", "rolled out", "since the deploy", "bad deploy",
+                          "version bump"),
 }
 
 

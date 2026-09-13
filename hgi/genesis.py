@@ -60,6 +60,14 @@ VOCABULARY: dict[str, dict] = {
                                    "wrong — a status or category kept as a coded literal to match on its stored form not a "
                                    "natural word, a date kept as text and reached with STRFTIME not a date function, a ratio "
                                    "the dialect integer-divides unless it is cast — the schema convention a query over it must know"),
+            ("pool-exhausted", "a datastore pool the world saturates under its own load — backends busy, queries slow, "
+                               "waiters queued — the local capacity fault the pool readings show and the dependency "
+                               "readings do not"),
+            ("dependency-stalled", "a dependency the world slows or fails, holding the caller's connections so a healthy "
+                                   "pool fills as a consequence — queries fast, backends idle in transaction, the "
+                                   "provider's status or latency carries the onset"),
+            ("release-regressed", "an error or latency spike the world starts at a deploy with the data unchanged — the "
+                                  "release history carries the onset, the payload samples do not"),
         ),
     },
     "latch-type": {"means": "the typed activation units of § 6.2", "terms": _terms(
