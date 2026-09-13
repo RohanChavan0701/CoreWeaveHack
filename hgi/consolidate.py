@@ -302,7 +302,7 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
             try:
                 draft = draft_from(store, record, raw)
             except ValueError as e:
-                nomination.outcome = f"draft refused at parse: {str(e).splitlines()[0]}"
+                nomination.outcome = f"draft refused at parse: {roles.refusal(e)}"
                 record.nominations.append(nomination)
                 continue
             store.write_draft(draft)

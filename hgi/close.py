@@ -120,7 +120,7 @@ def propose(store: Store, session: Session) -> list[Draft]:
             draft = store.parse_as(Draft, {**raw, "body": roles.body_of(raw), "uid": store.new_uid(), "name": store.next_name("P"),
                                            "drafted_at": now().isoformat(), "proposed_by": session.id})
         except ValueError as e:
-            print(f"draft refused: {str(e).splitlines()[0]}")
+            print(f"draft refused: {roles.refusal(e)}")
             continue
         store.write_draft(draft)
         session.proposals.append(draft.uid)

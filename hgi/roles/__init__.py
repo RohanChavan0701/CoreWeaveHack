@@ -71,6 +71,14 @@ def drafts_in(out: Any, key: str) -> list[dict[str, Any]]:
     return [raw for raw in items if isinstance(raw, dict)]
 
 
+def refusal(e: Exception) -> str:
+    """A parse refusal that names every failing field, so a role's next draft can be corrected against it."""
+    errors = getattr(e, "errors", None)
+    if callable(errors):
+        return "; ".join(f"{'.'.join(str(x) for x in err['loc'])}: {err['msg'].removeprefix('Value error, ')}" for err in errors())[:1000]
+    return str(e).splitlines()[0]
+
+
 def body_of(raw: dict[str, Any]) -> dict[str, Any]:
     """A draft's ``body`` as an object: a model that serialises it as a JSON string is read, not refused."""
     body = raw.get("body")

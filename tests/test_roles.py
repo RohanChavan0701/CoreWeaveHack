@@ -61,3 +61,13 @@ def test_only_objects_count_as_drafts_and_no_placeholder_sits_inside_a_list():
     for name, shape in roles.REPLIES.items():
         for items in lists(shape):
             assert not (len(items) > 1 and any(isinstance(i, str) for i in items) and any(isinstance(i, dict) for i in items)), name
+
+
+def test_a_refusal_names_every_failing_field(store):
+    from hgi.types import Draft
+
+    try:
+        store.parse_as(Draft, {"uid": "u", "name": "P-x", "drafted_at": "2026-09-12T00:00:00Z", "proposed_by": "K-1", "rung": "sideways", "rung_why": "", "body": {}})
+    except ValueError as e:
+        text = roles.refusal(e)
+    assert "rung: 'sideways' is not in the closed vocabulary" in text and "body." in text
