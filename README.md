@@ -69,7 +69,7 @@ coordinate (spec § 9).
 | trace store, the world, the steer channel | **W&B Weave** | `@weave.op` on every model and tool call with `hgi.session`, `hgi.pass`, `hgi.role` and `hgi.records_in_context` attributes; the task suite is a `weave.Dataset`, each scorer a `weave.Scorer`, each pass a `weave.Evaluation` run; feedback on calls becomes steer records |
 | the frozen model | **CoreWeave inference endpoint**, or **W&B Inference** | one OpenAI-compatible client per model, installed per role; every call records its model id; every lens records the model it was priced for |
 | the consolidation analyst | **W&B ARIA** | reads the disposition and session ledgers mirrored to Weave as datasets and drafts the consolidation brief; its report URI is recorded on the consolidation session; it nominates, never verdicts |
-| projections and the escalation surface | **marimo** | `dashboard.py` renders the index, the lineage DAG, the detection matrix and the escalation queue live from the demonstration store or any experiment arm's, overlays every arm of an experiment on one chart, charts a stream arm's lessons and what each pass cost, pulls every call's tokens and latency from Weave on request, and writes only through `hgi` commands |
+| projections and the escalation surface | **marimo** | `dashboard2.py` renders the index, the lineage DAG, the detection matrix and the escalation queue live from the demonstration store or any experiment arm's, overlays every arm of an experiment on one chart, charts a stream arm's lessons and what each pass cost, pulls every call's tokens and latency from Weave on request, and writes only through `hgi` commands |
 | the blind second coder, the guard evaluator | **TypeSafe AI System1** | classifies observations against the registry's shape terms without the consolidator's candidate labels; falls back to a second, separately prompted frozen-model context when the vendor is not configured |
 
 ## The demonstration and its acceptance bar
@@ -162,7 +162,7 @@ Every command that writes ends in a commit whose message names the record
 ids it admitted, flipped or retired, which is what makes the admitting
 commit derivable: a record carries no hash of the commit that admitted it,
 so `hgi lineage` reads it back as the oldest commit naming the id.
-`./demo.sh` runs the whole demonstration; `uv run marimo run dashboard.py`
+`./demo.sh` runs the whole demonstration; `uv run marimo run dashboard2.py`
 opens the projection surface and the escalation queue; `uv run hgi mirror`
 publishes the ledgers to Weave for the analyst.
 
