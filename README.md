@@ -258,6 +258,56 @@ tasks failing on a double-wrapped result and no observation filed; that run
 is recorded in `carry-forward.md`, not here, because its numbers measured
 the contract and not the model.
 
+### The world on `openai/gpt-oss-120b`
+
+`experiments/world.toml`, run on 2026-09-12 over W&B Inference: 52 tasks
+(twelve of each transcribed family, all of `genesis` and `conventions`),
+the first two HTTP calls of a faulted task failing, six passes attached,
+consolidation every two passes, traced to
+[`slavazinevich-worldvue/hgi-experiments`](https://wandb.ai/slavazinevich-worldvue/hgi-experiments/weave):
+
+| pass | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|
+| memory attached | 0.81 | 0.73 | 0.75 | 0.90 | 0.83 | 0.83 |
+| records in context | none | none | D-0002 | D-0002 | D-0002, D-0003 | D-0002, D-0003 |
+
+The detached arm was not run to completion: a detached pass has no boot,
+no close and no store, so its passes are draws of one evaluation, and pass
+1 of the attached arm — an empty store, nothing consulted, the constitution
+the only conditioning — is that draw. The runner now draws a detached
+arm's passes concurrently for the same reason.
+
+What the attached arm did: every failed row filed one anchored observation
+(60 over six passes); the first consolidation grouped them into twelve
+shapes, nominated four, declined two on the examiner's premise attacks and
+admitted D-0001 (*tool outputs conform to the schema*) and D-0002 (*calls
+stop at the HTTP budget*); the second admitted D-0003, D-0005 and D-0004 —
+the last by adopting the pass's own close-time proposal of a retry
+decision, the pre-admission tier working end to end — and expired one
+unadopted proposal; the third admitted D-0006 and retired D-0001, D-0004 and
+D-0005 as moot on their own telemetry, discharging three fires. Passes 3–6
+consulted D-0002 and D-0003 and applied them; the lint is green with the
+seven genesis-anchor warnings.
+
+The honest reading: the curve moved within the run's own noise. Passes 3
+and 4 ran with the same record in context and scored 0.75 and 0.90; the
+same task flips between passes with nothing in context changed
+(`api/21f6f753` passes, fails twice, passes twice; `mbpp/430` fails, fails,
+passes three times, fails), and the decisions admitted were the loop's
+tautologies —
+schema, budget, argument validation — not the world's conventions. The two
+conventions that failed every pass (`log_lines`, a budget of one shell call
+over files with no trailing newline; `versioned_status`, an API moved under
+`/v2` behind two faulted calls) never earned a record: their observations
+were coded into shapes the consolidator did not nominate on, or nominated
+and declined. The record that would have taught them is one the ladder's
+`hook-edit` and `counterfactual-edit` rungs would carry, and those rungs
+have no operator yet (carry-forward, decision 21). What the run does show
+is the mechanism at breadth on a real model: observations from every
+failure, grouping, four-role adjudication with declines, adoption, expiry,
+fires discharged and retirement — each of which the six-task baseline
+could not exercise.
+
 ## Tests
 
 ```bash

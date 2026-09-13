@@ -7,7 +7,7 @@ each with why it may be right and why it may not.
 ## Where it stands
 
 - Slices 0–3 of spec § 13 ship with their acceptance tests green
-  (`uv run pytest`, 104 tests). Slice 4 ships the dashboard, the analyst
+  (`uv run pytest`, 154 tests). Slice 4 ships the dashboard, the analyst
   mirror and the retirement leg; the rule tier and the grown floor do not
   exist because the roster is decisions only. Slice 6(e) — split and fold
   as executed operators — ships, with the other backward-pass legs that
@@ -18,9 +18,14 @@ each with why it may be right and why it may not.
 - The suite is composed from families under a fault profile (README, *The
   world*): `genesis` (6), `conventions` (10), `mbpp` (257), `tables` (100),
   `api` (100). `experiments/world.toml` samples twelve of each and faults
-  the first two HTTP calls. Its arms and their curves are in the README
-  (*The world on gpt-oss-120b*); the arm stores are under `runs/world/` on
-  this machine.
+  the first two HTTP calls. Its `120b-attached` arm ran to completion
+  (README, *The world on gpt-oss-120b*): 0.81 0.73 0.75 0.90 0.83 0.83,
+  six decisions admitted over three consolidations — one by adopting the
+  pass's own proposal — three retired moot, four fires discharged, 31 of 60
+  observations still open. The detached arm was stopped in its first pass;
+  pass 1 of the attached arm is the no-store draw. The arm store is under
+  `runs/world/120b-attached/` on this machine. The `20b-attached` and
+  `split-roles` arms have not run.
 - The role contracts on `openai/gpt-oss-120b`: every request — classify,
   guard, lens, dispose, propose, coding, nominate, attack, verdict, credit,
   currency — has been read back through `hgi roles try` and parses; every

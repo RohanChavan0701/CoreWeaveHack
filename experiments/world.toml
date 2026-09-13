@@ -19,7 +19,7 @@ id = "openai/gpt-oss-20b"
 model = "gpt-oss-120b"
 rounds = 3
 passes_per_round = 2
-concurrency = 4
+concurrency = 6
 
 [defaults.suite]
 families = ["genesis", "conventions", "mbpp", "tables", "api"]
