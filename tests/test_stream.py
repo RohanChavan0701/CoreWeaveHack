@@ -45,6 +45,11 @@ def test_the_curriculum_wears_every_lesson_in_disjoint_clothes():
     assert not ({n for t in tasks for n in t.files} & {n for t in hand for n in t.files}), "file names re-dressed"
     assert not ({p for t in tasks for p in t.routes} & {p for t in hand for p in t.routes}), "routes re-dressed"
     assert {s for t in tasks for s in t.shapes} <= {s for t in hand for s in t.shapes} | {"output-schema"}, "presentations from the registered vocabulary"
+    strict = FAMILIES["curriculum-strict"].tasks()
+    assert [t.id.split("/")[1] for t in strict] == [t.id.split("/")[1] for t in tasks], "the strict family wears the same clothes"
+    assert all(a.files == b.files and a.routes == b.routes and a.lesson == b.lesson for a, b in zip(tasks, strict))
+    assert all((b.shell_budget or 0) <= (a.shell_budget or 0) and (b.http_budget or 0) <= (a.http_budget or 0) for a, b in zip(tasks, strict))
+    assert any(b.shell_budget == 1 for b in strict) and any(b.http_budget == 1 for b in strict), "strict budgets hold exactly the knowing policy's calls"
 
 
 # The knowing policy per lesson, on any clothing: derived from the task's own world, one budgeted call each.
@@ -86,9 +91,9 @@ def _knowing(task, tools: Tools):
     raise AssertionError(task.lesson)
 
 
-@pytest.mark.parametrize("task_id", [t.id for t in FAMILIES["curriculum"].tasks()])
+@pytest.mark.parametrize("task_id", [t.id for fam in ("curriculum", "curriculum-strict") for t in FAMILIES[fam].tasks()])
 def test_each_clothing_fails_naively_and_passes_when_known(tmp_path, task_id):
-    world = build(SuiteSpec(families=["curriculum"], faults=FaultProfile(http_fault_fraction=0.0)))
+    world = build(SuiteSpec(families=[task_id.split("/")[0]], faults=FaultProfile(http_fault_fraction=0.0)))
     token = _suite.use(world)
     try:
         spec = world.by_id[task_id]

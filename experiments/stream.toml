@@ -42,3 +42,18 @@ description = "the ablation on the same batches; one run is the whole record"
 [arms.20b-attached]
 model = "gpt-oss-20b"
 description = "a weaker actor on the same stream, likelier to miss the loud lessons on first contact"
+
+# The strict pool: the same clothes budgeted at exactly the knowing policy's calls, so the convention costs a call the
+# budget does not hold. A pass that discovers it (a cat before the count, the first page before the walk) is over budget;
+# only a pass that already knows it — from the store, or from the model — passes. The knowledge-base question directly.
+[arms.120b-strict]
+mode = "attached"
+description = "the strict pool: does the memory save the discovery call"
+[arms.120b-strict.stream]
+families = ["curriculum-strict"]
+
+[arms.120b-strict-detached]
+mode = "detached"
+description = "the strict pool's ablation"
+[arms.120b-strict-detached.stream]
+families = ["curriculum-strict"]

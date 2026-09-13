@@ -1,11 +1,12 @@
 # Carry-forward
 
-State of the build as of 2026-09-12, after the world run, the review
-pass and the instruments pass (the true-miss floor, the precision slot, the
+State of the build as of 2026-09-13, after the world run, the review
+pass, the instruments pass (the true-miss floor, the precision slot, the
 second retirement key, anchor resolution, the late steer sweep, the antichain
-flag and the seeded controls), with the work left for the full implementation
-and the decisions taken along the way — each with why it may be right and why
-it may not.
+flag and the seeded controls) and the stream pass (lessons, the curriculum,
+the stream runner and the evolution log), with the work left for the full
+implementation and the decisions taken along the way — each with why it may
+be right and why it may not.
 
 ## Where it stands
 
@@ -60,6 +61,17 @@ it may not.
 - `experiments/model-sweep.toml` and `cadence.toml` are written and have
   not been run; `probe.toml` ran three passes and was stopped once its
   reply log had been read.
+- The stream pass (decisions 60–65 below): `suite/lessons.py` names the
+  seven lessons with their tiers and derives the naive outcome and the
+  symptom; `suite/families/curriculum.py` generates 84 tasks; `suite/stream.py`
+  deals a pool into batches; `hgi experiment` runs a `[stream]` arm (a new
+  batch every pass, revisit passes, detached draws on their own batches)
+  and `hgi/evolution.py` derives the log. `tests/test_stream.py` proves
+  every clothing fails naively and passes when known within budget, the
+  deal, the symptom rules and the stub smoke (351 tests green).
+  `experiments/stream.toml` is the run and had not completed when this was
+  written; `stream-probe.toml` (two batches of five on gpt-oss-120b) is
+  the endpoint check that preceded it — see item 25 for what it showed.
 - Weave: traces, evaluations, attributes, feedback → steer, and the mirror
   are verified live in `slavazinevich-worldvue/hgi-dev` and used in
   `slavazinevich-worldvue/hgi` and `hgi-experiments`.
@@ -284,6 +296,40 @@ it may not.
     closed session's calls at every close: one trace-store query per earlier
     session per close, which on a long run is a cost the channel's
     best-effort clause hides rather than prices.
+25. **The stream run.** `experiments/stream.toml` — 120b attached and
+    detached, 20b attached, ten batches of eight, revisit batches 1 and 2 —
+    is the experiment the stream pass was built for; its evolution report
+    lands at `runs/stream/evolution.md` and the README's *The stream*
+    section carries no numbers until it has. The probe (`stream-probe.toml`)
+    is the only real-model evidence of the stream mechanics so far.
+26. **Retention and forgetting beyond one revisit.** `revisit` re-meets
+    whole batches after the stream; the modes a continual-agent benchmark
+    scores (AgentMemoryBench: improvement, retention, forgetting,
+    generalization, conflict) would take a revisit at fixed checkpoints
+    during the stream and a held-out probe set met with the store and never
+    closed on — the `evaluate --detached` path has no store, and no probe
+    mode (boot + evaluate, no close) exists yet.
+27. **A mixed stream.** The stream's pool can name any families
+    (`families = ["curriculum", "tables"]`; a task with no lesson is dealt
+    under its family), but no shipped experiment mixes lesson tasks with
+    distractors, so the loop's grouping has not been tried where most
+    failures carry no lesson.
+28. **The mention heuristic.** `evolution` marks a record as mentioning a
+    lesson by keywords over its decision, latch and context; a record that
+    teaches a lesson in other words is missed and a record that names the
+    words without teaching it is counted. The join that would replace it —
+    the applied dispositions of the record on rows of that lesson — is in
+    the store (`rows[].applied`, keyed to the task) and not yet read by the
+    log.
+29. **Public continual-learning suites.** SWE-Bench-CL, AgentMemoryBench,
+    AgentCL and the procedural-memory-retrieval benchmark were surveyed
+    (2026-09-13) as the scale-up path for the stream shape — repository
+    feature work with recurring conventions — and not transcribed: each
+    needs a repository-scale agent and a run measured in hours, where the
+    curriculum measures the mechanism in minutes. The curriculum's lessons
+    are the conventions of a small world; the claim that the shape carries
+    to a codebase's conventions is untested.
+
 ## Decisions taken, and their risk
 
 1. **Decision-only roster.** Beliefs and rules were dropped by instruction;
@@ -771,3 +817,63 @@ it may not.
   `runs/probe/` and `runs/world/` on this machine are the 2026-09-12 runs;
   they are ignored by git. The baseline-precontract arms are the only
   record of the pre-contract run.
+
+60. **The stream is prequential: every batch is a test set once and a
+    training set afterwards**, and the curve is first-sight performance on
+    unseen tasks as the store grows. *Right:* a suite run scores whether the
+    store learned the tasks it was scored on, and the world run's curve
+    moved within noise on the same 52 tasks; a knowledge base is asked to
+    improve work that is always new. *Wrong if* one task per lesson per
+    batch is too thin a sample: a lesson's first-sight rate over ten batches
+    is ten draws, and the paired difference to the detached arm is the only
+    thing that carries; the per-batch curve alone reads batch difficulty as
+    learning.
+61. **Same-shape failures are decided by the task's naive outcome, not by
+    a judge.** Every lesson task carries its naive first-contact policy as
+    its scripted policy, so the answer or error first contact produces is
+    derivable by running it, and a failed row that reproduces it is the
+    lesson missed the naive way — with the row's tool errors read too, so a
+    410 met and reported without its cause still counts. *Right:* the
+    external-oracle problem (a judge asked "is this the same error?") is
+    replaced by a construction the task already has, deterministic and
+    offline. *Wrong if* the naive policy is not the way a model misses: a
+    model that reads a page and sums it wrong is `wrong`, not `naive`, and a
+    lesson whose naive shape a model never reproduces shows no recurrence
+    even when the lesson is never learned; the `wrong` and `error` columns
+    are kept beside `naive` for that reason.
+62. **Lessons are tiered by how the failure shows in the trace** (loud,
+    visible, invisible), and the report groups by tier. *Right:* the world
+    run's two conventions that never earned a record were silent ones, and
+    whether the loop learns only what the trace names is the question the
+    tiers put. *Risk:* the tier is asserted per lesson by hand, not
+    measured; a model that reads a file with `cat` sees a footer row and one
+    that sums with `awk` does not, so *visible* is a property of the pass as
+    much as of the lesson.
+63. **The curriculum is generated, not transcribed**, from one seeded
+    generator per lesson over word lists, with clothes disjoint from the
+    hand-written families' file names and routes and budgets that leave the
+    knowing policy one call to spare. *Right:* no public dataset carries the
+    structure the stream needs — many unseen instances of few recurring
+    conventions — and the generator gives as many clothes as a stream asks
+    (`CLOTHES`, twelve today; 84 tasks bound the stream at ten batches of
+    eight). *Wrong if* generated clothes are too alike: a record that
+    memorises "files named `<stem>-<n>.<ext>`" transfers within the family
+    where a real world's next instance would break it; the `transfer`
+    family's hand-written re-dressing is the stricter test and is not in the
+    pool.
+64. **The stream faults nothing by default.** The `[stream.faults]` profile
+    defaults to no transient 502s, so the lessons are the conventions alone
+    and a budget of two on a moved route is reachable (the world run's
+    `versioned_status` sat behind two faulted calls under a budget of two,
+    which no policy could pass). *Risk:* the retry lesson, the one lesson
+    every model already has, is now absent from the stream, so the store's
+    first admissions cannot be the tautologies the world run admitted — and
+    cannot be the easy win either.
+65. **A revisit is an attached pass after the stream with no consolidation
+    after it, and a detached arm has none.** A detached pass is one draw of
+    an evaluation, so meeting a batch again would repeat pass *k*; the
+    attached arm's pass-*k* score is the first-sight baseline for its own
+    revisit. *Risk:* the revisit passes are closed on — observations filed,
+    proposals drafted — so a second revisit reads a store the first one
+    touched, and the lint's per-pass checks run on them like any pass.
+

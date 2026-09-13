@@ -153,6 +153,7 @@ hgi price       --model <id>                # the size of a model swap over the 
 hgi lens-battery                            # the lens battery and the seeded controls; lens telemetry and index/controls.json
 hgi lineage     D-0007                      # the admitting commit, and the path query over the lineage DAG
 hgi suite       show | tasks | fetch <fam>  # the task suite in scope; transcribe a dataset family
+hgi experiment  evolution experiments/x.toml # a stream experiment's evolution log, per arm and paired
 hgi roles       try <request> --store <arm> # one role request against a copy of a store; how the reply parsed
 ```
 
@@ -246,6 +247,26 @@ family is hand-written or transcribed once from a public dataset into
 | `tables` | 100 | [TableBench](https://huggingface.co/datasets/Multilingual-Multimodal-NLP/TableBench), Apache-2.0, the scalar-answer rows | one question over `table.csv`, graded by a normalizer with tolerance |
 | `api` | 100 | the same TableBench rows, odd positions | the same questions through a paged JSON API under a budget of pages plus two |
 | `transfer` | 6 | hand-written | the `conventions` conventions re-dressed — the same no-trailing-newline files, paging API and `/v2` move worn as different file names, a different API surface and different endpoints — so a record whose hook reads the convention scores here and one that memorised a path or a filename does not |
+| `curriculum` | 84 | generated (`suite/families/curriculum.py`) | seven lessons of the world in twelve clothes each — the five `conventions` lessons, an export that ends with a `TOTAL` row, a route under `/secure` that answers 401 until the token in `token.txt` is passed — each clothing a different instance from a seeded generator, disjoint from the hand-written families' names and routes, budgeted with one call to spare for discovering the convention; the pool a stream experiment deals from |
+| `curriculum-strict` | 84 | generated, the same clothes | the same tasks budgeted at exactly the knowing policy's calls, so the convention costs a call the budget does not hold: only a pass that already knows it — from the store, or from the model — stays within budget |
+
+### Lessons
+
+A task that turns on a convention names it as its **lesson**
+(`suite/lessons.py`), and every lesson is tiered by how its failure shows
+in the trace: *loud* (the tool error names the convention — the 410 naming
+`/v2`, the 401 naming the token file, the parse error on the byte order
+mark), *visible* (the failure is silent but the convention is in the tool
+output the pass read — a `next` field on the page it stopped at, a quoted
+comma or a footer row in the file it counted), *invisible* (nothing in the
+trace shows it — a file with no trailing newline reads the same as one
+with). Every task in a lesson family carries its naive first-contact policy
+as its scripted policy, so the **naive outcome** — the answer or the error
+a policy that does not know the lesson produces — is derived by running it
+against a fault-free world. A failed row whose result equals the naive
+outcome, or whose error (or any tool error in its trace) is of the naive
+error's class, is a **naive-shape** failure: the lesson missed the way first
+contact misses it, decided by the task's own construction and no judge.
 
 The fault profile says how many leading HTTP calls of a faulted task fail,
 whether HTTP calls are budgeted, and whether shell output truncates. An
@@ -285,6 +306,9 @@ hgi experiment models                                # the ids the endpoint serv
 | `experiments/probe.toml` | `gpt-oss-120b` attached, 2 × 2, the hand-written families | every role request on a real model end to end; the reply log is the evidence |
 | `experiments/world.toml` | `gpt-oss-120b` and `gpt-oss-20b` attached, `gpt-oss-120b` detached, the split roles; 52 tasks from five families, first two HTTP calls faulted | a world with conventions the model cannot already know: does the attached curve separate |
 | `experiments/transfer.toml` | `gpt-oss-120b` attached and detached, `gpt-oss-20b` attached; `genesis`, `conventions`, `api` and `transfer`, first two HTTP calls faulted | a convention held twice in different clothes: does a record admitted on one family score on the same convention re-dressed as another |
+| `experiments/stream.toml` | `gpt-oss-120b` attached and detached, `gpt-oss-20b` attached, on the `curriculum` pool; `gpt-oss-120b` attached and detached on `curriculum-strict`; ten batches of eight, consolidation every two, batches 1 and 2 revisited | the stream: first-sight performance on unseen tasks as the store grows, paired per batch and per lesson, with the same-shape recurrence per lesson; on the strict pool, whether the memory saves the discovery call |
+| `experiments/stream-probe.toml` | `gpt-oss-120b` attached and detached, two batches of five | a stream arm end to end on the endpoint |
+| `experiments/stream-smoke.toml` | stub, attached and detached, four batches of four | the stream runner end to end offline; the tests run it |
 
 The shipped files run on W&B Inference (`https://api.inference.wandb.ai/v1`):
 the key is `$WANDB_API_KEY` or the netrc entry `wandb login` wrote, and the
@@ -296,6 +320,35 @@ carrying `hgi.experiment` and `hgi.arm`, each evaluation named by its arm.
 The dashboard's store picker lists every arm; choosing one shows its
 projections, its escalation queue and every arm of its experiment on one
 chart, refreshing while the arm runs.
+
+### The stream
+
+A suite experiment runs the same tasks every pass, so its curve measures
+whether the store learned *those* tasks. A **stream** experiment
+(`suite/stream.py`, the `[stream]` table of an arm) deals a pool into
+batches balanced over lessons and meets a new batch every pass: pass *k*
+boots with what the store holds, evaluates batch *k* **at first sight** —
+nothing in the store was learned on those tasks — closes on it, and
+consolidates at each round's end. Every batch is a validation set once and
+a training set afterwards, and the curve is first-sight performance on
+unseen tasks as the store grows: the shape a knowledge base is asked to
+improve, where the work that arrives is always new and the conventions
+recur. A detached arm draws the same batches with no store, so the
+comparison is paired per batch and per lesson; `revisit` names batches the
+attached arm meets again after the stream, which measures retention on
+seen tasks against transfer to unseen ones.
+
+The **evolution log** (`hgi/evolution.py`) is derived from the arm's store
+after the run and written beside it as `evolution.json` and `evolution.md`,
+with the experiment's paired report at `runs/<experiment>/evolution.md`
+(`hgi experiment evolution`): per pass, each row's symptom (`pass`,
+`naive`, `wrong`, `error:<class>`), the records in context and which
+lessons their text mentions (a keyword heuristic, logged as one), the
+observations filed and what the consolidation after the pass admitted,
+declined, retired or dismissed; per lesson, the first-sight series as a
+grid of symbols, and the naive-shape failures before and after the first
+pass that had a record mentioning the lesson in context — the same-shape
+recurrence the memory exists to stop. Every count is a floor from one run.
 
 ### The baseline on `openai/gpt-oss-120b`
 
