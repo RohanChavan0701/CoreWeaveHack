@@ -142,3 +142,25 @@ def test_a_spec_file_and_the_environment_name_the_suite(tmp_path, monkeypatch):
     assert len(from_env().tasks) == 3
     monkeypatch.delenv("HGI_SUITE")
     assert from_env().families() == {"genesis": 6}
+
+
+def test_an_endpoint_failure_on_a_turn_fails_the_row_with_its_cause_instead_of_dropping_it(store):
+    from hgi import evaluate as _evaluate
+    from hgi import model as _model
+    from hgi.store import now
+    from hgi.types import Session
+
+    class Broken(_model.Backend):
+        model_id = "broken"
+
+        def chat(self, messages, *, json_mode, tools=None):
+            raise RuntimeError("HTTP 503 from the endpoint")
+
+    _model.use(Broken(), role="pass")
+    try:
+        s = _evaluate.run(store, Session(id=store.mint("session"), pass_=1, started_at=now(), attached=True))
+    finally:
+        _model.use(None, role="pass")
+    rows = s.evaluation.rows
+    assert len(rows) == 6 and all(r["error"]["message"] == "model call failed" and "503" in r["error"]["cause"] for r in rows)
+    assert s.evaluation.scores["task_pass_rate"].value == 0.0

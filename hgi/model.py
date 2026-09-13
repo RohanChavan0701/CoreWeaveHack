@@ -201,7 +201,7 @@ def complete(role: str, user: str, *, json_mode: bool = True, session: str | Non
     """One fresh context for ``role``: its prompt file as the system message, ``user`` as the whole conversation."""
     system = role_prompt(role)
     with tracing.attributes(session=session, pass_=pass_, role=role, records_in_context=records_in_context):
-        result, call = _complete.call(role, system, user, json_mode)
+        result, call = _complete.call(role, system, user, json_mode, __should_raise=True)  # an endpoint error is raised, never a None reply
     completion = Completion(text=result["content"], model_id=model_id(role), call=tracing.call_uri(call))
     log_reply(role, user, completion)
     return completion
@@ -233,7 +233,7 @@ def chat_with_tools(role: str, messages: list[dict[str, Any]], tools: list[dict]
                     pass_: int | None = None, records_in_context: list[str] | None = None) -> tuple[dict[str, Any], str | None]:
     """One turn of a tool-using conversation for the agent under test; returns (message, call uri)."""
     with tracing.attributes(session=session, pass_=pass_, role=role, records_in_context=records_in_context):
-        result, call = _turn.call(role, messages, tools)
+        result, call = _turn.call(role, messages, tools, __should_raise=True)
     return result, tracing.call_uri(call)
 
 
