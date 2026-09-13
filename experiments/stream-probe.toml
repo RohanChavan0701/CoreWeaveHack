@@ -1,0 +1,29 @@
+# The stream on a real model, small: two batches of five, one consolidation, batch 1 met again. Not an experiment
+# about the model — the check that a stream arm runs end to end on the endpoint before the long one is dispatched.
+name = "stream-probe"
+description = "two batches of five on a real model, end to end"
+weave_project = "hgi-dev"
+
+[models.gpt-oss-120b]
+id = "openai/gpt-oss-120b"
+
+[defaults]
+model = "gpt-oss-120b"
+passes_per_round = 2
+concurrency = 5
+
+[defaults.stream]
+families = ["curriculum"]
+batch = 5
+batches = 2
+seed = 1
+revisit = [1]
+
+[defaults.stream.faults]
+http_fault_fraction = 0.0
+
+[arms.attached]
+mode = "attached"
+
+[arms.detached]
+mode = "detached"

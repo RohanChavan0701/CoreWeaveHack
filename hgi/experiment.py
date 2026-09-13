@@ -34,6 +34,16 @@ environment variable that holds its key.
     [arms.strong-judge.roles]
     adjudicator = "gpt-oss-120b"            # any role not named runs on the arm's model
 
+A **stream** arm meets a different batch every pass instead of one suite
+every pass (:mod:`suite.stream`): ``[stream]`` names the pool's families,
+the batch size and count, the seed and the fault profile, and the batches
+to revisit after the stream; ``rounds`` is then the batch count over
+``passes_per_round``. Pass *k* boots, evaluates batch *k* at first sight,
+closes, and consolidates at each round's end; a detached stream arm draws
+the same batches with no store. ``arm.json`` records every batch's hash and
+tasks, and the arm ends by writing its evolution log
+(:mod:`hgi.evolution`) beside it.
+
 The runner gives each arm a fresh store under ``runs/<experiment>/<arm>/``,
 in its own git repository so the write law (every write ends in a commit)
 holds per arm and the code repository's history stays the code's. It seeds
@@ -58,14 +68,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 import suite as _suite
 from hgi import model as _model
 from hgi import registry as _registry
 from hgi import tracing
 from hgi.roles import ROLES
-from suite.tasks import SuiteSpec, build
+from suite import stream as _stream
+from suite.stream import StreamSpec
+from suite.tasks import Suite, SuiteSpec, build
 
 RUNS = Path("runs")
 """Where arms run: ``$HGI_RUNS`` or ``./runs``, one directory per experiment, one per arm."""
@@ -131,15 +143,35 @@ class ArmSpec(BaseModel):
     """Overrides merged over the seed's bars, nested tables deep-merged (``[arms.x.bars.retirement] window_passes = 4``)."""
     suite: SuiteSpec = Field(default_factory=SuiteSpec)
     """The world: task families, sample size and seed, fault profile. Deep-merged like ``bars``."""
+    stream: StreamSpec | None = None
+    """A stream arm's pool and deal (:class:`suite.stream.StreamSpec`); when set, ``suite`` is unused and ``rounds`` is derived."""
     concurrency: int = Field(default=4, ge=1)
     """Tasks the oracle evaluates at once — W&B Inference answers 429 past its concurrency limit."""
     description: str = ""
 
     model_config = ConfigDict(extra="forbid")
 
+    @model_validator(mode="after")
+    def _rounds_from_stream(self):
+        if self.stream is not None:
+            if self.stream.batches % self.passes_per_round:
+                raise ValueError(f"a stream of {self.stream.batches} batches does not divide into rounds of {self.passes_per_round} passes")
+            self.rounds = self.stream.batches // self.passes_per_round
+        return self
+
     @property
     def passes(self) -> int:
+        """Passes in the run proper — the stream's batches, or the rounds' passes; a revisit pass comes after these."""
         return self.rounds * self.passes_per_round
+
+    @property
+    def revisits(self) -> list[int]:
+        """The batches an attached stream arm meets again after the stream; nothing for a detached arm, whose draws are one evaluation."""
+        return list(self.stream.revisit) if self.stream is not None and self.mode == "attached" else []
+
+    def batches(self) -> list[Suite] | None:
+        """The stream's batches, dealt by the seed; ``None`` for a suite arm."""
+        return _stream.partition(self.stream) if self.stream is not None else None
 
     def alias_for(self, role: str) -> str:
         return self.roles.get(role, self.model)
@@ -246,14 +278,17 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         os.environ["HGI_WEAVE_PROJECT"] = exp.weave_project
     os.environ["WEAVE_PARALLELISM"] = str(spec.concurrency)
     roster = install(exp, spec)
-    world = build(spec.suite)
+    batches = spec.batches()
+    world = batches[0] if batches else build(spec.suite)
     suite_token = _suite.use(world)
     reg = seed_arm(exp, arm, spec, store_root, roster)
     token = _registry.use(reg)
     store = Store(store_root, registry=reg)
     record: dict[str, Any] = {
         "experiment": exp.name, "arm": arm, "spec": spec.model_dump(), "passes": spec.passes, "roster": roster,
-        "suite": {"hash": world.hash, "tasks": len(world.tasks), "families": world.families()},
+        "suite": {"hash": world.hash, "tasks": len(world.tasks), "families": world.families()} if not batches else None,
+        "stream": {"batches": [_stream.batch_record(n, b) for n, b in enumerate(batches, 1)], "revisit": spec.revisits,
+                   "passes": {n: n for n in range(1, spec.passes + 1)} | {spec.passes + k: r for k, r in enumerate(spec.revisits, 1)}} if batches else None,
         "weave_project": tracing.project_name(), "started_at": _now(), "finished_at": None, "sessions": [], "curve": {},
     }
     _write(where / "arm.json", record)
@@ -266,6 +301,12 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         if cli.main([args[0], *argv, *args[1:]]) != 0:
             raise SystemExit(f"hgi {args[0]} failed in arm {arm}")
 
+    def suite_for(n: int) -> Suite:
+        """The suite pass ``n`` meets: batch ``n`` of the stream, a revisited batch past the stream, or the arm's one suite."""
+        if not batches:
+            return world
+        return batches[record["stream"]["passes"][n] - 1]
+
     def progress() -> None:
         # sorted by id, not pass: a detached arm draws its passes concurrently, so the
         # session ids are minted in lock-acquisition order — the set is stable, the order is not.
@@ -276,20 +317,26 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
     try:
         _commit_arm(where, store, commit, _genesis_message(exp, arm, spec, store, roster))
         if spec.mode == "attached":
-            for n in range(1, spec.passes + 1):
+            for n in range(1, spec.passes + len(spec.revisits) + 1):
+                _suite.use(suite_for(n))
                 session = store.mint("session")
                 hgi("boot", "--session", session, "--pass", str(n))
                 hgi("evaluate", "--session", session)
                 hgi("close", "--session", session)
-                if n % spec.passes_per_round == 0:
+                if n <= spec.passes and n % spec.passes_per_round == 0:
                     hgi("consolidate")
                 progress()
         else:
-            _detached_passes(spec, store, hgi, progress)
+            _detached_passes(spec, store, hgi, progress, suite_for)
+        _suite.use(world)
         hgi("lint", "--model", roster["pass"])
     finally:
         record["finished_at"] = _now()
         _write(where / "arm.json", record)
+        if batches:
+            from hgi import evolution
+
+            evolution.write(exp, arm, root)
         _commit_arm(where, store, commit, f"Arm {exp.name}/{arm} finished: {_curve_line(record['curve'])}")
         tracing.run()
         _registry.reset(token)
@@ -306,15 +353,17 @@ DETACHED_AT_ONCE = 3
 """Detached passes evaluated concurrently; each already runs its tasks ``concurrency`` at a time."""
 
 
-def _detached_passes(spec: ArmSpec, store, hgi, progress) -> None:
+def _detached_passes(spec: ArmSpec, store, hgi, progress, suite_for) -> None:
     """A detached arm's passes are draws of one evaluation — no boot, no close, nothing carried between them — so they are
-    drawn concurrently, each in a copy of the runner's context, and written without a commit each; the arm commits once."""
+    drawn concurrently, each in a copy of the runner's context with its own suite in scope (a stream arm's pass draws its
+    batch), and written without a commit each; the arm commits once."""
     import contextvars
     from concurrent.futures import ThreadPoolExecutor
 
     from hgi import index as _index
 
     def draw(n: int) -> None:
+        _suite.use(suite_for(n))
         hgi("evaluate", "--detached", "--pass", str(n), "--no-commit")  # the detached command mints its own session
 
     with ThreadPoolExecutor(max_workers=min(DETACHED_AT_ONCE, spec.passes)) as pool:
@@ -390,13 +439,13 @@ def report(exp: Experiment, root: Path | None = None) -> str:
             admitted = [d for k in store.all("consolidation") for d in k.admitted]  # type: ignore[attr-defined]
         finally:
             _registry.reset(token)
-        width = max(width, spec.passes)
+        width = max(width, spec.passes + len(spec.revisits))
         rows.append((arm, label, spec, c, admitted, None))
     head = ["arm", "model", "mode", "rounds×size"] + [f"p{n}" for n in range(1, width + 1)] + ["admitted"]
     lines = [f"# {exp.name}" + (f" — {exp.description}" if exp.description else ""), "", "| " + " | ".join(head) + " |", "|" + "---|" * len(head)]
     for arm, label, spec, c, admitted, note in rows:
-        cells = [arm, label, spec.mode, f"{spec.rounds}×{spec.passes_per_round}"]
-        cells += [("—" if c.get(n) is None else f"{c[n]:.2f}") if n <= spec.passes else "" for n in range(1, width + 1)]
+        cells = [arm, label, spec.mode, f"{spec.rounds}×{spec.passes_per_round}" + (f" stream ×{spec.stream.batch}" if spec.stream else "")]
+        cells += [("—" if c.get(n) is None else f"{c[n]:.2f}") if n <= spec.passes + len(spec.revisits) else "" for n in range(1, width + 1)]
         cells.append(note or (" ".join(admitted) or "nothing"))
         lines.append("| " + " | ".join(cells) + " |")
     return "\n".join(lines)
@@ -413,7 +462,10 @@ def show(exp: Experiment) -> str:
         if spec.description:
             lines.append(f"  {spec.description}")
         lines.append("  roles: " + ", ".join(f"{r}={m}" for r, m in roster.items()))
-        lines.append("  " + build(spec.suite).describe())
+        if spec.stream is not None:
+            lines.append("  " + _stream.describe(spec.stream, spec.batches()) + (f"; revisit passes {spec.passes + 1}..{spec.passes + len(spec.revisits)}" if spec.revisits else ""))
+        else:
+            lines.append("  " + build(spec.suite).describe())
         if spec.bars:
             lines.append(f"  bars: {json.dumps(spec.bars, sort_keys=True)}")
     return "\n".join(lines)
@@ -435,7 +487,7 @@ def list_models(base_url: str, api_key_env: str = "WANDB_API_KEY") -> list[str]:
 
 def register(add, store_of, finish) -> None:
     p = add("experiment", "run, show or report an experiment file's arms")
-    p.add_argument("action", choices=["run", "show", "report", "models"])
+    p.add_argument("action", choices=["run", "show", "report", "evolution", "models"])
     p.add_argument("file", nargs="?", help="the experiment TOML (not needed for `models`)")
     p.add_argument("--arm", action="append", help="run only this arm (repeatable); default every arm in file order")
     p.add_argument("--force", action="store_true", help="rerun an arm that has run, discarding its store")
@@ -456,6 +508,11 @@ def _cmd(args) -> int:
         return 0
     if args.action == "report":
         print(report(exp))
+        return 0
+    if args.action == "evolution":
+        from hgi import evolution
+
+        print(evolution.write_experiment(exp))
         return 0
     for arm in args.arm or list(exp.arms):
         print(f"== {exp.name}/{arm} ==", file=sys.stderr)

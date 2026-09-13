@@ -1,0 +1,23 @@
+# The stream runner's own check on the deterministic stub: four batches of four curriculum tasks, consolidation every
+# two, batch 1 met again at the end. The stub's policies are the naive first-contact policies, so every failure is a
+# naive-shape failure and the curve is flat and honest; what the run proves is the deal, the per-pass suite swap, the
+# revisit pass and the evolution log. The tests run it.
+name = "stream-smoke"
+description = "the stream runner end to end on the deterministic stub"
+
+[defaults]
+model = "stub"
+passes_per_round = 2
+
+[defaults.stream]
+families = ["curriculum"]
+batch = 4
+batches = 4
+seed = 0
+revisit = [1]
+
+[arms.attached]
+mode = "attached"
+
+[arms.detached]
+mode = "detached"

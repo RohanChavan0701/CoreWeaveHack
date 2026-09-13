@@ -138,8 +138,12 @@ def symptom(task: Task, row: dict[str, Any]) -> str:
     if naive is not None:
         if "result" in naive and not error and _same(row.get("result"), naive["result"]):
             return "naive"
-        if "error" in naive and error and error_class(error) == error_class(naive["error"]) and error_class(error) != "other":
-            return "naive"
+        if "error" in naive and error:
+            # the naive error's class, on the reported error or on any tool error the row's trace carries: a pass that met the
+            # 410 and reported it without its cause still failed the naive way
+            seen = {error_class(error), *(error_class(e) for e in row.get("tool_errors") or [])}
+            if error_class(naive["error"]) != "other" and error_class(naive["error"]) in seen:
+                return "naive"
     if error:
         return f"error:{error_class(error)}"
     return "wrong"
