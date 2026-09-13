@@ -22,6 +22,7 @@ a first contact does — so the stub's curve on this family is flat and honest.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import TYPE_CHECKING
 
 from suite.families import family
@@ -55,9 +56,20 @@ def _naive_moved_health(s: "Script"):
     return "ok" if s.get("/health")["ok"] else "down"  # raises on the 410
 
 
+LESSON = {
+    "report_lines": "trailing-newline",
+    "chunk_lines": "trailing-newline",
+    "paged_total": "paged-api",
+    "paged_active": "paged-api",
+    "moved_account": "moved-v2",
+    "moved_health": "moved-v2",
+}
+"""The lesson each task turns on, by its name within the family (:data:`suite.lessons.LESSONS`)."""
+
+
 @family("transfer", source="hand-written; the `conventions` conventions re-dressed — same lessons, different clothes")
 def tasks() -> list[Task]:
-    return [
+    return [replace(t, lesson=LESSON[t.id.split("/", 1)[1]]) for t in [
         # The no-trailing-newline convention, on files `conventions` never names.
         Task("transfer/report_lines",
              "Four files part-1.tsv..part-4.tsv are in the working directory; none ends with a newline. Return the total number of lines across them as result, using the shell tool. You have a budget of 2 shell calls.",
@@ -93,4 +105,4 @@ def tasks() -> list[Task]:
              routes={"/health": {"$error": {"message": "GET /health failed", "cause": "HTTP 410 Gone: this API serves /v2/health"}},
                      "/v2/health": {"ok": True}},
              stub=_naive_moved_health),
-    ]
+    ]]

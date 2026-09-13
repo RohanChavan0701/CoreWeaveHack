@@ -52,6 +52,8 @@ class Task:
     routes: dict[str, Any] = field(default_factory=dict)
     """The mock API: path → JSON body, or ``{"$error": {"message", "cause"}}`` for a route that answers with an error."""
     stub: Scripted | None = None
+    lesson: str | None = None
+    """The lesson of the world the task turns on (:data:`suite.lessons.LESSONS`), when it turns on one; not part of the presentation or the hash."""
 
     @property
     def family(self) -> str:

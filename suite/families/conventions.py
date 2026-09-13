@@ -15,6 +15,7 @@ stub's curve on this family is flat and honest.
 
 from __future__ import annotations
 
+from dataclasses import replace
 import json
 from typing import TYPE_CHECKING
 
@@ -55,9 +56,10 @@ def _naive_versioned(s: "Script"):
     return s.get("/users/7")["name"]
 
 
-def _naive_csv(column: int, value: str):
+def _naive_csv(column: int, value: str, name: str = "people.csv"):
+    """Count the rows whose column equals the value by splitting on commas — the naive read of a CSV with quoted fields."""
     def policy(s: "Script"):
-        return int(s.shell(f"awk -F, 'NR>1 && ${column}==\"{value}\"' people.csv | wc -l").strip())
+        return int(s.shell(f"awk -F, 'NR>1 && ${column}==\"{value}\"' {name} | wc -l").strip())
     return policy
 
 
@@ -68,9 +70,24 @@ def _naive_bom(s: "Script"):
     return report
 
 
+LESSON = {
+    "lines_without_newline": "trailing-newline",
+    "log_lines": "trailing-newline",
+    "paged_sum": "paged-api",
+    "paged_count": "paged-api",
+    "versioned_user": "moved-v2",
+    "versioned_status": "moved-v2",
+    "csv_quoted_city": "csv-quoted",
+    "csv_quoted_total": "csv-quoted",
+    "bom_config": "bom",
+    "bom_settings": "bom",
+}
+"""The lesson each task turns on, by its name within the family (:data:`suite.lessons.LESSONS`)."""
+
+
 @family("conventions", source="hand-written; conventions of this world a model meets on first contact")
 def tasks() -> list[Task]:
-    return [
+    return [replace(t, lesson=LESSON[t.id.split("/", 1)[1]]) for t in [
         Task("conventions/lines_without_newline",
              "Five files a.txt..e.txt are in the working directory; none ends with a newline. Return the total number of lines across them as result, using the shell tool. You have a budget of 2 shell calls.",
              ("shell-tool", "tool-budget"), RESULT_INT, lambda r, w: r == 18, shell_budget=2, files=NO_NEWLINE,
@@ -123,7 +140,7 @@ def tasks() -> list[Task]:
              lambda r, w: r == {"name": "edge", "enabled": 2},
              files={"settings.json": BOM + json.dumps({"name": "edge", "features": {"a": True, "b": False, "c": True}})},
              stub=lambda s: {"name": json.loads(s.read("settings.json"))["name"], "enabled": 2}),
-    ]
+    ]]
 
 
 def _report_ok(workdir, title: str, count: int) -> bool:
