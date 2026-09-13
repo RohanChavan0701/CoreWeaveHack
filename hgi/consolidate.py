@@ -11,12 +11,14 @@ Four roles, four contexts, no shared prompt beyond the store's schemas:
   closed verdict vocabulary;
 - the **committer** runs the floor and admits, declines, defers or escalates.
 
-The brief is derived here from the ledgers (applied ÷ considered per record,
-observations grouped by the blind coder's shapes under the independence
-qualifier, task-level credit for every applied record, escape clusters).
-When the analyst (ARIA) drafts it instead, its report URI is recorded on the
-consolidation record; either way the machine enumerates, proposes and
-audits — it never authors a verdict.
+The brief the consolidator reads is the analyst's (ARIA's) report when its URI
+is recorded on the pass (the programmatic surface: :func:`consolidation_brief`
+resolves the URI through :func:`hgi.mirror.read_report`), and otherwise it is
+derived here from the ledgers (applied ÷ considered per record, observations
+grouped by the blind coder's shapes under the independence qualifier,
+task-level credit for every applied record, escape clusters). Either way the
+report is the nominator's rows only — the machine enumerates, proposes and
+audits over the store's live records; it never authors a verdict or a fact.
 """
 
 from __future__ import annotations
@@ -29,6 +31,7 @@ from hgi import coder as _coder
 from hgi import index as _index
 from hgi import latches as _latches
 from hgi import lint as _lint
+from hgi import mirror as _mirror
 from hgi import model as _model
 from hgi import reviews as _reviews
 from hgi import roles
@@ -112,31 +115,52 @@ def credit_table(store: Store, sessions: list[Session]) -> list[dict[str, Any]]:
     return out
 
 
-def build_brief(store: Store, record: Consolidation, sessions: list[Session]) -> dict[str, Any]:
-    """The consolidation brief: every nominator's row, and the whole body of each record a row names.
+ANALYSIS_FIELDS = ("competence", "groups", "credit", "fusion", "convergence", "structural_zero", "escapes")
+"""The nominator's analytical rows — what ARIA produces over the mirrored runs, and what the local pass derives when no analyst report resolves."""
 
-    A split's leaves and a fold's successor are derived from the bodies they
-    leave, so a record named by ``fusion`` or ``convergence`` travels whole;
-    every other accepted record travels as its cheap cue.
+
+def local_analysis(store: Store, record: Consolidation, sessions: list[Session]) -> dict[str, Any]:
+    """The brief's analytical rows derived from the ledgers here: the fallback when no analyst report is present.
+
+    Grouping fills each open observation's ``shape`` as a side effect (see :func:`group_observations`); the analyst
+    surface writes the same shapes from its own coding instead (see :func:`adopt_shapes`).
     """
-    scores = {s.id: {k: f.value for k, f in s.evaluation.scores.items()} for s in sessions if s.evaluation}
-    fusion = [row for row in _index.fusion(store) if row["bimodal"]]
-    convergence = [row for row in _index.convergence(store) if row["co_applied"] >= 2]
-    named = {row["record"] for row in fusion} | {r for row in convergence for r in row["records"]}
     presented = sorted({t for s in sessions for t in s.work_shape.terms})
-    zero = [{"record": d.id, "terms": d.consultation_terms, "latch": d.summary.latch, "presented": presented}
-            for d in store.decisions("accepted") if d.id in _index.structural_zero(store)]
     return {
-        "after_pass": record.after_pass,
-        "sessions": [s.id for s in sessions],
-        "scores": scores,
         "competence": _index.competence(store),
         "groups": group_observations(store, record),
         "credit": credit_table(store, sessions),
+        "fusion": [row for row in _index.fusion(store) if row["bimodal"]],
+        "convergence": [row for row in _index.convergence(store) if row["co_applied"] >= 2],
+        "structural_zero": [{"record": d.id, "terms": d.consultation_terms, "latch": d.summary.latch, "presented": presented}
+                            for d in store.decisions("accepted") if d.id in _index.structural_zero(store)],
+        "escapes": sorted({e for s in sessions for e in s.work_shape.escapes}),
+    }
+
+
+def assemble_brief(store: Store, record: Consolidation, sessions: list[Session], analysis: dict[str, Any]) -> dict[str, Any]:
+    """The whole brief around a set of analytical rows — the analyst's or the local pass's — over the store's live state.
+
+    The score facts, the accepted record bodies, the open proposals, the steers and the fires owed are the store's:
+    the analyst reads runs and drafts the nominator's rows, it never authors a record or a fact. A record a lineage
+    row (``fusion`` or ``convergence``) names travels whole, so its split or fold can derive from its body; every
+    other accepted record travels as its cheap cue.
+    """
+    fusion = analysis.get("fusion") or []
+    convergence = analysis.get("convergence") or []
+    named = {row["record"] for row in fusion if isinstance(row, dict) and row.get("record")} \
+        | {r for row in convergence if isinstance(row, dict) for r in (row.get("records") or [])}
+    return {
+        "after_pass": record.after_pass,
+        "sessions": [s.id for s in sessions],
+        "scores": {s.id: {k: f.value for k, f in s.evaluation.scores.items()} for s in sessions if s.evaluation},
+        "competence": analysis.get("competence") or [],
+        "groups": analysis.get("groups") or [],
+        "credit": analysis.get("credit") or [],
         "fusion": fusion,
         "convergence": convergence,
-        "structural_zero": zero,
-        "escapes": sorted({e for s in sessions for e in s.work_shape.escapes}),
+        "structural_zero": analysis.get("structural_zero") or [],
+        "escapes": analysis.get("escapes") or [],
         "accepted": [{"id": d.id, "decision": d.decision, "terms": d.consultation_terms}
                      | ({"body": d.body().model_dump(by_alias=True, mode="json")} if d.id in named else {})
                      for d in store.decisions("accepted")],
@@ -144,6 +168,61 @@ def build_brief(store: Store, record: Consolidation, sessions: list[Session]) ->
         "steers": [t.id for t in store.all("steer")],
         "fires_owed": [f for f in _index.undischarged_fires(store) if f["disposer"] == BACKWARD_PASS],
     }
+
+
+def build_brief(store: Store, record: Consolidation, sessions: list[Session]) -> dict[str, Any]:
+    """The consolidation brief derived from the ledgers here: every nominator's row, and the whole body of each record a row names.
+
+    This is the fallback the consolidator reads when no analyst report resolves; :func:`consolidation_brief` reads
+    ARIA's report as the primary input when one is recorded.
+    """
+    return assemble_brief(store, record, sessions, local_analysis(store, record, sessions))
+
+
+def adopt_shapes(store: Store, groups: list[dict[str, Any]]) -> None:
+    """Stamp the analyst's coded shape onto each open observation it grouped — the write the local grouping performs.
+
+    So a promotion pointer and the projections agree with what the analyst nominated on, exactly as they would with
+    the local coder's shapes. An observation the report names that no longer exists, or is already disposed, is left.
+    """
+    for g in groups if isinstance(groups, list) else []:
+        if not isinstance(g, dict):
+            continue
+        shape = sorted(t for t in (g.get("shape") or []) if isinstance(t, str))
+        for o in g.get("observations") or []:
+            name = o.get("name") if isinstance(o, dict) else o
+            obs = store.observation(name) if isinstance(name, str) else None
+            if obs is not None and obs.disposition.state == "open":
+                obs.shape = shape
+                store.write(obs)
+
+
+def analyst_brief(store: Store, record: Consolidation, sessions: list[Session], report: dict[str, Any]) -> dict[str, Any]:
+    """The consolidation brief with the analyst's report as its primary input: ARIA's analytical rows over the store's live state.
+
+    ARIA reads the mirrored runs and drafts the nominator's rows; the code stamps its coding onto the open
+    observations where the local grouping would write it and assembles the brief around the store's current records,
+    proposals and owed fires. A row the report omits is empty, not re-derived — the report is the primary input, and
+    the whole-brief fallback to :func:`build_brief` is for when no report resolves at all.
+    """
+    adopt_shapes(store, report.get("groups") or [])
+    return assemble_brief(store, record, sessions, {k: report[k] for k in ANALYSIS_FIELDS if k in report})
+
+
+def consolidation_brief(store: Store, record: Consolidation, sessions: list[Session], analyst_report: str | None = None) -> dict[str, Any]:
+    """The brief the consolidator reads: the analyst's report when its URI resolves to one, else the local derivation.
+
+    The programmatic ARIA surface (§ 9.3): ``hgi mirror`` publishes the runs, the analyst drafts the brief over them,
+    and ``--analyst-report <uri>`` records where. When that URI resolves to a machine-readable report the
+    consolidator reads it as the brief's primary input; a URI that names only an interactive report, or none at all,
+    falls back gracefully to the derivation here. Either way the machine enumerates, proposes and audits — the
+    analyst nominates, never verdicts.
+    """
+    if analyst_report:
+        report = _mirror.read_report(analyst_report)
+        if report is not None:
+            return analyst_brief(store, record, sessions, report)
+    return build_brief(store, record, sessions)
 
 
 def proposals(store: Store) -> list[dict[str, Any]]:
@@ -508,8 +587,8 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
         raise SystemExit(f"consolidation runs every {every} passes or on a fire owed to it; {len(sessions)} pass(es) since pass {last}, {len(owed)} fires owed")
     record = Consolidation(id=store.mint("consolidation"), started_at=now(), after_pass=max((s.pass_ for s in sessions), default=last),
                            sessions_read=[s.id for s in sessions], analyst_report=analyst_report)
-    brief = build_brief(store, record, sessions)
-    record.brief = {k: v for k, v in brief.items() if k != "groups"} | {"groups": [{k: v for k, v in g.items() if k != "observations"} | {"observations": [o["name"] for o in g["observations"]]} for g in brief["groups"]]}
+    brief = consolidation_brief(store, record, sessions, analyst_report)
+    record.brief = {k: v for k, v in brief.items() if k != "groups"} | {"groups": [{k: v for k, v in g.items() if k != "observations"} | {"observations": [o["name"] if isinstance(o, dict) else o for o in g.get("observations", [])]} for g in brief["groups"]]}
 
     with tracing.attributes(session=record.id, role="consolidator"):
         for raw in nominate(store, record, brief):
