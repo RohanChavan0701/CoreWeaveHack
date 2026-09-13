@@ -1,39 +1,46 @@
 # Carry-forward
 
-State of the build as of 2026-09-12, after the world run, with the work
-left for the full implementation and the decisions taken along the way —
-each with why it may be right and why it may not.
+State of the build as of 2026-09-12, after the demonstration run, with the
+work left for the full implementation and the decisions taken along the way
+— each with why it may be right and why it may not.
 
 ## Where it stands
 
 - Slices 0–3 of spec § 13 ship with their acceptance tests green
-  (`uv run pytest`, 94 tests). Slice 4 ships the dashboard, the analyst
+  (`uv run pytest`, 104 tests). Slice 4 ships the dashboard, the analyst
   mirror and the retirement leg; the rule tier and the grown floor do not
-  exist because the roster is decisions only. Slice 5 (the demo) has run on
+  exist because the roster is decisions only. Slice 6(e) — split and fold
+  as executed operators — ships, with the other backward-pass legs that
+  were nominators without a consumer: deferral latches, propagation over
+  wiring latches, the structural-zero audit and the edit rungs, genesis
+  anchoring, and vocabulary growth (README, *The backward pass*). Slice 5 (the demo) has run on
   the repository store and is recorded in the README's acceptance table.
-- The suite is composed from families under a fault profile (README, *The
-  world*): `genesis` (6), `conventions` (10), `mbpp` (257), `tables` (100),
-  `api` (100). `experiments/world.toml` samples twelve of each and faults
-  the first two HTTP calls. Its arms and their curves are in the README
-  (*The world on gpt-oss-120b*); the arm stores are under `runs/world/` on
+- The demonstration ran on the deterministic stub (`hgi/stub.py`), because
+  no CoreWeave inference endpoint credentials were available.
+- `experiments/baseline.toml` has run twice on `openai/gpt-oss-120b` over
+  W&B Inference (2026-09-12). The first run, before the role requests
+  stated their reply shapes: attached 0.67 0.83 0.67 0.67 0.67 0.83,
+  detached 0.67 0.67 0.83 0.67 0.67 0.83, no observation filed, nothing
+  admitted — the model answered classify and every lens in JSON of its own
+  shape, and double-wrapped `result` on two tasks. The second run, after the
+  contract: 1.00 on every pass of both arms; eight observations filed, all
+  recovered transient faults; nothing admitted. The README reports the
+  second. The first run's arms are kept at `runs/baseline-precontract/` on
   this machine.
-- The role contracts on `openai/gpt-oss-120b`: every request — classify,
-  guard, lens, dispose, propose, coding, nominate, attack, verdict, credit,
-  currency — has been read back through `hgi roles try` and parses; every
-  role prompt is priced for it. The drafting requests answer with a sketch
-  (decision 21); the reply logs of the tries are ephemeral (scratch), the
-  world run's log is not kept either — `HGI_REPLY_LOG` recreates one.
-- `experiments/baseline.toml` (the six genesis tasks, one 502) is saturated
-  for gpt-oss-120b: 1.00 on every pass of both arms. Its three
-  consolidations wrote one file, K-0001, three times (the id-minting bug,
-  fixed in this build); the after-pass-2 and after-pass-4 records survive
-  only in that arm repository's history.
+- State of the role contracts on the real model: `classify`, `lens`
+  (L-0001, L-0004) verified; `dispose`, `guard`, `coding` ran inside the
+  arm without refusal; `nominate` parses about half the time — the other
+  half is a floor-rung or retirement latch in the work-shape key space,
+  which the floor refuses, correctly; `attack`, `verdict`, `credit`,
+  `currency` and `propose` have not yet received a parseable draft on the
+  real model and are unverified. Each refusal now names every failing field
+  on the nomination's outcome.
 - `experiments/model-sweep.toml` and `cadence.toml` are written and have
-  not been run; `probe.toml` ran three passes and was stopped once its
-  reply log had been read.
+  not been run; every model id they name is one `hgi experiment models`
+  listed on 2026-09-12.
 - Weave: traces, evaluations, attributes, feedback → steer, and the mirror
   are verified live in `slavazinevich-worldvue/hgi-dev` and used in
-  `slavazinevich-worldvue/hgi` and `hgi-experiments`.
+  `slavazinevich-worldvue/hgi`.
 
 ## Leftover work for the full implementation
 
@@ -48,22 +55,22 @@ each with why it may be right and why it may not.
    that leads with the residue, demotion on applied ÷ considered, coverage
    migration, and the ladder rungs `adoption-row` and `rule-enrollment` as
    executed operators. `registry/ports.json` needs the rule declarations.
-3. **The world, next.** The families that are here grade breadth; the ones
-   that would grade *transfer* are not: a second family with the same
-   conventions in different clothes (the paging and the `/v2` move on a
-   different API, the no-trailing-newline files under different names), so
-   a record admitted on one family is scored on another. `nestful`
-   (multi-step tool composition with a scalar gold) and a shell family from
-   `InterCode-Corrections` were surveyed and not transcribed. The
-   `tables`/`api` tolerance (1% relative) is lenient on large totals. MBPP
-   and TableBench are in every model's pretraining; absolute scores are
-   inflated, the arm-against-arm comparison is not.
-4. **The lenses on the real model.** L-0002 (the boot lens for unreached
-   records) answers "no hook reached" for every task on an empty store;
-   L-0003 (what the pass made false) names tasks and call URIs where it
-   must name a record id, so nothing files from it. Both are walked once
-   per pass and cost a call each; neither has a consumer yet that would
-   miss them. The lens battery (§ 9.2, slice 6a) would score exactly this.
+3. **A world the model cannot already handle.** The baseline is saturated:
+   gpt-oss-120b scores 1.00 from pass 1 (README, *The baseline*). Two
+   routes, both one arm each: a weaker pass model (`model-sweep.toml`'s
+   `20b-attached` and the `split-roles` arm are the first to run), or
+   harder faults — a 502 on the first two calls rather than one, a shell
+   budget of one, a route that changes shape between passes. The suite is
+   pinned by hash (spec § 14.1), so harder faults are a suite parameter
+   the experiment file would have to carry (`FAULT_FRACTION` and the
+   first-call rule in `suite/tools.py`), and a different suite hash per
+   arm; the report already keys on the arm, not the hash.
+4. **Finish the role contracts on the real model.** `nominate` still yields
+   a refused draft about half the time; `attack`, `verdict`, `credit`,
+   `currency` and `propose` are unverified (see *Where it stands*). The
+   role prompt files still say `priced_for: stub` and nothing lints that
+   header. Then `cadence.toml`; the report goes into the README by hand,
+   because the arm stores live outside the code repository (decision 15).
 5. **TypeSafe System1.** `hgi/coder.py` assumes an OpenAI-compatible surface
    behind `TYPESAFE_BASE_URL`; the real API shape is unverified (waitlist as
    of 2026-09-12). The role is the invariant; only the adapter changes.
@@ -71,33 +78,46 @@ each with why it may be right and why it may not.
    the brief it drafts is recorded by URI with `hgi consolidate
    --analyst-report`. A programmatic surface would replace `build_brief`'s
    local derivation with the analyst's report as the primary input.
-7. **Split and fold** (§ 10.6) as executed operators; today `lineage.split_from`
-   and `folded_from` exist on the envelope and nothing writes them.
-8. **Genesis anchoring.** All seven articles are past the three-consolidation
-   deadline without an anchor (the lint warns). The consolidator needs a
-   nomination that anchors an article to an instance, or evicts it.
-9. **The `defer` verdict** is accepted by the vocabulary but nothing turns its
-   condition into a latch; the draft simply stays in `store/proposals/` and,
-   being the backward pass's, is exempt from the proposal expiry.
-10. **Wiring latches** are written on supersedure but nothing consumes them:
-    propagation (`re-derive` / `check` on a neighbour's status change) is not
-    run at consolidation.
-11. **Structural-zero audit and escape recurrence** are projected but not
-    nominated on; vocabulary growth by the route-before-mint ladder is
-    `Registry.add_term` with no caller. The real model classifies every
-    pass with the escape `other(task)`, which is exactly the recurrence the
-    audit would read.
-12. **`admission.commit`** is not stored (see decision 4 below); `hgi lineage`
-    does not yet read the admitting commit from git history.
-13. **Model-pricing** warns only; nothing re-prices.
-14. **The watch a model sketches** is sometimes a watch on success
-    (`task_pass_rate == 1.0`, seen in a nominate try): the revisit latch
-    then fires when the record works. Nothing checks a watch's direction
-    against the decision's stakes; the examiner could, and does not yet.
-15. **Executing model-written code.** `mbpp` tasks run `python3 tests.py`
-    over a file the model wrote, on this machine, with a timeout and
-    nothing else; the shell tool already ran model commands the same way.
-    A sandbox is a tool-layer concern, not the suite's.
+7. **Split and fold nominations on a real model.** The operators execute
+   (`tests/test_lineage_ops.py`); the stub's leaves share the parent's payload
+   with the hook narrowed per sub-shape, which is a hook-edit wearing a
+   split's lineage. A real consolidator drafts distinct leaf payloads; the
+   `nominate` request carries the whole body of every record `fusion` or
+   `convergence` names, and neither row has yet appeared on a real-model
+   arm.
+8. **The lens battery** (§ 9.2, slice 6a): decoy rejection scored in Weave;
+   `LensTelemetry` fields are all `design-stage`.
+9. **The demonstration store's seven articles are still unanchored.** The
+   anchoring review exists and runs at every consolidation, and the stub
+   anchors all seven from the demo's own ledgers (`tests/test_genesis.py`),
+   but `store/` has not been consolidated since the review shipped: a
+   `hgi consolidate --force` on it with no `HGI_WEAVE_PROJECT` would leave
+   untraced ledger entries beside the traced demonstration's, so the next
+   consolidation is left to a traced run. Until then the lint's seven
+   `genesis-anchor` warnings stand.
+10. **Genesis term retirement.** Appendix A.2 retires a work-shape term
+    unused across three consolidation passes; nothing does. A retired term
+    still parses on the records that carry it, so retirement is a register
+    mark (`retired: <date>`) the hook index skips, not a removal.
+11. **Propagation's `re-derive` act** has no derived field to recompute in
+    a decisions-only roster; every wiring latch is written with `check`.
+    The rule tier's adoption cells and a belief's evidence state are the
+    fields `re-derive` is for.
+12. **Escape recurrence counts only the sessions' work-shape escapes.**
+    Escapes in other closed vocabularies (a latch key-space, a verdict) are
+    parsed and kept but not clustered; the review takes a vocabulary name
+    and is called for `work-shape` alone.
+13. **The pass's own proposals** (close step 6) parse and file but the stub
+    never drafts any; the real model may.
+14. **Re-authoring on a re-price.** `hgi price --restamp` moves the stamp and
+    records that the text did not move with it (decision 22); replacing the
+    text against the new model is authoring work and is not mechanized. A
+    role that re-authors a lens's angle or an article would close this, and
+    would meet the same unverified drafting contracts as item 4.
+15. **`hgi experiment`'s genesis message names no article ids** (`Genesis for
+    <exp>/<arm>: priced for …`), so `hgi lineage C-0003` finds no admitting
+    commit in an arm's store, where `hgi genesis`'s message would. One line
+    in `hgi/experiment.py`, left to whoever owns that file next.
 
 ## Decisions taken, and their risk
 
@@ -120,15 +140,14 @@ each with why it may be right and why it may not.
    a ledger. *Risk:* a reader expecting `observations.jsonl`.
 4. **`admission.commit` is derived, not stored.** A commit cannot contain its
    own hash; the commit message names the ids it admitted, so the anchor is
-   `git log --grep`. *Risk:* the spec puts the field on the envelope; a
-   consumer expecting it there finds nothing.
+   git history, read by `hgi.store.admitting_commit` and printed by `hgi
+   lineage` (decision 21). *Risk:* the spec puts the field on the envelope;
+   a consumer expecting it there finds nothing.
 5. **Facts are mirrored on the session record** (`evaluation.scores` and
    `evaluation.rows`) with the Weave run URI as `source`, and the watch
-   evaluator reads them from the session ledger, not from Weave. Each row
-   also carries its own scores, so the close can see which task the hidden
-   test failed. *Right:* offline runs, reproducible tests, one read path.
-   *Risk:* the spec keeps facts in the oracle; a fact edited on a session
-   file is not the oracle's.
+   evaluator reads them from the session ledger, not from Weave. *Right:*
+   offline runs, reproducible tests, one read path. *Risk:* the spec keeps
+   facts in the oracle; a fact edited on a session file is not the oracle's.
 6. **The session record is written at boot and completed at close** (one
    file, `closed_at` null in between). The spec's ledger is append-only.
    *Risk:* a crashed pass leaves an open session; `hgi boot` refuses a
@@ -140,12 +159,10 @@ each with why it may be right and why it may not.
    verdict authority on it. *Risk:* an attack with no adjudication is never
    written anywhere.
 8. **Credit assignment is task-level**, not series-level: a record's applied
-   tasks' pass fraction before and after, and only a record whose fraction
-   did not improve reaches the adjudicator, which names the slot. *Right:*
-   two records applied in the same passes are not confounded; the model no
-   longer writes a steer for every applied record. *Risk:* `before` is the
-   same tasks' earliest history, which conflates "the record didn't help"
-   with "the tasks were always hard".
+   tasks' pass fraction before and after. *Right:* two records applied in the
+   same passes are not confounded (D-0001 and D-0002 in the demo). *Risk:*
+   `before` is the same tasks' earliest history, which conflates "the record
+   didn't help" with "the tasks were always hard".
 9. **The retirement in the demo is a supersedure**, nominated by the credit
    table and the retry observations, not a status flip to `moot` by the
    ratio. The ratio-driven leg exists and is tested (`tests/test_retirement.py`)
@@ -169,9 +186,9 @@ each with why it may be right and why it may not.
     (6) was not applied because the supersedure satisfied the row.
 14. **The Evaluation summary is overridden to scorers only**
     (`hgi.evaluate.Evaluation.summarize`), because Weave's auto-summary
-    tries to average the heterogeneous task outputs and raises; the same
-    override keeps each row's scores aside for the session. *Risk:* the
+    tries to average the heterogeneous task outputs and raises. *Risk:* the
     Weave UI's evaluation comparison shows no model-output block.
+
 15. **Experiment arms run in a git repository each, under `runs/`, which
     the code repository ignores.** *Right:* the write law holds per arm
     (every write ends in a commit), arms cannot clobber each other or the
@@ -195,75 +212,113 @@ each with why it may be right and why it may not.
     role=…)`), so one arm can act on one model and adjudicate on another.
     *Risk:* the session record carries one `model_id` (the pass's); the
     per-role ids are on the ledger entries' role calls and on `arm.json`.
+
 19. **The reply shape travels with the request, not in the prompt**
     (`hgi.roles.REPLIES`, `roles.request`). *Right:* one table, the stub
     and the model read the same contract, and a shape change is one edit.
     *Risk:* the model echoes what it is shown — a placeholder inside a list
     came back as a literal element, and a `reply` key came back as a
-    wrapper; both are read defensively, and the test on `REPLIES` forbids a
-    string beside an object in any list.
-20. **Each role receives only the record shapes it reads** (`roles.schemas(role)`):
-    the drafting roles the Sketch, the judging roles the Draft and the
-    ledger entry, the coder none. *Right:* a third of the tokens per call,
-    and no schema a role cannot act on. *Risk:* the vocabularies are still
-    validated at runtime only — the schema says `string`.
-21. **Drafting roles return a sketch; the code derives the record**
-    (`hgi/drafting.py`). The model judges the five slots — payload,
-    overshoot, cue and exclusions, premises as falsifiers, watch, residue,
-    moot condition — and `drafting.body` builds the latches, the owed acts,
-    the retirement guard from the bars. *Right:* on gpt-oss-120b the full
-    body came back as placeholders in every try and the sketch parses and
-    clears the floor in every try since; the stub answers in the same
-    shape. *Risk:* the ladder's other rungs (`counterfactual-edit`,
-    `hook-edit`) still have no operator, so a sketch is always a new
-    decision whatever rung it names; and a sketch cannot express a latch
-    the derivation does not know (a wiring latch, a second consultation
-    hook).
-22. **Ids are minted against the counters on disk**, re-read before every
-    reservation. *Right:* a long-running runner and the commands it drives
-    hold separate registry objects; the baseline arm's three consolidations
-    overwrote one file before this. *Risk:* one file read per mint; a
-    process that edits `ids.json` by hand between mints is obeyed.
-23. **The suite is an object in scope**, like the registry: `suite.current()`
-    is what the experiment installed or what `$HGI_SUITE` names, and every
-    module that read `suite.tasks.TASKS` reads it. Faults are keyed on the
-    task's name within its family, so a family keeps its faults when
-    composed with others. *Risk:* a test that forgets to install a suite
-    runs the genesis family silently; the session records only the hash,
-    not the spec — `arm.json` records the spec, a hand-run's `.env` does.
-24. **The close lens that touches the artifact is walked once per failed
-    row.** *Right:* over sixteen rows in one context the model filed
-    nothing for two failed tasks; per row it files one anchored observation
-    each. *Risk:* one call per failure — a pass that fails thirty tasks
-    makes thirty lens calls — and a failure that was the model's own
-    arithmetic still files, so the coder's grouping has more noise to
-    separate.
-25. **A pass proposal reaches the consolidator through the brief and is
-    adopted by uid or expires** (`proposal_ttl_consolidations`, 2). *Right:*
-    the pass proposes, the backward pass admits, and the pass's draft keeps
-    its provenance on the admitted record. *Risk:* on the real model the
-    pass proposes the same retry decision every pass with thin evidence;
-    the consolidator has not been seen to adopt one yet.
-26. **The adjudicator's reply carries a rationale**, recorded on the ledger
-    entry, and a token outside the vocabulary escalates. *Right:* the
-    first verdict on the real model admitted over a landed premise kill
-    with no trace of why; now the weighing is on the ledger. *Risk:* the
-    rationale is prose the lint cannot read.
-27. **A regression is nominated mechanically before credit runs** (decision
-    8): the adjudicator sees only rows whose applied tasks did not improve.
-    *Risk:* a record whose tasks improved for another reason earns no steer
-    even when it was wrong — the oracle's floor, disclosed.
+    wrapper; both are now read defensively, and the test on `REPLIES`
+    forbids a string beside an object in any list.
+20. **Every role receives the whole JSON schema of Observation, Draft and
+    LedgerEntry**, definitions included (about three thousand tokens a
+    call), and the drafting requests carry every closed vocabulary. *Right:*
+    the body's typed fields stopped carrying invented terms. *Risk:* cost
+    per call, and the vocabularies are validated at runtime only — the
+    schema still says `string`.
+
+21. **The admitting commit is the oldest commit naming the id**, rather than
+    a commit parsed for the verb that names it. History is append-only and
+    no message names a record before the commit that wrote it, so the oldest
+    naming is the admission, and no vocabulary of message verbs has to be
+    kept in step with the messages. A range such as the genesis message's
+    `C-0001..C-0007` names each id it spans. *Risk:* a message that names an
+    id it did not write — a revert, a plan, a message quoting another —
+    reads as an admission; nothing enforces the convention the messages
+    follow.
+22. **A re-price that does not re-author says so on the record**
+    (`priced_for.authored_for`). *Right:* the stamp cannot launder the swap
+    into a green floor; the warning stands until the text follows, and
+    swapping back clears the field because stamp and authoring agree again.
+    *Wrong if* the two halves are really one act — then a store sits
+    indefinitely priced for a model nothing was authored for, behind a
+    warning nobody reads, which is exactly what `hgi genesis --force`
+    avoided by making a price a fresh seed.
+23. **A tombstone's `superseded_by` is a list**, not the scalar the spec's
+    envelope example shows, because a split leaves one retiree with several
+    heirs and a scalar cannot name them. A record written with a scalar or
+    `null` reads as the list it means; `store/decisions/D-0001.json` still
+    carries the scalar it was written with. *Risk:* a reader of the spec's
+    example expects a string.
+24. **A deferral is a latch on the draft itself**, in the pre-admission
+    tier, and only that latch is exposed to the watch evaluator — the
+    draft's own fan is not yet live. An adjudicator that defers without a
+    condition, or returns an escape verdict, re-queues the draft at the
+    next backward pass rather than leaving it without a condition that can
+    fire. *Risk:* the adjudicator's `until` is read from a fixed shape
+    (scorer, comparator, value, persistence — or passes); a condition it
+    phrases otherwise becomes the schedule default.
+25. **Observations a pending draft rests on are claimed** until the draft
+    is disposed, so a deferred draft is not nominated twice from the same
+    instances. *Risk:* a declined draft frees them, and the same fork is
+    nominated again at the next consolidation from the same observations.
+26. **A wiring latch's guard remembers the status it saw**, and the fire
+    ledger carries every later observation, so the latch stays immutable
+    and one departure fires once. A warrant that cites a record is wired to
+    it at admission, excluding the records the draft retires (the lineage
+    edge already carries those, and citing a predecessor would otherwise
+    close a wiring cycle the lint refuses). *Risk:* a wiring latch written
+    before guards remembered statuses reads its successor as `accepted`.
+27. **The edit rungs are successor records** derived from the one record
+    they supersede with the named fields replaced — never an edit in
+    place, because a decision is frozen after acceptance. The retirement
+    review's nomination still names `counterfactual-edit` as its rung for
+    want of a `retire` rung in the ladder vocabulary.
+28. **Genesis anchoring is a currency question**, not an attack: the
+    consolidator proposes an instance, the adjudicator reads the instance
+    itself, and the ledger entry's species is `currency` with `still-holds`
+    meaning the instance exemplifies the article. No examiner sits between
+    them, because the claim is one instance and one article, not a five-slot
+    draft. *Risk:* proposer and adjudicator without a contradictor is a
+    weaker separation than the protocol of § 10.9; the adjudicator is handed
+    the record, never the proposer's `why`.
+29. **Vocabulary growth files as a `coding` entry** whose contradictor is
+    the blind coder and whose verdict is `agree` | `disagree`; the
+    adjudicator's own token (`admit` | `decline(<why>)`) is the entry's
+    outcome. A declined term is re-nominated only by escapes from passes
+    after the verdict.
+
+30. **Every verdict seam routes through a closed table**
+    (`registry.route_table`), and a term the vocabulary admits but the seam
+    has no act for raises `Unrouted`; a test proves every table covers its
+    vocabulary and the escape. *Right:* the `defer` fall-through of the
+    first build cannot recur silently. *Risk:* an act tag is a string the
+    seam dispatches on; the table proves coverage, not that the act is
+    right.
+31. **A settlement cites its licence** — an adjudicated ledger entry, a
+    dispositive fire, or the admitted successor — and the committer refuses
+    any other, so a corroborating fire nominates and never settles. The
+    retirement latch is corroborating, so retirement cites the adjudicator's
+    currency entry, and the lint proves the licence on every settled latch.
+    *Risk:* `evict_article` cites no licence; the deadline in the bars is
+    its only ground.
+32. **A fire owed to the working pass is disposed at close** as a consulted
+    record is — from the pass's own rows, in the session's commit — or the
+    close is refused, and the lint's `fire-completeness` check reads the
+    close seam. *Risk:* no latch in the decisions-only roster names the
+    working pass as its disposer yet, so the path is proven by tests only.
 
 ## Housekeeping
 
 - `smoke_test.py` is the original W&B/Weave connectivity check and is not
   part of the package.
-- The store's genesis articles and lenses are priced for `stub`; reseed with
-  `HGI_MODEL_ID=<model> uv run hgi genesis --force` before a hand-run on a
-  real model (this resets the store). An experiment arm seeds its own store
-  and needs no reseed. The demonstration store's L-0004 product text
-  predates the per-row walk; an arm seeded now carries the current text.
-- `runs/smoke/`, `runs/baseline/`, `runs/baseline-precontract/`,
-  `runs/probe/` and `runs/world/` on this machine are the 2026-09-12 runs;
-  they are ignored by git. The baseline-precontract arms are the only
-  record of the pre-contract run.
+- The store's genesis articles and lenses are priced for `stub`. Before a
+  hand-run on a real model, either `uv run hgi price --model <model>
+  --restamp`, which keeps the store and leaves `model-pricing` warning that
+  the text is still authored for `stub`, or `HGI_MODEL_ID=<model> uv run hgi
+  genesis --force`, which prices a seed by writing it fresh and resets the
+  store with it. An experiment arm seeds its own store priced for its pass
+  model and needs neither.
+- `runs/smoke/`, `runs/baseline/` and `runs/baseline-precontract/` on this
+  machine are the 2026-09-12 runs; they are ignored by git. The first two
+  are regenerable; the third is the only record of the pre-contract run.
