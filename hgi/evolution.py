@@ -62,8 +62,18 @@ def arm_log(exp, arm: str, root: Path | None = None) -> dict[str, Any] | None:
     batches = spec.batches()
     recorded = {b["batch"]: b["hash"] for b in record["stream"]["batches"]}
     dealt = {n: b.hash for n, b in enumerate(batches, 1)}
+    warning = None
     if recorded != dealt:
-        raise SystemExit(f"{exp.name}/{arm}: the pool has changed since the arm ran; the recorded batch hashes no longer match the deal")
+        # the pool changed since the arm ran (a budget, a prompt): the batches are rebuilt from the task ids the arm recorded, so the
+        # log still reads the arm that ran, and says so
+        from suite.tasks import Suite, build
+
+        pool = build(spec.stream.pool_spec).by_id
+        missing = sorted({t for b in record["stream"]["batches"] for t in b["tasks"] if t not in pool})
+        if missing:
+            raise SystemExit(f"{exp.name}/{arm}: the pool has changed since the arm ran and no longer holds {', '.join(missing[:5])}")
+        batches = [Suite(spec=spec.stream.pool_spec, tasks=[pool[t] for t in b["tasks"]]) for b in record["stream"]["batches"]]
+        warning = "the pool has changed since the arm ran; batches rebuilt from the recorded task ids, hashes differ"
     batch_of = {int(k): v for k, v in record["stream"]["passes"].items()}
     reg = _registry.load(where / "store")
     token = _registry.use(reg)
@@ -72,11 +82,12 @@ def arm_log(exp, arm: str, root: Path | None = None) -> dict[str, Any] | None:
         sessions = sorted((s for s in store.all("session") if s.attached == (spec.mode == "attached") and s.evaluation is not None), key=lambda s: s.pass_)
         consolidations = {k.after_pass: k for k in store.all("consolidation")}
         accepted = {d.id: d for d in store.all("decision")}
-        passes = [_pass_entry(store, s, batch_of[s.pass_], batches[batch_of[s.pass_] - 1], s.pass_ > spec.passes, consolidations.get(s.pass_), accepted)
+        bar = int(store.registry.bars.get("decision", {}).get("independent_observations", 2))
+        passes = [_pass_entry(store, s, batch_of[s.pass_], batches[batch_of[s.pass_] - 1], s.pass_ > spec.passes, consolidations.get(s.pass_), accepted, bar)
                   for s in sessions if s.pass_ in batch_of]
     finally:
         _registry.reset(token)
-    log = {"experiment": exp.name, "arm": arm, "mode": spec.mode, "model": record["roster"]["pass"], "roster": record["roster"],
+    log = {"experiment": exp.name, "arm": arm, "mode": spec.mode, "model": record["roster"]["pass"], "roster": record["roster"], "warning": warning,
            "stream": spec.stream.model_dump(mode="json"), "passes": passes, "lessons": _lesson_series(passes),
            "records": [{"id": d.id, "admitted_after_pass": _admitted_after(consolidations, d.id), "decision": d.decision, "hook": d.consultation_terms,
                         "mentions": [l for l in _lessons.LESSONS if _lessons.mentions(l, " ".join([d.decision, d.summary.latch, d.context]))],
@@ -89,7 +100,7 @@ def _admitted_after(consolidations: dict[int, Any], record: str) -> int | None:
     return next((n for n, k in sorted(consolidations.items()) if record in k.admitted), None)
 
 
-def _pass_entry(store, session, batch: int, suite, revisit: bool, consolidation, accepted: dict[str, Any]) -> dict[str, Any]:
+def _pass_entry(store, session, batch: int, suite, revisit: bool, consolidation, accepted: dict[str, Any], bar: int) -> dict[str, Any]:
     token = _suite.use(suite)
     try:
         rows = []
@@ -108,14 +119,19 @@ def _pass_entry(store, session, batch: int, suite, revisit: bool, consolidation,
              "pass_rate": (sum(r["symptom"] == "pass" for r in scored) / len(scored)) if scored else None,
              "symptoms": dict(Counter(r["symptom"] for r in rows)), "rows": rows,
              "in_context": in_context, "mentions": {l: ids for l, ids in mentions.items() if ids},
-             "work_shape": session.work_shape.terms, "observations_filed": session.observations_filed, "proposals": len(session.proposals),
+             "work_shape": session.work_shape.terms, "proposals": len(session.proposals),
+             "observations": [{"name": o.name, "noticed": o.noticed, "shape": o.shape, "state": o.disposition.state}
+                              for o in store.observations(state=None) if o.name in session.observations_filed],
              "consolidation": None}
     if consolidation is not None:
-        outcomes = Counter((n.outcome or "pending").split("(")[0] for n in consolidation.nominations)
+        outcomes = Counter((n.outcome or "pending").split("(")[0] for n in consolidation.nominations if not n.subject.startswith("C-"))
+        anchoring = Counter((n.outcome or "pending").split("(")[0] for n in consolidation.nominations if n.subject.startswith("C-"))
+        groups = [{"shape": g.get("shape"), "sessions": g.get("sessions", []), "observations": g.get("observations", []),
+                   "at_bar": len(g.get("sessions", [])) >= bar} for g in consolidation.brief.get("groups", []) if isinstance(g, dict)]
         entry["consolidation"] = {"id": consolidation.id, "admitted": consolidation.admitted, "flipped": consolidation.flipped,
-                                  "nominations": [{"subject": n.subject, "rung": n.rung, "outcome": n.outcome} for n in consolidation.nominations],
-                                  "outcomes": dict(outcomes), "retired": consolidation.retired, "dismissed": consolidation.dismissed,
-                                  "expired": consolidation.expired, "groups": len(consolidation.brief.get("groups", []))}
+                                  "nominations": [{"subject": n.subject, "rung": n.rung, "outcome": n.outcome} for n in consolidation.nominations if not n.subject.startswith("C-")],
+                                  "outcomes": dict(outcomes), "anchoring": dict(anchoring), "retired": consolidation.retired, "dismissed": consolidation.dismissed,
+                                  "expired": consolidation.expired, "groups": groups, "groups_at_bar": sum(g["at_bar"] for g in groups)}
     return entry
 
 
@@ -154,17 +170,17 @@ def arm_markdown(log: dict[str, Any]) -> str:
     st = log["stream"]
     lines = [f"# {log['experiment']}/{log['arm']} — evolution", "",
              f"{log['mode']} on `{log['model']}`; {st['batches']} batches × {st['batch']} tasks from {'+'.join(st['families'])}, seed {st['seed']}"
-             + (f"; revisit {st['revisit']}" if st["revisit"] else "") + ".", "",
+             + (f"; revisit {st['revisit']}" if st["revisit"] else "") + ".", ""] + ([f"> {log['warning']}", ""] if log.get("warning") else []) + [
              "## Passes", "", "| pass | batch | first sight | symptoms | in context | mentions | filed | consolidation after |", "|---|---|---|---|---|---|---|---|"]
     for p in log["passes"]:
         sym = " ".join(f"{k}={v}" for k, v in sorted(p["symptoms"].items()))
         k = p["consolidation"]
-        kk = "" if k is None else (f"{k['id']}: admitted {' '.join(k['admitted']) or 'nothing'}"
-                                   + (f"; {', '.join(f'{v} {o}' for o, v in sorted(k['outcomes'].items()))}" if k["outcomes"] else "")
+        kk = "" if k is None else (f"{k['id']}: {len(k['groups'])} groups, {k['groups_at_bar']} at the bar; admitted {' '.join(k['admitted']) or 'nothing'}"
+                                   + (f"; {', '.join(f'{v} {o}' for o, v in sorted(k['outcomes'].items()))}" if k["outcomes"] else "; nothing nominated")
                                    + (f"; retired {' '.join(k['retired'])}" if k["retired"] else "") + (f"; dismissed {len(k['dismissed'])}" if k["dismissed"] else ""))
         lines.append(f"| {p['pass']}{' (revisit)' if p['kind'] == 'revisit' else ''} | {p['batch']} | {'—' if p['pass_rate'] is None else f'{p['pass_rate']:.2f}'} | {sym} | "
                      f"{' '.join(p['in_context']) or 'none'} | {', '.join(f'{l}: {' '.join(ids)}' for l, ids in p['mentions'].items()) or '—'} | "
-                     f"{len(p['observations_filed'])} obs, {p['proposals']} prop | {kk} |")
+                     f"{len(p['observations'])} obs, {p['proposals']} prop | {kk} |")
     lines += ["", "## Lessons", "", "Each cell is the lesson's rows in that pass: ✓ passed, N the naive first-contact outcome (a same-shape failure), "
               "W another wrong answer, E a harness or tool error. `mentioned` marks passes with a record in context whose text uses the lesson's words.", "",
               "| lesson | tier | " + " | ".join(f"p{p['pass']}" + ("r" if p["kind"] == "revisit" else "") for p in log["passes"]) +
@@ -176,6 +192,20 @@ def arm_markdown(log: dict[str, Any]) -> str:
         lines.append(f"| {lesson} | {s['tier'] or '—'} | " + " | ".join(cells.get(p, "") for p in by_pass) + f" | {_rate(*s['first_sight'])} | "
                      f"{_rate(*s['naive_before'])} / {_rate(*s['naive_after'])} | {s['first_mention_pass'] or '—'} | "
                      + (", ".join(f"batch {b}: {p}/{n}" for b, p, n in s["revisit"]) or "—") + " |")
+    lines += ["", "## What the passes noticed", "", "Each observation as the close filed it, with the shape the blind coder gave it at the next "
+              "consolidation (`open` until one has run); a group reaches the bar when its observations come from as many distinct sessions as the bar asks.", ""]
+    for p in log["passes"]:
+        for o in p["observations"]:
+            lines.append(f"- pass {p['pass']} {o['name']} [{', '.join(o['shape'] or []) or o['state']}]: {o['noticed']}")
+        k = p["consolidation"]
+        if k is not None:
+            for g in k["groups"]:
+                lines.append(f"- {k['id']} group [{', '.join(g['shape'] or [])}] ← {' '.join(g['observations'])} from {' '.join(g['sessions'])}"
+                             + (" — at the bar" if g["at_bar"] else " — below the bar"))
+            for n in k["nominations"]:
+                lines.append(f"- {k['id']} nominated {n['subject']} at {n['rung']} → {n['outcome']}")
+    if not any(p["observations"] for p in log["passes"]):
+        lines.append("Nothing was filed.")
     lines += ["", "## Records", ""]
     if log["records"]:
         lines += ["| record | admitted after pass | mentions | decision |", "|---|---|---|---|"]

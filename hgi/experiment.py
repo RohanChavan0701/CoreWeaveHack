@@ -519,4 +519,8 @@ def _cmd(args) -> int:
         record = run_arm(exp, arm, commit=not args.no_commit, force=args.force)
         print(f"{exp.name}/{arm}: {_curve_line(record['curve'])}", file=sys.stderr)
     print(report(exp))
+    if any(exp.resolve(a).stream is not None for a in exp.arms):
+        from hgi import evolution
+
+        print(evolution.write_experiment(exp))
     return 0

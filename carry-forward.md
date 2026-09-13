@@ -301,7 +301,21 @@ be right and why it may not.
     is the experiment the stream pass was built for; its evolution report
     lands at `runs/stream/evolution.md` and the README's *The stream*
     section carries no numbers until it has. The probe (`stream-probe.toml`)
-    is the only real-model evidence of the stream mechanics so far.
+    is the only real-model evidence of the stream mechanics so far. What it
+    showed on gpt-oss-120b (2026-09-12, `runs/stream-probe/`, traced to
+    `hgi-dev`): first sight 0.80 then 0.60 attached against 0.60 and 0.80
+    detached — noise at five tasks a batch; every loud lesson and most
+    visible ones passed on first contact, `trailing-newline` failed every
+    time with the naive count, and the revisit of batch 1 scored 0.60 with
+    nothing in context. The close filed one observation per failed row, each
+    naming the task and the wrong number but never the convention ("returned
+    15 lines, which was incorrect"), and the blind coder shaped the two
+    newline observations differently (`test-failure-triage` against
+    `output-schema, test-failure-triage`), so no group reached the
+    independence bar and the consolidation nominated nothing. The stream
+    run's question is therefore whether ten batches give a lesson enough
+    same-shaped observations to group, and the strict pool whether the
+    visible lessons still pass when the discovery call is not in the budget.
 26. **Retention and forgetting beyond one revisit.** `revisit` re-meets
     whole batches after the stream; the modes a continual-agent benchmark
     scores (AgentMemoryBench: improvement, retention, forgetting,
