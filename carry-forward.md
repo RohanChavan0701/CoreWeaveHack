@@ -77,6 +77,19 @@ be right and why it may not.
 - Weave: traces, evaluations, attributes, feedback → steer, and the mirror
   are verified live in `slavazinevich-worldvue/hgi-dev` and used in
   `slavazinevich-worldvue/hgi` and `hgi-experiments`.
+- The reasoning-core and text2sql streams have run on a real model with the
+  roles split (`experiments/reasoning-core.toml`, `experiments/text2sql.toml`;
+  decision 96 below): the forward pass on the actor and every other role on
+  `deepseek-ai/DeepSeek-V4-Pro`. As of 2026-09-13 mid-afternoon the attached
+  and strict arms and the text2sql ablations are done, the 20b arms and the
+  reasoning-core ablations still running; the stores are under
+  `runs/reasoning-core/` and `runs/text2sql/`, the logs beside them. Neither
+  pool separated the arms on pass rate: reasoning-core because the budget
+  fails no task (item 47), text2sql because the store admitted nothing about
+  the schema (items 48–50) — the detached text2sql arm matched the attached
+  arm on seven of its eight first-sight batches and was one row under on
+  the eighth. The results files and the README section wait on the last
+  wave.
 
 ## Leftover work for the full implementation
 
@@ -629,6 +642,98 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     code, not on a finished run. The pile chart colours shapes by first
     appearance across the snapshots, so a shape's hue is stable within an
     arm but not across arms.
+
+47. **The reasoning-core budget fails no task, so its strict pool is not
+    strict** (reasoning-core run). `suite/tools.py` refuses a shell call past
+    the budget, but the task is graded on the answer alone, and a regex
+    witness or a grammar member is something the actor can produce unaided
+    — so `tool_budget_respected` sat at 0.00–0.75 while `task_pass_rate` was
+    1.00 on the same rows, the strict arm on Qwen3.6-35B-A3B scored 0.88 at
+    first sight and the lax arm 0.79, and the teacher's own second decision
+    ("enforce the one-call budget") had its premise reversed a consolidation
+    later on the evidence that over-budget passes go unpunished. The budget
+    only reaches the economy series. For the pool to bite, the answer has to
+    depend on the shell — grade only a candidate the row verified (a
+    `commands` check the way `mbpp` reruns `tests.py`), or fail a row whose
+    budget was exceeded outright, as `curriculum` does in effect because its
+    answer needs the call — and the level-3/level-2 instances are near
+    saturation for a 35B model regardless (item 88 said the 0.5 target was a
+    hypothesis; it is now measured at ~0.85). The `reasoning-core` seed
+    (decision 95) inherits the same ceiling.
+48. **Lens answers about the store's own machinery become observations of
+    the world** (text2sql run). Seven of the attached arm's twenty-one
+    observations read "no rule matched", "no store records consulted", "the
+    check record should have fired" — the actor answering a close lens that
+    asks which record should have fired, filed by the close as a finding —
+    and the consolidator built a decision on them (D-0004/D-0007: "a
+    solution must consult the store's rules before execution; a failure with
+    no applicable rule is a process failure"). This is item 40 in a second
+    clothing: there the observations named the scorer, here they name the
+    store. The close's observation request should exclude findings whose
+    subject is a store record or the loop, and the noise filter (decision 42)
+    should drop a nomination whose every anchor is self-referential. Until
+    then any retrofit reproduces the artifact.
+49. **The teacher abstracts a real miss into an instruction** (text2sql run).
+    The anchors were right — EXISTS where every transaction had to match,
+    a district column read as a client average, the 2015 unemployment
+    columns for 1995 — and the decision they became was "a SQL solution must
+    correctly translate the task's logical requirements" (D-0003/D-0006).
+    Meanwhile the failed rows that recur across the pool — `status =
+    'approved'` three times where the code is `'A'`, `frequency = 'TYDNE'`
+    for `'POPLATEK TYDNE'` — became no decision at all, and the strict arm's
+    D-0002 ("the final answer must be a row-returning SELECT, not an
+    aggregate") misread three `COUNT(*)` questions that failed on the coded
+    status as schema violations, a decision that is wrong and was in context
+    when the same question failed again on the revisit. The seeded
+    `schema-coded-value` term was never used; the blind coder read every miss
+    as `output-schema` or `shell-tool`. Three levers, in order of leverage:
+    (a) the nominate request should ask for the world's fact the row met
+    (item 40's fix applies here too), and the propose sketch should be
+    refused when the decision sentence names no value, column, dialect or
+    command — a decision with no falsifiable content about the world is an
+    instruction, and the adjudicator should decline it; (b) the coder's
+    coverage question should be put to the row's `result` and `commands`,
+    not to the observation prose, since the wrong literal is in the query
+    text; (c) a teacher stronger than the actor did not help here — the
+    contracts are priced for `gpt-oss-120b`, DeepSeek-V4-Pro parsed on every
+    request but wrote the same generic drafts, so the fix is in the request,
+    not the model.
+50. **Supersession by latch widening** (text2sql run). Three of the seven
+    decisions are copies of the other three whose only change is the latch
+    terms — `output-schema` widened to `shell-tool, tool-budget`, and so on —
+    the hook-edit rung firing because the boot classifies every text2sql
+    task under the tool cues and a record keyed on a convention term never
+    fired. Widening a latch to the shape every task presents makes the
+    record fire on every task and mean nothing; D-0002 was in context on two
+    later rows that both failed. A hook-edit that widens onto a term every
+    task in the pool carries should be refused or should count as a
+    retirement candidate, and the report should show `applied` against the
+    row's outcome so this is visible without reading the store.
+51. **Two tasks a batch is too few** (text2sql run). With eight batches of
+    two, the strict arm's rise from 0.00 to 0.50 on batch 5 was matched by
+    the detached ablation on the same batch, and the lax arms differed by
+    one row over sixteen. The financial pool is 32 questions less the 4 that
+    read `trans`, so 28 is the ceiling; the next design should use all of
+    them at batch 4, or take a second BIRD database over the same dialect
+    conventions, and read the decision content beside the curve as the
+    primary evidence — here the content decided the question the curve
+    could not.
+52. **Follow-ups on the runs themselves.** (a) The wave-2 and wave-3 arms
+    exit 1 after writing their store, `arm.json` and evolution log: commit
+    a04d9e8 appended `seed`-keyed arms to both TOMLs while the arms ran from
+    a worktree pinned before the field existed, and the end-of-run report
+    resolves every arm in the file — the data is intact; regenerate the
+    reports from main. `experiment.py` should resolve only the arm it ran,
+    or a run should snapshot the TOML it loaded beside `arm.json`. (b) The
+    results files under `experiments/results/reasoning-core/` and
+    `experiments/results/text2sql/` and the README section are not written;
+    the last wave was running when this item was. (c) The `*-seeded` twins
+    (decision 95) of both experiments have not run; on text2sql the seed
+    carries exactly the six conventions the loop failed to learn, so the
+    seeded − attached gap there is the cleanest reading of items 48–50. (d)
+    The retrofit (`hgi experiment retrofit`, running on the stream and
+    economy arms) reproduces item 48's artifact by construction, since it
+    re-runs the same close; read its stores with that in mind.
 
 ## Decisions taken, and their risk
 
@@ -1873,3 +1978,34 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     and consolidates, so its store can retire or supersede a seed decision
     the world contradicts — a seed the loop retires is itself a finding, and
     the evolution log can tell the two apart by `proposed_by`.
+96. **The roles split with the forward pass alone on the actor, and the
+    experiments dispatched in waves from a pinned tree** (reasoning-core and
+    text2sql runs, 2026-09-13). Both experiments put the pass on a mid-sized
+    actor (Qwen3.6-35B-A3B for reasoning-core, gpt-oss-120b for text2sql,
+    gpt-oss-20b as the weak actor in each) and every other role —
+    consolidator, examiner, adjudicator, coder and, at the user's direction,
+    the reauthor — on `deepseek-ai/DeepSeek-V4-Pro`, set once in
+    `[defaults.roles]`. A probe arm (`runs/rc-probe`, project `hgi-dev`)
+    preceded the dispatch: two batches of three, consolidation every pass,
+    which showed the teacher parsing on contracts priced for gpt-oss-120b
+    and Qwen passing 6/6. The ten arms ran as detached processes in three
+    waves — attached Qwen and 120b arms; the 20b arms with the text2sql
+    ablations; the reasoning-core ablations alone — from a worktree pinned
+    at the commit the arms loaded, with the TOMLs read from main. Why it may
+    be right: the split is § 9.6's four contexts on several models, and a
+    stronger backward pass is the cheapest test of whether the store's
+    weakness is the judge or the request; the waves kept every arm under the
+    endpoint's concurrency ceiling with no 429 past the retries; the pin
+    kept two merges to main out of the running code. Why it may not: (a) the
+    contracts are priced for one model and the pricing floor warns on every
+    other — the teacher's drafts parsed but were no better (item 49), so the
+    result speaks to the request, not to the model choice, and a priced
+    contract for DeepSeek-V4-Pro would be the fair test; (b) the pin covered
+    the code and not the experiment file, which another session extended
+    mid-run (item 52a); (c) `text2sql` and `text2sql-holdout` were pooled
+    into one stream, so the holdout is more first sights rather than a
+    separate transfer leg — in a prequential stream every batch is unseen,
+    but the family's disjoint-template design is unused; (d) the strict
+    text2sql pool consolidates every pass because five batches do not
+    divide into rounds of two, so its cadence differs from its lax sibling's
+    and the two are not paired on consolidation points.
