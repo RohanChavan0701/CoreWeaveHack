@@ -1482,3 +1482,49 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     radius sweep was meant to catch, now guarded only by τ\*=1.0 standing;
     the escape-to-vocabulary-bar path is the doctrine's answer if a
     convention the seed lacks recurs.
+88. **The signal half of the battery lands on the per-lens register, beside
+    the decoy half** (commit `ce19b3d`). The battery scored two axes onto each
+    lens — `decoy_rejection` and `answer_variance` — but the `SignalCaught`
+    scorer's product went only to the global fact series
+    `lens-battery-v1/signal_caught`, never onto the lens register, so a lens
+    that rejected every decoy while catching half its genuine signals read
+    healthy per-lens and the partial signal-miss was invisible. `LensTelemetry`
+    gains a `signal_caught` cell seeded `design-stage` the way the other two
+    are (the genesis seed and the committed lens register carry it), and
+    `telemetry_from` computes the per-lens caught fraction over the signal
+    items exactly as `decoy_rejection` is computed over the decoys —
+    `1.00 — 2/2 planted signals caught (lens-battery-v1)`, or `unevaluable` when
+    a lens has no signal — flowing onto the register through the existing
+    `model_dump`. *Right:* the register now carries both halves of the same
+    run, so a lens's floor gate (reject the decoy) and its recall (catch the
+    signal) are read side by side; on the honest stub L-0004 reads 1.00 and
+    L-0003 reads 0.00, the miss the decoy axis alone showed as a clean 1.00.
+    *Risk:* the fraction is the stub answerer's, a lexical proxy for the pass
+    model's filing, and the two axes share the one battery run — a dataset that
+    plants too few signals reads a coarse fraction (2/2 is the current plant),
+    and a lens with no signal items reads `unevaluable`, never a false 1.00.
+89. **A human steer can cite a lens, and the register reads the steers that
+    cite it** (commit `ecf1d81`). Every lens declared
+    `"miss_stream": "steers/ citing this lens"`, a dead literal no code
+    populated: `indictment()` resolved ids through `store.find`, which reaches
+    only file-layout record kinds, while lens ids live in the register, so a
+    note naming `L-000x` was dropped. `indictment()` now resolves a lens id
+    through `store.registry` when no store record matched the note — records
+    come first, so a note naming both keeps its record, and only a note naming
+    no record but a registered lens is credited to the lens — and
+    `populate_telemetry` reads `store.all("steer")` and replaces each battered
+    lens's static `miss_stream` with the steers that cite it,
+    `1 steer cites this lens: T-0003` or `no steer cites this lens
+    (lens-battery-v1)`. *Right:* a lens id flows harmlessly through every
+    consumer of `Steer.indicts` — no fire latches on a lens id, so `file_note`
+    lands the steer in `system-misses/human-catches` (the right cell: a human
+    caught a lens miss the system did not), and `matrix`, `recall` and
+    `attacker` gate their lens-id reads on `decisions`/`accepted` records that
+    never include one. *Risk:* the `indicts.record` field now carries either a
+    record id or a lens id, and the reader tells them apart only by prefix; the
+    matrix's `indicted` set mixes both, harmless today because fires and
+    dispositions never key on a lens, but a future reader that assumes
+    `indicts.record` is always a decision would misread a lens-citing steer.
+    The miss stream is written only for the lenses `populate_telemetry`
+    touches (the battered ones), so a boot lens no battery reaches keeps its
+    static literal until a run writes it.
