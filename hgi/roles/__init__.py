@@ -42,7 +42,7 @@ REPLIES: dict[str, Any] = {
                 "fires": [{"fire": "<a fire id from `fires_owed`>", "outcome": "<what the pass did about the owed act, read from the rows; one sentence>"}]},
     "propose": {"drafts": [{"rung": "<a ladder rung from `rungs`>", "rung_why": "<why the cheaper rungs do not suffice>", "subject": "<one word naming the lesson>",
                             "evidence": ["<observation names from `observations`>"], "supersedes": [], "sketch": SKETCH_REPLY}]},
-    "coding": {"<observation name>": ["<work-shape term or other(<what>)>"]},
+    "coding": {"<observation name>": ["<the convention the noticing names, as a registry work-shape term; a tool-major term only when the miss turned on a way of working with no world-convention behind it; other(<the convention in a few words>) when no term covers it>"]},
     "triage": {"verdict": "<reducible when a duty the loop could have carried would have prevented the failure the rows show; irreducible when nothing any record could say would have — the endpoint failed the turn, the turn limit fell, a hidden test raised, the task had no policy to run>",
                "why": "<one sentence naming the row and the duty, or the row and why no duty reaches it>"},
     "nominate": {"nominations": [{"rung": "<a ladder rung from `rungs`>", "rung_why": "<why the cheaper rungs do not suffice>", "subject": "<one word naming the lesson>",

@@ -168,7 +168,7 @@ def test_the_coder_control_scores_the_term_and_the_escape_and_writes_controls_js
     coder = payload[lb.CODER]
     assert coder["signal_caught"].startswith("1.00") and coder["decoy_rejection"].startswith("1.00")
     items = {i["item"]: i for i in coder["items"]}
-    assert "http-tool" in items["coder/signal/0"]["terms"] and items["coder/decoy/1"]["terms"] == ["other(unclassified)"]
+    assert "listing-paged" in items["coder/signal/0"]["terms"] and items["coder/decoy/1"]["terms"] == ["other(unclassified)"]
     lb.write_controls(store, payload)
     path = store.index_dir / "controls.json"
     assert path.exists() and json.loads(path.read_text())[lb.CODER]["items"][1]["expected"] is None

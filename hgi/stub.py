@@ -60,6 +60,27 @@ def terms_for(text: str, allowed: list[str]) -> list[str]:
     return [t for t in allowed if any(k in text for k in KEYWORDS.get(t, ()))]
 
 
+# The convention-major shapes the blind coder groups observations by, keyed off the world-fact the noticing names —
+# distinct from KEYWORDS, which the boot classify reads over the *task prompt* (where the convention is hidden, so a
+# prompt keys only the tool cue). These words appear in the noticing the blind close writes, never in the lesson label
+# the coder is denied. The stub is a lexical proxy for the model's convention inference; a live re-score is what confirms it.
+CONVENTION_KEYWORDS: dict[str, tuple[str, ...]] = {
+    "route-versioned": ("/v2", "410", "versioned", "moved", "gone", "successor route", "retired route"),
+    "listing-paged": ("page", "paging", "paginat", "next page", "one page", "first page"),
+    "route-guarded": ("token", "401", "unauthor", "secure route", "authorize", "authoriz"),
+    "field-quoted": ("quoted", "quoted field", "quoted comma", "comma inside", "embedded comma"),
+    "summary-row": ("footer", "total row", "summary row", "footer row", "trailer", "total line", "totals row"),
+    "line-unterminated": ("newline", "no trailing", "unterminated", "not terminated"),
+    "byte-order-mark": ("byte order mark", "byte-order mark", "bom", "utf-8-sig", "u+feff"),
+}
+
+
+def conventions_for(text: str, allowed: list[str]) -> list[str]:
+    """The registered convention-major terms whose world-fact the noticing names — the blind coder's finer shape."""
+    text = text.lower()
+    return [t for t in allowed if t in CONVENTION_KEYWORDS and any(k in text for k in CONVENTION_KEYWORDS[t])]
+
+
 @handles("classify")
 def _classify(req):
     text = " ".join(p["prompt"] for p in req["presentations"])
@@ -129,7 +150,13 @@ def _propose(req):
 
 @handles("coding")
 def _coding(req):
-    return {o["name"]: terms_for(o["noticed"], req["terms"]) or ["other(unclassified)"] for o in req["observations"]}
+    # Shape on the convention the noticing names when a registered convention term fits; fall back to the tool-major cue
+    # (or an escape) only when no world-convention is behind the miss — the same order the coder prompt states.
+    out = {}
+    for o in req["observations"]:
+        conv = conventions_for(o["noticed"], req["terms"])
+        out[o["name"]] = sorted(conv) if conv else (terms_for(o["noticed"], req["terms"]) or ["other(unclassified)"])
+    return out
 
 
 # --- the consolidator ---------------------------------------------------------------------

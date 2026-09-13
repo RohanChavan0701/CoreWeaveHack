@@ -30,8 +30,13 @@ def _terms(*pairs: tuple[str, str]) -> dict[str, dict[str, str]]:
 
 VOCABULARY: dict[str, dict] = {
     "work-shape": {
-        "means": "the closed vocabulary of task presentations a consultation hook keys on; minted from the task suite's known presentations",
+        "means": "the closed vocabulary of task presentations a consultation hook keys on; minted from the task suite's known presentations. "
+                 "Two granularities live here and neither displaces the other: the tool-major terms, coarse cues a consultation hook keys on "
+                 "at boot (a task that calls the HTTP tool), and the convention-major terms, the world-fact an attempt turns on (a route the "
+                 "world has retired to a versioned successor). The blind coder shapes an observation on the finer of the two the noticing names, "
+                 "so two misses of one convention share a shape and two of different conventions differ even when both called the same tool",
         "terms": _terms(
+            # the tool-major cues: what a boot classify keys a consultation hook on, coarse by design
             ("tool-call-retry", "the task involves retrying a tool call that failed transiently"),
             ("http-tool", "the task calls the HTTP tool"),
             ("shell-tool", "the task calls the shell tool"),
@@ -41,6 +46,16 @@ VOCABULARY: dict[str, dict] = {
             ("tool-budget", "the task runs under a call budget"),
             ("error-wrapping", "the task wraps, rethrows or reports an error"),
             ("task-planning", "the task requires a plan before action"),
+            # the convention-major shapes: the world-fact the attempt turned on, the granularity the blind coder groups observations by.
+            # One tool carries many of these, which is why the tool cue alone conflated distinct lessons (shape-radius sweep, decision 77);
+            # a convention term names the presentation the world exhibits, read from the noticing, never from the task's held-out lesson label.
+            ("route-versioned", "a route the world has retired, answering with the versioned successor it moved to"),
+            ("listing-paged", "a listing the world returns one page at a time, each page naming the next or its end"),
+            ("route-guarded", "a route the world answers only when a held token authorizes the call"),
+            ("field-quoted", "a delimited field the world quotes so it may carry the delimiter inside it"),
+            ("summary-row", "a tabular export the world ends with a total or summary row that is not a data record"),
+            ("line-unterminated", "a text file whose last line the world leaves with no terminating newline"),
+            ("byte-order-mark", "a text file the world opens with a byte-order mark a strict parser refuses"),
         ),
     },
     "latch-type": {"means": "the typed activation units of § 6.2", "terms": _terms(
