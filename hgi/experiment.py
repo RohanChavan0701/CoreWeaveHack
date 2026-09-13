@@ -368,8 +368,10 @@ def _detached_passes(spec: ArmSpec, store, hgi, progress, suite_for) -> None:
     other arms and an attached arm's own passes run — safe to run several arms of an experiment together
     under one endpoint's concurrency ceiling (decision 36). Off, they are drawn concurrently instead, each in
     a copy of the runner's context with its own suite in scope (a stream arm's pass draws its batch) — faster
-    alone, or with headroom under the ceiling. Either way each pass is written without a commit; the arm
-    commits once."""
+    alone, or with headroom under the ceiling; a worker thread starts with no Weave project bound in its own
+    context, so each re-enters the client before drawing (item 34) — moot in the serial mode above, where
+    every draw runs in the thread the arm's own ``tracing.run()`` already joined. Either way each pass is
+    written without a commit; the arm commits once."""
     from hgi import index as _index
 
     def draw(n: int) -> None:
@@ -384,8 +386,12 @@ def _detached_passes(spec: ArmSpec, store, hgi, progress, suite_for) -> None:
         import contextvars
         from concurrent.futures import ThreadPoolExecutor
 
+        def draw_in_thread(n: int) -> None:
+            tracing.rejoin()
+            draw(n)
+
         with ThreadPoolExecutor(max_workers=min(DETACHED_AT_ONCE, spec.passes)) as pool:
-            futures = [pool.submit(contextvars.copy_context().run, draw, n) for n in range(1, spec.passes + 1)]
+            futures = [pool.submit(contextvars.copy_context().run, draw_in_thread, n) for n in range(1, spec.passes + 1)]
             for f in futures:
                 f.result()
                 progress()

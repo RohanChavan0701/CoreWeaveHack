@@ -120,6 +120,24 @@ def test_serial_detached_can_be_turned_off_for_the_old_concurrent_draw(tmp_path,
     assert record["sessions"] == ["S-0001", "S-0002"]
 
 
+def test_weave_is_rejoined_in_each_worker_thread_of_a_concurrent_detached_draw(tmp_path, monkeypatch):
+    """Moot under the serial default (no worker threads); needed the moment ``serial_detached`` is turned
+    off, since a worker thread starts with no project bound in its own context (item 34)."""
+    monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
+    calls = []
+    monkeypatch.setattr(_experiment.tracing, "rejoin", lambda: calls.append(True))
+
+    concurrent_exp = _experiment.Experiment(name="concurrent-detached", defaults={"rounds": 1, "passes_per_round": 2},
+                                             arms={"a": {"mode": "detached", "serial_detached": False}})
+    _experiment.run_arm(concurrent_exp, "a", tmp_path, commit=False)
+    assert len(calls) == 2, "once per worker-thread draw"
+
+    calls.clear()
+    serial_exp = _experiment.load(EXPERIMENTS / "smoke.toml")
+    _experiment.run_arm(serial_exp, "detached", tmp_path, commit=False)
+    assert calls == [], "the serial draw runs in this thread, already joined by tracing.run"
+
+
 def test_rerunning_an_arm_needs_force(tmp_path, monkeypatch):
     monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
     exp = _experiment.load(EXPERIMENTS / "smoke.toml")

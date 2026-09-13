@@ -10,7 +10,9 @@ nested ``hgi`` attribute, so the trace store can be queried by
 pass was conditioned on. ``run`` names the experiment and arm the process is
 executing; both ride on every call as ``hgi.experiment`` and ``hgi.arm`` and
 prefix every evaluation's display name, so arms of one experiment are told
-apart inside one project.
+apart inside one project. ``rejoin`` re-opens that same project from inside a
+thread ``init`` never ran in — a detached arm's concurrent draws need it, or
+their traces are lost though the data they wrote is not.
 """
 
 from __future__ import annotations
@@ -48,6 +50,17 @@ def init():
 
 def client():
     return _client if _initialised else init()
+
+
+def rejoin() -> None:
+    """Re-open the configured project in the calling thread. ``init`` runs once per process, so a worker
+    thread spawned after it (a detached arm's concurrent draws, :func:`hgi.experiment._detached_passes`)
+    shares the same client object but starts with no project bound in its own context, and Weave's
+    trace-batch flush from that thread fails to resolve one (``Invalid project_id format``) — a fresh
+    ``weave.init`` from inside the thread sets it there too. A no-op when tracing is off."""
+    name = project_name()
+    if name:
+        weave.init(name)
 
 
 def enabled() -> bool:
