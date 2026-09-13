@@ -449,6 +449,12 @@ def _currency(req):
         return {"verdict": "reversed", "why": f"the anchors {req['rotted']} retired with no successor; the warrant cites nothing that stands", "premise": None}
     if req.get("successor"):
         return {"verdict": "reversed", "why": f"the premise is superseded by {req['successor']}", "premise": None}
+    if req.get("domain_entered") is False:  # never considered over the window: a count, kept unless the evidence meets the moot condition
+        when, ev = str(req.get("moot_when", "")).lower(), req.get("evidence") or {}
+        met = (("transient" in when or "fail" in when) and ev.get("fault_rate") == 0) or ("budget" in when and "tool-budget" not in ev.get("presented", []))
+        if met and req.get("moot_evidence"):
+            return {"verdict": "moot", "why": f"no pass over {req.get('window')} passes entered the domain and the window's evidence meets the moot condition ({req.get('moot_when')})", "premise": None}
+        return {"verdict": "still-holds", "why": "never considered is a count; the killer-item check keeps a record whose moot condition the evidence does not meet", "premise": None}
     ratio = req.get("applied_over_considered")
     if ratio is not None and ratio < req.get("threshold", 0.1) and req.get("moot_evidence"):
         return {"verdict": "moot", "why": "the domain is no longer entered"}

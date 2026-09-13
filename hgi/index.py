@@ -156,7 +156,7 @@ def competence(store: Store) -> list[dict[str, Any]]:
     presentation alone and the pass disposed the record ``considered-not-applicable``; dominating the considered count,
     it indicts the guard and nominates a ``counterfactual-edit`` growing ``not_this`` (:func:`precision`).
     """
-    sessions, window = _window(store)
+    sessions, window = review_window(store)
     recent = {s.id for s in sessions}
     tally: dict[str, dict[str, int]] = defaultdict(lambda: {"considered": 0, "applied": 0, "not_applicable": 0, "guard_failed": 0, "off_map": 0})
     for u in store.all("disposition"):
@@ -195,7 +195,7 @@ def precision(store: Store) -> list[dict[str, Any]]:
     killer-item check), not a guard to tighten.
     """
     bar = store.registry.bars.get("precision", {}).get("not_applicable_over_considered_above", 0.5)
-    sessions, _ = _window(store)
+    sessions, _ = review_window(store)
     recent = {s.id for s in sessions}
     bimodal = {row["record"] for row in fusion(store) if row["bimodal"]}
     notes: dict[str, list[dict[str, str]]] = defaultdict(list)
@@ -222,7 +222,7 @@ def precision(store: Store) -> list[dict[str, Any]]:
     return rows
 
 
-def _window(store: Store) -> tuple[list[Session], int]:
+def review_window(store: Store) -> tuple[list[Session], int]:
     """The closed attached sessions of the review window, oldest first, and the window's length."""
     window = store.registry.bars["retirement"]["window_passes"]
     sessions: list[Session] = sorted((s for s in store.all("session") if s.attached and s.closed_at is not None), key=lambda s: s.pass_)  # type: ignore[misc]
@@ -249,7 +249,7 @@ def fusion(store: Store) -> list[dict[str, Any]]:
     the two ends. The row nominates; the consolidator drafts the leaves and
     the adjudicator ratifies them against the raw anchors, never the labels.
     """
-    sessions, _ = _window(store)
+    sessions, _ = review_window(store)
     applied = _applied_by_session(store, sessions)
     matched = {s.id: {c.record: c.terms_matched for c in s.considered if c.via == "index"} for s in sessions}
     rows = []
@@ -276,7 +276,7 @@ def convergence(store: Store) -> list[dict[str, Any]]:
     differentiation under stress; whether their payloads entail one another is
     the consolidator's reading and the adjudicator's verdict, never this row's.
     """
-    sessions, _ = _window(store)
+    sessions, _ = review_window(store)
     applied = _applied_by_session(store, sessions)
     accepted = store.decisions("accepted")
     rows = []
@@ -378,7 +378,7 @@ def recall(store: Store) -> list[dict[str, Any]]:
     nominator for re-keying (``hook-edit``), never a verdict. ``presented`` is what the probing passes classified their
     work as: the terms a re-key may add.
     """
-    sessions, _ = _window(store)
+    sessions, _ = review_window(store)
     probes: dict[str, list[dict[str, Any]]] = defaultdict(list)
     presented: dict[str, set[str]] = defaultdict(set)
     accepted = {d.id: d for d in store.decisions("accepted")}

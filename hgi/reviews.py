@@ -7,8 +7,10 @@ adjudicator in its own context; the committer acts on the verdict and the
 ledger records the pair. None of them settles anything by count.
 
 - :func:`retirement` — applied ÷ considered below a record's retirement
-  guard over the review window nominates mootness; the adjudicator's
-  killer-item check decides.
+  guard over the review window nominates mootness, and so does a record
+  never considered across the whole window (the domain no longer entered,
+  § 10.5's lifecycle row); the adjudicator's killer-item check decides
+  either, and nothing retires by count alone.
 - :func:`genesis_anchors` — a genesis article carries ``warrant.evidence:
   genesis`` and no anchor; the consolidator proposes an instance from the
   loop's own ledgers, the adjudicator says whether it exemplifies the
@@ -75,12 +77,50 @@ def _entry(store: Store, *, subject: str, claim: str, proposer: RoleCall, c: _mo
 
 # --- retirement --------------------------------------------------------------------------------
 
+def domain_evidence(store: Store, sessions: list, d: Decision) -> dict[str, Any]:
+    """What the window shows of a record's domain: the work-shape terms its passes presented against the record's hook, and the
+    fault rate over their rows — the oracle's reading the adjudicator checks a ``moot_when`` condition against."""
+    rows = [row for s in sessions if s.evaluation for row in s.evaluation.rows]
+    faults = [e for row in rows for e in row.get("tool_errors", []) if e.get("transient")]
+    return {"presented": sorted({t for s in sessions for t in s.work_shape.terms}), "hook": d.consultation_terms,
+            "fault_rate": (len(faults) / len(rows)) if rows else None, "rows": len(rows), "passes": [s.id for s in sessions]}
+
+
 def retirement(store: Store, record: Consolidation) -> list[Nomination]:
-    """applied ÷ considered nominates, never verdicts; the adjudicator's killer-item check decides mootness."""
+    """The two retirement keys nominate, never verdict; the adjudicator's killer-item check decides mootness.
+
+    The first key is the ratio: applied ÷ considered below the record's retirement guard over the window. The second is the
+    domain no longer entered: a record accepted before the window opened and considered by no pass across the whole of it
+    (``considered == 0`` with the window full). Both reach the adjudicator through the ``currency`` request with
+    ``moot_evidence``; a record never considered is kept unless its ``moot_when`` condition is met by the window's evidence,
+    because never fired is a count and the killer-item is exempt regardless of count.
+    """
+    from hgi.consolidate import settle_currency
+
+    sessions, window = _index.review_window(store)
     out = []
     for row in _index.competence(store):
         d: Decision = store.read("decision", row["record"])  # type: ignore[assignment]
         guard = d.lifecycle.retirement.guard
+        if row["considered"] == 0:
+            if row["passes_in_window"] < window or not sessions or d.admission.committed_at > sessions[0].started_at:
+                continue  # the window is not full, or the record was admitted inside it and could not have been considered across it
+            evidence = domain_evidence(store, sessions, d)
+            c = _model.complete("adjudicator", roles.request("currency", record=d.id, applied_over_considered=None, considered=0, window=window,
+                                                             domain_entered=False, threshold=guard.applied_over_considered_below, moot_when=d.lifecycle.moot_when,
+                                                             moot_evidence=True, evidence=evidence,
+                                                             note="the domain was not entered: no pass in the review window considered the record; never fired is a count, and the record is kept unless the evidence meets its moot condition"),
+                                session=record.id)
+            out_ = c.json()
+            v = str(out_.get("verdict", "pending"))
+            entry = _entry(store, subject=d.id, claim=f"{d.id} was considered by no pass over {window} passes: the domain was not entered",
+                           proposer=RoleCall(role="consolidator", model_id=None, call=None), c=c, verdict=v, coding={**row, "domain": evidence},
+                           why=out_.get("why"), rung="counterfactual-edit", source=f"competence:{d.id}")
+            n = Nomination(rung="counterfactual-edit", rung_why="retirement leg: the record was never considered across the review window; the domain was not entered",
+                           subject=d.id, evidence=[f"considered=0 over {window} passes"], ledger_entry=entry.id, outcome=v)
+            settle_currency(store, record, d, out_, entry)
+            out.append(n)
+            continue
         if row["applied_over_considered"] is None or guard.applied_over_considered_below is None:
             continue
         if row["passes_in_window"] < (guard.over_passes or 0) or row["applied_over_considered"] >= guard.applied_over_considered_below:
@@ -93,8 +133,6 @@ def retirement(store: Store, record: Consolidation) -> list[Nomination]:
         entry = _entry(store, subject=d.id, claim=f"{d.id} applied ÷ considered = {row['applied_over_considered']:.2f} over {row['passes_in_window']} passes",
                        proposer=RoleCall(role="consolidator", model_id=None, call=None), c=c, verdict=v, coding=row, why=out_.get("why"), rung="counterfactual-edit",
                        source=f"competence:{d.id}")
-        from hgi.consolidate import settle_currency
-
         n = Nomination(rung="counterfactual-edit", rung_why="retirement leg: the nominating ratio fell below the guard", subject=d.id,
                        evidence=[f"applied_over_considered={row['applied_over_considered']}"], ledger_entry=entry.id, outcome=v)
         settle_currency(store, record, d, out_, entry)
