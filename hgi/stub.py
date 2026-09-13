@@ -184,34 +184,18 @@ def lesson_key(texts: list[str]) -> str | None:
     return None
 
 
-def decision_body(key: str, terms: list[str], not_this_extra: list[str], anchors: list[str], bars: dict[str, Any], model_id: str) -> dict[str, Any]:
+def sketch(key: str, terms: list[str], anchors: list[str]) -> dict[str, Any]:
+    """The lesson as a drafting reply's sketch — the judgment; the body is derived by :mod:`hgi.drafting`."""
     L = LESSONS[key]
     scorer, cmp, value = L["watch"]
-    retirement = bars["retirement"]
     return {
-        "scopes": ["suite/tools"],
-        "summary": {"latch": L["latch"], "not_this": L["not_this"], "stakes": L["stakes"]},
+        "decision": L["decision"], "counterfactual": L["counterfactual"].format(anchors=", ".join(anchors)),
+        "latch": L["latch"], "terms": terms, "not_this": L["not_this"], "stakes": L["stakes"],
         "context": "the same fork was observed in independent passes: " + ", ".join(anchors),
         "options": [{"name": n, "judged": j, "why": w} for n, j, w in L["options"]],
-        "decision": L["decision"],
-        "counterfactual": L["counterfactual"].format(anchors=", ".join(anchors)),
-        "warrant": {"anchors": anchors, "premises": [{"id": i, "statement": s, "falsifier": f, "status": "supported"} for i, s, f in L["premises"]],
-                    "adjudication": {"ledger_entry": None, "species": "attack", "verdict": "pending"}},
-        "latches": [
-            {"type": "consultation", "slot": "payload", "key_space": "work-shape", "edge": {"kind": "level", "at": "boot"},
-             "guard": {"terms": terms, "not_this": L["not_this"] + not_this_extra}, "consumer": "the working pass",
-             "owed_act": {"class": "apply", "role": "dispositive"}, "lifecycle": {"status": "live"}},
-            {"type": "revisit", "slot": "warrant", "key_space": "world-state",
-             "edge": {"kind": "edge", "predicate": {"evaluation": "suite-v1", "scorer": scorer, "comparator": cmp, "value": value, "persistence": 2}},
-             "guard": {}, "consumer": "the backward pass", "owed_act": {"class": "re-adjudicate", "role": "dispositive"}, "lifecycle": {"status": "live"}},
-        ],
-        "enforcement": {"floor": ["schema", "complement-law", "ports"], "residue": L["residue"]},
-        "lifecycle": {"consumer": "the working pass, at boot, on a matching work-shape", "moot_when": L["moot_when"],
-                      "retirement": {"type": "retirement", "slot": "lifecycle", "key_space": "competence",
-                                     "edge": {"kind": "schedule", "at": "consolidation"},
-                                     "guard": {"applied_over_considered_below": retirement["applied_over_considered_below"], "over_passes": retirement["window_passes"]},
-                                     "consumer": "the lifecycle review", "owed_act": {"class": "retire", "role": "corroborating"}, "lifecycle": {"status": "live"}}},
-        "priced_for": {"model_id": model_id},
+        "premises": [{"id": i, "statement": st, "falsifier": f} for i, st, f in L["premises"]],
+        "watch": {"scorer": scorer, "comparator": cmp, "value": value, "persistence": 2},
+        "residue": L["residue"], "moot_when": L["moot_when"], "scopes": ["suite/tools"],
     }
 
 
@@ -239,7 +223,7 @@ def _nominate(req):
             "rung_why": ("payload indicted: the superseded record was recalled and applied and the oracle still regressed on task_pass_rate; a re-derived payload supersedes it"
                          if supersedes else "no existing record's counterfactual, hook or register absorbs this fork; the fork is undecided"),
             "subject": key, "evidence": names, "supersedes": supersedes,
-            "body": decision_body(key, terms, [], names, bars, req.get("model_id", "stub")),
+            "sketch": sketch(key, terms, names),
         })
     return {"nominations": nominations}
 

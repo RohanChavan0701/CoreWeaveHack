@@ -80,7 +80,7 @@ def walk_lenses(store: Store, session: Session, host: str, subject_for) -> list[
     answers = []
     for lens in store.registry.lenses(host):
         payload = roles.request("lens", lens={"id": lens.id, "angle": lens.angle, "counterfactual": lens.counterfactual, "product": lens.product},
-                                subject=subject_for(lens))
+                                subject=subject_for(lens), empty_is_legal=roles.EMPTY_LENS_IS_LEGAL)
         c = _model.complete("pass", payload, session=session.id, pass_=session.pass_,
                             records_in_context=[x.record for x in session.considered if x.guard_passed])
         out = c.json()

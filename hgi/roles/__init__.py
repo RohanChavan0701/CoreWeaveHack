@@ -1,9 +1,13 @@
 """The role prompts, one file each, each priced; and the request contract.
 
 A prompt file is Markdown with a leading ``priced_for:`` line naming the
-model it was authored against. ``prompt(role)`` returns the body; the four
+models its replies have been read against, comma-separated (``stub`` is
+the deterministic stand-in). ``prompt(role)`` returns the body; the four
 contexts of the backward pass share no prompt text beyond the store's
-schemas, which every role receives through :func:`schemas`.
+schemas, which every role receives through :func:`schemas`. The lint warns
+when a role runs on a model its prompt is not priced for (``hgi roles
+pricing`` lists them); a model earns its place on the line when every
+request the role answers has been read back through ``hgi roles try``.
 
 Every request a role receives is one JSON object built by :func:`request`:
 its ``request`` field names the request, its ``reply`` field states the
@@ -21,33 +25,30 @@ from functools import cache
 from pathlib import Path
 from typing import Any
 
+from hgi.drafting import SKETCH_REPLY
+
 HERE = Path(__file__).parent
 
 ROLES = ("pass", "consolidator", "examiner", "adjudicator", "coder")
-
-_DRAFT_BODY = ("<a JSON object, not a string: the Draft schema's `body` (DecisionBody) with every required field in the type the schema gives it, "
-               "latches as latch objects, options as {name, judged, why} objects, premises as {id, statement, falsifier, status} objects; every field the "
-               "schema names as a vocabulary term (latch type, slot, key_space, edge kind, owed_act class and role, premise status, latch status) takes a "
-               "term listed under that vocabulary in the request's `vocabularies`, and a consultation latch's guard.terms are work-shape terms; "
-               "priced_for.model_id = the request's model_id>")
 
 REPLIES: dict[str, Any] = {
     "classify": {"terms": ["<a term from `terms` that at least one presentation's prompt plainly instantiates; the union over all tasks; a term that merely might apply is left out>"],
                  "escapes": ["other(<a shape a presentation has and the vocabulary lacks>)"]},
     "guard": {"passed": "<true if the hook's terms match the work-shape and no `not_this` applies to the presentations>", "why": "<one sentence>"},
     "lens": {"answer": "<one sentence answering the lens's angle from the subject; empty string when nothing is found>",
-             "findings": ["<one object per finding, with exactly the fields the lens's `product` names; an anchor is {call: <a row's `call` URI>, path: <a file path>}; empty list is a legal answer>"]},
+             "findings": ["<one object per finding, with exactly the fields the lens's `product` names; a `noticed` states what happened in one sentence naming the task; an anchor is {call: <the row's `call` URI>, path: <a file path or null>}>"]},
     "dispose": {"dispositions": [{"record": "<a consulted record id>", "disposition": "<applied | considered-not-applicable | fired-off-map>",
                                   "note": "<which rows it bore on, or why it did not>"}]},
-    "propose": {"drafts": [{"kind": "decision", "rung": "<a ladder rung from `rungs`>", "rung_why": "<why the cheaper rungs do not suffice>",
-                            "evidence": ["<observation names from `observations`>"], "supersedes": [], "body": _DRAFT_BODY}]},
+    "propose": {"drafts": [{"rung": "<a ladder rung from `rungs`>", "rung_why": "<why the cheaper rungs do not suffice>", "subject": "<one word naming the lesson>",
+                            "evidence": ["<observation names from `observations`>"], "supersedes": [], "sketch": SKETCH_REPLY}]},
     "coding": {"<observation name>": ["<work-shape term or other(<what>)>"]},
     "nominate": {"nominations": [{"rung": "<a ladder rung from `rungs`>", "rung_why": "<why the cheaper rungs do not suffice>", "subject": "<one word naming the lesson>",
                                   "evidence": ["<observation names from the brief's groups>"], "supersedes": ["<accepted decision ids this retires>"],
-                                  "body": _DRAFT_BODY}]},
+                                  "sketch": SKETCH_REPLY}]},
     "attack": {"claims": [{"target": "<premise:<id> | payload:<aspect> | activation | warrant:independence>", "refutation": "<what reading of the evidence would show it false>",
                            "reading_taken": "<true if you took that reading>", "landed": "<true if the reading showed it false>", "evidence": ["<what you read>"]}]},
-    "verdict": {"verdict": "<admit | admit-amended(<amendment>) | decline(<why>) | defer(<until>) | escalate(<why>)>", "amendment": "<the amended decision text, or null>"},
+    "verdict": {"verdict": "<admit | admit-amended(<amendment>) | decline(<why>) | defer(<until>) | escalate(<why>)>", "amendment": "<the amended decision text, or null>",
+                "rationale": "<one sentence weighing the attack against the evidence: which landed claim you accepted or rejected, and why>"},
     "credit": {"steers": [{"record": "<record id>", "slot": "<payload | activation | warrant>", "signature": "recalled-applied-still-corrected",
                            "correction": "<what the record got wrong>", "why_not_caught": "<why no floor caught it>"}]},
     "currency": {"verdict": "<still-holds | reversed | moot>", "why": "<one sentence>"},
@@ -64,6 +65,8 @@ def request(name: str, **content: Any) -> str:
 EMPTY_IS_LEGAL = "an empty list is a legal answer: refusal is a first-class outcome when nothing observed earns a rung"
 """Sent as request content, never as a list placeholder — a placeholder inside a list comes back as a literal element."""
 
+EMPTY_LENS_IS_LEGAL = "an empty findings list is a legal answer: a finding is filed only for something that happened in the rows; nothing is invented to have one"
+
 
 def drafts_in(out: Any, key: str) -> list[dict[str, Any]]:
     """The draft-carrying objects under ``key`` of a reply; anything that is not an object is dropped."""
@@ -79,12 +82,25 @@ def refusal(e: Exception) -> str:
     return str(e).splitlines()[0]
 
 
-def body_of(raw: dict[str, Any]) -> dict[str, Any]:
-    """A draft's ``body`` as an object: a model that serialises it as a JSON string is read, not refused."""
-    body = raw.get("body")
-    if isinstance(body, str):
-        body = json.loads(body)
-    return body if isinstance(body, dict) else {}
+def draft_of(store, raw: dict[str, Any], *, proposed_by: str, name: str, model_id: str | None):
+    """A :class:`hgi.types.Draft` from a drafting reply's item: the sketch parsed, the body derived under the store's bars.
+
+    Raises ``ValueError`` naming every failing field when the item does not
+    carry what a draft needs; a missing sketch is a failing field too.
+    """
+    from hgi.drafting import body, sketch_of
+    from hgi.store import now
+    from hgi.types import Draft
+
+    if "sketch" not in raw:
+        raise ValueError("sketch: a drafting reply carries a `sketch` object")
+    sketch = sketch_of(raw.get("sketch"), store.registry)
+    evidence = [e for e in raw.get("evidence", []) if isinstance(e, str)]
+    return store.parse_as(Draft, {
+        "uid": store.new_uid(), "name": name, "kind": "decision", "drafted_at": now().isoformat(), "proposed_by": proposed_by,
+        "rung": raw.get("rung"), "rung_why": raw.get("rung_why") or "", "evidence": evidence,
+        "supersedes": [x for x in raw.get("supersedes", []) if isinstance(x, str)], "body": body(sketch, evidence, store.registry.bars, model_id),
+    })
 
 
 REPLY_RULE = ("Every request is one JSON object whose `reply` field states the exact shape of your answer: reply with one JSON object of that "
@@ -104,22 +120,37 @@ def _load(role: str) -> tuple[str | None, str]:
 def prompt(role: str) -> str:
     if role not in ROLES:
         raise KeyError(f"no role prompt for {role!r}; roles are {ROLES}")
-    return _load(role)[1] + "\n\n" + REPLY_RULE + "\n\n" + schemas()
+    return _load(role)[1] + "\n\n" + REPLY_RULE + "\n\n" + schemas(role)
 
 
 def priced_for(role: str) -> str | None:
     return _load(role)[0]
 
 
-@cache
-def schemas() -> str:
-    """The record shapes every role reads and writes, derived from the declarations — never a second copy."""
+def priced_models(role: str) -> list[str]:
+    head = priced_for(role)
+    return [m.strip() for m in head.split(",") if m.strip()] if head else []
+
+
+def is_priced_for(role: str, model_id: str | None) -> bool:
+    return model_id is None or model_id in priced_models(role)
+
+
+def role_models(role: str) -> list[type]:
+    """The record shapes a role reads or writes: the drafting roles the sketch, the judging roles the draft and the ledger entry."""
+    from hgi.drafting import Sketch
     from hgi.types import Draft, LedgerEntry, Observation
 
-    parts = ["## Record shapes (JSON Schema, derived from hgi/types.py)"]
-    for model in (Observation, Draft, LedgerEntry):
+    return {"pass": [Observation, Sketch], "consolidator": [Sketch], "examiner": [Draft, LedgerEntry], "adjudicator": [Draft, LedgerEntry], "coder": []}[role]
+
+
+@cache
+def schemas(role: str = "examiner") -> str:
+    """The record shapes the role reads and writes, derived from the declarations — never a second copy."""
+    parts = ["## Record shapes (JSON Schema, derived from hgi/types.py and hgi/drafting.py)"]
+    for model in role_models(role):
         parts.append(f"### {model.__name__}\n```json\n{_compact(model)}\n```")
-    return "\n\n".join(parts)
+    return "\n\n".join(parts) if len(parts) > 1 else ""
 
 
 def _compact(model) -> str:

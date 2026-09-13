@@ -534,6 +534,8 @@ class LedgerEntry(Strict):
     verdict: str = "pending"
     adjudicator: RoleCall | None = None
     amendment: str | None = None
+    rationale: str | None = None
+    """The adjudicator's one-sentence weighing of the attack against the evidence."""
     rung: Term("ladder-rung") | None = None
     outcome: str | None = None
     """What the committer did: ``admitted D-0007`` | ``declined`` | ``escalated`` | ``deferred``."""

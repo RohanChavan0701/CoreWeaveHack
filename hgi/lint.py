@@ -20,7 +20,8 @@ constitution-cap             write          fails a store exceeding max_articles
 disposition-completeness     close          fails a closed session with a consulted record lacking a disposition      whether the disposition was honest
 projection-coherence         commit         fails when index/ differs from regeneration                               nothing — total
 consumer-edge-acyclicity     commit         fails a cycle over wiring edges                                           undeclared edges
-model-pricing                boot           warns on a lens or decision priced for a model other than the session's   the size of the re-pricing
+model-pricing                boot           warns on a lens or decision priced for a model other than the session's,  the size of the re-pricing
+                                            and on a role prompt not priced for the model the role runs on
 oracle-honesty               runtime        fails a fact carrying both a zero value and an unevaluable reason         a scorer measuring the wrong quantity
 genesis-anchor               consolidation  warns on a genesis article past its anchor deadline with no anchor         whether the anchor exemplifies the article
 
@@ -349,6 +350,13 @@ def check_pricing(store: Store, model_id: str | None = None) -> list[Finding]:
     for d in store.decisions("accepted"):
         if d.priced_for.model_id != model_id:
             out.append(warn("model-pricing", d.id, f"priced for {d.priced_for.model_id!r}, the session runs {model_id!r}"))
+    from hgi import model as _model
+    from hgi import roles
+
+    for role in roles.ROLES:
+        runs = _model.model_id(role) if role != "pass" else model_id
+        if not roles.is_priced_for(role, runs):
+            out.append(warn("model-pricing", f"roles/{role}.md", f"priced for {roles.priced_for(role)!r}, the role runs {runs!r}"))
     return out
 
 
