@@ -159,3 +159,7 @@ def test_the_incidents_smoke_runs_both_arms_naively_over_the_three_decoy_lessons
     assert set(log["lessons"]) == {"decoy-dependency", "decoy-saturation", "decoy-state"}
     detached = _experiment.run_arm(exp, "detached", tmp_path, commit=False)
     assert detached["sessions"] == [f"S-{n:04d}" for n in range(1, 13)] and detached["stream"]["revisit"] == []
+    _experiment.run_arm(exp, "strict", tmp_path, commit=False)
+    strict = json.loads((tmp_path / "incidents-smoke" / "strict" / "evolution.json").read_text())
+    assert all(p["symptoms"] == {"naive": 3} for p in strict["passes"]), "zero slack dies on the budget a call sooner"
+    assert set(strict["lessons"]) == set(log["lessons"])

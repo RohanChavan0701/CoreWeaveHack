@@ -1,8 +1,9 @@
-# The incidents stream's own check on the deterministic stub: six batches of three diagnoses, consolidation every two,
-# batch 1 met again at the end. The stub's policy for every incidents task is the naive walk through all the readings,
-# which dies on the budget, so every failure is a naive-shape (budget) failure and the curve is flat and honest; what
-# the run proves is the deal over the three decoy lessons, the per-pass suite swap, the revisit pass and the evolution
-# log on this family. The tests run it.
+# The incidents stream's own check on the deterministic stub: twelve batches of three diagnoses out of the 36 tasks,
+# consolidation every two, batch 1 met again at the end. The stub's policy for every incidents task is the naive walk
+# down the whole reading menu, which dies on the budget, so every failure is a naive-shape (budget) failure and the
+# curve is flat and honest; what the run proves is the deal over the three decoy lessons, the per-pass suite swap, the
+# revisit pass and the evolution log on this family. The strict arm runs the same deal on the zero-slack pool, where
+# the naive walk dies one call sooner. The tests run it.
 name = "incidents-smoke"
 description = "the incidents stream end to end on the deterministic stub"
 
@@ -22,3 +23,9 @@ mode = "attached"
 
 [arms.detached]
 mode = "detached"
+
+[arms.strict]
+mode = "attached"
+description = "the same deal on the zero-slack pool"
+[arms.strict.stream]
+families = ["incidents-strict"]
