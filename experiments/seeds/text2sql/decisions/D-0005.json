@@ -1,0 +1,191 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T12:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "The financial database names its standing-order table `order`, a SQL reserved word (suite/families/text2sql.py:26). Every other identifier in the schema - account, loan, client, disp, card, district, trans, date, type, amount - is unreserved in SQLite and needs no quoting.",
+  "counterfactual": "The overshoot is the bare name: SELECT COUNT(*) FROM order raises near \"order\": syntax error, the failure named at suite/families/text2sql.py:26, and the task is failed at suite/families/text2sql.py:158 before any row is compared. The opposite overshoot is quoting everything - \"loan\".\"amount\" runs but wastes the attention that should go to the join.",
+  "created_at": "2026-09-13T12:00:00-07:00",
+  "decision": "The table `order` in financial.sqlite is a reserved word: write it as `order` (backticks) or \"order\" (double quotes) in every FROM and JOIN, alias it once (FROM `order` AS T1) and refer to the alias. Never use order, group, from, to, by, select or table as an alias. The other seven tables and every column name, including date and type, are unreserved and are written bare.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "a question that reads orders is rare in the graded set; the decision is cheap insurance, and its use ratio may stay low"
+    ]
+  },
+  "id": "D-0005",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a question over a database other than financial.sqlite, whose schema this card does not describe",
+          "a task that creates, alters or writes to the database (DDL or DML) rather than reading it with a SELECT",
+          "a shell task with no SQLite database in the working directory"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "shell-tool",
+          "tool-budget"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.5
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the database renames the table to an unreserved identifier",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — quote the table name every time it appears",
+      "why": "the only form the parser accepts; aliasing it once keeps the rest of the query plain"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — write it bare like the other seven tables",
+      "why": "near \"order\": syntax error, and the query never runs"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/text2sql"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a question over financial.sqlite that reads permanent orders, standing orders or payment orders - the `order` table",
+    "not_this": [
+      "a question over a database other than financial.sqlite, whose schema this card does not describe",
+      "a task that creates, alters or writes to the database (DDL or DML) rather than reading it with a SELECT",
+      "a shell task with no SQLite database in the working directory"
+    ],
+    "stakes": "FROM order is a syntax error; the check reads the raise as a failed task and the repair costs a call the strict budget lacks"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/text2sql.py:26",
+      "suite/families/text2sql.py:158"
+    ],
+    "premises": [
+      {
+        "falsifier": "a shipped database whose standing-order table is renamed, e.g. to orders or perm_order",
+        "id": "p1",
+        "statement": "order is a SQLite reserved word and the table is named exactly `order` (suite/families/text2sql.py:26)",
+        "status": "supported"
+      }
+    ]
+  }
+}

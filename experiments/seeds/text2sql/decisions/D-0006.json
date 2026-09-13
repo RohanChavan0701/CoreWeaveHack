@@ -1,0 +1,212 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T12:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "The check re-executes the returned statement against financial.sqlite and compares its rows to the gold's as a multiset (suite/families/text2sql.py:146), order-insensitive, floats to two decimals. The prompt says to return the query text, not a computed value (suite/families/text2sql.py:116). The knowing floor is one shell call (suite/families/text2sql.py:96): write the query from the card, run it once, return it.",
+  "counterfactual": "The overshoot is discovery before composition: a first call on .schema and a second on SELECT DISTINCT, as the prompt at suite/families/text2sql.py:113 invites, leaves the strict pass (suite/families/text2sql.py:96) with no call to run its query and the slack pass with one. The opposite overshoot is returning the rows or a formatted answer instead of the statement, which the check at suite/families/text2sql.py:153 fails before any row is compared; and a second run on a query that already executed is a spent call that buys nothing.",
+  "created_at": "2026-09-13T12:00:00-07:00",
+  "decision": "Answer a financial.sqlite question in one shell call: compose the complete SELECT from the schema card and the evidence, run it exactly once with sqlite3 financial.sqlite \"<SELECT>\" to see that it executes and the rows look plausible, then return the SELECT text as result - never the rows, never a number. Shapes the grader turns on: highest/lowest/oldest/top N is ORDER BY <col> [DESC] LIMIT N (LIMIT 1 for a superlative), not a MAX/MIN subquery; return only the columns the question asks for (a how-many question returns one COUNT, a percentage one number, 'list the account ID, district name and region' three columns in that order); COUNT(T.col) over the joined rows, COUNT(DISTINCT ...) only when the counted entity is coarser than the row (districts counted across clients); GROUP BY the entity's id when listing per-entity counts; ORDER BY matters only under LIMIT since rows compare as a multiset; one statement, no trailing scratch queries, no ROUND. Under text2sql-strict the one call is the budget; under text2sql the remaining two calls are for a repair only when the run errored.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether the rows the one run showed were plausible is judgment; the floor checks shape only",
+      "the column-order rule is only as good as the question's wording"
+    ]
+  },
+  "id": "D-0006",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a question over a database other than financial.sqlite, whose schema this card does not describe",
+          "a task that creates, alters or writes to the database (DDL or DML) rather than reading it with a SELECT",
+          "a shell task with no SQLite database in the working directory"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "shell-tool",
+          "file-tool",
+          "tool-budget"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.5
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the families stop grading by re-execution, or the budget rises above the knowing floor by more than the slack",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — compose from the card, run once to verify, return the statement",
+      "why": "one call fits both budgets and the run catches a syntax or column error before it reaches the grader"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — explore the schema and values first, then iterate on the query",
+      "why": "spends the strict budget on discovery the store already holds, and in text2sql leaves at most one repair"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — return the rows the query produced",
+      "why": "the check runs a SELECT; a number or a list is not a statement and fails before any comparison"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/text2sql"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a question over financial.sqlite under a shell-call budget where the result is the SELECT statement itself, not the rows it returns",
+    "not_this": [
+      "a question over a database other than financial.sqlite, whose schema this card does not describe",
+      "a task that creates, alters or writes to the database (DDL or DML) rather than reading it with a SELECT",
+      "a shell task with no SQLite database in the working directory"
+    ],
+    "stakes": "under text2sql-strict the single shell call is the whole budget; a pass that explores first has nothing left to run its query, and a pass that returns the rows instead of the statement fails the check outright"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/text2sql.py:96",
+      "suite/families/text2sql.py:113",
+      "suite/families/text2sql.py:146",
+      "suite/families/text2sql.py:153"
+    ],
+    "premises": [
+      {
+        "falsifier": "a check that compares the query text to the gold, or compares rows in order",
+        "id": "p1",
+        "statement": "the check executes the returned string as SQL and compares rows as an order-insensitive multiset (suite/families/text2sql.py:146)",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a task prompt stating a budget below one or a knowing floor above one",
+        "id": "p2",
+        "statement": "text2sql-strict budgets one shell call and text2sql three, both with knowing floor one (suite/families/text2sql.py:96)",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a graded question whose gold returns all tied rows via a MAX/MIN subquery",
+        "id": "p3",
+        "statement": "the graded golds resolve superlatives with ORDER BY ... LIMIT 1 and per-entity listings with GROUP BY, so matching that shape matches the rows",
+        "status": "supported"
+      }
+    ]
+  }
+}

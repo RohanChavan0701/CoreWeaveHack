@@ -1,0 +1,198 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T12:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "loan.amount, district.A11 and every COUNT are INTEGER; SQLite divides two integers as integers (29 where the gold has 29.77). The evidence gives the formula in prose (suite/data/text2sql.jsonl) but never says CAST, so a pass writes the formula literally and gets a running query with wrong rows (suite/families/text2sql.py:24).",
+  "counterfactual": "The overshoot is the uncast formula: SUM(status = 'A') * 100 / COUNT(account_id) integer-divides and returns 29 where the gold returns 29.77 - the query at suite/families/text2sql.py:27 that executes cleanly and returns the wrong rows. The opposite overshoot is casting or rounding the result into a shape the two-decimal comparison at suite/families/text2sql.py:141 no longer matches, such as ROUND(..., 0) or a string percentage with '%'.",
+  "created_at": "2026-09-13T12:00:00-07:00",
+  "decision": "A percentage or ratio over financial.sqlite casts before dividing: CAST(SUM(...) AS REAL) * 100 / COUNT(...), or multiply by 100.0. A conditional count is the boolean-sum idiom SUM(status = 'C') or SUM(CASE WHEN status = 'A' THEN amount ELSE 0 END); the denominator is COUNT(id) or SUM(amount) over the same filtered rows. A rate increment is CAST((A13 - A12) AS REAL) * 100 / A12. Rows are compared to two decimals, so do not ROUND. AVG() already returns REAL and needs no cast.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether the numerator and denominator are over the same filtered rows is judgment; the floor checks shape only"
+    ]
+  },
+  "id": "D-0003",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a question over a database other than financial.sqlite, whose schema this card does not describe",
+          "a task that creates, alters or writes to the database (DDL or DML) rather than reading it with a SELECT",
+          "a shell task with no SQLite database in the working directory"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "shell-tool",
+          "tool-budget"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.5
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the amount and salary columns become REAL, or the check compares rows after integer truncation",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — CAST one operand AS REAL before dividing",
+      "why": "the gold's own form; rows are compared to two decimals so CAST and 100.0 both grade"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — write the formula as the prose gives it",
+      "why": "integer division truncates, the query runs, the rows mismatch, and nothing in the trace says why"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/text2sql"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a question over financial.sqlite asking for a percentage, a ratio, a rate increment or an average of one thing over another",
+    "not_this": [
+      "a question over a database other than financial.sqlite, whose schema this card does not describe",
+      "a task that creates, alters or writes to the database (DDL or DML) rather than reading it with a SELECT",
+      "a shell task with no SQLite database in the working directory"
+    ],
+    "stakes": "an uncast division over INTEGER columns integer-divides to a whole number that executes cleanly and fails the row comparison - the valid-but-wrong case the credit correction grades as a failure"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/text2sql.py:24",
+      "suite/families/text2sql.py:27",
+      "suite/families/text2sql.py:141"
+    ],
+    "premises": [
+      {
+        "falsifier": "a SQLite build or a schema where amount and counts are REAL, so the uncast division already matches the gold",
+        "id": "p1",
+        "statement": "SQLite integer-divides two INTEGER operands and amount, A11 and COUNT are INTEGER (suite/families/text2sql.py:24)",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a comparison that matches floats exactly",
+        "id": "p2",
+        "statement": "the row comparison rounds floats to two decimals (suite/families/text2sql.py:141), so CAST and 100.0 forms both grade",
+        "status": "supported"
+      }
+    ]
+  }
+}

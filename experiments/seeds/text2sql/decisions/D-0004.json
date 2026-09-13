@@ -1,0 +1,198 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T12:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "The coded columns hold literal codes: loan.status A/B/C/D, account.frequency three Czech phrases, gender F/M, disp.type OWNER/DISPONENT, card.type classic/gold/junior, district.A3 eight region spellings with a lowercase compass word. BIRD's evidence names the mapping for the one code the question needs (suite/families/text2sql.py:19); the card carries every value so no SELECT DISTINCT is spent.",
+  "counterfactual": "The overshoot is a literal the database does not hold: status = 'running' or A3 = 'North Bohemia' executes and returns zero rows, the valid-but-wrong case at suite/families/text2sql.py:25 the row comparison fails. The opposite overshoot is spending a shell call on SELECT DISTINCT status to confirm a closed set this map already enumerates (suite/families/text2sql.py:114).",
+  "created_at": "2026-09-13T12:00:00-07:00",
+  "decision": "Filter coded columns of financial.sqlite on their exact literal, case-sensitive, never on an English translation or a number: loan.status 'A' = finished, no problems; 'B' = finished, loan not paid; 'C' = running, OK so far; 'D' = running, client in debt - so 'running contract' is status IN ('C', 'D'), 'finished' is IN ('A', 'B'), 'in debt' is 'D', 'fully paid with no issue' is 'A'. account.frequency 'POPLATEK MESICNE' = monthly issuance; 'POPLATEK TYDNE' = weekly issuance; 'POPLATEK PO OBRATU' = issuance after transaction. client.gender 'F' female, 'M' male. disp.type 'OWNER' | 'DISPONENT'. card.type 'classic' | 'gold' | 'junior'. `order`.k_symbol '' | 'LEASING' | 'POJISTNE' | 'SIPO' | 'UVER'. district.A3 exactly 'Prague', 'central Bohemia', 'east Bohemia', 'north Bohemia', 'south Bohemia', 'west Bohemia', 'north Moravia', 'south Moravia' (the compass word is lowercase; 'North Bohemia' matches nothing). Use = or IN with the literal; LIKE and LOWER() are unnecessary.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "which code a vague phrase ('still running', 'no issue') means is judgment guided by the evidence; the floor checks shape only"
+    ]
+  },
+  "id": "D-0004",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a question over a database other than financial.sqlite, whose schema this card does not describe",
+          "a task that creates, alters or writes to the database (DDL or DML) rather than reading it with a SELECT",
+          "a shell task with no SQLite database in the working directory"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "shell-tool",
+          "tool-budget"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.5
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the database decodes its status and frequency columns into English text",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — filter on the exact code from this map",
+      "why": "the codes are closed sets enumerated here; SQLite = is case-sensitive so the exact spelling is the only one that matches"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — spend a shell call on SELECT DISTINCT to learn the codes",
+      "why": "the strict budget has no call to spare and the values never change between tasks"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/text2sql"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a question over financial.sqlite that filters on a loan status, a statement issuance frequency, a gender, a region or a card or disposition type - running contract, finished, in debt, weekly, monthly, after transaction, female, male",
+    "not_this": [
+      "a question over a database other than financial.sqlite, whose schema this card does not describe",
+      "a task that creates, alters or writes to the database (DDL or DML) rather than reading it with a SELECT",
+      "a shell task with no SQLite database in the working directory"
+    ],
+    "stakes": "a status written in English, a frequency guessed, or a region capitalised differently matches no row: the query runs, returns nothing or the wrong count, and fails"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/text2sql.py:25",
+      "suite/families/text2sql.py:19",
+      "suite/families/text2sql.py:114"
+    ],
+    "premises": [
+      {
+        "falsifier": "a row in the shipped database whose status, frequency, gender, type or A3 is outside the listed set or differs in case",
+        "id": "p1",
+        "statement": "the coded columns hold exactly the values listed and SQLite string equality is case-sensitive (suite/families/text2sql.py:25)",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a graded question whose gold filters on a code the evidence maps to a different phrase",
+        "id": "p2",
+        "statement": "BIRD's evidence maps the phrase to the code the gold filters on, and 'running' spans C and D as the holdout evidence states (suite/families/text2sql.py:19)",
+        "status": "supported"
+      }
+    ]
+  }
+}
