@@ -157,6 +157,9 @@ class ArmSpec(BaseModel):
     running several arms together this way put 429s past the client's retries into the detached rows on
     a real endpoint (decision 36). ``False`` restores the old concurrent draw, sound alone or with headroom
     under the endpoint's ceiling."""
+    seed: str | None = None
+    """A hand-authored seed store injected before pass 1 (:mod:`hgi.seeds`): a directory, a path relative to the
+    experiment file, or a world name under ``experiments/seeds``. The compare/contrast against the same arm unseeded."""
     description: str = ""
 
     model_config = ConfigDict(extra="forbid")
@@ -265,6 +268,9 @@ def seed_arm(exp: Experiment, arm: str, spec: ArmSpec, root: Path, roster: dict[
     reg = seed(root, model_id=roster["pass"])
     bars = _merge(_merge(dict(reg.bars), {"consolidation_every_passes": spec.passes_per_round}), spec.bars)
     _registry.write_json(root / "registry" / "bars.json", bars)
+    if spec.seed:
+        from hgi import seeds as _seeds
+        _seeds.inject(root, _seeds.resolve(spec.seed, exp.path), model_id=roster["pass"])
     return _registry.load(root)
 
 
@@ -297,6 +303,7 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
     record: dict[str, Any] = {
         "experiment": exp.name, "arm": arm, "spec": spec.model_dump(), "passes": spec.passes, "roster": roster,
         "suite": {"hash": world.hash, "tasks": len(world.tasks), "families": world.families()} if not batches else None,
+        "seed": _registry.read_json(store_root / "seed.json") if (store_root / "seed.json").exists() else None,
         "stream": {"batches": [_stream.batch_record(n, b) for n, b in enumerate(batches, 1)], "revisit": spec.revisits,
                    "passes": {n: n for n in range(1, spec.passes + 1)} | {spec.passes + k: r for k, r in enumerate(spec.revisits, 1)}} if batches else None,
         "weave_project": tracing.project_name(), "started_at": _now(), "finished_at": None, "sessions": [], "curve": {},
