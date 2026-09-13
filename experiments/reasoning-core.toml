@@ -10,8 +10,8 @@
 # the strict pool budgets exactly that one call, so only a pass that already produces a member first time stays in
 # budget.
 #
-# The roles are split: the actor is a mid-sized open model, and the backward pass — consolidator, examiner,
-# adjudicator, blind coder — runs on a strong teacher, so what the store admits is the teacher's reading of the actor's
+# The roles are split: only the forward pass runs on the actor, a mid-sized open model; every other role — consolidator, examiner,
+# adjudicator, blind coder, re-author — runs on a strong teacher, so what the store admits is the teacher's reading of the actor's
 # misses. A second actor, gpt-oss-20b, meets the same stream under the same teacher; the detached arm is the actor
 # alone. The first-sight rate on the ~0.5 band is the hypothesis this run measures (carry-forward item 88).
 #
@@ -39,6 +39,7 @@ consolidator = "deepseek-pro"
 examiner = "deepseek-pro"
 adjudicator = "deepseek-pro"
 coder = "deepseek-pro"
+reauthor = "deepseek-pro"
 
 [defaults.stream]
 families = ["reasoning-core"]
@@ -52,7 +53,7 @@ http_fault_fraction = 0.0
 
 [arms.qwen-attached]
 mode = "attached"
-description = "Qwen3.6-35B-A3B acting, DeepSeek-V4-Pro consolidating, examining, adjudicating and coding"
+description = "Qwen3.6-35B-A3B acting, DeepSeek-V4-Pro on every other role"
 
 [arms.qwen-detached]
 mode = "detached"

@@ -12,8 +12,9 @@
 # same schema. Grading re-executes the returned SELECT and compares rows to the gold's rows — a wrong-but-running
 # query fails.
 #
-# The roles are split: the actor is gpt-oss-120b, the model the role contracts were priced on, and the backward pass
-# runs on a strong teacher. gpt-oss-20b meets the same stream under the same teacher as the weaker actor. The strict
+# The roles are split: only the forward pass runs on the actor, gpt-oss-120b, the model the role contracts were priced on;
+# every other role — consolidator, examiner, adjudicator, blind coder, re-author — runs on a strong teacher. gpt-oss-20b meets
+# the same stream under the same teacher as the weaker actor. The strict
 # pool holds the ten graded questions alone (the holdout has no strict twin), five batches of two consolidated every
 # pass, budgeted at the knowing floor of one shell call: only a pass that already knows the schema convention stays in
 # budget. The ~0.5 first-sight rate is the hypothesis this run measures (carry-forward item 89).
@@ -42,6 +43,7 @@ consolidator = "deepseek-pro"
 examiner = "deepseek-pro"
 adjudicator = "deepseek-pro"
 coder = "deepseek-pro"
+reauthor = "deepseek-pro"
 
 [defaults.stream]
 families = ["text2sql", "text2sql-holdout"]
@@ -55,7 +57,7 @@ http_fault_fraction = 0.0
 
 [arms.120b-attached]
 mode = "attached"
-description = "gpt-oss-120b acting, DeepSeek-V4-Pro consolidating, examining, adjudicating and coding"
+description = "gpt-oss-120b acting, DeepSeek-V4-Pro on every other role"
 
 [arms.120b-detached]
 mode = "detached"
