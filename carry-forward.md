@@ -112,11 +112,24 @@ each with why it may be right and why it may not.
 13. **The pass's own proposals** (close step 6) parse and file, and a
     consolidation adopts one whose lesson a ratified group earns; the stub
     adopts (`tests/test_proposals.py`), and the real model may draft its own.
-14. **Re-authoring on a re-price.** `hgi price --restamp` moves the stamp and
-    records that the text did not move with it (decision 29); replacing the
-    text against the new model is authoring work and is not mechanized. A
-    role that re-authors a lens's angle or an article would close this, and
-    would meet the same unverified drafting contracts as item 4.
+14. **Re-authoring on a re-price — mechanized; the text's quality is
+    unverified.** The `reauthor` role and `hgi price --reauthor` ship: the
+    role rewrites each conditioning field (a lens's angle, an article, a
+    decision's sentence, each with its counterfactual) against the new model,
+    and the path stamps the text and the authoring together (`authored_for`
+    null), so `model-pricing` clears because the text followed the model —
+    where `--restamp` (stamp-only, warning stands) is unchanged. The
+    mechanism is proven offline against the stub (`tests/test_price.py`): a
+    re-author moves every field, agrees the stamp, and quiets the floor; a
+    restamp leaves the warning a later re-author clears. What only a real
+    model can verify is the *content*: the stub marks the conditioning it
+    stands in for (`[for <model>] …`) rather than rewriting for the model,
+    so whether a re-authored angle or article actually conditions the new
+    model better than the old text is the same unverified drafting contract
+    as item 4 (the lenses on the real model) and needs a live run to read
+    back through `HGI_REPLY_LOG`. `--reauthor` has not been run on `store/`;
+    the Housekeeping note's `--restamp`-or-`genesis --force` choice now has a
+    third option that keeps the store and moves the text.
 15. **`hgi experiment`'s genesis message names no article ids** (`Genesis for
     <exp>/<arm>: priced for …`), so `hgi lineage C-0003` finds no admitting
     commit in an arm's store, where `hgi genesis`'s message would. One line
@@ -378,7 +391,12 @@ each with why it may be right and why it may not.
   --restamp`, which keeps the store and leaves `model-pricing` warning that
   the text is still authored for `stub`, or `HGI_MODEL_ID=<model> uv run hgi
   genesis --force`, which prices a seed by writing it fresh and resets the
-  store with it. An experiment arm seeds its own store priced for its pass
+  store with it. A third option now keeps the store and moves the text with
+  the stamp: `HGI_INFERENCE_BASE_URL=… HGI_MODEL_ID=<model> uv run hgi price
+  --reauthor`, which re-authors each conditioning field against the model
+  through the `reauthor` role and clears `model-pricing` (offline the stub
+  answers but only marks the text; a real endpoint actually re-authors it).
+  An experiment arm seeds its own store priced for its pass
   model and needs neither. The demonstration store's L-0004 product text
   predates the per-row walk; an arm seeded now carries the current text.
 - `runs/smoke/`, `runs/baseline/`, `runs/baseline-precontract/`,
