@@ -5,8 +5,10 @@ a public dataset into a pinned file under ``suite/data/`` (``mbpp``, …). A
 transcribed family declares ``fetch``, the transcriber from the dataset's
 rows to the pinned records, which ``hgi suite fetch <family>`` runs once;
 its ``tasks`` then reads the pinned file, so a run needs no network and the
-suite hash is stable. The registry is :data:`FAMILIES`; a family registers
-itself by importing here.
+suite hash is stable. A family may also be *derived* — no ``fetch`` of its
+own, its ``tasks`` reading another family's pinned records and presenting
+them differently (``api`` over ``tables``). The registry is
+:data:`FAMILIES`; a family registers itself by importing here.
 """
 
 from __future__ import annotations
@@ -63,4 +65,4 @@ def family(name: str, source: str, fetch: Callable[[int], list[dict[str, Any]]] 
     return deco
 
 
-from suite.families import conventions, genesis  # noqa: E402,F401 — registration
+from suite.families import api, conventions, genesis, mbpp, tables  # noqa: E402,F401 — registration
