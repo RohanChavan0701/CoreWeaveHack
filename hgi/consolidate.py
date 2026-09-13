@@ -124,6 +124,21 @@ ANALYSIS_FIELDS = ("competence", "precision", "groups", "credit", "fusion", "con
 """The nominator's analytical rows — what ARIA produces over the mirrored runs, and what the local pass derives when no analyst report resolves."""
 
 
+def _fold_candidates(store: Store) -> list[dict[str, Any]]:
+    """The fold nominator's convergence rows: pairs applied together at the bar (§ 10.6), and near-verbatim restatements
+    that never co-applied (stream-run item 33). Both are convergence-shaped rows drafted as folds and adjudicated behind
+    the floor; a pair reached by either route is surfaced once."""
+    seen: set[tuple[str, str]] = set()
+    out: list[dict[str, Any]] = []
+    for row in [*(r for r in _index.convergence(store) if r["co_applied"] >= 2), *_index.restatements(store)]:
+        pair = tuple(row["records"])
+        if pair in seen:
+            continue
+        seen.add(pair)
+        out.append(row)
+    return out
+
+
 def local_analysis(store: Store, record: Consolidation, sessions: list[Session]) -> dict[str, Any]:
     """The brief's analytical rows derived from the ledgers here: the fallback when no analyst report is present.
 
@@ -137,7 +152,7 @@ def local_analysis(store: Store, record: Consolidation, sessions: list[Session])
         "groups": group_observations(store, record),
         "credit": credit_table(store, sessions),
         "fusion": [row for row in _index.fusion(store) if row["bimodal"]],
-        "convergence": [row for row in _index.convergence(store) if row["co_applied"] >= 2],
+        "convergence": _fold_candidates(store),
         "structural_zero": [{"record": d.id, "terms": d.consultation_terms, "latch": d.summary.latch, "presented": presented}
                             for d in store.decisions("accepted") if d.id in _index.structural_zero(store)],
         "escapes": sorted({e for s in sessions for e in s.work_shape.escapes}),

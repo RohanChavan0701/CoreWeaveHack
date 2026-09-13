@@ -297,6 +297,70 @@ def convergence(store: Store) -> list[dict[str, Any]]:
     return rows
 
 
+def _lineage_related(store: Store) -> set[tuple[str, str]]:
+    """Every unordered pair of decisions connected through the lineage DAG's decision-to-decision edges.
+
+    Supersedure, split and fold are the edges that make one decision a move on another; a record and its successor,
+    its leaf's parent, or the records it was folded from lie in one component, and split-siblings sharing a parent lie
+    in one component too. Admission and promotion edges (which touch ledger and observation nodes, not two decisions)
+    are not lineage moves and are left out. Two decisions in the same component have a lineage relation between them."""
+    ids = {d.id for d in store.decisions()}
+    adj: dict[str, set[str]] = defaultdict(set)
+    for e in lineage(store)["edges"]:
+        if e["kind"] in ("supersedes", "split", "fold") and e["from"] in ids and e["to"] in ids:
+            adj[e["from"]].add(e["to"])
+            adj[e["to"]].add(e["from"])
+    related: set[tuple[str, str]] = set()
+    seen: set[str] = set()
+    for start in ids:
+        if start in seen:
+            continue
+        component, stack = [], [start]
+        while stack:
+            n = stack.pop()
+            if n in seen:
+                continue
+            seen.add(n)
+            component.append(n)
+            stack += [m for m in adj[n] if m not in seen]
+        for i, x in enumerate(component):
+            for y in component[i + 1:]:
+                related.add((x, y))
+                related.add((y, x))
+    return related
+
+
+def restatements(store: Store, min_overlap: float = 0.6) -> list[dict[str, Any]]:
+    """Accepted pairs that restate one lesson — the fold nominator for records that never co-applied (stream-run item 33).
+
+    Split and fold run on the lineage DAG, so :func:`convergence` folds records that were *applied together*; but a
+    strict arm that admitted several near-verbatim restatements of one lesson (D-0004/5/6 restating D-0001/D-0002) left
+    the store carrying that lesson many times, and every boot carried all of them — the restatements never co-applied,
+    so :func:`convergence`'s co-application bar never saw them. This row nominates a fold of two admitted records that
+    (1) have no lineage edge between them (:func:`_lineage_related`), (2) share a consultation term, so a boot recalls
+    them on the same presentations, and (3) carry payloads shaped alike — a token overlap of the decision payload at or
+    above ``min_overlap``. The alikeness is a heuristic and the fold it proposes is still drafted, examined and
+    adjudicated behind the floor like any nomination; this row only proposes the merge, it does not settle it.
+    """
+    related = _lineage_related(store)
+    by_id = {d.id: d for d in store.decisions("accepted")}
+    rows = []
+    for row in convergence(store):  # convergence already keys on a shared hook, so it is the pool to filter
+        a, b = row["records"]
+        if (a, b) in related or a not in by_id or b not in by_id:
+            continue
+        overlap = _jaccard(tokens(by_id[a].decision), tokens(by_id[b].decision))
+        if overlap >= min_overlap:
+            rows.append({**row, "payload_overlap": round(overlap, 3)})
+    return rows
+
+
+def _jaccard(a: set[str], b: set[str]) -> float:
+    """The token overlap of two payloads: shared stems over their union; ``0.0`` when both are empty."""
+    union = a | b
+    return len(a & b) / len(union) if union else 0.0
+
+
 def structural_zero(store: Store) -> list[str]:
     """Accepted decisions no live consultation hook on a registered term reaches — stored, unreachable, never recalled."""
     reached = {cell["record"] for cells in hooks(store).values() for cell in cells}
