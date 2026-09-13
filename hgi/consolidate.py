@@ -773,6 +773,7 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
     record.nominations += _reviews.genesis_anchors(store, record)
     record.nominations += _reviews.lenses(store, record)
     record.nominations += _reviews.vocabulary(store, record)
+    record.nominations += _reviews.ports(store, record)
     propagate(store, record)
     record.closed_at = now()
     store.write(record)

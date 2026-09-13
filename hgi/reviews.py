@@ -17,6 +17,9 @@ ledger records the pair. None of them settles anything by count.
   warrant is its effect evidence, derived here from the products that reached a consumer; a seed lens unanchored past
   the genesis deadline, or a lens whose product stopped varying, is nominated to the adjudicator and retired on
   ``moot`` — the answer is cacheable, or the question was never needed.
+- :func:`ports` — the port declaration's own miss stream (doctrine § 9, the port law): a latch admitted off its
+  declaration carries a warrant, and the same off-declaration channel recurring across independent records nominates
+  widening the mark; the adjudicator admits or declines, and the registry's port table is corrected in place.
 - :func:`vocabulary` — the route-before-mint ladder's last rung for a term,
   for every closed vocabulary whose escapes the loop keeps (a pass's
   work-shape, a latch's key-space, a species' verdict): the same
@@ -310,6 +313,78 @@ def lenses(store: Store, record: Consolidation) -> list[Nomination]:
             n.outcome = f"{v}: retired through the {door} door" + (f"; the cacheable answer is {json.dumps(crystal['product'])[:120]}" if crystal else "")
         else:
             n.outcome = f"{v}: kept"
+        out.append(n)
+    return out
+
+
+# --- the port calculus's miss stream ---------------------------------------------------------------
+
+PORTS = route_table("ports", "adjudicator-verdict", {"admit": "widen", "admit-amended": "widen", "decline": "keep", "defer": "keep", "escalate": "keep", "other": "keep"})
+"""A port nomination has no draft: ``widen`` corrects the declaration's mark to optional; anything else keeps it and waits for new recurrence."""
+
+
+def off_declaration(store: Store) -> list[dict[str, Any]]:
+    """Every live latch admitted off its port declaration — forbidden for its kind and status, carried on a warrant — as an occasion of the declaration's miss stream."""
+    of = _pass_of(store)
+    out = []
+    for d in store.decisions():
+        for i, latch in enumerate(d.all_latches()):
+            if latch.lifecycle.status == "live" and latch.warrant and store.registry.port("decision", d.status, latch.type) == "forbidden":
+                out.append({"kind": "decision", "status": d.status, "latch_type": latch.type, "record": d.id, "latch_index": i, "warrant": latch.warrant,
+                            "pass": of.get(d.admission.proposed_by, 0)})
+    return out
+
+
+def port_clusters(store: Store) -> list[dict[str, Any]]:
+    """The off-declaration channels by (kind, status, latch type), each over independent records; an occasion adjudicated
+    before counts again only from passes after the consolidation that adjudicated it."""
+    adjudicated: dict[str, int] = {}
+    for e in store.all("hypothesis"):
+        if e.species == "currency" and e.subject.startswith("port/") and isinstance(e.contradiction.coding, dict):  # type: ignore[attr-defined]
+            adjudicated[e.subject] = max(adjudicated.get(e.subject, 0), int(e.contradiction.coding.get("after_pass", 0)))  # type: ignore[attr-defined]
+    clusters: dict[str, dict[str, Any]] = {}
+    for o in off_declaration(store):
+        subject = f"port/{o['kind']}/{o['status']}/{o['latch_type']}"
+        if o["pass"] and o["pass"] <= adjudicated.get(subject, 0):
+            continue
+        c = clusters.setdefault(subject, {"subject": subject, "kind": o["kind"], "status": o["status"], "latch_type": o["latch_type"], "records": [], "occasions": []})
+        if o["record"] not in c["records"]:
+            c["records"].append(o["record"])
+        c["occasions"].append({"record": o["record"], "latch_index": o["latch_index"], "warrant": o["warrant"], "pass": o["pass"]})
+    return [clusters[k] for k in sorted(clusters)]
+
+
+def ports(store: Store, record: Consolidation) -> list[Nomination]:
+    """A recurring off-declaration channel nominates widening the port's mark; the adjudicator decides; the registry is corrected in place.
+
+    Marks are earned per mark through the write gate: a declaration begins as the seed's reading of which latch types a
+    kind at a status may carry, and a latch admitted against it on an explicit warrant is that reading's miss. When the
+    same channel recurs across independent records at the vocabulary's independence bar, the mark is nominated from
+    ``forbidden`` to ``optional``; a decline keeps it, and the channel is re-nominated only by new recurrence.
+    """
+    bar = store.registry.bars.get("vocabulary", {}).get("independent_escapes", 2)
+    out = []
+    for cluster in port_clusters(store):
+        if len(cluster["records"]) < bar:
+            continue
+        c = _model.complete("adjudicator", roles.request("ports", kind=cluster["kind"], status=cluster["status"], latch_type=cluster["latch_type"],
+                                                         mark="forbidden", occasions=cluster["occasions"], bar=bar), session=record.id)
+        out_ = c.json()
+        v = str(out_.get("verdict", "decline(adjudicator returned no verdict)"))
+        act = store.registry.route("adjudicator-verdict", v, PORTS)
+        entry = _entry(store, subject=cluster["subject"], claim=f"a {cluster['status']} {cluster['kind']} carries no {cluster['latch_type']} latch",
+                       proposer=RoleCall(role="consolidator", model_id=None, call=None), c=c, verdict="reversed" if act == "widen" else "still-holds",
+                       coding={"records": cluster["records"], "occasions": cluster["occasions"], "after_pass": record.after_pass, "token": v},
+                       why=out_.get("why"), source=cluster["subject"])
+        n = Nomination(rung="hook-edit", rung_why=f"port miss stream: {cluster['latch_type']} admitted off the {cluster['status']} {cluster['kind']} declaration on a warrant by {len(cluster['records'])} independent records",
+                       subject=cluster["subject"], evidence=cluster["records"], ledger_entry=entry.id)
+        if act == "widen":
+            store.registry.ports.setdefault(cluster["kind"], {}).setdefault(cluster["status"], {})[cluster["latch_type"]] = "optional"
+            store.registry.save("ports")
+            record.minted.append(cluster["subject"])
+            n.outcome = f"{v}: {cluster['subject']} widened from forbidden to optional"
+        else:
+            n.outcome = f"{v}: the declaration stands; re-nominated only by new recurrence"
         out.append(n)
     return out
 

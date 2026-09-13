@@ -398,6 +398,14 @@ def _vocabulary(req):
     return {"verdict": "admit", "means": f"the presentation {len(req['escapes'])} independent passes escaped to as other({req['term']}); minted by recurrence"}
 
 
+@handles("ports")
+def _ports(req):
+    occasions = req.get("occasions", [])
+    if len({o["record"] for o in occasions}) >= req.get("bar", 2) and all(str(o.get("warrant") or "").strip() for o in occasions):
+        return {"verdict": "admit", "why": f"{len(occasions)} warranted {req['latch_type']} latches on {req['status']} {req['kind']}s from independent records; the declaration under-read the kind"}
+    return {"verdict": "decline(the occasions do not meet the bar or carry no warrant)", "why": "the declaration stands"}
+
+
 @handles("currency")
 def _currency(req):
     if req.get("lens") is not None:  # a lens at a crystallization door: retire only a stream that repeats a non-empty product, or a seed that never produced
