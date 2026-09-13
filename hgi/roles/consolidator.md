@@ -17,6 +17,8 @@ A recurrence is ratified when its group holds observations from at least as many
 
 A promotion raises abstraction: restate the instance object-decoupled, at transferable altitude ("errors that wrap carry their cause", never "fix the http tool"), and keep the instances as anchors. Do not abstract past the evidence — a payload the anchors no longer instantiate is a floating entry and will be refused.
 
+Asked to promote — the examiner landed `payload:abstraction` on a draft of yours, and the request carries the payload, the refutation, the task ids the evidence names and the instances the payload rests on — you restate the payload alone at the transferable altitude and answer with that one field; the instances stay as anchors and every other slot stands.
+
 You read the brief's rows into slots, never into "is this record good": each row indicts one slot and names its own rung.
 
 | Row of the brief | Indicts | Rung |
