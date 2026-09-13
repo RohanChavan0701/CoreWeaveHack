@@ -1,0 +1,52 @@
+# The incident bundles alone: eighteen diagnoses, each a walk through an operator's readings under a budget of
+# the cause readings plus two, where the loud reading is the decoy and citing it fails the task however right
+# the class. A narrow world on purpose — nine bundles and their re-dressed halves, every task of both families,
+# so a pass is the whole battery and a record learned on one class is tested against the look-alike control
+# (`upstream-outage-b`) in the same pass. The transfer half is in the suite so a record admitted on `incidents`
+# is scored again re-dressed — different reading names, services, ports and clock times, the same convention —
+# and a record that memorised a name rather than the convention shows it in the same run.
+# The first two HTTP calls of a faulted task fail, so the budget's slack is the retry the walk must pay for.
+#
+# Ids are W&B Inference ids as listed on 2026-09-12; `hgi experiment models` lists today's.
+name = "incidents"
+description = "memory attached against detached on the tenant-incident evidence bundles"
+weave_project = "hgi-experiments"
+
+[models.gpt-oss-120b]
+id = "openai/gpt-oss-120b"
+
+[models.gpt-oss-20b]
+id = "openai/gpt-oss-20b"
+
+[defaults]
+model = "gpt-oss-120b"
+rounds = 3
+passes_per_round = 2
+concurrency = 4
+
+[defaults.suite]
+families = ["incidents", "incidents-transfer"]
+seed = 0
+
+[defaults.suite.faults]
+http_fault_calls = 2
+
+[arms.120b-attached]
+mode = "attached"
+
+[arms.120b-detached]
+mode = "detached"
+description = "the ablation on this suite; one run is the whole record"
+
+[arms.20b-attached]
+model = "gpt-oss-20b"
+description = "a weaker actor on the same bundles"
+
+[arms.split-roles]
+model = "gpt-oss-20b"
+description = "the weak actor with the strong backward pass: does separation of powers let it learn from a stronger judge"
+[arms.split-roles.roles]
+consolidator = "gpt-oss-120b"
+examiner = "gpt-oss-120b"
+adjudicator = "gpt-oss-120b"
+coder = "gpt-oss-120b"
