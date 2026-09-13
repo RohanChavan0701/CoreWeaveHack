@@ -1,5 +1,5 @@
 {
-  "note": "system-misses/none-catches is detection-limited; its count is a floor of zero",
+  "note": "system-misses/none-catches is detection-limited: it counts the failed rows of sessions that consulted nothing and filed no observation from the row, and its count is a floor — the store cannot see a miss the world has not yet voted on",
   "system-catches/none-catches": [
     "U-0004",
     "U-0006",

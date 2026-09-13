@@ -271,8 +271,41 @@ def lineage(store: Store) -> dict[str, Any]:
     return {"nodes": nodes, "edges": edges}
 
 
+def row_passed(row: dict[str, Any]) -> bool:
+    """Whether the oracle passed a task row: its ``task_pass_rate`` score, read off the row; an unscored row reads as passed only when it carries no error."""
+    score = (row.get("scores") or {}).get("task_pass_rate") or {}
+    return score.get("value") == 1.0 if "value" in score else not row.get("error")
+
+
+def observed_from(store: Store, session: Session, row: dict[str, Any]) -> bool:
+    """Whether the session filed an observation from this row: one anchored on the row's call, or naming its task when the row carries no call."""
+    for o in store.observations(state=None):
+        if o.session != session.id:
+            continue
+        if row.get("call") and o.anchor.call == row["call"]:
+            return True
+        if not row.get("call") and str(row.get("task")) in o.noticed:
+            return True
+    return False
+
+
+def true_misses(store: Store) -> list[str]:
+    """The rows nothing caught (§ 10.1, the bottom-right cell): a task failed in a closed attached session that consulted no
+    record, and the pass filed no observation from the row — no latch fired, no floor refused, no noticing. Each is
+    ``<session>/<task>``. A floor: the store cannot see a miss the world has not yet voted on."""
+    out = []
+    for s in store.all("session"):
+        s: Session
+        if not s.attached or s.closed_at is None or s.evaluation is None or s.consulted:
+            continue
+        for row in s.evaluation.rows:
+            if not row_passed(row) and not observed_from(store, s, row):
+                out.append(f"{s.id}/{row.get('task')}")
+    return out
+
+
 def matrix(store: Store) -> dict[str, Any]:
-    """The detection matrix of § 10.1: steers × fires × applied dispositions. Every count is a floor."""
+    """The detection matrix of § 10.1: steers × fires × applied dispositions × the rows nothing caught. Every count is a floor."""
     cells: dict[str, list[str]] = defaultdict(list)
     for t in store.all("steer"):
         cells[t.matrix_cell].append(t.id)  # type: ignore[attr-defined]
@@ -284,8 +317,10 @@ def matrix(store: Store) -> dict[str, Any]:
         u: Disposition
         if u.disposition == "applied" and u.record not in indicted:
             cells["system-catches/none-catches"].append(u.id)
-    cells.setdefault("system-misses/none-catches", [])
-    return {cell: sorted(ids) for cell, ids in sorted(cells.items())} | {"note": "system-misses/none-catches is detection-limited; its count is a floor of zero"}
+    cells["system-misses/none-catches"] = true_misses(store)
+    return {cell: sorted(ids) for cell, ids in sorted(cells.items())} | {
+        "note": "system-misses/none-catches is detection-limited: it counts the failed rows of sessions that consulted nothing and filed "
+                "no observation from the row, and its count is a floor — the store cannot see a miss the world has not yet voted on"}
 
 
 def recall(store: Store) -> list[dict[str, Any]]:

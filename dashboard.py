@@ -161,7 +161,7 @@ def _(hindex, mo, store):
         mo.md("## Detection matrix — every count is a floor"),
         mo.ui.table([
             {"": "system catches", "oracle or human catches": _cell("system-catches/oracle-catches") + _cell("system-catches/human-catches"), "neither catches": _cell("system-catches/none-catches")},
-            {"": "system misses", "oracle or human catches": _cell("system-misses/oracle-catches") + _cell("system-misses/human-catches"), "neither catches": f"≥ {_cell('system-misses/none-catches')} (detection-limited)"},
+            {"": "system misses", "oracle or human catches": _cell("system-misses/oracle-catches") + _cell("system-misses/human-catches"), "neither catches": f"≥ {_cell('system-misses/none-catches')} rows nothing caught (a floor: failed rows of passes that consulted nothing and filed no observation from the row)"},
         ]),
         mo.md(f"## Attacker precision — {a['dispatched']} dispatched, {a['landed']} claims landed, {a['upheld']} upheld, {a['overruled']} overruled"
               + (f"; precision {a['precision']:.2f}" if a["precision"] is not None else "; precision unevaluable (no landing)")),

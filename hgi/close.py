@@ -182,15 +182,9 @@ def lens_subjects(store: Store, session: Session, lens) -> dict[str, Any] | list
     if lens.externality.contact == "artifact":
         world = _suite.current()
         return [{"task": row["task"], "prompt": world.by_id[row["task"]].prompt if row["task"] in world.by_id else None, "row": row, "consulted": consulted}
-                for row in rows if not _passed(row)]
-    return {"consulted": consulted, "rows": rows, "failed": [r["task"] for r in rows if not _passed(r)], "fires": session.fires_seen,
+                for row in rows if not _index.row_passed(row)]
+    return {"consulted": consulted, "rows": rows, "failed": [r["task"] for r in rows if not _index.row_passed(r)], "fires": session.fires_seen,
             "scores": {k: f.value for k, f in session.evaluation.scores.items()} if session.evaluation else {}}
-
-
-def _passed(row: dict[str, Any]) -> bool:
-    """Whether the oracle passed the row: its task_pass_rate score, read off the row; an unscored row reads as passed only when it carries no error."""
-    score = (row.get("scores") or {}).get("task_pass_rate") or {}
-    return score.get("value") == 1.0 if "value" in score else not row.get("error")
 
 
 def carry_forward(store: Store, session: Session, dispositions: list[Disposition]) -> str:
