@@ -1482,3 +1482,78 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     radius sweep was meant to catch, now guarded only by τ\*=1.0 standing;
     the escape-to-vocabulary-bar path is the doctrine's answer if a
     convention the seed lacks recurs.
+
+88. **A procedural fast-fail family from Reasoning Core: regex-following and
+    cfg-generation, graded by the generator's own checker** (commits
+    `881e9f7`, `3c5e26b`, `897c144`). Reasoning Core (`sileod/reasoning-core`,
+    MIT, rev `1c87ac6`, v0.5.0, arXiv:2509.18083) is structurally the
+    `curriculum` pattern — procedural, many instances of one lesson, an
+    executable checker — with a single integer difficulty knob (`level`) its
+    configs fold into pattern depth, rule count, sentence depth. Two families
+    are added over its generators, `reasoning-core` and its strict twin
+    `reasoning-core-strict`, built from the `mbpp` shape (pinned file +
+    `fetch` transcriber) so the suite hash is stable and a run touches neither
+    the network nor the generation stack. Scope is the generators that make
+    the agent *churn* shell calls to verify a candidate — regex-following
+    (produce a visible-ASCII string a regex fully matches) and cfg-generation
+    (produce a string of ≥ `min_tokens` terminals a grammar derives) — so
+    decisions get generated; the answer-only RC generators (regex
+    equivalence/containment, parsing-derivation graded by edit-similarity,
+    continuation) are the deferred later slice noted below. *What grades:* the
+    generator's own verdict, never a stored-answer compare — `regex.fullmatch`
+    over an admissible sample (RC's `regex.py` `_is_sft_sample`), and grammar
+    membership under NLTK's Earley chart parser (the parser RC's grammar tasks
+    use). Note RC's own `RegexFollowing.score_answer` *is* a canonical-string
+    compare; grading membership (any match) is the deliberate reading of the
+    task's "produce a string matching" framing and of the instruction to grade
+    by the checker, not by a compare. The checker inputs are pinned (the
+    regex; the grammar with its start and token floor) and no witness is —
+    the file cannot leak an answer, and for regex there is no unique answer to
+    leak. *The strict twin:* `knowing={"shell":1}` (a knowing policy verifies
+    once); lax leaves one call to spare so a pass may iterate on a candidate,
+    strict holds exactly the floor so a wrong first candidate cannot be
+    repaired — the `curriculum`/`curriculum-strict` slack `{1,0}`, differing
+    only in slack. *Difficulty-knob values chosen:* RegexConfig `level` 3
+    (alternation, groups, exact counts, anchors, word boundaries), witness
+    length ≥ 2 to drop trivial one-char targets; GrammarConfig `level` 2 with
+    the witness length kept in 6–12 tokens, `min_tokens` set to the witness's
+    own length so a member provably exists. Twelve instances of each are
+    pinned; ids and integer seeds are disjoint from every other family's
+    (string-keyed) seeds and clothes. *Right:* the two families build (hash
+    `2eb120f` over the pair), 513 tests pass including a new
+    `test_reasoning_core.py` that shows two distinct strings both matching a
+    pattern and membership over the token floor — a verdict, not a gold
+    string; the checks catch broad exceptions and return False, so a bad
+    pattern or an out-of-vocabulary token is a failed task, never a raise from
+    the grader (the `mbpp` convention). *Determinism, and what it cost:*
+    `gramforge.generate` reseeds Python's RNG from entropy on every call
+    (`seed=None`), so the bound name is patched to draw seeds from a
+    per-instance `random.Random`, and `faker` is seeded before the task
+    modules import (their terminal word lists are import-time); the CFG
+    generator is additionally forced onto `random_productive_cfg`
+    (`random_grammar_prob=1.0`, free-form off) because the pre-built english
+    grammars reach `trim_grammar`, which seeds a `random.Random(None)` from
+    entropy and cannot be reproduced — the synthetic productive CFGs (bracket
+    nesting, word terminals) are kept, the natural-language grammars dropped.
+    Cross-process regeneration is byte-identical (sha `5a25c31`). *Risks and
+    leftovers:* (1) the ~0.5 first-sight target is a **hypothesis, not
+    measured** — no inference endpoint here, and these families carry no stub
+    (like `mbpp`), so they fail the deterministic stub harness and
+    `naive_outcome`/`symptom` return no-naive; the first live arm run is what
+    calibrates level and budget to the 0.47/0.50 band, and difficulty is
+    **non-monotonic** in `level` for "produce a match" — high levels admit
+    trivial short matches, so raising `level` is not a reliable hardener, the
+    lever is pattern/grammar structure and the token floor. (2) `fetch` is not
+    runnable in the standard hgi env — the generation stack (`reasoning_core`,
+    `gramforge`, `greenery`, `faker`, `exrex`) is deliberately not a runtime
+    dependency (only `regex` and `nltk` are, for the checks and the agent's
+    shell); the committed jsonl is the reproducibility artifact, and re-fetch
+    needs that stack installed and would rewrite the file and move the hash.
+    (3) the broad `except Exception` in the checks could mask a genuine
+    checker bug as a failed task. (4) the agent's shell membership check
+    depends on `nltk` being importable in the run's `python3` — true now that
+    it is a dependency. (5) no metamorphic `twin` is attached (the
+    `method_transfer` scorer will not read this family); a second-seed twin is
+    the addition if it should. *Next slice:* the answer-only RC generators,
+    and a live arm run to place these two on the target band before they enter
+    a stream/transfer design.
