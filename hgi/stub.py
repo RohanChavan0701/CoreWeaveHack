@@ -377,6 +377,11 @@ def _vocabulary(req):
 
 @handles("currency")
 def _currency(req):
+    if req.get("finding") is not None:  # a pass's close-time contradiction: it reverses a premise only when it names one
+        named = [p["id"] for p in req.get("premises", []) if p["id"] in str(req["finding"].get("what_changed", "")) + str(req.get("claim", ""))]
+        if str(req["finding"].get("slot", "warrant")) == "warrant" and named:
+            return {"verdict": "reversed", "why": f"the pass's reading reversed premise {named[0]}", "premise": named[0]}
+        return {"verdict": "still-holds", "why": "the finding names no premise of the warrant; self-noticed signal alone settles nothing", "premise": None}
     if req.get("rotted"):
         if req.get("successor"):
             return {"verdict": "still-holds", "why": f"the anchors {req['rotted']} retired into {req['successor']}, which stands for them", "premise": None}

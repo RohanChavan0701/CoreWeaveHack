@@ -155,3 +155,28 @@ def test_consolidation_keeps_its_schedule(store):
 def test_an_invented_applied_id_earns_no_credit_row(store):
     s1 = _session(store, 1, [{**CLEAN, "applied": ["obs-001"]}], {"task_pass_rate": 1.0})
     assert _consolidate.credit_table(store, [s1]) == []
+
+
+def test_a_pending_contradiction_reaches_the_adjudicator_at_the_next_consolidation(store):
+    from hgi import close as _close
+    from hgi.types import LensAnswer
+    s1 = _session(store, 1, [FAULTED], {"task_pass_rate": 0.5, "error_cause_present": 0.0})
+    s2 = _session(store, 2, [FAULTED], {"task_pass_rate": 0.5, "error_cause_present": 0.0})
+    _observe(store, s1, NO_CAUSE), _observe(store, s2, NO_CAUSE)
+    _consolidate.consolidate(store)
+    s3 = _session(store, 3, [FAULTED], {"task_pass_rate": 0.5})
+    s3.model_id = "stub"
+    s3.lens_answers = [LensAnswer(lens="L-0003", answer="", call="weave:///t/call/pass-lens",
+                                  findings=[{"record": "D-0001", "slot": "warrant", "what_changed": "p1 is false: the scorer graded on exit code", "anchor": "weave:///t/eval/3"}])]
+    [pending] = _close.file_contradictions(store, s3)
+    store.write(s3)
+    _session(store, 4, [FAULTED], {"task_pass_rate": 0.5})
+    assert [e.id for e in _consolidate.pending_contradictions(store)] == [pending.id]
+    record = _consolidate.consolidate(store)
+    assert _consolidate.pending_contradictions(store) == [], "the pending entry has a consumer"
+    settled = next(e for e in store.all("hypothesis") if isinstance(e.contradiction.coding, dict) and e.contradiction.coding.get("pending") == pending.id)
+    assert settled.verdict == "reversed" and settled.adjudicator.role == "adjudicator" and settled.contradiction.source.role == "pass"
+    assert store.read("decision", "D-0001").warrant.premises[0].status == "reversed"
+    assert any(n.evidence == [pending.id] for n in record.nominations)
+    _index.regenerate(store)
+    assert _lint.run(store).green

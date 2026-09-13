@@ -578,6 +578,40 @@ def readjudicate(store: Store, record: Consolidation, draft: Draft, f: Fire, bri
     return entry
 
 
+def pending_contradictions(store: Store) -> list[LedgerEntry]:
+    """The close-time contradictions nobody has adjudicated: pending currency entries on accepted decisions that no later entry cites."""
+    entries = store.all("hypothesis")
+    consumed = {e.contradiction.coding.get("pending") for e in entries if isinstance(e.contradiction.coding, dict)}  # type: ignore[attr-defined]
+    return [e for e in entries if e.species == "currency" and e.verdict == "pending" and e.adjudicator is None  # type: ignore[attr-defined]
+            and e.id not in consumed and store.exists("decision", e.subject) and store.read("decision", e.subject).status == "accepted"]  # type: ignore[attr-defined]
+
+
+def readjudicate_pending(store: Store, record: Consolidation) -> list[LedgerEntry]:
+    """Every pending contradiction the passes filed at close (L-0003) reaches the adjudicator: a ledger with no consumer is a graveyard.
+
+    The pass contradicted a standing record from its own streams — self-noticed signal, the lowest-trust class — so the
+    pending entry never settles anything by itself: the adjudicator re-checks the warrant against the finding and the
+    verdict lands on a new entry that cites the pending one, the pending line staying as the history of the claim.
+    """
+    out = []
+    for pending in pending_contradictions(store):
+        d: Decision = store.read("decision", pending.subject)  # type: ignore[assignment]
+        finding = pending.contradiction.coding if isinstance(pending.contradiction.coding, dict) else {"what_changed": pending.claim}
+        c = _model.complete("adjudicator", roles.request("currency", record=d.id, claim=pending.claim, finding=finding,
+                                                         premises=[p.model_dump() for p in d.warrant.premises]), session=record.id)
+        out_ = c.json()
+        v = str(out_.get("verdict", "pending"))
+        entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="currency", subject=d.id, claim=pending.claim,
+                            proposer=pending.proposer, contradiction={"source": pending.contradiction.source.model_dump(), "coding": {"pending": pending.id, "finding": finding}},
+                            verdict=v, adjudicator=RoleCall(role="adjudicator", model_id=c.model_id, call=c.call), outcome=out_.get("why"))
+        store.append(entry)
+        entry.outcome = f"{entry.outcome or ''}; {settle_currency(store, record, d, out_, entry)}".strip("; ")
+        record.nominations.append(Nomination(rung="counterfactual-edit", rung_why="a pass contradicted the warrant at close; the adjudicator re-checks it",
+                                             subject=d.id, evidence=[pending.id], ledger_entry=entry.id, outcome=entry.outcome))
+        out.append(entry)
+    return out
+
+
 def propagate(store: Store, record: Consolidation) -> list[Fire]:
     """Wiring latches whose neighbour moved fire and are checked in the same commit; a rotted anchor goes to the adjudicator."""
     fires = _latches.emit_neighbour(store, record.after_pass, by=record.id)
@@ -631,6 +665,7 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
             adjudicate(store, record, nomination, draft, brief)
             record.nominations.append(nomination)
     discharge_fires(store, record, brief)
+    readjudicate_pending(store, record)
     record.expired = expire_proposals(store, record)
     steers = credit(store, record, brief, sessions)
     record.nominations += _reviews.retirement(store, record)
