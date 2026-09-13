@@ -33,6 +33,19 @@ def test_every_kind_of_store_anchor_resolves(store):
     assert _lint.unresolved_anchors(store, "seen in O-0001, H-0001 and O-0009; bounded by commit:abc1234 and suite/tools.py:54 and weave:///p/call/1") == ["O-0009"]
 
 
+def test_a_consultation_latch_without_not_this_warns_never_fails(store):
+    body = decision_body()
+    body["summary"]["not_this"] = []
+    for latch in body["latches"]:
+        if latch["type"] == "consultation":
+            latch["guard"]["not_this"] = []
+    d = draft(store, summary=body["summary"], latches=body["latches"])
+    findings = _lint.body_findings(d.name, d.body, store)
+    empty = [f for f in findings if "declares no exclusions" in f.message]
+    assert empty and all(f.level == "warn" for f in empty), "an empty not_this warns; precision review grows it (fix A)"
+    assert not [f for f in findings if f.level == "fail"], "no floor failure keeps the record out of the store"
+
+
 def test_the_check_runs_over_the_store_and_the_committers_floor(store):
     d = draft(store, counterfactual="The overshoot is a retry storm — observed in O-0042.")
     assert any("O-0042" in f.message for f in _lint.check_draft(store, d))

@@ -90,8 +90,8 @@ class Sketch(Strict):
     """The cue: when this record enters context, as prose the router shows before the record opens."""
     terms: list[Term("work-shape")] = Field(min_length=1)
     """The hook: registered work-shape terms the consultation latch keys on."""
-    not_this: list[str] = Field(min_length=1)
-    """The router's declared exclusions: presentations the hook must not fire on."""
+    not_this: list[str] = Field(default_factory=list)
+    """The router's declared exclusions: presentations the hook must not fire on. Empty at first draft — precision review grows it from ``not_applicable`` notes, so a floor refusal here would only keep the record out of the store where it can be corrected."""
     stakes: str
     context: str
     """The fork as it was observed: which passes, which anchors."""

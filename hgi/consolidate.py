@@ -558,6 +558,16 @@ def displacement(rung: str) -> str | None:
     return None if rung in OPERATED_RUNGS else rung
 
 
+def orphaned_edit(store: Store, rung: str, raw: dict[str, Any]) -> bool:
+    """Whether an edit-rung nomination names no record and the store holds none to edit.
+
+    An edit rung supersedes exactly one existing record; when it comes back with an empty ``supersedes`` and the store
+    holds no decision at all, there is nothing to refine, so the nomination is a new decision wearing an edit's rung.
+    It is displaced to ``new-decision`` (:data:`DISPLACED_TO`) rather than refused at parse — the lesson is carried
+    where it can fire. When decisions do exist and none is named, the edit is refused as before (see :func:`edited_body`)."""
+    return rung in EDIT_RUNGS and not (raw.get("supersedes") or []) and not store.decisions()
+
+
 def sketch_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
     """A draft's body derived from the consolidator's sketch under the store's bars.
 
@@ -846,9 +856,13 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
         for raw in nominate(store, record, brief):
             nomination = nomination_from(store, raw)
             adopted = adoptable(store, raw)
-            if adopted is None and (displaced := displacement(nomination.rung)) is not None:
+            displaced = displacement(nomination.rung)
+            orphan = displaced is None and orphaned_edit(store, nomination.rung, raw)
+            if adopted is None and (displaced := displaced or (nomination.rung if orphan else None)) is not None:
+                why = ("no operator for it in this roster" if not orphan
+                       else "an edit rung named no record and the store holds none to edit")
                 nomination.displaced_from, nomination.rung = displaced, DISPLACED_TO
-                nomination.rung_why = f"displaced from {displaced}: no operator for it in this roster, so the lesson is carried as a decision; " + nomination.rung_why
+                nomination.rung_why = f"displaced from {displaced}: {why}, so the lesson is carried as a decision; " + nomination.rung_why
                 raw = {**raw, "rung": DISPLACED_TO, "rung_why": nomination.rung_why, "displaced_from": displaced}
             if adopted is not None:
                 nomination.adopts = adopted.uid

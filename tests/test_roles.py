@@ -52,7 +52,8 @@ def test_a_sketch_missing_its_judgment_is_refused_field_by_field(store):
     with pytest.raises(ValueError) as e:
         sketch_of({"decision": "x", "terms": [], "not_this": []}, store.registry)
     text = roles.refusal(e.value)
-    assert "terms" in text and "not_this" in text and "counterfactual" in text and "premises" in text
+    # not_this is no longer a floor field — an empty one is allowed, and precision review grows it (fix A).
+    assert "terms" in text and "counterfactual" in text and "premises" in text and "not_this" not in text
 
 
 def test_each_role_receives_only_the_shapes_it_reads():

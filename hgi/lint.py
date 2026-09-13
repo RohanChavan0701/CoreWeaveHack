@@ -8,9 +8,9 @@ Check                        Seam           Fails / warns                       
 ---------------------------  -------------  -------------------------------------------------------------------------  --------------------------------------------------
 schema                       write          fails a record that does not parse against its declared type              truth of any field
 closed-vocabulary            write          fails an enum value outside the registry without an other(<what>) escape  whether the escape should have been a term
-complement-law               write          fails a decision without falsifiers or a counterfactual, a consultation   whether the pair is non-vacuous; whether an anchor
-                                            latch without not_this; warns on a counterfactual with no anchor, or     that resolves exemplifies the overshoot
-                                            with an anchor naming a record or observation the store does not hold
+complement-law               write          fails a decision without falsifiers or a counterfactual; warns on a       whether the pair is non-vacuous; whether an anchor
+                                            consultation latch without not_this, on a counterfactual with no        that resolves exemplifies the overshoot
+                                            anchor, or with an anchor naming a record or observation the store lacks
 settlement-test              write          fails a projection cell carrying a compliable sentence                    compliance by omission
 verdict-authority            write          fails a proposal or attack payload carrying a verdict; fails a ledger     whether the adjudicator's verdict is right
                                             verdict with no adjudicator call
@@ -248,7 +248,7 @@ def body_findings(id: str, body: DecisionBody, store: Store | None = None) -> li
         out.append(warn("complement-law", id, f"the counterfactual cites {', '.join(missing)}, which names nothing in the store; a pair citing an instance that does not exist is priming wearing an anchor"))
     for i, latch in enumerate(body.latches):
         if latch.type == "consultation" and not (latch.guard.not_this or body.summary.not_this):
-            out.append(fail("complement-law", id, f"consultation latch {i} declares no not-this exclusions"))
+            out.append(warn("complement-law", id, f"consultation latch {i} declares no exclusions; precision review will grow them from not_applicable notes"))
     return out
 
 
