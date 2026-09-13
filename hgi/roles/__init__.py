@@ -61,6 +61,8 @@ REPLIES: dict[str, Any] = {
     "anchor": {"anchors": [{"article": "<a C- id from `articles`>", "anchor": "<one id or URI from `instances` that exemplifies the article>",
                             "why": "<how that instance instantiates the article's claim>"}]},
     "exemplifies": {"verdict": "<still-holds if the instance exemplifies the article; reversed if it contradicts it; moot if it does not bear on it>", "why": "<one sentence>"},
+    "vocabulary": {"verdict": "<admit if the escapes name one shape no registered term covers and the blind coder also escaped; else decline(<why>)>",
+                   "means": "<for admit: one sentence defining the term, as the registry will carry it>"},
     "currency": {"verdict": "<still-holds | reversed | moot>", "why": "<one sentence; a record whose cited anchor (`rotted`) retired still holds only if the anchor's successor stands for it>"},
 }
 

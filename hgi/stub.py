@@ -366,6 +366,14 @@ def _credit(req):
     return {"steers": steers}
 
 
+@handles("vocabulary")
+def _vocabulary(req):
+    covered = [t for t in req.get("coder", []) if not t.startswith("other(")]
+    if covered:
+        return {"verdict": f"decline(the blind coder read the presentations as {covered}; an existing term covers the shape)", "means": None}
+    return {"verdict": "admit", "means": f"the presentation {len(req['escapes'])} independent passes escaped to as other({req['term']}); minted by recurrence"}
+
+
 @handles("currency")
 def _currency(req):
     if req.get("rotted"):

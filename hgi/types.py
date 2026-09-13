@@ -714,6 +714,8 @@ class Consolidation(Strict):
     """Draft uids re-queued with their condition as a latch."""
     anchored: list[str] = Field(default_factory=list)
     """Genesis articles that earned an anchor in this pass."""
+    minted: list[str] = Field(default_factory=list)
+    """Vocabulary terms minted in this pass, as ``<vocabulary>/<term>``."""
 
 
 # --- kind table ---------------------------------------------------------------

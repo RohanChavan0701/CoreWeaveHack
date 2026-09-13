@@ -13,15 +13,24 @@ ledger records the pair. None of them settles anything by count.
   genesis`` and no anchor; the consolidator proposes an instance from the
   loop's own ledgers, the adjudicator says whether it exemplifies the
   article, and an article still unanchored past the deadline is evicted.
+- :func:`vocabulary` — the route-before-mint ladder's last rung for a term:
+  the same ``other(<what>)`` escape from independent passes nominates it, the
+  blind coder recodes the presentations with the candidate withheld, the
+  adjudicator admits or declines, and the committer mints through the
+  registry.
 """
 
 from __future__ import annotations
 
+import re
+from collections import defaultdict
 from typing import Any
 
+from hgi import coder as _coder
 from hgi import index as _index
 from hgi import model as _model
 from hgi import roles
+from hgi.registry import ESCAPE, is_escape
 from hgi.store import Store, now
 from hgi.types import Consolidation, ConstitutionArticle, Decision, LedgerEntry, Nomination, RoleCall
 
@@ -153,4 +162,84 @@ def genesis_anchors(store: Store, record: Consolidation) -> list[Nomination]:
                 store.evict_article(store.read("constitution", article.id))  # type: ignore[arg-type]
                 record.flipped.append(article.id)
                 next(n for n in out if n.subject == article.id).outcome += f"; evicted past the {deadline}-consolidation deadline"
+    return out
+
+
+# --- vocabulary growth ----------------------------------------------------------------------------
+
+TERM = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+"""The shape a registered term takes; an escape's ``what`` is normalised to it before it can be minted."""
+
+
+def term_of(escape: str) -> str | None:
+    m = ESCAPE.match(escape.strip())
+    if not m:
+        return None
+    what = re.sub(r"[\s_]+", "-", m.group(1).strip().lower())
+    return what if TERM.match(what) else None
+
+
+def escape_clusters(store: Store, vocab: str = "work-shape") -> list[dict[str, Any]]:
+    """Same-shaped escapes across attached passes, with the sessions that made them — the recurrence counter, never the verdict.
+
+    An escape already adjudicated counts again only from passes after the
+    consolidation that adjudicated it, so a declined term is re-nominated by
+    new recurrence and not by the same two sessions forever.
+    """
+    adjudicated: dict[str, int] = {}
+    for e in store.all("hypothesis"):
+        if e.species == "coding" and e.subject.startswith(f"{vocab}/") and isinstance(e.contradiction.coding, dict):  # type: ignore[attr-defined]
+            adjudicated[e.subject.split("/", 1)[1]] = max(adjudicated.get(e.subject.split("/", 1)[1], 0), int(e.contradiction.coding.get("after_pass", 0)))  # type: ignore[attr-defined]
+    registered = set(store.registry.terms(vocab))
+    seen: dict[str, dict[str, Any]] = defaultdict(lambda: {"sessions": [], "escapes": []})
+    for s in sorted((s for s in store.all("session") if s.attached and s.closed_at is not None), key=lambda s: s.pass_):  # type: ignore[attr-defined]
+        for escape in s.work_shape.escapes:  # type: ignore[attr-defined]
+            what = term_of(escape)
+            if what is None or what in registered or s.pass_ <= adjudicated.get(what, 0):  # type: ignore[attr-defined]
+                continue
+            cluster = seen[what]
+            if s.id not in cluster["sessions"]:  # type: ignore[attr-defined]
+                cluster["sessions"].append(s.id)  # type: ignore[attr-defined]
+            cluster["escapes"].append({"session": s.id, "pass": s.pass_, "escape": escape})  # type: ignore[attr-defined]
+    return [{"vocabulary": vocab, "term": what, **c} for what, c in sorted(seen.items())]
+
+
+def vocabulary(store: Store, record: Consolidation, vocab: str = "work-shape") -> list[Nomination]:
+    """Escape recurrence nominates a term; the blind coder contradicts; the adjudicator verdicts; the registry grows."""
+    from suite.tasks import presentations
+
+    bar = store.registry.bars.get("vocabulary", {}).get("independent_escapes", 2)
+    out = []
+    for cluster in escape_clusters(store, vocab):
+        if len(cluster["sessions"]) < bar:
+            continue
+        what = cluster["term"]
+        n = Nomination(rung="hook-edit", rung_why=f"escape recurrence: other({what}) from {len(cluster['sessions'])} independent passes; the route-before-mint ladder's last rung for a term",
+                       subject=f"{vocab}/{what}", evidence=[e["session"] for e in cluster["escapes"]])
+        text = " ".join(p["prompt"] for p in presentations())
+        coded, coder_call = _coder.code([{"name": what, "noticed": text}], store.registry.terms(vocab), session=record.id, records_in_context=[])
+        coder_terms = coded.get(what, [])
+        covered = [t for t in coder_terms if not is_escape(t)]
+        c = _model.complete("adjudicator", roles.request("vocabulary", vocabulary=vocab, term=what, escapes=cluster["escapes"], coder=coder_terms,
+                                                         existing=store.registry.terms(vocab), bar=bar), session=record.id)
+        out_ = c.json()
+        v = str(out_.get("verdict", "decline(adjudicator returned no verdict)"))
+        store.registry.check("adjudicator-verdict", v)
+        admitted = v == "admit"
+        entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="coding", subject=f"{vocab}/{what}",
+                            claim=f"the presentations escaping to other({what}) are one shape no {vocab} term covers",
+                            proposer=RoleCall(role="consolidator", model_id=None, call=None),
+                            contradiction={"source": {"role": "coder", "model_id": _model.model_id("coder"), "call": coder_call},
+                                           "coding": {"coder": coder_terms, "covered_by": covered, "sessions": cluster["sessions"], "after_pass": record.after_pass}},
+                            verdict="agree" if admitted else "disagree", adjudicator=RoleCall(role="adjudicator", model_id=c.model_id, call=c.call),
+                            outcome=v if not admitted else f"admit: {out_.get('means', '')}", rung="hook-edit")
+        store.append(entry)
+        n.ledger_entry = entry.id
+        if admitted:
+            store.registry.add_term(vocab, what, str(out_.get("means") or f"minted from {len(cluster['sessions'])} independent escapes"), since=now().date().isoformat())
+            record.minted.append(f"{vocab}/{what}")
+            n.outcome = f"minted {vocab}/{what}"
+        else:
+            n.outcome = v + (f"; the coder read the presentations as {covered}" if covered else "")
+        out.append(n)
     return out

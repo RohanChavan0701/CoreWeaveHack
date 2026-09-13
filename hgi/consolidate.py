@@ -405,6 +405,7 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
     steers = credit(store, record, brief, sessions)
     record.nominations += _reviews.retirement(store, record)
     record.nominations += _reviews.genesis_anchors(store, record)
+    record.nominations += _reviews.vocabulary(store, record)
     propagate(store, record)
     record.closed_at = now()
     store.write(record)
@@ -419,7 +420,8 @@ def report(record: Consolidation, steers: list[Steer]) -> str:
         lines.append(f"nominated {n.rung} on {n.subject} ({', '.join(n.evidence)}) → {n.ledger_entry}: {n.outcome}")
     lines.append(f"steers: {', '.join(f'{t.id} {t.indicts.record if t.indicts else ''} [{t.matrix_cell}]' for t in steers) or 'none'}")
     lines.append(f"fires discharged: {', '.join(record.fires_discharged) or 'none'}; admitted: {', '.join(record.admitted) or 'none'}; "
-                 f"flipped: {', '.join(record.flipped) or 'none'}; deferred: {', '.join(record.deferred) or 'none'}; anchored: {', '.join(record.anchored) or 'none'}")
+                 f"flipped: {', '.join(record.flipped) or 'none'}; deferred: {', '.join(record.deferred) or 'none'}; anchored: {', '.join(record.anchored) or 'none'}; "
+                 f"minted: {', '.join(record.minted) or 'none'}")
     if record.analyst_report:
         lines.append(f"analyst report: {record.analyst_report}")
     return "\n".join(lines)
@@ -465,7 +467,7 @@ def _cmd(args, store_of, finish) -> int:
     record = consolidate(store, analyst_report=args.analyst_report, force=args.force)
     finish(store, args, f"Consolidate {record.id} after pass {record.after_pass}: admitted {' '.join(record.admitted) or 'nothing'}"
            + (f", flipped {' '.join(record.flipped)}" if record.flipped else "") + (f", discharged {' '.join(record.fires_discharged)}" if record.fires_discharged else "")
-           + (f", deferred {len(record.deferred)}" if record.deferred else ""))
+           + (f", deferred {len(record.deferred)}" if record.deferred else "") + (f", minted {' '.join(record.minted)}" if record.minted else ""))
     return 0
 
 
