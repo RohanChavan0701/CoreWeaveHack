@@ -588,6 +588,36 @@ hook fires, the fold collapses the restatements, and the live coder
 normalizes each convention onto its registered term so the pure exact-match
 grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
 
+43. **Click-to-open on the score curve** (dashboard pass). `mo.ui.altair_chart`
+    puts its point-selection param on every layer of a layered chart and
+    projects it on x and y; in the compiled view the admitted-record rule and
+    label layers lose theirs (Vega-Lite warns "Cannot project a selection on
+    encoding channel y", with or without a y field on them), so the frontend
+    listens for `select_point_2` / `select_point_3` signals that do not exist
+    and no selection reaches Python. The curve is a plain chart and the
+    Passes drill-down is the dropdown. Ways out: a unit chart
+    (`mark_line(point=True)`) with the rules dropped or drawn as a strip
+    beneath, or an upstream fix in marimo's vega component.
+44. **The Compute tab reads Weave on request only, and prices nothing**
+    (dashboard pass). One filtered `get_calls` over
+    `attributes.hgi.experiment` and the completions op name (about 5 s for
+    the stream project's 12k calls) gives tokens and latency per arm, pass,
+    role and model. No cost, because no price table exists: a per-model
+    $/Mtok table in the experiment TOML would let the tab and
+    `hgi experiment report` say what an arm cost. The CoreWeave seam is the
+    endpoint dimension — the model id in Weave's usage summary and the
+    `base_url` the experiment installed per role; CoreWeave Observe exposes
+    the Prometheus paths (`/api/v1/query_range`, bearer token), so a refresh
+    cell could overlay endpoint latency and throughput on the pass timeline.
+    Unexercised: no CoreWeave endpoint credentials existed on 2026-09-13.
+45. **The arms are traced but not mirrored into W&B runs** (dashboard pass).
+    A `wandb.init(project, group=experiment, name=arm)` per arm with
+    `wandb.log({"task_pass_rate": v}, step=pass)` from `run_arm`'s
+    `progress()` would put the same curve on a W&B workspace beside the Weave
+    evaluations, and a W&B Report could carry the experiment's story with the
+    dashboard's pages linked; the other direction is `mo.iframe` of a report
+    or panel share link in the Loop tab. Neither is built.
+
 ## Decisions taken, and their risk
 
 1. **Decision-only roster.** Beliefs and rules were dropped by instruction;
@@ -1053,6 +1083,23 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     land, not that it does; and `controls.json` under `index/` bends the
     projection law (regenerated, never hand-edited) for the sake of one file
     a reader would look for there.
+
+60. **The dashboard's charts are altair over polars, rendered as plain
+    charts** (dashboard pass). `altair` and `polars` join the dependencies;
+    the hand-rolled SVG had no tooltips, cycled eight hues past their domain,
+    was a fixed 640 px on a white background and could not facet. An arm's
+    hue is its place in the experiment's arm order (eight slots, stepped for
+    the light and the dark surface off `mo.app_meta().theme`), so an arm
+    keeps its colour whether or not a sibling is drawn; attached is solid,
+    detached dashed; a revisit a triangle; measures of different scale are
+    small multiples, never two axes; magnitude is one blue ramp. *Why right:*
+    every mark carries the row behind it, the width follows the container,
+    and the palette is the validated dataviz reference. *Why not:* the theme
+    is read once at render, so a toggle needs a rerun; plain charts drive no
+    other cell (leftover 43); and the Compute tab charges the backward
+    pass's calls — which carry the consolidation id as `hgi.session` and no
+    `hgi.pass` — to the pass the consolidation followed, one reading, where
+    the other would give the backward pass a column of its own.
 
 ## Housekeeping
 
