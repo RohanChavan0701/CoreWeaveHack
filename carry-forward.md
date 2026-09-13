@@ -358,6 +358,18 @@ be right and why it may not.
     zero and unevaluable on its failed rows). The two runs are additive:
     the stream run's evolution log already shows `economy`, derived from
     the counts, and only `turns` and `transfer` need the new envelope.
+    It has since run on `openai/gpt-oss-120b` (2026-09-13, brought over
+    from `claude/nervous-rubin-e8e759`; `experiments/results/economy/`):
+    pass rate did not separate (38/80 attached against 42/80 detached) and
+    quality could not have, because no record was in context on any
+    first-sight pass — D-0001 sat behind a guard the boot failed and went
+    moot, D-0002's consultation latch was scoped to a work-shape term
+    (`test-failure-triage`) so the boot index matched it to nothing,
+    D-0003 landed after pass 10 and failed both moved-v2 rows it was
+    applied to. The run's own findings — the retrieval miss, the close
+    naming scores not world-facts, the parse refusals and the malformed
+    tool call — are items 39–42 below and are the evidence for gap fixes
+    beyond the admittance bar.
 31. **Quality beyond the shell lessons.** `method_transfer` replays a
     shell command, so it grades the three shell lessons only; the API
     lessons' method is the walk and transfers trivially, and `bom` has no
@@ -514,6 +526,48 @@ be right and why it may not.
     `tests/test_close_findings.py`). Whether to refuse the reply instead
     (the finding is malformed) is the contract's question; skipping loses
     an observation the pass tried to file.
+39. **A consultation latch's scope is drawn from the observation's coding,
+    not the task's terms** (economy run, `claude/nervous-rubin-e8e759`).
+    D-0002 was admitted for `paged-api` rows and latched on
+    `test-failure-triage`, the shape the blind coder gave the observations,
+    so the boot index matched it to nothing and its competence window
+    closed at zero considered: a record admitted but never retrieved. The
+    task's own terms (`http-tool` for every API lesson) are on the
+    observation's anchor and could seed the latch's `terms`; today the
+    drafter chooses them. This is the retrieval floor the admittance-bar
+    raise does not touch — a higher bar admits fewer records, none of which
+    fire if the latch scope does not match the task.
+40. **The close files observations about its scores, not the world's
+    facts** (economy run). The close reads the row's scores by series name
+    and the observations say so ("the `method_transfer` check was missed",
+    "did not fire a check record to verify the total"); none of the forty
+    named the convention (a footer row, a missing newline, a quoted comma)
+    in words the blind coder could group on, and the two silent shell
+    lessons stayed at 24/24 naive in both arms. The series names should not
+    reach the close's brief, and the observation request should ask for the
+    world's fact the row met, not the check the row failed.
+41. **Drafts refused at parse at the `hook-edit` rung** (economy run). Six
+    drafts were refused across three consolidations — three because the
+    hook-edit named no record to supersede (`a hook-edit supersedes exactly
+    one record; got []` on an empty store), three because `not_this` came
+    back empty. These are gates 2 and 1 of item 32 seen again on a second
+    run. A repair turn (re-ask with the refusal) or a rung-specific example
+    in the request would recover most of them, keeping the contract rather
+    than relaxing the floor; item 32 relaxes the floor instead. Every
+    refusal is on the ledger, so the count is exact.
+42. **A tool call with malformed arguments loses the row** (economy run).
+    In the detached arm's pass 10 the model emitted a shell call whose
+    arguments string was not valid JSON; `suite/tools.py` answered with a
+    *bad tool call* result, but the assistant message carrying the raw
+    string went back into the history and the endpoint refused the next
+    request outright (`messages[2].tool_calls[0].function.arguments must be
+    a valid JSON object string`), so the model never got the turn to read
+    the error and retry. The row failed `error:model-call` — a symptom that
+    covers a genuine endpoint fault and the model's own malformed output
+    alike. The fix is in `suite/agent.py`: replay the assistant turn with
+    arguments the endpoint accepts (the raw string wrapped as a JSON
+    object) so the conversation continues and the wasted turn still costs
+    turn economy; and split the symptom so the two causes read apart.
 
 ## Decisions taken, and their risk
 
@@ -1173,3 +1227,13 @@ be right and why it may not.
     its decline is now an admission the floor cannot catch (exemplification
     is residue); the override is written on the outcome so the ledger shows
     where that happens.
+76. **A model call the endpoint refuses fails the row, scored, not
+    dropped** — and a refusal the model caused, by emitting tool-call
+    arguments that are not JSON, is counted the same way (economy run,
+    `claude/nervous-rubin-e8e759`). *Right:* a row the harness could not
+    finish must not vanish from the denominator, and a model that writes
+    malformed output did fail the task. *Wrong if* the endpoint's
+    validation is stricter than the loop's: the loop tolerates a bad tool
+    call and lets the model recover, the endpoint does not, so the row
+    measures the endpoint's contract as much as the model; item 42 carries
+    the fix.
