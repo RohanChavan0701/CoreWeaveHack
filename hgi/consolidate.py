@@ -383,15 +383,27 @@ def nomination_from(store: Store, raw: dict[str, Any]) -> Nomination:
 # --- credit, fires, retirement --------------------------------------------------------------
 
 def credit(store: Store, record: Consolidation, brief: dict[str, Any], sessions: list[Session]) -> list[Steer]:
-    """Oracle-attributed steers: the adjudicator performs credit assignment on a regression, never the pass that produced it."""
-    if not brief["credit"]:
+    """Oracle-attributed steers: the adjudicator performs credit assignment on a regression, never the pass that produced it.
+
+    The regression is mechanical — a record applied in the window whose
+    applied tasks passed no more often than before — and only those rows
+    reach the adjudicator, which names the slot; a record whose tasks
+    improved is not a candidate and earns no steer.
+    """
+    regressions = [a for a in brief["credit"] if a["applied_count"] > 0 and a["before"] is not None and a["after"] <= a["before"]]
+    if not regressions:
         return []
-    c = _model.complete("adjudicator", roles.request("credit", applied=brief["credit"]), session=record.id)
+    c = _model.complete("adjudicator", roles.request("credit", applied=regressions, empty_is_legal=roles.EMPTY_STEER_IS_LEGAL), session=record.id)
     fired_on = {f.latch.record for f in store.all("fire") if any(f.edge_event.pass_ == s.pass_ for s in sessions)}  # type: ignore[attr-defined]
     out = []
-    for s in c.json().get("steers", []):
-        steer = Steer(id=store.mint("steer"), at=now(), source={"kind": "oracle", "anchor": c.call}, correction=s["correction"],
-                      indicts={"record": s["record"], "slot": s["slot"], "signature": s["signature"]}, why_not_caught=s.get("why_not_caught"),
+    candidates = {a["record"] for a in regressions}
+    out_json = c.json()
+    for s in (out_json.get("steers", []) if isinstance(out_json, dict) else []):
+        if not isinstance(s, dict) or s.get("record") not in candidates or not s.get("correction"):
+            continue  # a steer names a regressed record and says what it got wrong; anything else is not a steer
+        steer = Steer(id=store.mint("steer"), at=now(), source={"kind": "oracle", "anchor": c.call}, correction=str(s["correction"]),
+                      indicts={"record": s["record"], "slot": s.get("slot") or "payload", "signature": s.get("signature") or "recalled-applied-still-corrected"},
+                      why_not_caught=s.get("why_not_caught"),
                       matrix_cell="system-catches/oracle-catches" if s["record"] in fired_on else "system-misses/oracle-catches")
         store.append(steer)
         out.append(steer)

@@ -34,7 +34,7 @@ ROLES = ("pass", "consolidator", "examiner", "adjudicator", "coder")
 REPLIES: dict[str, Any] = {
     "classify": {"terms": ["<a term from `terms` that at least one presentation's prompt plainly instantiates; the union over all tasks; a term that merely might apply is left out>"],
                  "escapes": ["other(<a shape a presentation has and the vocabulary lacks>)"]},
-    "guard": {"passed": "<true if the hook's terms match the work-shape and no `not_this` applies to the presentations>", "why": "<one sentence>"},
+    "guard": {"passed": "<true when at least one presentation instantiates the hook's terms and is not excluded by a `not_this`; an exclusion that covers some matching presentations but not all does not fail the guard>", "why": "<one sentence naming the presentation that passed, or the exclusion that covered every match>"},
     "lens": {"answer": "<one sentence answering the lens's angle from the subject; empty string when nothing is found>",
              "findings": ["<one object per finding, with exactly the fields the lens's `product` names; a `noticed` states what happened in one sentence naming the task; an anchor is {call: <the row's `call` URI>, path: <a file path or null>}>"]},
     "dispose": {"dispositions": [{"record": "<a consulted record id>", "disposition": "<applied | considered-not-applicable | fired-off-map>",
@@ -59,8 +59,8 @@ REPLIES: dict[str, Any] = {
                 "until": {"scorer": "<for defer keyed on the oracle: the scorer of `oracle.evaluation` whose next readings settle it; else null>",
                           "comparator": "<one of < <= > >= == !=; else null>", "value": "<a number; else null>", "persistence": "<consecutive runs the reading must hold; else null>",
                           "passes": "<for defer keyed on the schedule: passes to wait before re-adjudication; else null>"}},
-    "credit": {"steers": [{"record": "<record id>", "slot": "<payload | activation | warrant>", "signature": "recalled-applied-still-corrected",
-                           "correction": "<what the record got wrong>", "why_not_caught": "<why no floor caught it>"}]},
+    "credit": {"steers": [{"record": "<a record id from `applied` — each is a regression: applied, and its tasks passed no more often than before>", "slot": "<the slot indicted: payload when the content was wrong, activation when it fired where it did not bear, warrant when a premise no longer holds>",
+                           "signature": "recalled-applied-still-corrected", "correction": "<what the record got wrong, from the table>", "why_not_caught": "<why no floor caught it>"}]},
     "anchor": {"anchors": [{"article": "<a C- id from `articles`>", "anchor": "<one id or URI from `instances` that exemplifies the article>",
                             "why": "<how that instance instantiates the article's claim>"}]},
     "exemplifies": {"verdict": "<still-holds if the instance exemplifies the article; reversed if it contradicts it; moot if it does not bear on it>", "why": "<one sentence>"},
@@ -80,6 +80,8 @@ def request(name: str, **content: Any) -> str:
 
 EMPTY_IS_LEGAL = "an empty list is a legal answer: refusal is a first-class outcome when nothing observed earns a rung"
 """Sent as request content, never as a list placeholder — a placeholder inside a list comes back as a literal element."""
+
+EMPTY_STEER_IS_LEGAL = "an empty list is a legal answer: a steer is written only where the table shows a record that was applied and did not help; a regression the evidence does not attribute to the record earns none"
 
 EMPTY_LENS_IS_LEGAL = "an empty findings list is a legal answer: a finding is filed only for something that happened in the rows; nothing is invented to have one"
 
