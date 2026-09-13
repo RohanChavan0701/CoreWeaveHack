@@ -131,12 +131,21 @@ def _(Path, hevolution, hexperiment, root):
     exp = log = evo_error = None
     logs = {}
     if _dir.parent.parent == hexperiment.runs_root() and _file.exists():
+        _errors = []
+        # `hgi` refuses with SystemExit, which is a BaseException: `except Exception` lets it through and marimo blanks every cell under it
         try:
             exp = hexperiment.load(_file)
-            log = hevolution.arm_log(exp, _dir.name)
-            logs = {a: l for a in exp.arms if (l := hevolution.arm_log(exp, a)) is not None}
-        except Exception as _e:  # a half-written or stale arm names itself instead of killing the tab
-            evo_error = f"{type(_e).__name__}: {_e}"
+        except (Exception, SystemExit) as _e:  # a half-written or stale arm names itself instead of killing the tab
+            _errors.append(f"the experiment did not load: `{type(_e).__name__}: {_e}`")
+        for _arm in dict.fromkeys([*exp.arms, _dir.name]) if exp is not None else ():
+            try:  # arm by arm: a sibling arm that will not read must not blank the chosen one
+                if (_l := hevolution.arm_log(exp, _arm)) is not None:
+                    logs[_arm] = _l
+            except (Exception, SystemExit) as _e:
+                _errors.append(f"the evolution log did not read: `{type(_e).__name__}: {_e}`" if _arm == _dir.name
+                               else f"arm `{_arm}` was skipped: `{type(_e).__name__}: {_e}`")
+        log = logs.get(_dir.name)
+        evo_error = "; ".join(_errors) or None
     return evo_error, exp, log, logs
 
 
@@ -159,22 +168,26 @@ def _(curve_svg, log, mo, sessions):
 def _(curve_svg, exp, hexperiment, json, mo):
     overlay = mo.md("")
     if exp is not None:
-        _arms = {a: json.loads(p.read_text()) for a in exp.arms if (p := hexperiment.arm_dir(exp, a) / "arm.json").exists()}
-        _series = {f"{a} · {r['roster']['pass']}" + (" (detached)" if r["spec"]["mode"] == "detached" else ""):
-                   [(int(p), v) for p, v in r["curve"].items()] for a, r in _arms.items()}
-        overlay = mo.vstack([mo.md(f"## Experiment `{exp.name}` — every arm on one chart" + (f": {exp.description}" if exp.description else "")),
-                             curve_svg(_series), mo.md(hexperiment.report(exp).split("\n", 2)[2])])
+        try:  # `hexperiment.report` resolves every arm, and a refusal there is a SystemExit
+            _arms = {a: json.loads(p.read_text()) for a in exp.arms if (p := hexperiment.arm_dir(exp, a) / "arm.json").exists()}
+            _series = {f"{a} · {r['roster']['pass']}" + (" (detached)" if r["spec"]["mode"] == "detached" else ""):
+                       [(int(p), v) for p, v in r["curve"].items()] for a, r in _arms.items()}
+            overlay = mo.vstack([mo.md(f"## Experiment `{exp.name}` — every arm on one chart" + (f": {exp.description}" if exp.description else "")),
+                                 curve_svg(_series), mo.md(hexperiment.report(exp).split("\n", 2)[2])])
+        except (Exception, SystemExit) as _e:
+            overlay = mo.md(f"⚠️ the experiment overlay did not read: `{type(_e).__name__}: {_e}`")
     return (overlay,)
 
 
 @app.cell
 def _(curve_svg, evo_error, exp, hevolution, log, logs, mo):
     # the paired attached-vs-detached report, and the arm's solution quality beside its correctness
-    evolution_view = mo.md(f"⚠️ the evolution log did not read: `{evo_error}`") if evo_error else mo.md("")
+    evolution_view = _warning = mo.md(f"⚠️ {evo_error}") if evo_error else mo.md("")
     if log is not None:
         _q = {q: [(p["pass"], p["quality"][q]) for p in log["passes"]] for q in ("economy", "turns", "transfer")}
         _q = {q: pts for q, pts in _q.items() if any(v is not None for _, v in pts)}
         evolution_view = mo.vstack([
+            _warning,  # a sibling arm that would not read still says so over the chosen arm's report
             mo.md(hevolution.experiment_markdown(exp, logs)),
             mo.md("## Solution quality per pass — `economy` / `turns` / `transfer`, mean over the pass's rows"),
             curve_svg(_q) if _q else mo.md("_no quality series is evaluable on this arm_"),
