@@ -155,6 +155,7 @@ hgi lineage     D-0007                      # the admitting commit, and the path
 hgi suite       show | tasks | fetch <fam>  # the task suite in scope; transcribe a dataset family
 hgi experiment  evolution experiments/x.toml # a stream experiment's evolution log, per arm and paired
 hgi roles       try <request> --store <arm> # one role request against a copy of a store; how the reply parsed
+hgi consult     --problem "<the work>"      # the store read from outside the loop: latch, then project the payload
 ```
 
 Every command that writes ends in a commit whose message names the record
@@ -171,6 +172,34 @@ directions. `hgi price` names what a swap costs; `hgi price --restamp` moves
 the stamp without claiming the text moved with it, keeping
 `priced_for.authored_for` at the model that authored it, so the
 `model-pricing` check goes on warning until the text is re-authored.
+
+### Consulting the store from outside the loop
+
+The loop's read is the boot: a model classifies the work, the hook-major
+index matches it, a guard evaluator decides each fire. An agent that is not
+the pass — a coding assistant with a problem, a sibling project — has the
+same store and none of that machinery, and `hgi consult` is its read. It is
+read-only and two-staged, the split being the settlement test: bare, it
+prints the **surface** — per accepted decision the hook prose, the
+registered terms its consultation latch keys on, the exclusions, the stakes,
+the scopes and the watch, with a superseded record as a tombstone pointing
+at its successor — and never the decision sentence, which a reader could
+obey without opening the record. Named ids, or a latch, **project** the
+payload: `--terms http-tool,tool-budget` routes registered terms through the
+hook-major index exactly as the boot does and refuses an unregistered one
+with the registry listed; `--problem "<the work>"` infers the terms the
+prose names and runs the boot's lexical nominator over hook prose, each hit
+marked as nominated since no guard ran, with an exclusion the problem
+contains flagged for the reader. Records that share a hook with no lineage
+edge print as co-applying. Nothing latched prints the surface for the
+reader's own match. `--json` returns the structure; `--all` every accepted
+payload; `--articles` adds the constitution. Nothing under the store
+changes: no session, no disposition, no commit, no regenerated projection.
+
+The procedure an agent follows — scan, latch, project, apply or dispose,
+report provenance — is the project skill `consult-decisions`
+(`.claude/skills/consult-decisions/SKILL.md`), which carries the invocation
+and the framing and restates no record.
 
 ## The backward pass
 

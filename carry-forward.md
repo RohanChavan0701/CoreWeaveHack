@@ -1404,3 +1404,31 @@ than the tool, the deeper reading decision 77 exposes.
     every pass until it is admitted, deferred or its observations retire —
     churn that decision 84's grading and the retirement ratio, not a
     suppression, are meant to resolve.
+86. **The store is readable from outside the loop, through its projections**
+    (`hgi consult`, `hgi/consult.py`; the skill `consult-decisions`). The
+    read is additive: a new module registered beside the pass commands, no
+    change to boot, close or consolidate, and no write to the store — the
+    test hashes the tree before and after. Stage one is built from the
+    `summaries`, `hooks` and `lineage` projections and so passes the
+    settlement test by construction; stage two opens the record for the
+    payload. The two latches are the boot's own: exact terms through the
+    hook-major index, and the lexical nominator at the same two-token floor.
+    The shape follows the sibling projects' consultation reads (WorldVue's
+    `rules:adoption-status --shapes`, the Gauntlet's `gauntlet decisions`
+    with its `adr-read` skill): an activation-only scan that withholds the
+    payload, a targeted read, an unknown token refused with the vocabulary
+    listed, and the reader as the matcher. *Right:* an end user's agent
+    gets the lessons the loop admitted without running a pass, and the
+    loop's ledgers stay the loop's — a consultation from outside files no
+    disposition, so the applied-over-considered ratios the retirement leg
+    reads are not diluted by reads it cannot score. *Risk:* no guard runs,
+    so the reader decides the exclusions alone, and the `excluded_by` flag
+    is the stub guard's literal reading, which a paraphrased exclusion
+    escapes; the lexical route nominates on two shared stems, a floor that
+    over-reaches on common words (`tool`, `call`) and under-reaches on a
+    hook written in vocabulary the problem does not share — the surface
+    fallback and the reader's eye are the recovery, not a better matcher.
+    What an outside reader learns has no channel back into the store; if
+    the reads should count, a consultation session kind with its own
+    dispositions is the addition, and it would need the retirement ratio to
+    distinguish it from a pass.
