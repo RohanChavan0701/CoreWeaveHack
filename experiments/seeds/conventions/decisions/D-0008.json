@@ -1,0 +1,206 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T00:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "seed: the world faults the leading HTTP calls of some tasks with a transient 502 (suite/tools.py:73), one or two calls per task (suite/faults.py:18), and every other error it raises is permanent; the genesis family and the faulted arms of probe and transfer meet it",
+  "counterfactual": "The overshoot is retrying every failure — the 410 of a moved route, the 401 of a secure route — as if transient, a retry storm bounded by suite/tools.py:73 (the one transient fault the world raises) against suite/tools.py:75 (a 404 that names no fix); the other overshoot is stopping at the first 502 when suite/faults.py:18 faults two leading calls.",
+  "created_at": "2026-09-13T00:00:00-07:00",
+  "decision": "A tool failure whose cause is marked transient (`HTTP 502 Bad Gateway from <path> (transient)`) is retried on the same path: the world faults at most the first two calls of a task, so retry up to twice, then report. Any other status — 401, 404, 410, a budget refusal — is never retried: each names its own fix (the token, the /v2 successor) or none, and a retry repeats it. An error that is reported carries the underlying cause verbatim.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether two retries is the right bound is the fault profile's number; a profile that faults more calls moves it"
+    ]
+  },
+  "id": "D-0008",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a 4xx or a budget refusal, which a retry cannot repair — a 401, 404 or 410 names its own fix or none",
+          "a failure inside the model's own reasoning, with no tool call behind it"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "http-tool",
+          "error-wrapping",
+          "tool-call-retry"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.7
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the fault profile faults no HTTP call",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — retry a transient 502 on the same path, up to twice; report anything else with its cause",
+      "why": "clears the world's faults within their bound and keeps the budget for the answer"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — retry every failure",
+      "why": "a 410 or 401 repeats on every retry; the budget goes and the error names a fix the retry ignores"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — report the first failure",
+      "why": "the transient fault clears on the next call and the row was one call from passing"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "genesis",
+    "conventions",
+    "transfer",
+    "curriculum",
+    "curriculum-strict"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "an HTTP call that fails with a 502 marked transient; an error to be reported from a tool failure",
+    "not_this": [
+      "a 4xx or a budget refusal, which a retry cannot repair — a 401, 404 or 410 names its own fix or none",
+      "a failure inside the model's own reasoning, with no tool call behind it"
+    ],
+    "stakes": "a task that stops at a transient fault scores zero when the next call would answer; a retry on a permanent status spends the budget and repeats the failure"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/tools.py:73",
+      "suite/tools.py:75",
+      "suite/faults.py:18"
+    ],
+    "premises": [
+      {
+        "falsifier": "a third consecutive 502 on the same path",
+        "id": "p1",
+        "statement": "the transient fault clears within the faulted leading calls",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a 502 whose cause lacks the transient mark",
+        "id": "p2",
+        "statement": "the tool marks a transient failure as such in the cause",
+        "status": "supported"
+      }
+    ]
+  }
+}

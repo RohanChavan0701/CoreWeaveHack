@@ -1,0 +1,204 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T00:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "seed: routes under /secure answer 401 unless ?token= carries the token in token.txt (suite/families/curriculum.py:210); every clothing of the token-route lesson asks for one field of one /secure route under a budget of one or two calls, with token.txt in the working directory",
+  "counterfactual": "The overshoot is calling the bare route and reporting the 401 — the naive policy at suite/families/curriculum.py:214 — when the 401's cause names token.txt at suite/families/curriculum.py:210 and the file is in the working directory; the other overshoot is appending ?token= to routes outside /secure and collecting 404s.",
+  "created_at": "2026-09-13T00:00:00-07:00",
+  "decision": "Routes under `/secure` answer 401 unless the token held in `token.txt` is passed as a query parameter. Before the first HTTP call to any `/secure/...` path, read `token.txt` with the file tool (file reads are not budgeted), strip its trailing newline, and GET `/secure/<what>?token=<token>` — the path with the query string appended. Never call the bare `/secure/<what>` first, never retry a 401, never send the token as a header, and never guess a token.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "which field of the body is the answer is read off the prompt"
+    ]
+  },
+  "id": "D-0006",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a route outside /secure, which takes no token — adding ?token= there answers 404",
+          "a 410 naming a /v2 path, which is a moved route, not an auth failure",
+          "a 502 marked transient, which is retried on the same path"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "http-tool",
+          "file-tool",
+          "error-wrapping"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.7
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "no route of the world is under /secure",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — read token.txt, then GET the route with ?token= on the first call",
+      "why": "one HTTP call; the file read is not budgeted"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — call the bare route and report the 401",
+      "why": "the error names the fix and the row fails anyway"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — retry the bare route or send the token as a header",
+      "why": "the API reads the query parameter only; every other attempt repeats the 401 and spends the budget"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "curriculum",
+    "curriculum-strict"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "an HTTP task on a route under /secure; a 401 Unauthorized naming token.txt",
+    "not_this": [
+      "a route outside /secure, which takes no token — adding ?token= there answers 404",
+      "a 410 naming a /v2 path, which is a moved route, not an auth failure",
+      "a 502 marked transient, which is retried on the same path"
+    ],
+    "stakes": "the 401 names the fix but a pass that stops at it fails; under a budget of one call only the pass that reads the token before its first call stays within budget"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/curriculum.py:210",
+      "suite/families/curriculum.py:214"
+    ],
+    "premises": [
+      {
+        "falsifier": "a /secure task with no token.txt",
+        "id": "p1",
+        "statement": "token.txt in the working directory holds the token",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a /secure route that answers 401 with the token passed in the query",
+        "id": "p2",
+        "statement": "the API reads the token from the ?token= query parameter",
+        "status": "supported"
+      }
+    ]
+  }
+}

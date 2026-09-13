@@ -1,0 +1,207 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T00:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "seed: every listing route of this API pages (suite/families/curriculum.py:128) — the body is {items, next} and next names the following page or null; every clothing of the paged-api lesson asks for a sum or a count over the whole collection under a budget of the page count plus at most one",
+  "counterfactual": "The overshoot is summing the first page alone — the naive policy at suite/families/conventions.py:52, suite/families/transfer.py:43 and suite/families/curriculum.py:134 — when the page carries `next` at suite/families/curriculum.py:128; the other overshoot is walking pages the response never named.",
+  "created_at": "2026-09-13T00:00:00-07:00",
+  "decision": "A listing route answers a page: an object with `items` and `next`. Aggregate over every page: GET the route, fold its items into the running sum or count, then GET the path that `next` names — verbatim, as given — and repeat until `next` is null. The answer is over all pages; a result from the first page alone is wrong. Spend exactly one call per page: no repeated calls, no probing of `?page=` paths the response did not name, and no /v2 or ?token= on a collection route.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether an item counts (its active field, its value) is read off the prompt; the rule settles the walk, not the predicate"
+    ]
+  },
+  "id": "D-0002",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a GET of a single resource by id, which answers one object with no items or next",
+          "a route under /secure, which needs the token before any page is read",
+          "a response whose body is a bare list or an object with no next field — there is nothing further to walk"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "http-tool",
+          "error-wrapping"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.7
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "no route in the world pages",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — walk next until null, one call per page",
+      "why": "the answer is over every page and the walk spends exactly the knowing count"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — aggregate the first page",
+      "why": "a plausible number that is short by every later page"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — probe ?page=2, ?page=3 without reading next",
+      "why": "a guess at the page scheme that spends calls the budget does not hold"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "conventions",
+    "transfer",
+    "curriculum",
+    "curriculum-strict"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "an HTTP task that sums or counts the items of a collection route (GET /<collection>)",
+    "not_this": [
+      "a GET of a single resource by id, which answers one object with no items or next",
+      "a route under /secure, which needs the token before any page is read",
+      "a response whose body is a bare list or an object with no next field — there is nothing further to walk"
+    ],
+    "stakes": "the first page's total is a plausible wrong number and the trace shows the next field the pass ignored; the budget is the page count plus at most one, so a walk that probes or repeats a page fails on budget"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/conventions.py:52",
+      "suite/families/curriculum.py:128",
+      "suite/families/curriculum.py:134",
+      "suite/families/transfer.py:43"
+    ],
+    "premises": [
+      {
+        "falsifier": "a collection route whose body is a bare list or names no next field",
+        "id": "p1",
+        "statement": "a listing route of this API pages and names the next page or null",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a paged task budgeted below its page count",
+        "id": "p2",
+        "statement": "the budget holds one call per page",
+        "status": "supported"
+      }
+    ]
+  }
+}

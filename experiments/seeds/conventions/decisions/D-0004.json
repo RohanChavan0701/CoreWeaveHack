@@ -1,0 +1,207 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T00:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "seed: CSV fields of this world may be quoted and hold a comma (\"Doe, Jane\", \"Acme, Inc.\") so a split on commas shifts the columns of those rows; every clothing of the csv-quoted lesson counts or sums by a column under a budget of one or two shell calls",
+  "counterfactual": "The overshoot is `awk -F,` on a file with quoted fields — the naive policy at suite/families/conventions.py:62 and suite/families/curriculum.py:171 and suite/families/curriculum.py:183 — where the column shifts on every quoted row and the count is short by exactly those rows; the other overshoot is reaching for a CSV parser on a plain text file whose lines are not records.",
+  "created_at": "2026-09-13T00:00:00-07:00",
+  "decision": "Parse a CSV with a CSV parser, never by splitting on commas: a field may be quoted and hold a comma (`\"Doe, Jane\"`, `\"Acme, Inc.\"`), and a comma split shifts every column after it on that row. In one shell call run Python's csv module over the file, filtering and summing by column name and printing only the answer, for example `python3 -c 'import csv,sys; r=list(csv.DictReader(open(sys.argv[1]))); print(sum(1 for x in r if x[\"city\"]==sys.argv[2]))' <file> <value>` or `... print(round(sum(float(x[\"total\"]) for x in r if x[\"customer\"]==sys.argv[2]),2))`. Compare the whole quoted value, comma included, exactly as the prompt spells it. Do not `cat` or `head` the file first, and do not use `awk -F,` or `cut -d,` on a CSV.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "the column to filter and the value to match are read off the prompt; the rule settles the parser, not the predicate"
+    ]
+  },
+  "id": "D-0004",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "plain text or log files with no columns — a line total follows the line-count rule",
+          "a JSON file read through the file tool",
+          "an exported CSV's TOTAL trailer row, which the footer rule drops before aggregating — the parser is the same"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "shell-tool",
+          "file-tool",
+          "tool-budget"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.7
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "no task reads a CSV through the shell",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — Python's csv module in one shell call",
+      "why": "quoted fields parse as one value and the filter compares the whole value, comma included"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — awk -F, or cut -d,",
+      "why": "splits inside the quotes; the city or total column shifts on every quoted row"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — cat the file and compute by hand",
+      "why": "a discovery call the strict budget does not hold, and no replayable command is left for the twin"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "conventions",
+    "transfer",
+    "curriculum",
+    "curriculum-strict"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a shell task over a .csv file that counts the rows matching a column value or sums a column over the matching rows",
+    "not_this": [
+      "plain text or log files with no columns — a line total follows the line-count rule",
+      "a JSON file read through the file tool",
+      "an exported CSV's TOTAL trailer row, which the footer rule drops before aggregating — the parser is the same"
+    ],
+    "stakes": "a comma split miscounts every row whose name or customer is quoted and misreads the total column; the naive count or sum is a plausible number and the budget holds no second look"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/conventions.py:62",
+      "suite/families/curriculum.py:171",
+      "suite/families/curriculum.py:183"
+    ],
+    "premises": [
+      {
+        "falsifier": "a CSV family whose values never carry a comma and whose gold equals the comma-split answer",
+        "id": "p1",
+        "statement": "a CSV field of this world may be quoted and contain a comma",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a shell host without python3",
+        "id": "p2",
+        "statement": "python3 with the csv module is on the shell tool's host",
+        "status": "supported"
+      }
+    ]
+  }
+}
