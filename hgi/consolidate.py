@@ -119,9 +119,10 @@ def build_brief(store: Store, record: Consolidation, sessions: list[Session]) ->
 
 def nominate(store: Store, record: Consolidation, brief: dict[str, Any]) -> list[dict[str, Any]]:
     c = _model.complete("consolidator", roles.request("nominate", brief=brief, bars=store.registry.bars, rungs=store.registry.terms("ladder-rung"),
-                                                      model_id=_model.model_id("pass")), session=record.id)
+                                                      vocabularies=store.registry.vocabulary_terms(), model_id=_model.model_id("pass"),
+                                                      empty_is_legal=roles.EMPTY_IS_LEGAL), session=record.id)
     record.brief["consolidator_call"] = c.call
-    return list(c.json().get("nominations", []))
+    return roles.drafts_in(c.json(), "nominations")
 
 
 def evidence_pack(store: Store, draft: Draft, brief: dict[str, Any]) -> dict[str, Any]:
@@ -199,7 +200,7 @@ def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draf
 
 def draft_from(store: Store, record: Consolidation, raw: dict[str, Any]) -> Draft:
     return store.parse_as(Draft, {"uid": store.new_uid(), "name": store.next_name("P"), "kind": "decision", "drafted_at": now().isoformat(),
-                                  "proposed_by": record.id, "rung": raw["rung"], "rung_why": raw["rung_why"], "body": raw["body"],
+                                  "proposed_by": record.id, "rung": raw["rung"], "rung_why": raw["rung_why"], "body": roles.body_of(raw),
                                   "evidence": list(raw.get("evidence", [])), "supersedes": list(raw.get("supersedes", []))})
 
 

@@ -51,12 +51,15 @@ class Completion:
     """The Weave call URI, joinable from ledger entries and admission stamps."""
 
     def json(self) -> Any:
-        """Parse the completion as JSON, tolerating a fenced block around it."""
+        """Parse the completion as JSON, tolerating a fenced block around it and a model that echoes the request's ``reply`` key as a wrapper."""
         text = self.text.strip()
         m = re.search(r"```(?:json)?\s*(.*?)```", text, re.S)
         if m:
             text = m.group(1).strip()
-        return json.loads(text)
+        out = json.loads(text)
+        if isinstance(out, dict) and set(out) == {"reply"}:
+            out = out["reply"]
+        return out
 
 
 class Backend:

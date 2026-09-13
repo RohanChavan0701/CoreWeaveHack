@@ -102,6 +102,10 @@ class Registry:
     def check(self, vocab: str, value: str) -> str:
         return self.vocab(vocab).check(value)
 
+    def vocabulary_terms(self) -> dict[str, list[str]]:
+        """Every closed vocabulary's terms by name — what a role drafting a record must draw its typed fields from."""
+        return {name: self.terms(name) for name in self.vocabularies}
+
     def terms(self, vocab: str) -> list[str]:
         return list(self.vocab(vocab).terms)
 

@@ -25,7 +25,11 @@ HERE = Path(__file__).parent
 
 ROLES = ("pass", "consolidator", "examiner", "adjudicator", "coder")
 
-_DRAFT_BODY = "<a decision body per the Draft schema's `body`: scopes, summary{latch, not_this, stakes}, context, options, decision, counterfactual, warrant{anchors, premises[{id, statement, falsifier, status}], adjudication}, latches, enforcement{floor, residue}, lifecycle{consumer, moot_when, retirement}, priced_for{model_id}>"
+_DRAFT_BODY = ("<a JSON object, not a string: the Draft schema's `body` (DecisionBody) with every required field in the type the schema gives it, "
+               "latches as latch objects, options as {name, judged, why} objects, premises as {id, statement, falsifier, status} objects; every field the "
+               "schema names as a vocabulary term (latch type, slot, key_space, edge kind, owed_act class and role, premise status, latch status) takes a "
+               "term listed under that vocabulary in the request's `vocabularies`, and a consultation latch's guard.terms are work-shape terms; "
+               "priced_for.model_id = the request's model_id>")
 
 REPLIES: dict[str, Any] = {
     "classify": {"terms": ["<a term from `terms` that at least one presentation's prompt plainly instantiates; the union over all tasks; a term that merely might apply is left out>"],
@@ -35,10 +39,10 @@ REPLIES: dict[str, Any] = {
              "findings": ["<one object per finding, with exactly the fields the lens's `product` names; an anchor is {call: <a row's `call` URI>, path: <a file path>}; empty list is a legal answer>"]},
     "dispose": {"dispositions": [{"record": "<a consulted record id>", "disposition": "<applied | considered-not-applicable | fired-off-map>",
                                   "note": "<which rows it bore on, or why it did not>"}]},
-    "propose": {"drafts": [{"kind": "decision", "rung": "<a ladder rung>", "rung_why": "<why the cheaper rungs do not suffice>",
+    "propose": {"drafts": [{"kind": "decision", "rung": "<a ladder rung from `rungs`>", "rung_why": "<why the cheaper rungs do not suffice>",
                             "evidence": ["<observation names from `observations`>"], "supersedes": [], "body": _DRAFT_BODY}]},
     "coding": {"<observation name>": ["<work-shape term or other(<what>)>"]},
-    "nominate": {"nominations": [{"rung": "<a ladder rung>", "rung_why": "<why the cheaper rungs do not suffice>", "subject": "<one word naming the lesson>",
+    "nominate": {"nominations": [{"rung": "<a ladder rung from `rungs`>", "rung_why": "<why the cheaper rungs do not suffice>", "subject": "<one word naming the lesson>",
                                   "evidence": ["<observation names from the brief's groups>"], "supersedes": ["<accepted decision ids this retires>"],
                                   "body": _DRAFT_BODY}]},
     "attack": {"claims": [{"target": "<premise:<id> | payload:<aspect> | activation | warrant:independence>", "refutation": "<what reading of the evidence would show it false>",
@@ -55,6 +59,24 @@ def request(name: str, **content: Any) -> str:
     if name not in REPLIES:
         raise KeyError(f"no reply shape for request {name!r}; requests are {sorted(REPLIES)}")
     return json.dumps({"request": name, **content, "reply": REPLIES[name]}, default=str)
+
+
+EMPTY_IS_LEGAL = "an empty list is a legal answer: refusal is a first-class outcome when nothing observed earns a rung"
+"""Sent as request content, never as a list placeholder — a placeholder inside a list comes back as a literal element."""
+
+
+def drafts_in(out: Any, key: str) -> list[dict[str, Any]]:
+    """The draft-carrying objects under ``key`` of a reply; anything that is not an object is dropped."""
+    items = out.get(key, []) if isinstance(out, dict) else []
+    return [raw for raw in items if isinstance(raw, dict)]
+
+
+def body_of(raw: dict[str, Any]) -> dict[str, Any]:
+    """A draft's ``body`` as an object: a model that serialises it as a JSON string is read, not refused."""
+    body = raw.get("body")
+    if isinstance(body, str):
+        body = json.loads(body)
+    return body if isinstance(body, dict) else {}
 
 
 REPLY_RULE = ("Every request is one JSON object whose `reply` field states the exact shape of your answer: reply with one JSON object of that "
@@ -93,8 +115,5 @@ def schemas() -> str:
 
 
 def _compact(model) -> str:
-    import json
-
-    schema = model.model_json_schema(by_alias=True)
-    schema.pop("$defs", None)
-    return json.dumps(schema, separators=(",", ":"))[:4000]
+    """The whole schema, nested definitions included: a body drafted against a schema with its definitions stripped comes back in an invented shape."""
+    return json.dumps(model.model_json_schema(by_alias=True), separators=(",", ":"))

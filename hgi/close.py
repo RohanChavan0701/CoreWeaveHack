@@ -112,13 +112,13 @@ def propose(store: Store, session: Session) -> list[Draft]:
     """Step 5. The pass proposes; nothing it proposes is yet true. A draft that fails to parse is not filed."""
     rows = session.evaluation.rows if session.evaluation else []
     c = _model.complete("pass", roles.request("propose", observations=session.observations_filed, rows=rows, bars=store.registry.bars,
-                                              rungs=store.registry.terms("ladder-rung"), model_id=_model.model_id("pass")),
+                                              rungs=store.registry.terms("ladder-rung"), vocabularies=store.registry.vocabulary_terms(), model_id=_model.model_id("pass"), empty_is_legal=roles.EMPTY_IS_LEGAL),
                         session=session.id, pass_=session.pass_)
     out = []
-    for raw in c.json().get("drafts", []):
+    for raw in roles.drafts_in(c.json(), "drafts"):
         try:
-            draft = store.parse_as(Draft, {**raw, "uid": store.new_uid(), "name": store.next_name("P"), "drafted_at": now().isoformat(),
-                                           "proposed_by": session.id})
+            draft = store.parse_as(Draft, {**raw, "body": roles.body_of(raw), "uid": store.new_uid(), "name": store.next_name("P"),
+                                           "drafted_at": now().isoformat(), "proposed_by": session.id})
         except ValueError as e:
             print(f"draft refused: {str(e).splitlines()[0]}")
             continue
