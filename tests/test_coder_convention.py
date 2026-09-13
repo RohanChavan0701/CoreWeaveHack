@@ -24,7 +24,7 @@ def test_the_seed_registers_convention_major_work_shape_terms(store):
     assert {"http-tool", "shell-tool", "tool-budget"} <= terms
     # and the convention-major shapes the coder groups observations by are there too
     assert {"route-versioned", "listing-paged", "route-guarded", "field-quoted",
-            "summary-row", "line-unterminated", "byte-order-mark"} <= terms
+            "summary-row", "line-unterminated", "byte-order-mark", "schema-coded-value"} <= terms
 
 
 # --- one tool, two conventions, two shapes -----------------------------------------------------
@@ -44,6 +44,16 @@ def test_two_http_misses_of_different_conventions_get_different_shapes(store):
     assert coded["o-moved"] == ["route-versioned"]
     assert coded["o-token"] == ["route-guarded"]
     assert coded["o-moved"] != coded["o-token"]
+
+
+def test_two_text2sql_misses_over_one_schema_share_the_schema_convention_shape(store):
+    """The text-to-SQL family's transfer story: distinct schema quirks of one fixed database are one convention, so a
+    coded-status miss and a text-date miss share a shape and a decision hooked on it can carry the whole schema."""
+    coded = _code(store, [
+        {"name": "o-status", "noticed": "task q117 filtered loans on the word 'paid' but the status is a coded value stored as a single-letter code A/B/C/D, so the query matched nothing"},
+        {"name": "o-date", "noticed": "task q99 called a date function on the account date, but the date is text and needs strftime to read its year"},
+    ])
+    assert coded["o-status"] == coded["o-date"] == ["schema-coded-value"]
 
 
 def test_two_misses_of_one_convention_share_a_shape_across_wordings(store):

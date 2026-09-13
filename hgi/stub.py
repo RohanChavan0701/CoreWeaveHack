@@ -72,6 +72,9 @@ CONVENTION_KEYWORDS: dict[str, tuple[str, ...]] = {
     "summary-row": ("footer", "total row", "summary row", "footer row", "trailer", "total line", "totals row"),
     "line-unterminated": ("newline", "no trailing", "unterminated", "not terminated"),
     "byte-order-mark": ("byte order mark", "byte-order mark", "bom", "utf-8-sig", "u+feff"),
+    "schema-coded-value": ("coded value", "coded literal", "coded status", "status char", "single-letter code", "categorical code",
+                           "stored as text", "text date", "date is text", "strftime", "date function", "integer division",
+                           "integer-divide", "cast to real", "needs a cast", "reserved word", "backtick"),
 }
 
 

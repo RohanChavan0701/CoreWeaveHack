@@ -1533,14 +1533,25 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     moderate/challenging mix under a three-call budget. *If it lands off
     the band,* tune by question selection (the 32 financial questions, minus
     the 4 trans ones, are the pool) or the slack budget, not by touching the
-    check. (c) The task shapes reuse the tool-major terms (`shell-tool`,
-    `file-tool`, `tool-budget`); no convention-major work-shape term names a
-    SQL-dialect quirk, so the blind coder groups these observations under
-    the tool cue or `other(...)` rather than one convention per quirk (the
-    decision-77/decision-87 granularity). *Risk:* transfer through the store
-    is coarser than it could be until such terms are minted; that is a
-    registry-vocabulary change (`hgi/genesis.py`), deliberately left out of
-    scope here. (d) `fetch` downloads BIRD's 346 MB dev bundle and verifies
+    check. (c) The task shapes are the tool-major cues (`shell-tool`,
+    `file-tool`, `tool-budget`) the boot classify keys on, since the schema
+    convention is hidden from the prompt (that is the point). Beside them a
+    new convention-major work-shape term, `schema-coded-value`, was seeded
+    (`hgi/genesis.py`, `hgi/stub.py`, `hgi/roles/coder.md`, following
+    decision 87's precedent exactly — the seed and the stub, not the
+    diverged store snapshot, whose committed registry predates the
+    convention terms), so the blind coder groups two text-to-SQL misses over
+    the one fixed schema — a coded-status miss and a text-date miss — under
+    the same shape rather than the coarse tool cue. It is deliberately one
+    term, not one per quirk: the family runs over a single database, so its
+    quirks are one convention and a decision hooked on the term can carry the
+    whole schema, which is the transfer the family demonstrates. *Right:* the
+    grouping is sharpened; *the limit that remains:* the term sharpens the
+    consolidation grouping and rides the decision's hook, but boot retrieval
+    still keys on the tool cue (the convention cannot be read from the
+    prompt), so a schema-convention record is retrieved for any shell-tool
+    task via the tool-major terms `anchor_terms` seeds — the coarse-retrieval
+    limit decision 87 already documented, not new here. (d) `fetch` downloads BIRD's 346 MB dev bundle and verifies
     `financial.sqlite` against a pinned SHA-256; `$HGI_BIRD_DEV_ZIP` caches
     it. Re-fetching is rare (only to re-pin) and rewrites both the jsonl and
     the committed 856 KB database, changing the suite hash — the same

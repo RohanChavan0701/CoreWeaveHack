@@ -56,6 +56,10 @@ VOCABULARY: dict[str, dict] = {
             ("summary-row", "a tabular export the world ends with a total or summary row that is not a data record"),
             ("line-unterminated", "a text file whose last line the world leaves with no terminating newline"),
             ("byte-order-mark", "a text file the world opens with a byte-order mark a strict parser refuses"),
+            ("schema-coded-value", "a fixed database whose schema stores a value in an encoded form a plain query gets "
+                                   "wrong — a status or category kept as a coded literal to match on its stored form not a "
+                                   "natural word, a date kept as text and reached with STRFTIME not a date function, a ratio "
+                                   "the dialect integer-divides unless it is cast — the schema convention a query over it must know"),
         ),
     },
     "latch-type": {"means": "the typed activation units of § 6.2", "terms": _terms(
