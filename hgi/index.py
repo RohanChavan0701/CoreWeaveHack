@@ -17,7 +17,7 @@ import re
 from collections import defaultdict
 from typing import Any, Callable
 
-from hgi.registry import read_json, write_json
+from hgi.registry import is_escape, read_json, write_json
 from hgi.store import Store
 from hgi.types import Decision, Disposition, Fire, Session
 
@@ -43,13 +43,22 @@ def tokens(text: str) -> set[str]:
 # --- projections --------------------------------------------------------------
 
 def hooks(store: Store) -> dict[str, list[dict[str, Any]]]:
-    """Hook-major: for each work-shape term, the accepted decisions whose consultation latches carry it."""
+    """Hook-major: for each registered work-shape term, the accepted decisions whose consultation latches carry it.
+
+    An ``other(<what>)`` escape in a guard is legal to write and reaches
+    nothing here: no boot classifies into an escape, so a record keyed only
+    on escapes is a structural zero until the term is minted and the hook
+    re-keyed. A latch is worth exactly as much as the governance of its
+    key-space.
+    """
     out: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for d in store.decisions("accepted"):
         for i, latch in enumerate(d.all_latches()):
             if latch.type != "consultation" or latch.lifecycle.status != "live":
                 continue
             for term in latch.guard.terms:
+                if is_escape(term):
+                    continue
                 out[term].append({
                     "record": d.id,
                     "latch": d.summary.latch,
@@ -187,7 +196,7 @@ def convergence(store: Store) -> list[dict[str, Any]]:
 
 
 def structural_zero(store: Store) -> list[str]:
-    """Accepted decisions no live consultation hook reaches."""
+    """Accepted decisions no live consultation hook on a registered term reaches — stored, unreachable, never recalled."""
     reached = {cell["record"] for cells in hooks(store).values() for cell in cells}
     return [d.id for d in store.decisions("accepted") if d.id not in reached]
 

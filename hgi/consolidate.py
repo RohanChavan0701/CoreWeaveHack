@@ -110,6 +110,9 @@ def build_brief(store: Store, record: Consolidation, sessions: list[Session]) ->
     fusion = [row for row in _index.fusion(store) if row["bimodal"]]
     convergence = [row for row in _index.convergence(store) if row["co_applied"] >= 2]
     named = {row["record"] for row in fusion} | {r for row in convergence for r in row["records"]}
+    presented = sorted({t for s in sessions for t in s.work_shape.terms})
+    zero = [{"record": d.id, "terms": d.consultation_terms, "latch": d.summary.latch, "presented": presented}
+            for d in store.decisions("accepted") if d.id in _index.structural_zero(store)]
     return {
         "after_pass": record.after_pass,
         "sessions": [s.id for s in sessions],
@@ -119,6 +122,7 @@ def build_brief(store: Store, record: Consolidation, sessions: list[Session]) ->
         "credit": credit_table(store, sessions),
         "fusion": fusion,
         "convergence": convergence,
+        "structural_zero": zero,
         "escapes": sorted({e for s in sessions for e in s.work_shape.escapes}),
         "accepted": [{"id": d.id, "decision": d.decision, "terms": d.consultation_terms}
                      | ({"body": d.body().model_dump(by_alias=True, mode="json")} if d.id in named else {})
@@ -211,10 +215,49 @@ def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draf
     return entry
 
 
+EDIT_RUNGS = {"counterfactual-edit": ("counterfactual", "not_this"), "hook-edit": ("terms", "not_this")}
+"""The slot-local rungs of the ladder (§ 10.3, rungs 1 and 4): each names the fields of ``edit`` it may change."""
+
+
+def edited_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
+    """A successor's body for an edit rung: the one superseded record's body with the rung's fields replaced — a refinement is a successor record, never a rewrite."""
+    rung, edit = raw.get("rung"), raw.get("edit") or {}
+    if rung not in EDIT_RUNGS:
+        return roles.body_of(raw)
+    if len(raw.get("supersedes") or []) != 1:
+        raise ValueError(f"a {rung} supersedes exactly one record; got {raw.get('supersedes')}")
+    body = store.read("decision", raw["supersedes"][0]).body().model_dump(by_alias=True, mode="json")  # type: ignore[attr-defined]
+    allowed = {k: v for k, v in edit.items() if k in EDIT_RUNGS[rung] and v}
+    if not allowed:
+        raise ValueError(f"a {rung} names at least one of {EDIT_RUNGS[rung]} in its edit")
+    if "counterfactual" in allowed:
+        body["counterfactual"] = allowed["counterfactual"]
+    for latch in body["latches"]:
+        if latch["type"] == "consultation":
+            if "terms" in allowed:
+                latch["guard"]["terms"] = list(allowed["terms"])
+            if "not_this" in allowed:
+                latch["guard"]["not_this"] = list(allowed["not_this"])
+    if "not_this" in allowed:
+        body["summary"]["not_this"] = list(allowed["not_this"])
+    return body
+
+
+def inherited_evidence(store: Store, retires: list[str]) -> list[str]:
+    """The observation anchors of the records a draft retires: a successor, a leaf or a fold rests on the instances its predecessors rested on."""
+    out: list[str] = []
+    for rid in retires:
+        if store.exists("decision", rid):
+            out += [a for a in store.read("decision", rid).warrant.anchors if store.observation(a) is not None]  # type: ignore[attr-defined]
+    return list(dict.fromkeys(out))
+
+
 def draft_from(store: Store, record: Consolidation, raw: dict[str, Any]) -> Draft:
+    retires = [*(raw.get("supersedes") or []), *(raw.get("folded_from") or []), *([raw["split_from"]] if raw.get("split_from") else [])]
     return store.parse_as(Draft, {"uid": store.new_uid(), "name": store.next_name("P"), "kind": "decision", "drafted_at": now().isoformat(),
-                                  "proposed_by": record.id, "rung": raw["rung"], "rung_why": raw["rung_why"], "body": roles.body_of(raw),
-                                  "evidence": list(raw.get("evidence", [])), "supersedes": list(raw.get("supersedes", [])),
+                                  "proposed_by": record.id, "rung": raw["rung"], "rung_why": raw["rung_why"], "body": edited_body(store, raw),
+                                  "evidence": list(raw.get("evidence") or []) or inherited_evidence(store, retires),
+                                  "supersedes": list(raw.get("supersedes") or []),
                                   "split_from": raw.get("split_from") or None, "folded_from": list(raw.get("folded_from") or [])})
 
 
