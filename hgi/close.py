@@ -114,18 +114,36 @@ def file_observations(store: Store, session: Session) -> list[Observation]:
     return out
 
 
+def proposer_of(store: Store, record: Any) -> RoleCall:
+    """The party that put a record's claim forward: the proposer on its admission's ledger entry, else the role that admitted it."""
+    entry_id = getattr(getattr(record, "admission", None), "ledger_entry", None)
+    if entry_id:
+        entry = next((e for e in store.all("hypothesis") if e.id == entry_id), None)  # type: ignore[attr-defined]
+        if entry is not None:
+            return entry.proposer  # type: ignore[attr-defined]
+    proposed_by = getattr(getattr(record, "admission", None), "proposed_by", "")
+    return RoleCall(role="consolidator" if str(proposed_by).startswith("K-") else "human" if proposed_by == "genesis" else "pass", model_id=None, call=None)
+
+
 def file_contradictions(store: Store, session: Session) -> list[LedgerEntry]:
-    """Step 3b. Each L-0003 finding naming a record and a slot files as a currency entry, verdict pending."""
+    """Step 3b. Each L-0003 finding naming a record and a slot files as a currency entry, verdict pending.
+
+    The pass is the contradictor — its lens read the session's streams against a standing record — and the claim's
+    proposer is whoever put the record forward at admission, never the pass: a party that proposes and contradicts
+    the same claim generates no contradiction (§ 3.3). The entry waits, pending, for the backward pass to re-adjudicate
+    the warrant (:func:`hgi.consolidate.readjudicate_pending`).
+    """
     out = []
     for answer in session.lens_answers:
         if answer.lens != "L-0003":
             continue
         for f in answer.findings:
-            if not f.get("record") or not store.find(f["record"]):
+            record = store.find(f["record"]) if f.get("record") else None
+            if record is None:
                 continue
             entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="currency", subject=f["record"],
                                 claim=f"{f.get('slot', 'warrant')}: {f.get('what_changed', '')}",
-                                proposer=RoleCall(role="pass", model_id=session.model_id, call=answer.call),
+                                proposer=proposer_of(store, record),
                                 contradiction={"source": {"role": "pass", "model_id": session.model_id, "call": answer.call}, "coding": f})
             store.append(entry)
             session.ledger_entries.append(entry.id)

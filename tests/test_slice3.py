@@ -105,7 +105,43 @@ def test_verdict_authority_and_role_separation_on_the_ledger(store):
         assert entry.contradiction.attack.verdict == "pending"
         assert entry.verdict != "pending" and entry.adjudicator is not None and entry.adjudicator.role == "adjudicator"
         assert {entry.proposer.role, entry.contradiction.source.role, entry.adjudicator.role} == {"consolidator", "examiner", "adjudicator"}
-    assert not [f for f in _lint.run(store, seams=("write",)).failures if f.check == "verdict-authority"]
+    # every species, not the attack alone: a currency entry's contradictor is the oracle — the anchor, the ratio, the
+    # fire — never the adjudicator that verdicts it, and no two parties on one entry share a role or a call
+    currency = [e for e in store.all("hypothesis") if e.species == "currency"]
+    assert currency, "genesis anchoring wrote currency entries"
+    for entry in store.all("hypothesis"):
+        parties = [entry.proposer, entry.contradiction.source] + ([entry.adjudicator] if entry.adjudicator else [])
+        assert len({p.role for p in parties}) == len(parties), entry.id
+    assert all(e.contradiction.source.role == "oracle" and e.contradiction.source.call for e in currency)
+    failures = _lint.run(store, seams=("write",)).failures
+    assert not [f for f in failures if f.check in ("verdict-authority", "role-separation")]
+
+
+def test_the_lint_names_a_collapsed_pair_on_the_ledger(store):
+    from hgi.types import LedgerEntry
+    store.append(LedgerEntry(id=store.mint("hypothesis"), at=now(), species="currency", subject="D-0001", claim="x",
+                             proposer={"role": "consolidator", "call": None},
+                             contradiction={"source": {"role": "adjudicator", "model_id": "stub", "call": "weave:///t/call/1"}},
+                             verdict="still-holds", adjudicator={"role": "adjudicator", "model_id": "stub", "call": "weave:///t/call/1"}))
+    findings = [f for f in _lint.run(store, seams=("write",)).failures if f.check == "role-separation"]
+    assert len(findings) == 1 and "contradictor and adjudicator are both 'adjudicator'" in findings[0].message
+
+
+def test_a_close_time_contradiction_is_proposed_by_the_records_admitter_and_contradicted_by_the_pass(store):
+    from hgi import close as _close
+    from hgi.types import LensAnswer
+    s1 = _session(store, 1, [FAULTED], {"task_pass_rate": 0.5, "error_cause_present": 0.0})
+    s2 = _session(store, 2, [FAULTED], {"task_pass_rate": 0.5, "error_cause_present": 0.0})
+    _observe(store, s1, NO_CAUSE), _observe(store, s2, NO_CAUSE)
+    _consolidate.consolidate(store)
+    s3 = _session(store, 3, [FAULTED], {"task_pass_rate": 0.5})
+    s3.model_id = "stub"
+    s3.lens_answers = [LensAnswer(lens="L-0003", answer="p1 no longer holds", call="weave:///t/call/pass-lens",
+                                  findings=[{"record": "D-0001", "slot": "warrant", "what_changed": "the scorer graded on exit code", "anchor": "weave:///t/eval/3"}])]
+    [entry] = _close.file_contradictions(store, s3)
+    assert entry.verdict == "pending" and entry.species == "currency" and entry.subject == "D-0001"
+    assert entry.proposer.role == "consolidator" and entry.contradiction.source.role == "pass"
+    assert entry.contradiction.source.call == "weave:///t/call/pass-lens"
 
 
 def test_consolidation_keeps_its_schedule(store):

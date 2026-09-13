@@ -46,10 +46,15 @@ VOCABULARY = route_table("vocabulary", "adjudicator-verdict", {"admit": "mint", 
 
 
 def _entry(store: Store, *, subject: str, claim: str, proposer: RoleCall, c: _model.Completion, verdict: str, coding: dict[str, Any],
-           why: str | None, rung: str | None = None) -> LedgerEntry:
-    """A currency entry as every review leaves it: the nominator as proposer, the adjudicator's call on the contradiction and the verdict."""
+           why: str | None, rung: str | None = None, source: str | None = None) -> LedgerEntry:
+    """A currency entry as every review leaves it: the nominator as proposer, the oracle as the contradictor, the adjudicator's verdict.
+
+    The currency species' contradiction source is time and the world — the ratio, the fire, the instance the history
+    holds — never the adjudicator: a contradictor that is also the adjudicator grades its own attack (§ 3.3). ``source``
+    names what the oracle put forward: a fire id, an anchor, a projection row.
+    """
     entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="currency", subject=subject, claim=claim, proposer=proposer,
-                        contradiction={"source": {"role": "adjudicator", "model_id": c.model_id, "call": c.call}, "coding": coding},
+                        contradiction={"source": {"role": "oracle", "model_id": None, "call": source}, "coding": coding},
                         verdict=verdict, adjudicator=RoleCall(role="adjudicator", model_id=c.model_id, call=c.call), outcome=why, rung=rung)
     store.append(entry)
     return entry
@@ -73,7 +78,8 @@ def retirement(store: Store, record: Consolidation) -> list[Nomination]:
         out_ = c.json()
         v = str(out_.get("verdict", "pending"))
         entry = _entry(store, subject=d.id, claim=f"{d.id} applied ÷ considered = {row['applied_over_considered']:.2f} over {row['passes_in_window']} passes",
-                       proposer=RoleCall(role="consolidator", model_id=None, call=None), c=c, verdict=v, coding=row, why=out_.get("why"), rung="counterfactual-edit")
+                       proposer=RoleCall(role="consolidator", model_id=None, call=None), c=c, verdict=v, coding=row, why=out_.get("why"), rung="counterfactual-edit",
+                       source=f"competence:{d.id}")
         from hgi.consolidate import settle_currency
 
         n = Nomination(rung="counterfactual-edit", rung_why="retirement leg: the nominating ratio fell below the guard", subject=d.id,
@@ -156,7 +162,7 @@ def genesis_anchors(store: Store, record: Consolidation) -> list[Nomination]:
             v = str(verdict.get("verdict", "moot"))
             entry = _entry(store, subject=article.id, claim=f"{article.id} is exemplified by {proposal['anchor']}",
                            proposer=RoleCall(role="consolidator", model_id=c.model_id, call=c.call), c=v_call, verdict=v,
-                           coding={"anchor": proposal["anchor"], "why": proposal.get("why")}, why=verdict.get("why"), rung="article")
+                           coding={"anchor": proposal["anchor"], "why": proposal.get("why")}, why=verdict.get("why"), rung="article", source=str(proposal["anchor"]))
             n.ledger_entry = entry.id
             if store.registry.route("currency-verdict", v, EXEMPLIFIES) == "anchor":
                 store.anchor_article(article, str(proposal["anchor"]))

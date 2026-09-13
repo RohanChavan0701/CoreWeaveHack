@@ -121,6 +121,7 @@ VOCABULARY: dict[str, dict] = {
         ("pass", "the working pass — the agent under test and its boot and close steps"),
         ("consolidator", "nominates"), ("examiner", "contradicts"), ("adjudicator", "verdicts"),
         ("committer", "admits mechanically"), ("coder", "the blind second coder"), ("human", "the escalation queue"),
+        ("oracle", "the world channel — a fire, a ratio, an evaluation run; it contradicts and grounds, it never authors or verdicts"),
     )},
 }
 

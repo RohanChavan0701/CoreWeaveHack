@@ -108,7 +108,7 @@ class RoleCall(Strict):
     role: Term("role")
     model_id: str | None = None
     call: str | None = None
-    """The Weave call URI; ``None`` when the run was untraced."""
+    """The Weave call URI; for the oracle, the fire, anchor or run that contradicted; ``None`` when the run was untraced."""
 
 
 class Admission(Strict):

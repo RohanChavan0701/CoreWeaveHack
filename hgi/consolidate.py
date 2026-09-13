@@ -543,13 +543,17 @@ def settle_currency(store: Store, record: Consolidation, d: Decision, out: dict[
 
 
 def ask_currency(store: Store, record: Consolidation, d: Decision, f: Fire, claim: str, coding: dict[str, Any], **content: Any) -> tuple[LedgerEntry, dict[str, Any]]:
-    """The adjudicator re-checks a warrant; the currency entry is appended with its verdict."""
+    """The adjudicator re-checks a warrant; the currency entry is appended with its verdict.
+
+    The fire is the contradictor — the world moved and said so — the committer that owes the fire its disposition is
+    the proposer of the standing claim, and the adjudicator alone verdicts: three parties, no collapse.
+    """
     c = _model.complete("adjudicator", roles.request("currency", record=d.id, fire=f.model_dump(by_alias=True, mode="json"), **content), session=record.id)
     out = c.json()
     v = str(out.get("verdict", "pending"))
     entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="currency", subject=d.id, claim=claim,
                         proposer=RoleCall(role="committer", model_id=None, call=None),
-                        contradiction={"source": {"role": "adjudicator", "model_id": c.model_id, "call": c.call}, "coding": coding},
+                        contradiction={"source": {"role": "oracle", "model_id": None, "call": f.id}, "coding": coding},
                         verdict=v, adjudicator=RoleCall(role="adjudicator", model_id=c.model_id, call=c.call), outcome=out.get("why"))
     store.append(entry)
     return entry, out

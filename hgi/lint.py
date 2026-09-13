@@ -13,6 +13,8 @@ complement-law               write          fails a decision without falsifiers 
 settlement-test              write          fails a projection cell carrying a compliable sentence                    compliance by omission
 verdict-authority            write          fails a proposal or attack payload carrying a verdict; fails a ledger     whether the adjudicator's verdict is right
                                             verdict with no adjudicator call
+role-separation              write          fails a ledger entry whose proposer, contradictor and adjudicator are      whether two contexts of one model share a prior
+                                            not three distinct roles, or whose two role calls are one call
 fire-disposer                write          fails a fire naming no disposer                                           whether the disposer discharged it well
 settlement-authority         write          fails a settled latch whose settlement cites no adjudicated ledger entry,  whether the settlement was right
                                             dispositive fire or admitted successor
@@ -189,6 +191,26 @@ def check_schema(store: Store) -> list[Finding]:
 
 def _first_line(e: Exception) -> str:
     return str(e).strip().splitlines()[0] if str(e).strip() else type(e).__name__
+
+
+# --- role separation ------------------------------------------------------------------
+
+@check("role-separation", "write", "whether two contexts of one model share a prior")
+def check_role_separation(store: Store) -> list[Finding]:
+    """Proposer, contradictor and adjudicator are distinct parties on every ledger entry (§ 3.3): each collapse of two is a
+    named failure, and a contradictor recorded as the adjudicator grades its own attack. Roles must differ; where two
+    parties both carry a call URI, the calls must differ too — one context wearing two role names is one context."""
+    out = []
+    for e in store.all("hypothesis"):
+        e: LedgerEntry
+        parties = [("proposer", e.proposer), ("contradictor", e.contradiction.source)] + ([("adjudicator", e.adjudicator)] if e.adjudicator else [])
+        for i, (a_name, a) in enumerate(parties):
+            for b_name, b in parties[i + 1:]:
+                if a.role == b.role:
+                    out.append(fail("role-separation", e.id, f"{a_name} and {b_name} are both {a.role!r}; {a_name} = {b_name} is a named collapse of the separation of powers"))
+                elif a.call and b.call and a.call == b.call:
+                    out.append(fail("role-separation", e.id, f"{a_name} ({a.role}) and {b_name} ({b.role}) cite one call {a.call}; two role names on one context is one context"))
+    return out
 
 
 # --- complement law ---------------------------------------------------------------
