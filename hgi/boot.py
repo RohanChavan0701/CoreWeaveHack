@@ -43,11 +43,16 @@ def previous_session(store: Store, pass_: int) -> Session | None:
 
 
 def classify(store: Store, session: Session) -> WorkShape:
-    """Step 3: the pass names its work-shape in registry terms; anything the vocabulary lacks is an escape."""
+    """Step 3: the pass names its work-shape in registry terms; anything the vocabulary lacks is an escape.
+
+    The tasks' declared shapes are the floor of the pass's work-shape and the model's classification adds the
+    convention it reads on top; mirrors ``consolidate.anchor_terms`` seeding a record's hook on the write side.
+    """
     terms = store.registry.terms("work-shape")
     c = _model.complete("pass", roles.request("classify", presentations=_suite.current().presentations(), terms=terms), session=session.id, pass_=session.pass_)
     out = c.json()
-    registered = [t for t in out.get("terms", []) if t in terms]
+    declared = {sh for t in _suite.current().tasks for sh in t.shapes if sh in terms}
+    registered = sorted(declared | {t for t in out.get("terms", []) if t in terms})
     escapes = [t for t in out.get("terms", []) if t not in terms and t.startswith("other(")] + list(out.get("escapes", []))
     return WorkShape(terms=registered, escapes=escapes)
 
