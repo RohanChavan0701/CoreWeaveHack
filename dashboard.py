@@ -297,7 +297,7 @@ def _(log, mo, pass_pick, sessions, store, wcell, wlink):
 
 
 @app.cell
-def _(log, mo, sessions, store, wcell):
+def _(curve_svg, hindex, log, mo, sessions, store, wcell):
     # every observation in the store, whatever the arm: the store is the only source, the log only adds the lesson
     _obs = sorted(store.observations(state=None), key=lambda o: o.noticed_at.timestamp(), reverse=True)
     _pass_of = {s.id: s.pass_ for s in sessions}
@@ -308,8 +308,41 @@ def _(log, mo, sessions, store, wcell):
     for _o in _obs:
         _counts[_shape(_o)] = _counts.get(_shape(_o), 0) + 1
     _counts = dict(sorted(_counts.items(), key=lambda kv: (-kv[1], kv[0])))
+
+    # the retrofit: the failures a pass met against what it filed from them, and which failed row each observation is anchored on
+    _att = [s for s in sessions if s.attached and s.evaluation]
+    _failed = {s.pass_: [r for r in s.evaluation.rows if not hindex.row_passed(r)] for s in _att}
+    _filed = {s.pass_: len(s.observations_filed) for s in _att}
+    _cum, _cums = 0, {}
+    for _p in sorted(_failed):
+        _cum += _filed.get(_p, 0)
+        _cums[_p] = _cum
+    # `curve_svg` draws a 0..1 axis, so the three counts share one scale and the heading names its top
+    _top = max([len(v) for v in _failed.values()] + list(_filed.values()) + [_cum, 1])
+    _retro_series = {"failed rows": [(p, len(_failed[p]) / _top) for p in sorted(_failed)],
+                     "observations filed": [(p, _filed.get(p, 0) / _top) for p in sorted(_failed)],
+                     "cumulative observations": [(p, _cums[p] / _top) for p in sorted(_failed)]}
+    _symptom_of = {(p["pass"], r["task"]): r["symptom"] for p in (log["passes"] if log else []) for r in p["rows"]}
+    _obs_by_call = {o.anchor.call: o for o in _obs if o.anchor.call}
+
+    def _retrofit(session, row):
+        o = _obs_by_call.get(row.get("call"))
+        return {"pass": session.pass_, "task": row.get("task", "—"), "lesson": _lesson_of.get(row.get("call"), "—"),
+                "symptom": _symptom_of.get((session.pass_, row.get("task")), "failed"),
+                "observation": o.name if o else "— none filed", "shape": _shape(o) if o else "—"}
+
+    _rows = sorted((_retrofit(s, r) for s in _att for r in _failed[s.pass_]), key=lambda x: x["pass"])
+    _with = sum(r["observation"] != "— none filed" for r in _rows)
+    _shaped = sum(r["shape"] not in ("—", "open") for r in _rows)
+
     observations_view = mo.md("_no observations filed yet_") if not _obs else mo.vstack([
         mo.md(f"## {len(_obs)} observations · by shape: " + ", ".join(f"{k} {v}" for k, v in _counts.items())),
+        mo.md(f"### Retrofit — failures per pass against the observations filed from them (all three counts on one 0–{_top} scale)"),
+        curve_svg(_retro_series),
+        mo.md("### Failed rows → observation"),
+        mo.ui.table(_rows) if _rows else mo.md("_no failed row on an attached pass_"),
+        mo.md(f"{len(_rows)} failed rows, {_with} with an observation, {_shaped} with a shaped observation"),
+        mo.md("### Every observation"),
         mo.ui.table([{"name": o.name, "pass": _pass_of.get(o.session, "—"), "task": _task_of.get(o.anchor.call, "—"),
                       "lesson": _lesson_of.get(o.anchor.call, "—"), "shape": _shape(o), "state": o.disposition.state,
                       "noticed": o.noticed, "trace": wcell(o.anchor.call)} for o in _obs]),
