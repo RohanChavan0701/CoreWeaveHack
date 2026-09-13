@@ -179,6 +179,8 @@ def register(add, store_of, finish) -> None:
     p.add_argument("--pass", dest="pass_", type=int, help="the pass number (detached runs)")
     p.add_argument("--detached", action="store_true", help="an ablation pass: same agent, same suite, no boot or close")
     p.set_defaults(fn=lambda args: _cmd(args, store_of, finish))
+    from hgi import lens_battery
+    lens_battery.register(add, store_of, finish)
 
 
 def _cmd(args, store_of, finish) -> int:
