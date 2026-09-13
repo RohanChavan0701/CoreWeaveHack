@@ -579,11 +579,14 @@ recurrence graded for the adjudicator → 84 and refused observations kept in
 the open pile → 85 are the further levers built on top. The shape-radius
 sweep (decision 77) found τ\*=1.0 — the coder's shapes already conflate
 lessons, so widening the grouping radius is not the lever and item 40's
-coding fix is; no `group_observations` change was made. The suite is green
-at 487. What remains untested is a rerun on the live endpoint — whether
-drafts now survive to adjudication, the seeded hook fires, and the fold
-collapses the restatements — and the coder shaping on the convention rather
-than the tool, the deeper reading decision 77 exposes.
+coding fix is; no `group_observations` change was made. The coder shaping on
+the convention rather than the tool — the deeper reading decision 77 exposed
+— is now built and measured on the stub (decision 87): the τ=1.0 grouping
+moves from impure to pure at the source. What remains untested is a rerun on
+the live endpoint — whether drafts now survive to adjudication, the seeded
+hook fires, the fold collapses the restatements, and the live coder
+normalizes each convention onto its registered term so the pure exact-match
+grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
 
 ## Decisions taken, and their risk
 
@@ -1432,3 +1435,50 @@ than the tool, the deeper reading decision 77 exposes.
     the reads should count, a consultation session kind with its own
     dispositions is the addition, and it would need the retirement ratio to
     distinguish it from a pass.
+87. **The blind coder shapes on the convention, not the tool — the deeper
+    lever decision 77 exposed** (commits `fe7a303`, `29e6d95`, addressing
+    item 40's unbuilt next lever and decision 81). Decision 81 made the
+    `noticed` name the world-fact; this makes the coder *group* on it. The
+    work-shape vocabulary gains a convention-major granularity beside the
+    tool-major cues (`route-versioned`, `listing-paged`, `route-guarded`,
+    `field-quoted`, `summary-row`, `line-unterminated`, `byte-order-mark`);
+    `coder.md` and the coding reply shape now tell the coder to shape an
+    observation on the finer of the two its noticing names, a tool-major
+    term only for a way of working with no world-fact behind it (a budget, a
+    retry, a wrap) and `other(<convention>)` for a convention the vocabulary
+    lacks. The tool cues stay: the boot classify still keys a consultation
+    hook on the coarse cue, where the convention is hidden from the task
+    prompt, so the stub gives the coder a convention keyword map distinct
+    from the classify's tool map and `_classify` is untouched. *Measured*
+    (`hgi grouping-shaping`, tests `test_convention_shaping.py`,
+    `test_coder_convention.py`): on a synthetic labeled set in the blind
+    close's voice the τ=1.0 grouping the sweep left in place moves from
+    impure to pure — homogeneity 0.37→1.0, cross-lesson clusters 2→0,
+    `lessons_at_bar` 1→7 (all seven), four shapes for seven lessons becoming
+    one convention shape per lesson; re-coding the recorded arms (118 obs)
+    both ways corroborates on real noticings, 0.48→0.96 homogeneity and 1→5
+    lessons at the bar. The grouping radius did not move; the coding did.
+    *Right:* two misses of one convention now share a shape and two of
+    different conventions differ even when both called the same tool, which
+    is exactly what decision 77 measured the tool cue could not do; the
+    coder stays blind by construction — the coding request carries each
+    observation's name and noticing and the flat term list, never the task
+    id, the lesson or a score, a leakage guard pins it. *Risk:* the
+    convention terms align one-for-one with the curriculum's scoring lessons
+    because both enumerate the same world-conventions — the mechanism's
+    target, not a leak, since the coder infers the term from the noticing
+    prose, but a vocabulary that *is* the answer key's partition is a soft
+    leak of the label space, and the guarantee rests on the noticing being
+    blind (decision 81) and the per-observation label never in context. The
+    numbers are the stub, a lexical proxy for the model's convention
+    inference; the pending confirmation is a live re-score of freshly coded
+    observations on `openai/gpt-oss-120b` (needs `WANDB_ENTITY` and a weave
+    project), not run here — no live curve was fabricated. The recorded
+    re-score's residue (homogeneity short of 1.0, two clusters still
+    crossing) is the pre-81 noticings' noise, the gap the live re-score over
+    post-81 noticings would close. If the model does not normalize a
+    convention onto the same registered term across clothes, exact-match
+    grouping splits a lesson on near-shapes — the completeness failure the
+    radius sweep was meant to catch, now guarded only by τ\*=1.0 standing;
+    the escape-to-vocabulary-bar path is the doctrine's answer if a
+    convention the seed lacks recurs.
