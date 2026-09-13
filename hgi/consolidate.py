@@ -281,11 +281,12 @@ def sketch_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
         sketch = sketch_of(raw.get("sketch"), store.registry)
         evidence = [e for e in raw.get("evidence", []) if isinstance(e, str)]
         return _body_from_sketch(sketch, evidence, store.registry.bars, _model.model_id("pass"))
-    derived = raw.get("body")
-    if isinstance(derived, str):
-        derived = json.loads(derived)
-    if isinstance(derived, dict):
-        return derived
+    if raw.get("split_from") or raw.get("folded_from"):  # a lineage move derives its body from the records it leaves, not from a sketch
+        derived = raw.get("body")
+        if isinstance(derived, str):
+            derived = json.loads(derived)
+        if isinstance(derived, dict):
+            return derived
     raise ValueError("sketch: a drafting reply carries a `sketch` object")
 
 
