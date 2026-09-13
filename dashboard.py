@@ -145,11 +145,11 @@ def _(Path, hevolution, hexperiment, root):
     _file = Path("experiments") / f"{_dir.parent.name}.toml"
     exp = log = evo_error = None
     logs = {}
-    if _dir.parent.parent == hexperiment.runs_root() and (_file.exists() or (_dir / "arm.json").exists()):
+    if _dir.parent.parent == hexperiment.runs_root() and _file.exists():
         _errors = []
         # `hgi` refuses with SystemExit, which is a BaseException: `except Exception` lets it through and marimo blanks every cell under it
-        try:  # an experiment file declares the arms; a directory of arms no file declares (a retrofit) is read from its arm.json records
-            exp = hexperiment.load(_file) if _file.exists() else hexperiment.from_dir(_dir.parent)[0]
+        try:
+            exp = hexperiment.load(_file)
         except (Exception, SystemExit) as _e:  # a half-written or stale arm names itself instead of killing the tab
             _errors.append(f"the experiment did not load: `{type(_e).__name__}: {_e}`")
         for _arm in dict.fromkeys([*exp.arms, _dir.name]) if exp is not None else ():
