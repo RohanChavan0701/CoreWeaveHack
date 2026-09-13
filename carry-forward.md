@@ -1769,3 +1769,48 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     two misses of the same term from genuinely different faults would nominate
     one coverage the human must still shape; the count is detection-limited — a
     lower bound the world's votes set, never a census.
+
+95. **Seed stores and the seeded arms: a hand-authored mature store per world,
+    injected before pass 1, as the compare/contrast against the loop's own
+    learning.** `experiments/seeds/<world>/` holds what a store that had
+    already learned the world would carry — `conventions` (9: the seven
+    lessons plus the genesis retry and the budget plan), `world` (7: mbpp's
+    test-first loop and triage, tables/api's parsing, coercion and scalar
+    answer, the api retry and the page walk), `incidents` (4: the walk plan
+    and the three decoy shapes as symptom signatures), `reasoning-core` (4:
+    derive-then-verify, the regex witness rule, the grammar derivation with
+    the start-symbol reset, the budget rule), `text2sql` (6: the schema card,
+    TEXT dates, real division, coded literals, the reserved `order`, the
+    one-call method). `hgi/seeds.py` injects them (ids minted past the
+    store's own, priced for the pass model, write-seam lint, projections;
+    `proposed_by = "seed"` on every record), an arm's `seed` field drives it,
+    and `stream`, `transfer`, `world`, `incidents`, `reasoning-core` and
+    `text2sql` carry `*-seeded` twins of their attached and strict arms.
+    Every seed lints green injected into a fresh genesis store; none has been
+    run on a real model. Why it may be right: the seeded − detached gap on
+    batch 1 is the value of the decisions themselves, seeded − attached over
+    the stream the cost of learning them, and the strict pools ask the
+    knowledge-base question directly. Why it may not: (a) the seeds are the
+    authors' reading of the family code, not the loop's reading of misses —
+    a seed decision can be righter than any the loop would admit, so the gap
+    overstates what the loop could reach on its own; the honest twin is the
+    attached arm's late passes, not the seed. (b) The pass sees only id,
+    terms, stakes and decision text (`suite/agent.py`), so the seeds carry
+    the symptom signature and the exclusions inside the decision sentence;
+    D-0003 of `incidents` is 1.7k characters and the boot's context grows
+    with every co-applying record — on `world` sixteen records reach every
+    task. (c) Five of the twelve sampled `api` tasks under `world.toml` are
+    unpassable by any honest walk (two faulted calls plus the description
+    plus the pages exceed the budget; `suite/families/api.py` documents slack
+    for one fault), so the seeded arm's api ceiling is 7/12 and the world
+    seed's page-walk decision tells the pass to stop within budget and
+    report the cause; `versioned_status` has the same shape. (d) The
+    reasoning-core verification depends on `uv run` putting the venv's
+    `python3` (nltk, regex) first on the shell tool's PATH; a runner launched
+    outside the venv fails every grammar check. (e) A seed keyed on the
+    registered terms fires on every batch that presents them; per-task
+    selection rests on the decision's opening clause, which the guard call
+    does not enforce across a mixed batch. (f) The seeded arm still closes
+    and consolidates, so its store can retire or supersede a seed decision
+    the world contradicts — a seed the loop retires is itself a finding, and
+    the evolution log can tell the two apart by `proposed_by`.
