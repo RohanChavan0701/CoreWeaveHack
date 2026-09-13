@@ -78,7 +78,7 @@ CONVENTION_KEYWORDS: dict[str, tuple[str, ...]] = {
     "pool-exhausted": ("pool exhaust", "pool is exhausted", "in_use", "backends busy", "waiting for a connection",
                        "undersized pool", "pool max", "pool saturated by load"),
     "dependency-stalled": ("provider", "upstream", "dependency latency", "idle in transaction", "held across",
-                           "status page", "geocod", "third-party", "slow dependency"),
+                           "geocod", "third-party", "slow dependency"),
     "release-regressed": ("deploy", "release", "regression", "rolled out", "since the deploy", "bad deploy",
                           "version bump"),
 }
