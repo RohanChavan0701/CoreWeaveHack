@@ -125,6 +125,11 @@ class Admission(Strict):
     proposed_by: str
     """A session id, a consolidation id, or ``genesis``."""
     ledger_entry: str | None = None
+    rung: Term("ladder-rung") | None = None
+    """The ladder rung the admitting nomination named."""
+    displaced_from: Term("ladder-rung") | None = None
+    """The rung the lesson was meant for when this roster had no operator for it — a rule, a floor, an article carried as a
+    decision; what a later tier reads to find the records that stand in for it."""
     verdict: Term("adjudicator-verdict")
     adjudicator: RoleCall | None = None
     committed_at: datetime
@@ -617,6 +622,8 @@ class Draft(Strict):
     rung: Term("ladder-rung")
     rung_why: str
     """Why the cheaper rungs do not suffice."""
+    displaced_from: Term("ladder-rung") | None = None
+    """The rung the nomination named when this roster has no operator for it (:data:`hgi.consolidate.DISPLACED_TO`)."""
     body: DecisionBody
     evidence: list[str] = Field(default_factory=list)
     """The observation uids, steer ids and Weave URIs the draft rests on."""
@@ -708,6 +715,8 @@ class Lens(Strict):
 class Nomination(Strict):
     rung: Term("ladder-rung")
     rung_why: str
+    displaced_from: Term("ladder-rung") | None = None
+    """The rung the consolidator named, when the nomination was carried at another for want of an operator."""
     subject: str
     evidence: list[str]
     draft: str | None = None

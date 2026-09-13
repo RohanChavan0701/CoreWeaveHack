@@ -282,8 +282,8 @@ class Store:
         decision = self.parse_as(Decision, {
             "id": id, "kind": "decision", "status": "accepted", "created_at": draft.drafted_at.isoformat(),
             "lineage": {"supersedes": list(draft.supersedes), "superseded_by": [], "split_from": draft.split_from, "folded_from": list(draft.folded_from)},
-            "admission": {"proposed_by": draft.proposed_by, "ledger_entry": entry.id, "verdict": entry.verdict,
-                          "adjudicator": adjudicator.model_dump(), "committed_at": stamp.isoformat()},
+            "admission": {"proposed_by": draft.proposed_by, "ledger_entry": entry.id, "verdict": entry.verdict, "rung": draft.rung,
+                          "displaced_from": draft.displaced_from, "adjudicator": adjudicator.model_dump(), "committed_at": stamp.isoformat()},
             **body,
         })
         self.write(decision)

@@ -449,17 +449,19 @@ EDIT_RUNGS = {"counterfactual-edit": ("counterfactual", "not_this"), "hook-edit"
 
 OPERATED_RUNGS = frozenset({*EDIT_RUNGS, "new-decision"})
 """The rungs this roster has an operator for. The case leg drafts decisions and their successors; ``adoption-row`` and
-``rule-enrollment`` need the rule tier, ``floor`` a lint check authored by hand, ``article`` an eviction under the cap —
-none of which a sketch can stand for. A nomination at a rung with no operator is refused and recorded, never drafted
-as a decision wearing the rung's name: refusal is a first-class outcome, and the refusal is the datum that the roster
-is short a tier."""
+``rule-enrollment`` need the rule tier, ``floor`` a lint check authored by hand, ``article`` an eviction under the cap."""
+
+DISPLACED_TO = "new-decision"
+"""Where a nomination at a rung with no operator lands: the decision is the cheapest *available* home in this roster, so a
+lesson a rule, a floor or an article would carry is carried as a decision rather than lost — the ladder's cheapest
+sufficient home, read over the homes that exist. The rung it meant travels with it (``displaced_from``) and is stamped on
+the admitted record, so a later tier can find what stands in for it and re-home it; a mis-placed record that fires beats a
+well-placed record that was never written. A nomination with no sketch to carry as a decision is still refused."""
 
 
-def unoperated(rung: str) -> str | None:
-    """Why a nomination at ``rung`` cannot be drafted in this roster, or ``None`` when the rung has an operator."""
-    if rung in OPERATED_RUNGS:
-        return None
-    return f"refused: the rung {rung} has no operator in this roster (decisions only); nothing is drafted under a rung the store cannot execute"
+def displacement(rung: str) -> str | None:
+    """The rung a nomination at ``rung`` is displaced from in this roster, or ``None`` when the rung has an operator."""
+    return None if rung in OPERATED_RUNGS else rung
 
 
 def sketch_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
@@ -538,7 +540,8 @@ def draft_from(store: Store, record: Consolidation, raw: dict[str, Any]) -> Draf
     move recorded in ``split_from``/``folded_from``, and the anchors inherited from what it retires when it names none of its own."""
     retires = [*(raw.get("supersedes") or []), *(raw.get("folded_from") or []), *([raw["split_from"]] if raw.get("split_from") else [])]
     return store.parse_as(Draft, {"uid": store.new_uid(), "name": store.next_name("P"), "kind": "decision", "drafted_at": now().isoformat(),
-                                  "proposed_by": record.id, "rung": raw.get("rung"), "rung_why": raw.get("rung_why") or "", "body": edited_body(store, raw),
+                                  "proposed_by": record.id, "rung": raw.get("rung"), "rung_why": raw.get("rung_why") or "", "displaced_from": raw.get("displaced_from"),
+                                  "body": edited_body(store, raw),
                                   "evidence": list(raw.get("evidence") or []) or inherited_evidence(store, retires),
                                   "supersedes": list(raw.get("supersedes") or []),
                                   "split_from": raw.get("split_from") or None, "folded_from": list(raw.get("folded_from") or [])})
@@ -749,10 +752,10 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
         for raw in nominate(store, record, brief):
             nomination = nomination_from(store, raw)
             adopted = adoptable(store, raw)
-            if adopted is None and (why := unoperated(nomination.rung)) is not None:
-                nomination.outcome = why
-                record.nominations.append(nomination)
-                continue
+            if adopted is None and (displaced := displacement(nomination.rung)) is not None:
+                nomination.displaced_from, nomination.rung = displaced, DISPLACED_TO
+                nomination.rung_why = f"displaced from {displaced}: no operator for it in this roster, so the lesson is carried as a decision; " + nomination.rung_why
+                raw = {**raw, "rung": DISPLACED_TO, "rung_why": nomination.rung_why, "displaced_from": displaced}
             if adopted is not None:
                 nomination.adopts = adopted.uid
                 draft = adopted

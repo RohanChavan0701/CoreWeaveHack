@@ -1262,8 +1262,11 @@ lenses registered for each role, and the adjudicator sees the oracle's
 evidence and the attack — never the proposer's narrative of the pass. A
 nomination at a rung this roster has no operator for (`adoption-row`,
 `rule-enrollment`, `floor`, `article` while the roster is decisions only)
-is refused and recorded, never drafted as a decision under the rung's
-name. Every ledger entry, of every species, names three distinct parties:
+is carried at `new-decision` — the cheapest available home — with the rung
+it meant kept as `displaced_from` on the nomination, the draft and the
+admitted record's `admission`: a duty held as a decision and consulted
+beats a duty the store never wrote, and the stamp is what a later tier
+reads to re-home it. Every ledger entry, of every species, names three distinct parties:
 the currency species' contradictor is the oracle — the fire, the ratio,
 the instance — never the adjudicator that verdicts it, and a pass that
 contradicts a standing record at close contradicts a claim its admitter

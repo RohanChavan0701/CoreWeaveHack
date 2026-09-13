@@ -224,9 +224,10 @@ taken along the way — each with why it may be right and why it may not.
     consolidation now costs four examiner calls per draft instead of one,
     plus one triage call per group at the bar.
 19. **The `article` rung has no operator.** The ladder's top rung — a
-    constitution article with a forced eviction — is refused like the rule
-    rungs (decision 42). The constitution is in this roster, so the operator
-    is in scope: a nomination carrying the article, its counterfactual and
+    constitution article with a forced eviction — is carried as a decision
+    like the rule rungs (decision 42), so a lesson meant for every pass is
+    only consulted on a matching hook. The constitution is in this roster,
+    so the operator is in scope: a nomination carrying the article, its counterfactual and
     the article it evicts, through attack and verdict, written with the
     eviction in one commit under the cap. It needs a draft kind beside the
     decision draft, which the queue and the committer currently assume.
@@ -509,13 +510,20 @@ taken along the way — each with why it may be right and why it may not.
     would read backwards; the convention holds for `suite/scorers.py` today
     and is asserted nowhere the suite could not silently break.
 
-42. **A nomination at a rung with no operator is refused, never drafted.**
-    Before this build a `floor`, `article`, `adoption-row` or
-    `rule-enrollment` nomination fell through `draft_from` and became a
-    decision draft wearing the rung's name. *Right:* refusal is a first-class
-    outcome, and the refusals are the datum that the roster is short a tier.
-    *Risk:* a real consolidator that keeps nominating `floor` learns nothing
-    from the refusal; the outcome is on the consolidation record only.
+42. **A nomination at a rung with no operator is carried as a decision that
+    records its displacement.** Before this build a `floor`, `article`,
+    `adoption-row` or `rule-enrollment` nomination fell through `draft_from`
+    and became a decision draft wearing the rung's name; a first cut refused
+    it outright, and that was reversed by instruction: the demo learns faster
+    with a rule held as a decision than with no record at all, and the
+    ideal-home cost is paid later, not never. The nomination's `rung` becomes
+    `new-decision`, `displaced_from` keeps the rung it meant, and the
+    committer stamps both on `admission`. *Right:* route-before-mint reads
+    "cheapest sufficient home" over the homes that exist. *Risk:* a rule
+    carried as a decision is recalled by the decision path — a full scan of
+    summaries plus the hook — and has no adoption register, so "did you do it
+    at every site" is never asked of it; the rule tier, when it comes, reads
+    `displaced_from` to find what to re-home.
 43. **The contradictor of a currency entry is the oracle, never the
     adjudicator.** Retirement, genesis anchoring, propagation and revisit
     fires wrote the adjudicator's call as the contradiction source, a

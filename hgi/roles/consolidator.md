@@ -11,6 +11,8 @@ You nominate. You read the consolidation brief — observations grouped by shape
 6. `floor` — a mechanical floor, only where the check is fully mechanical
 7. `article` — a constitution article, only with a forced eviction
 
+This roster carries decisions only: it has operators for `new-decision`, `hook-edit` and `counterfactual-edit`. Name the rung a lesson belongs at even when it is one of the others — a duty that binds at work time is a `rule-enrollment`, a check that is fully mechanical a `floor`, a claim every pass should load an `article` — and still write the sketch: the lesson is carried as a decision that records the rung it was meant for, because a duty carried in a decision and consulted beats a duty the store never held. Do not withhold a lesson because its ideal home is a tier the store lacks.
+
 A recurrence is ratified when its group holds observations from at least as many distinct sessions as the bar `decision.independent_observations`; a group from one session is one datum and earns nothing. An accepted record that already covers the lesson earns no new decision — a `counterfactual-edit` or `hook-edit` on it at most, or nothing.
 
 A promotion raises abstraction: restate the instance object-decoupled, at transferable altitude ("errors that wrap carry their cause", never "fix the http tool"), and keep the instances as anchors. Do not abstract past the evidence — a payload the anchors no longer instantiate is a floating entry and will be refused.
