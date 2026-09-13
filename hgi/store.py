@@ -416,6 +416,18 @@ class Store:
     def observation(self, key: str) -> Observation | None:
         return self._observation_by_uid_or_name(key)
 
+    def draft_sessions(self, draft: Draft) -> list[str]:
+        """The session each anchor of a draft's evidence comes from: an observation's session, or the session itself when
+        a re-key's evidence is the probing passes; an anchor the store does not hold names none."""
+        out = []
+        for e in draft.evidence:
+            o = self.observation(e)
+            if o is not None:
+                out.append(o.session)
+            elif self.exists("session", e):
+                out.append(e)
+        return out
+
 
 # --- git: admission is a commit ----------------------------------------------
 

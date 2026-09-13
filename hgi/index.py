@@ -24,7 +24,7 @@ from typing import Any, Callable
 
 from hgi.registry import is_escape, read_json, write_json
 from hgi.store import Store
-from hgi.types import Decision, Disposition, Draft, Fire, Session
+from hgi.types import MECHANICAL, Decision, Disposition, Draft, Fire, Session
 
 FORBIDDEN_CELL_KEYS = frozenset({"decision", "duty", "then", "article", "context", "options"})
 """Fields whose content a reader could obey directly from a cell; the settlement test evicts them."""
@@ -428,8 +428,9 @@ def attacker(store: Store) -> dict[str, Any]:
     upheld = [e for e in with_landing if e.verdict in ("attack-landed", "premise-killed")]  # type: ignore[attr-defined]
     per_angle: dict[str, dict[str, int]] = defaultdict(lambda: {"claims": 0, "landed": 0})
     for c in claims:
-        per_angle[c.lens or "single-context"]["claims"] += 1
-        per_angle[c.lens or "single-context"]["landed"] += int(c.landed)
+        angle = c.lens or ("mechanical" if c.target in MECHANICAL else "single-context")
+        per_angle[angle]["claims"] += 1
+        per_angle[angle]["landed"] += int(c.landed)
     indicted = defaultdict(list)
     for t in store.all("steer"):
         if t.indicts:  # type: ignore[attr-defined]

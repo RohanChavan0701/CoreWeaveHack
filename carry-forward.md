@@ -365,6 +365,19 @@ be right and why it may not.
     assert shown, two held out) with a lint or complexity column would be
     the lesson-free family with a graded quality metric, for a mixed
     stream; not built.
+38. **The review's reject-vs-amend change is proven on the stub only.**
+    Decisions 73–75 — independence and watch direction read by the code,
+    a landed abstraction claim amended through one promote re-ask, a
+    decline standing only on an upheld premise kill — are proven by the
+    stub's paths and the tests (`tests/test_mechanical_review.py`,
+    `tests/test_abstraction_amend.py`, `tests/test_decline_override.py`)
+    and by no real-model run. The evidence they answer is the stream run's
+    ledgers (`runs/stream/*/store/ledger/ledger.jsonl`, 2026-09-13): three
+    lesson drafts on gpt-oss-120b — endpoint versioning, the moved-v2
+    route, after passes 2 and 6 of the attached arm and in the strict arm —
+    were declined on abstraction and watch direction alone and dropped.
+    The test of whether the run now admits the moved-v2 record is a rerun
+    of `experiments/stream.toml` arm `120b-attached`; not run.
 29. **Public continual-learning suites.** SWE-Bench-CL, AgentMemoryBench,
     AgentCL and the procedural-memory-retrieval benchmark were surveyed
     (2026-09-13) as the scale-up path for the stream shape — repository
@@ -1107,3 +1120,56 @@ be right and why it may not.
     submission. *Risk:* item 36 — the detached draws paid in 429s and were
     redrawn; the attached arms' rows show no rate-limit error, so their
     curves stand.
+73. **Independence and the watch's direction are the code's readings, not a
+    lens's.** The distinct-session count of a draft's evidence against the
+    bar is a lint floor check (`independence`) the committer refuses on,
+    and a sketched watch that fires on success is dropped from the draft
+    before any context opens — the watch is optional, the draft is not —
+    with the drop recorded on the ledger claim; both join the attack first
+    with no lens and no call, an examiner claim on either class that
+    contradicts the computed reading is discarded, and L-0005 and L-0008
+    are seeded retired through the crystallization door. *Right:* over the
+    stream run's fifteen attacks `warrant:watch-direction` landed nine
+    times and was wrong at least twice (on `task_pass_rate < 1.0` and
+    `== 0.0`, both of which fire on failure) and `warrant:independence`
+    landed on a draft whose group came from two sessions; a count and a
+    comparator are gates, and a gate asked as a question is a lens whose
+    answer has crystallized. *Risk:* a register seeded before this change
+    still walks the two lenses and pays two calls per draft for claims
+    that are then advisory; and a watch dropped is a record unwatched —
+    its warrant returns only through the retirement ratio or a pass's
+    close-time contradiction, never through the oracle's series.
+74. **A landed abstraction claim amends; it never declines.** With no
+    premise kill beside it and the bar met, the consolidator is re-asked
+    once (the `promote` request: the payload, the refutation, the task ids
+    and the instances) to restate the payload at the transferable shape
+    with the instances kept as anchors; the abstraction angle is walked
+    again over the promoted draft, the entry keeps the nominated text as
+    its claim, the promoted text as its amendment and the promotion under
+    `coding`; when no promotion comes back the adjudicator's
+    `admit-amended` restates the payload and the committer admits the
+    amended text. *Right:* on gpt-oss-120b the claim landed four times and
+    was right each time, and the adjudicator never once returned
+    `admit-amended`: an instance-shaped lesson is a lesson mis-stated, not
+    a lesson refuted, and dropping it drops the recurrence with it. *Risk:*
+    one more consolidator call per landed claim, whose product only the
+    re-walked abstraction angle judges; a consolidator that promotes past
+    the evidence yields a floating payload the anchors no longer
+    instantiate, which only the adjudicator's exemplification check reads;
+    and the re-ask returns the whole payload, so a promotion can change
+    more than the instance's name.
+75. **A decline stands only on an upheld premise kill.** The adjudicator's
+    `decline` with no landed `premise:` claim is overridden to an admit —
+    amended where it offered an amendment — the entry keeps the attack
+    named (`survived-with-attack-named`) and its outcome says which token
+    was overridden and why; the floor still refuses an overridden draft
+    below the bar; defer and escalate are the adjudicator's as returned.
+    A decline that stands is always `premise-killed`, so `attack-landed`
+    is reached only from the human queue. *Right:* the run's two premise
+    kills that stood were right, and every other decline was on a class
+    that is now mechanical or amend-only. *Wrong if* a refutation exists
+    that is neither a premise kill nor a mis-statement — an anchor that
+    does not exemplify the payload is the case the prompt still names, and
+    its decline is now an admission the floor cannot catch (exemplification
+    is residue); the override is written on the outcome so the ledger shows
+    where that happens.

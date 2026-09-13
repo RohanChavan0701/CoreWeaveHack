@@ -21,6 +21,8 @@ settlement-authority         write          fails a settled latch whose settleme
                                             dispositive fire or admitted successor
 ports                        write          fails a latch off its port declaration without a warrant; fails a         whether the declaration is right
                                             required latch type that is absent
+independence                 write          fails a draft whose evidence names fewer distinct sessions than the bar    whether two sessions were two contexts
+                                            decision.independent_observations
 key-space                    write          fails a neighbour latch naming a record that does not exist; fails a       whether the referent is the right quantity to watch
                                             world-state watch naming a scorer or evaluation the oracle does not run
 constitution-cap             write          fails a store exceeding max_articles or max_bytes                         the ranking
@@ -528,9 +530,22 @@ def run(store: Store, seams: tuple[str, ...] | None = None, model_id: str | None
     return report
 
 
+def independence(store: Store, draft: Draft) -> Finding | None:
+    """The independence bar as a floor: a draft whose evidence names fewer distinct sessions than
+    ``decision.independent_observations`` is one context counted twice — one datum — and is refused before any verdict
+    admits it. The count is the code's; no lens reads it."""
+    bar = store.registry.bars["decision"]["independent_observations"]
+    sessions = sorted(set(store.draft_sessions(draft)))
+    if len(sessions) >= bar:
+        return None
+    return fail("independence", draft.name, f"{len(sessions)} distinct session(s) in the evidence ({', '.join(sessions) or 'none'}) against the bar {bar}")
+
+
 def check_draft(store: Store, draft: Draft) -> list[Finding]:
-    """The committer's floor over one draft: shape, complement law, ports for the status it will take."""
+    """The committer's floor over one draft: shape, complement law, the independence bar, ports for the status it will take."""
     findings = body_findings(draft.name, draft.body, store)
+    if (unmet := independence(store, draft)) is not None:
+        findings.append(unmet)
     declared = store.registry.ports.get("decision", {}).get("accepted", {})
     present = {l.type for l in draft.body.all_latches()}
     for latch_type, mark in declared.items():
