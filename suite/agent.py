@@ -148,8 +148,11 @@ class Agent(weave.Model):
         user = f"Task {task}: {prompt}\nOutput schema: {json.dumps(schema)}" + (f"\nBudgets — {budgets}" if budgets else "")
         messages: list[dict[str, Any]] = [{"role": "system", "content": system}, {"role": "user", "content": user}]
         for _ in range(MAX_TURNS):
-            reply, _ = _model.chat_with_tools("pass", messages, Tools.SCHEMA, session=self.session, pass_=self.pass_,
-                                              records_in_context=[r["id"] for r in self.records])
+            try:
+                reply, _ = _model.chat_with_tools("pass", messages, Tools.SCHEMA, session=self.session, pass_=self.pass_,
+                                                  records_in_context=[r["id"] for r in self.records])
+            except Exception as e:  # the endpoint failed the turn: the row fails with the cause, and is scored, not dropped
+                return _envelope(task, tools, error={"message": "model call failed", "cause": f"endpoint {type(e).__name__}: {str(e)[:200]}"})
             if reply["tool_calls"]:
                 messages.append({"role": "assistant", "content": reply["content"] or None,
                                  "tool_calls": [{"id": tc["id"], "type": "function", "function": {"name": tc["name"], "arguments": tc["arguments"]}} for tc in reply["tool_calls"]]})
