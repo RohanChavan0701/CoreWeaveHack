@@ -54,12 +54,19 @@ SLOT_WORDS = {"activation": ("hook", "fire", "fired", "activation", "recall", "n
 
 
 def indictment(store: Store, note: str) -> dict[str, str] | None:
-    """The credit assignment a human steer performs: the record its note names, and the slot its words indict.
+    """The credit assignment a human steer performs: the artifact its note names, and the slot its words indict.
 
-    A steer decides which artifact absorbs the lesson (doctrine § 7.1); a note naming no record in the store is a
-    correction with its credit unassigned, and the backward pass reads it without an indictment.
+    A steer decides which artifact absorbs the lesson (doctrine § 7.1). The artifact is a store record — resolved by
+    :meth:`hgi.store.Store.find` — or a registered lens, which lives in the register rather than as a record kind and so
+    is resolved through ``store.registry``. Records come first: a note naming both takes the record, the way it always
+    has, and only a note that names no store record but does name a registered lens is credited to the lens. A note
+    naming neither is a correction with its credit unassigned, and the backward pass reads it without an indictment.
     """
-    ids = [rid for rid in re.findall(r"\b[A-Z]-\d{4,}\b", note) if store.find(rid) is not None]
+    named = re.findall(r"\b[A-Z]-\d{4,}\b", note)
+    ids = [rid for rid in named if store.find(rid) is not None]
+    if not ids:
+        lens_ids = {l.id for l in store.registry.lenses(status=None)}
+        ids = [rid for rid in named if rid in lens_ids]
     if not ids:
         return None
     lower = note.lower()

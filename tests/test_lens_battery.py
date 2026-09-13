@@ -13,8 +13,9 @@ from hgi import index as _index
 from hgi import lens_battery as lb
 from hgi import lint as _lint
 from hgi import model as _model
-from hgi.store import Store
-from hgi.types import Draft, LensTelemetry
+from hgi import steers as _steers
+from hgi.store import Store, now
+from hgi.types import Draft, LensTelemetry, Session
 
 
 # --- the filing rule and the scorers -----------------------------------------------------------
@@ -133,6 +134,21 @@ def test_populate_moves_the_lens_register_off_design_stage(store):
     assert telemetry["L-0004"].answer_variance.startswith("0.25")
     assert telemetry["L-0001"].decoy_rejection == "design-stage"  # boot lenses untouched
     assert isinstance(telemetry["L-0003"], LensTelemetry)
+
+
+def test_populate_wires_the_miss_stream_from_a_citing_steer(store, monkeypatch):
+    # a human note naming a lens becomes a steer that cites it
+    s = Session(id="S-0001", pass_=1, started_at=now())
+    monkeypatch.setattr(_steers, "notes_for", lambda session: [{"call": "weave:///t/call/1", "note": "L-0004 missed the uncaused failure its angle should catch"}])
+    [steer] = _steers.capture(store, s)
+    assert steer.indicts.record == "L-0004"
+
+    result = lb.run_battery(store)
+    lb.populate_telemetry(store, result.telemetry)
+    telemetry = {l.id: l.telemetry for l in Store(store.root).registry.lenses()}
+    # the cited lens reads the steer in its miss stream, off the static literal; a battered lens no steer cites reads none
+    assert "1 steer cites this lens" in telemetry["L-0004"].miss_stream and steer.id in telemetry["L-0004"].miss_stream
+    assert telemetry["L-0003"].miss_stream == f"no steer cites this lens ({lb.LENS_BATTERY})"
 
 
 def test_the_populated_store_stays_lint_green(store):

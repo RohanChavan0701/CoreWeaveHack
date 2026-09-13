@@ -480,15 +480,32 @@ def write_controls(store: Store, payload: dict[str, Any]) -> None:
     _registry.write_json(controls_path(store), payload)
 
 
+def _miss_stream(steer_ids: list[str]) -> str:
+    """The miss stream a lens reads: the steers whose indictment cites it — the misses of that lens a human caught."""
+    if not steer_ids:
+        return f"no steer cites this lens ({LENS_BATTERY})"
+    n = len(steer_ids)
+    return f"{n} steer{'' if n == 1 else 's'} cite{'s' if n == 1 else ''} this lens: {', '.join(sorted(steer_ids))}"
+
+
 def populate_telemetry(store: Store, telemetry: dict[str, LensTelemetry]) -> list[str]:
-    """Write the computed telemetry onto the lens register, moving each battered lens off ``design-stage``; returns the ids updated."""
+    """Write the computed telemetry onto the lens register, moving each battered lens off ``design-stage``; returns the ids updated.
+
+    The ``miss_stream`` cell is wired from real data here rather than in :func:`telemetry_from`, which sees only the
+    battery outputs: a human steer's indictment can name a lens (:func:`hgi.steers.indictment`), and the stream a lens
+    reads is the steers that cite it. The battery axes are the rest of the cell; the miss stream is the store's steers.
+    """
+    citing: dict[str, list[str]] = defaultdict(list)
+    for steer in store.all("steer"):
+        if steer.indicts is not None:  # type: ignore[attr-defined]
+            citing[steer.indicts.record].append(steer.id)  # type: ignore[attr-defined]
     path = store.registry.path("lenses")
     raw = _registry.read_json(path)
     updated = []
     for item in raw:
         t = telemetry.get(item.get("id"))
         if t is not None:
-            item["telemetry"] = t.model_dump()
+            item["telemetry"] = {**t.model_dump(), "miss_stream": _miss_stream(citing.get(item["id"], []))}
             updated.append(item["id"])
     _registry.write_json(path, raw)
     return updated
