@@ -27,7 +27,7 @@ def environment():
 
 
 TAILS = [["genesis", "--force"], ["lint"], ["index"], ["lineage", "D-0001"],
-         ["boot", "--pass", "1"], ["consolidate"], ["price", "--model", "stub"]]
+         ["boot", "--pass", "1"], ["consolidate"], ["price", "--model", "stub"], ["consult"]]
 """One invocation a subcommand, each carrying whatever that subcommand requires."""
 
 
