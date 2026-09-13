@@ -1,0 +1,214 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T12:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "seed: what a mature store for the reasoning-core stream holds — no observation behind it; the fork is read off the family's prompt (suite/families/reasoning_core.py:66, suite/families/reasoning_core.py:76), its budgets (suite/families/reasoning_core.py:47, suite/families/reasoning_core.py:50) and the checkers (suite/families/_reasoning_core.py:58, suite/families/_reasoning_core.py:73); cfg-generation at Reasoning Core level 2: small grammars, rules shuffled, a witness of six to twelve terminals with a min_tokens floor at the witness's length",
+  "counterfactual": "The overshoot is a pass that checks with `CFG.fromstring(G)` alone, as the prompt's hint reads (suite/families/reasoning_core.py:77), on a grammar whose first rule is `D -> 'some'` or `B -> 'per' D`: the parser starts from D or B, a correct sentence prints False or raises, and the pass spends its repair call — or under the strict budget answers a candidate it now believes is wrong. The checker itself resets the start (suite/families/_reasoning_core.py:84, suite/families/_reasoning_core.py:86); the other overshoot is a candidate padded past the minimum with words the grammar has but the derivation does not reach, or past sixty tokens (suite/families/_reasoning_core.py:78).",
+  "created_at": "2026-09-13T12:00:00-07:00",
+  "decision": "Build the grammar candidate by a leftmost derivation from the stated start symbol, and verify it from that start symbol, never from NLTK's default. Derivation: from the start symbol reach a recursive rule — one whose right side contains its own left side, such as `S -> '<' S '>'`, `S -> 'boy' S`, `B -> '[' B ']'`, `C -> C 'this'` (follow unit rules like `S -> A`, `A -> B` to get there) — and apply it repeatedly, counting terminals, until the count will reach the required minimum; then close every remaining nonterminal with a rule whose right side is terminals only (or a chain of unit rules ending in one). Count the tokens: at least the minimum, at most 60. Write the terminals unquoted, separated by single spaces, in derivation order; `<`, `>`, `[` and `]` are ordinary tokens. Verify with one shell call that sets the start symbol explicitly — NLTK takes the first rule's left side as the start and the prompt's rules are shuffled, so a correct sentence checked without that line reports no parse or raises:\n\npython3 - <<'EOF'\nfrom nltk import CFG, Nonterminal\nfrom nltk.parse.earleychart import EarleyChartParser\nG = '''<the rules, one per line, exactly as the prompt shows them>'''\ntoks = \"<candidate>\".split()\ng = CFG(Nonterminal('<start symbol>'), CFG.fromstring(G).productions())\ntry: ok = next(EarleyChartParser(g).parse(toks), None) is not None\nexcept Exception: ok = False\nprint(len(toks), ok)\nEOF\n\nReturn the candidate only when the call printed a count at or above the minimum and True; a False here means the derivation, not the checker, is wrong — redo the derivation rather than reshuffle the words.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "which recursive rule reaches the minimum cheapest is judgment; the floor checks that the start symbol was set and the count printed"
+    ]
+  },
+  "id": "D-0003",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a task that shows a regular expression rather than a grammar — the regex witness rule bears there",
+          "a task that asks for the grammar, a parse tree or a derivation rather than a sentence the grammar derives",
+          "a grammar checked by something other than the shell's NLTK — a parser to write, a membership proof to give"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "shell-tool",
+          "tool-budget"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.9
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the family stops asking for a sentence of a stated minimum length, or the checker stops resetting the start symbol",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — leftmost derivation from the stated start, repeat a recursive rule until the terminal count reaches the minimum, close with terminal rules; verify with the start symbol set explicitly",
+      "why": "the checker sets the start back explicitly because NLTK reads the first rule's left side as the start and the rules are shuffled (suite/families/_reasoning_core.py:84); the derivation guarantees membership by construction"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — write a sentence that uses the grammar's words and check with CFG.fromstring alone",
+      "why": "on a grammar whose first rule is not the start symbol the parse fails or raises for a correct sentence; the pass then edits a member into a non-member"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — take the shortest sentence and pad it with extra terminals to reach the minimum",
+      "why": "padding is not derivation; only a recursive rule adds tokens the grammar admits"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/reasoning_core"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a task that shows a context-free grammar with a stated start symbol and asks for a string of at least N space-separated terminals it derives, checked in the shell with NLTK's CFG and EarleyChartParser",
+    "not_this": [
+      "a task that shows a regular expression rather than a grammar — the regex witness rule bears there",
+      "a task that asks for the grammar, a parse tree or a derivation rather than a sentence the grammar derives",
+      "a grammar checked by something other than the shell's NLTK — a parser to write, a membership proof to give"
+    ],
+    "stakes": "a sentence checked from NLTK's default start symbol reports no parse for a correct candidate on five of the twelve pinned grammars, so the pass repairs a right answer into a wrong one or burns the repair call; a leftmost derivation that repeats a recursive rule reaches the token minimum first time and the explicit start symbol reports it True"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/reasoning_core.py:73",
+      "suite/families/reasoning_core.py:76",
+      "suite/families/reasoning_core.py:77",
+      "suite/families/_reasoning_core.py:49",
+      "suite/families/_reasoning_core.py:77",
+      "suite/families/_reasoning_core.py:78",
+      "suite/families/_reasoning_core.py:84",
+      "suite/families/_reasoning_core.py:86"
+    ],
+    "premises": [
+      {
+        "falsifier": "a grammar whose first rule is always the start symbol — the explicit CFG(Nonterminal(start), …) is then redundant, never wrong",
+        "id": "p1",
+        "statement": "NLTK reads the first production's left side as the start symbol and the prompt's rules are shuffled, so membership is checked from the stated start (suite/families/_reasoning_core.py:84); on five of the twelve pinned grammars the first rule is not the start",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a grammar whose language is finite below the minimum, or whose only path to the minimum exceeds 60 tokens",
+        "id": "p2",
+        "statement": "every pinned grammar has a recursive production reachable from the start that reaches the token minimum within 60 tokens, because the generator kept only instances whose own witness passed the checker",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a checker that expects the quoted terminals, a parse tree, or a derivation rather than the sentence",
+        "id": "p3",
+        "statement": "the checker splits the result on whitespace and matches each token as a terminal verbatim, quotes stripped (suite/families/_reasoning_core.py:77)",
+        "status": "supported"
+      }
+    ]
+  }
+}

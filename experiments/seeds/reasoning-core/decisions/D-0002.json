@@ -1,0 +1,218 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T12:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "seed: what a mature store for the reasoning-core stream holds — no observation behind it; the fork is read off the family's prompt (suite/families/reasoning_core.py:66, suite/families/reasoning_core.py:76), its budgets (suite/families/reasoning_core.py:47, suite/families/reasoning_core.py:50) and the checkers (suite/families/_reasoning_core.py:58, suite/families/_reasoning_core.py:73); regex-following at Reasoning Core level 3: alternation, groups, counted repetition, anchors, word boundaries, possessive and lazy quantifiers",
+  "counterfactual": "The overshoot is a candidate read off the pattern as prose: on `piece{3}[^Y1F]\\w*` (suite/families/reasoning_core.py:67 is the call the pass makes) the probe's first candidate was `pieceeeXabc`, with a `c` where `{3}` had bound only the `e`, and the verdict was False before the repair; the mirror overshoot is a candidate that satisfies the pattern but not the domain — a space, a tab, backticks around it — which the checker refuses before matching (suite/families/_reasoning_core.py:53, suite/families/_reasoning_core.py:62).",
+  "created_at": "2026-09-13T12:00:00-07:00",
+  "decision": "Build the regex candidate from the pattern's structure, left to right, taking each construct's cheapest witness, and only then verify it. A literal is itself; `[set]` is one member of the set; `[^set]` is one printable non-space character outside it (for a range such as `[^6-e]` take a digit below the range's start, e.g. `1`, or a letter past its end); `\\w` is `a`, `\\d` is `1`, `.` is `a`; `x?` and `x*` (also `?+`, `*+`, `*?`, `??`) contribute nothing; `x+` (also `++`, `+?`) contributes one `x`; `x{m}` and `x{m,n}` contribute exactly m copies of x; `A|B` takes the alternative with the cheapest non-empty, satisfiable witness (drop one that needs an empty string or contradicts itself, such as `\\B\\btwo`); a group `(…)` or `(?:…)` contributes the witness of its contents, and a quantified group repeats that whole witness; `^` and `$` contribute nothing; `\\b` needs a word character (letter, digit, `_`) on the side inside the string and the string's edge or a non-word character on the other; `\\B` needs the same class on both sides; a backreference `\\N` repeats group N's witness verbatim. A quantifier binds only the single atom before it: `piece{3}` is `pieceee`, `futureimportant{1,3}` is `futureimportant`, `occur{1}` is `occur`, `near{1}?` is `near`; only a parenthesised group repeats as a whole (`(last){2,5}` is `lastlast`). The result must be non-empty, printable ASCII, with no whitespace and no backticks — the checker strips backticks and surrounding blanks before matching, so a candidate that needs them is wrong; when the cheapest witness would be empty take one iteration of a starred group instead. Verify that exact string once with python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '<pattern>' '<candidate>' — both arguments single-quoted — and return it unchanged.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether the chosen alternative or set member was the cheapest is judgment; the floor checks that the verified string was returned"
+    ]
+  },
+  "id": "D-0002",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a task that shows a context-free grammar rather than a regular expression — the grammar derivation rule bears there",
+          "a task that asks for a regular expression rather than for a string one accepts",
+          "a task where the string must also satisfy a constraint outside the pattern — a stated length, a file's contents, a second pattern"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "shell-tool",
+          "tool-budget"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.9
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the family stops asking for a fullmatch witness, or moves to patterns with lookaround the witness rule does not cover",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — construct the witness left to right, the cheapest witness of each construct, quantifiers bound to the single preceding atom",
+      "why": "concatenating each construct's minimal witness is a fullmatch witness of the whole pattern for every construct the level-3 generator emits; verified on all twelve pinned patterns under both re and regex"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — read the pattern as prose and type a plausible string",
+      "why": "`piece{3}` read as prose gives `piecepiecepiece` or `pieceeeXabc`; the quantifier binds one atom and the probe's first candidate missed exactly that"
+    },
+    {
+      "judged": "rejected",
+      "name": "C — enumerate strings in the shell until one matches",
+      "why": "the budget is one call plus at most one (suite/families/reasoning_core.py:47); enumeration is refused at the third call"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/reasoning_core"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a task that shows a regular expression and asks for a non-empty printable string with no whitespace that the expression fully matches, verified with re.fullmatch in the shell",
+    "not_this": [
+      "a task that shows a context-free grammar rather than a regular expression — the grammar derivation rule bears there",
+      "a task that asks for a regular expression rather than for a string one accepts",
+      "a task where the string must also satisfy a constraint outside the pattern — a stated length, a file's contents, a second pattern"
+    ],
+    "stakes": "a candidate built by reading the pattern loosely (a quantifier applied to a whole word, a negated class filled from inside the range, an empty alternative) prints False and costs the repair call the strict pool does not have; a candidate built construct by construct prints True first time"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/reasoning_core.py:64",
+      "suite/families/reasoning_core.py:67",
+      "suite/families/_reasoning_core.py:53",
+      "suite/families/_reasoning_core.py:58",
+      "suite/families/_reasoning_core.py:62",
+      "suite/families/_reasoning_core.py:68"
+    ],
+    "premises": [
+      {
+        "falsifier": "a pattern the checker treats `piece{3}` in as three `piece`s — a checker that is not a regex engine",
+        "id": "p1",
+        "statement": "a quantifier binds only the atom immediately before it, a group repeats as a whole, and neither re nor regex reads it otherwise",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a pinned pattern with a lookahead or lookbehind whose witness cannot be built by concatenation, or a backreference the rule's verbatim repeat does not satisfy",
+        "id": "p2",
+        "statement": "concatenating each construct's minimal witness in order yields a fullmatch witness of the whole pattern for the constructs the level-3 generator emits (no lookaround)",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a checker that admits an empty or whitespace string, or one that matches the raw result",
+        "id": "p3",
+        "statement": "the checker refuses an empty, whitespace-bearing or non-printable string before matching (suite/families/_reasoning_core.py:53) and matches the string with backticks and blanks stripped (suite/families/_reasoning_core.py:62)",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a pinned pattern that `re` refuses to compile or matches differently from `regex` — a fuzzy-match or recursion construct",
+        "id": "p4",
+        "statement": "the checker's `regex.fullmatch` (suite/families/_reasoning_core.py:68) and the shell's `re.fullmatch` agree on every construct the pinned patterns use, possessive quantifiers included (Python 3.11+)",
+        "status": "supported"
+      }
+    ]
+  }
+}
