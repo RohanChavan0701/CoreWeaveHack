@@ -9,6 +9,11 @@ cannot comply with without opening the record — ids, hook prose, exclusions,
 stakes, owed acts — and never a compliable sentence. The decision sentence
 itself is evicted to the full record; :data:`FORBIDDEN_CELL_KEYS` names the
 fields the lint refuses in any cell.
+
+One file under ``index/`` is not a projection: ``controls.json``, the blind
+coder's seeded-control telemetry, written by ``hgi lens-battery``
+(:mod:`hgi.lens_battery`) the way the lens register's telemetry is, and left
+alone by regeneration.
 """
 
 from __future__ import annotations

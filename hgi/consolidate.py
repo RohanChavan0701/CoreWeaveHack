@@ -345,14 +345,16 @@ def evidence_pack(store: Store, draft: Draft, brief: dict[str, Any]) -> dict[str
             "series": series, "watch_scorer": watch, "scores": brief["scores"], "evaluation": evaluation}
 
 
-def attack(store: Store, record: Consolidation, draft: Draft, evidence: dict[str, Any]) -> tuple[dict[str, Any], _model.Completion]:
+def attack(store: Store, record: Consolidation, draft: Draft, evidence: dict[str, Any], lenses: list[Any] | None = None) -> tuple[dict[str, Any], _model.Completion]:
     """The examiner attacks the verbatim draft, one angle per context: each examiner-hosted lens is walked in a fresh call
     and contributes the claims of its own class; the fan's product is their union, each claim naming the angle and the
     call that produced it. A fan walked in one context is a longer prompt, not an ensemble (the fan law), and the
     examiner is where tree-facing lenses live because its independence from the draft is structural (the host law).
     A register with no examiner lens falls back to the single-context attack, which is the same product with no angles.
+    ``lenses`` names the angles to walk when the caller is not the backward pass — the lens battery's examiner control
+    walks one angle at a time; the pass walks the register's.
     """
-    lenses = store.registry.lenses("examiner")
+    lenses = store.registry.lenses("examiner") if lenses is None else lenses
     payload = dict(draft=draft.model_dump(by_alias=True, mode="json"), evidence=evidence)
     if not lenses:
         c = _model.complete("examiner", roles.request("attack", **payload), session=record.id)
