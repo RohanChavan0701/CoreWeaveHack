@@ -150,10 +150,15 @@ def undischarged_fires(store: Store) -> list[dict[str, Any]]:
 
 
 def competence(store: Store) -> list[dict[str, Any]]:
-    """applied ÷ considered per record over the review window — the demotion nominator, never a verdict."""
+    """applied ÷ considered per record over the review window — the demotion nominator, never a verdict.
+
+    ``not_applicable`` is the fired-but-not-applicable count (§ 10.5, activation — precision): the hook fired on
+    presentation alone and the pass disposed the record ``considered-not-applicable``; dominating the considered count,
+    it indicts the guard and nominates a ``counterfactual-edit`` growing ``not_this`` (:func:`precision`).
+    """
     sessions, window = _window(store)
     recent = {s.id for s in sessions}
-    tally: dict[str, dict[str, int]] = defaultdict(lambda: {"considered": 0, "applied": 0, "guard_failed": 0, "off_map": 0})
+    tally: dict[str, dict[str, int]] = defaultdict(lambda: {"considered": 0, "applied": 0, "not_applicable": 0, "guard_failed": 0, "off_map": 0})
     for u in store.all("disposition"):
         u: Disposition
         if u.session not in recent:
@@ -163,6 +168,8 @@ def competence(store: Store) -> list[dict[str, Any]]:
             t["considered"] += 1
         if u.disposition == "applied":
             t["applied"] += 1
+        elif u.disposition == "considered-not-applicable":
+            t["not_applicable"] += 1
         elif u.disposition == "guard-failed":
             t["guard_failed"] += 1
         elif u.disposition == "fired-off-map":
@@ -173,6 +180,45 @@ def competence(store: Store) -> list[dict[str, Any]]:
         ratio = (t["applied"] / t["considered"]) if t["considered"] else None
         rows.append({"record": d.id, **t, "applied_over_considered": ratio, "window_passes": window,
                      "passes_in_window": len(recent)})
+    return rows
+
+
+def precision(store: Store) -> list[dict[str, Any]]:
+    """The activation-precision nominator (§ 10.5, the first slot signature): records whose not-applicable dispositions
+    dominate their considered count over the review window, at or above the bar ``precision.not_applicable_over_considered_above``,
+    each with the dispositions' notes — the presentations the hook fired on and did not bear on, which a
+    ``counterfactual-edit`` grows ``not_this`` by.
+
+    Two finer diagnoses outrank it and are left to their own rows: a record whose dispositions are bimodal across
+    sub-shapes is fused (``fusion``: the not-applicable fires are the other sub-shape's, a split, not an exclusion), and a
+    record at its retirement door — never applied over a full window — is the retirement leg's (mootness, after the
+    killer-item check), not a guard to tighten.
+    """
+    bar = store.registry.bars.get("precision", {}).get("not_applicable_over_considered_above", 0.5)
+    sessions, _ = _window(store)
+    recent = {s.id for s in sessions}
+    bimodal = {row["record"] for row in fusion(store) if row["bimodal"]}
+    notes: dict[str, list[dict[str, str]]] = defaultdict(list)
+    for u in store.all("disposition"):
+        u: Disposition
+        if u.session in recent and u.disposition == "considered-not-applicable":
+            notes[u.record].append({"disposition": u.id, "session": u.session, "note": u.note or ""})
+    rows = []
+    for row in competence(store):
+        if not row["considered"] or row["record"] in bimodal:
+            continue
+        ratio = row["not_applicable"] / row["considered"]
+        if ratio < bar:
+            continue
+        d: Decision = store.read("decision", row["record"])  # type: ignore[assignment]
+        guard = d.lifecycle.retirement.guard
+        at_retirement_door = (guard.applied_over_considered_below is not None and row["applied_over_considered"] < guard.applied_over_considered_below
+                              and row["passes_in_window"] >= (guard.over_passes or 0))
+        if at_retirement_door:
+            continue
+        rows.append({"record": d.id, "considered": row["considered"], "not_applicable": row["not_applicable"],
+                     "not_applicable_over_considered": ratio, "bar": bar, "not_this": d.consultation_not_this,
+                     "notes": notes.get(d.id, [])})
     return rows
 
 

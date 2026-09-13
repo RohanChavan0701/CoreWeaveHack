@@ -11,6 +11,9 @@
     "anchors": 1,
     "noticings": 1
   },
+  "precision": {
+    "not_applicable_over_considered_above": 0.5
+  },
   "retirement": {
     "applied_over_considered_below": 0.1,
     "window_passes": 6

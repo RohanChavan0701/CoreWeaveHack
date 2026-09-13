@@ -146,6 +146,7 @@ BARS = {
         "independence": "observations from distinct sessions",
     },
     "retirement": {"applied_over_considered_below": 0.1, "window_passes": 6},
+    "precision": {"not_applicable_over_considered_above": 0.5},
     "vocabulary": {"independent_escapes": 2, "independence": "escapes from distinct sessions; two from one pass are one datum"},
     "consolidation_every_passes": 2,
     "genesis_anchor_deadline_consolidations": 3,

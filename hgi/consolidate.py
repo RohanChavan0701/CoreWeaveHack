@@ -118,7 +118,7 @@ def credit_table(store: Store, sessions: list[Session]) -> list[dict[str, Any]]:
     return out
 
 
-ANALYSIS_FIELDS = ("competence", "groups", "credit", "fusion", "convergence", "structural_zero", "escapes", "recall")
+ANALYSIS_FIELDS = ("competence", "precision", "groups", "credit", "fusion", "convergence", "structural_zero", "escapes", "recall")
 """The nominator's analytical rows — what ARIA produces over the mirrored runs, and what the local pass derives when no analyst report resolves."""
 
 
@@ -131,6 +131,7 @@ def local_analysis(store: Store, record: Consolidation, sessions: list[Session])
     presented = sorted({t for s in sessions for t in s.work_shape.terms})
     return {
         "competence": _index.competence(store),
+        "precision": _index.precision(store),
         "groups": group_observations(store, record),
         "credit": credit_table(store, sessions),
         "fusion": [row for row in _index.fusion(store) if row["bimodal"]],
@@ -159,6 +160,7 @@ def assemble_brief(store: Store, record: Consolidation, sessions: list[Session],
         "sessions": [s.id for s in sessions],
         "scores": {s.id: {k: f.value for k, f in s.evaluation.scores.items()} for s in sessions if s.evaluation},
         "competence": analysis.get("competence") or [],
+        "precision": analysis.get("precision") or [],
         "groups": analysis.get("groups") or [],
         "credit": analysis.get("credit") or [],
         "fusion": fusion,

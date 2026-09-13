@@ -115,7 +115,8 @@ def _dispose(req):
              for f in req.get("fires_owed", [])]
     return {"fires": fires, "dispositions": [
         {"record": c["record"], "disposition": "applied" if c["record"] in applied_in else "considered-not-applicable",
-         "note": "applied on " + ", ".join(r["task"] for r in req["rows"] if c["record"] in r.get("applied", [])) if c["record"] in applied_in else "hook matched the pass's presentation; no task bore on it"}
+         "note": "applied on " + ", ".join(r["task"] for r in req["rows"] if c["record"] in r.get("applied", [])) if c["record"] in applied_in
+                 else "hook matched the pass's presentation and no task bore on it: " + ", ".join(r["task"] for r in req["rows"])}
         for c in req["consulted"]
     ]}
 
@@ -205,6 +206,18 @@ def sketch(key: str, terms: list[str], anchors: list[str]) -> dict[str, Any]:
     }
 
 
+NOT_APPLICABLE_ON = re.compile(r"bore on it: (.+)$")
+"""How the stub's own disposition note names the presentations a record fired on and did not bear on."""
+
+
+def presentations_named(note: str) -> list[str]:
+    """The presentations a not-applicable disposition note names: the tasks after the stub's own marker, else the note itself."""
+    m = NOT_APPLICABLE_ON.search(note or "")
+    if m:
+        return [x.strip() for x in m.group(1).split(",") if x.strip()]
+    return [note.strip()] if note and note.strip() else []
+
+
 def _leaf(parent: dict[str, Any], terms: list[str], context: str) -> dict[str, Any]:
     """A draft body derived from an accepted record's body with its consultation hook replaced — never a second copy."""
     body = json.loads(json.dumps(parent["body"]))
@@ -236,6 +249,17 @@ def _nominate(req):
         nominations.append({"rung": "hook-edit", "rung_why": f"{row['record']} is a structural zero: its consultation hook names {row['terms']}, which no boot classifies into; its cue names {terms}, which the window presented",
                             "subject": f"zero:{row['record']}", "evidence": [], "supersedes": [row["record"]], "split_from": None, "folded_from": [],
                             "edit": {"terms": terms}, "body": None})
+    for row in brief.get("precision", []):  # activation — precision: fired-but-not-applicable dominating grows not_this by the presentations the notes name
+        sessions = sorted({n["session"] for n in row.get("notes", []) if n.get("session")})
+        if len(sessions) < bars["decision"]["independent_observations"]:
+            continue
+        named = [x for n in row.get("notes", []) for x in presentations_named(n.get("note", ""))]
+        new = [x for x in dict.fromkeys(named) if x not in row.get("not_this", [])]
+        if not new:
+            continue
+        nominations.append({"rung": "counterfactual-edit", "rung_why": f"{row['record']} fired and did not bear in {row['not_applicable']} of {row['considered']} considered passes; the hook is right and the guard is loose — precision is recovered through not_this, never by shaving the hook",
+                            "subject": f"precision:{row['record']}", "evidence": sessions, "supersedes": [row["record"]], "split_from": None, "folded_from": [],
+                            "edit": {"not_this": [*row.get("not_this", []), *new]}, "body": None})
     for row in brief.get("recall", []):  # activation — recall: a record the passes needed and no hook reached is re-keyed on what they presented
         if len(row.get("sessions", [])) < bars["decision"]["independent_observations"] or not row.get("missing"):
             continue

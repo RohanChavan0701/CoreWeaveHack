@@ -21,7 +21,7 @@ You read the brief's rows into slots, never into "is this record good": each row
 
 | Row of the brief | Indicts | Rung |
 |---|---|---|
-| `competence`: applied ÷ considered low, fired-but-not-applicable dominating | activation — precision | `counterfactual-edit`: grow `not_this` |
+| `precision` (read off `competence`: fired-but-not-applicable dominating the considered count, at or above the bar `precision.not_applicable_over_considered_above`), each row carrying the not-applicable dispositions' notes from independent passes | activation — precision | `counterfactual-edit`: grow `not_this` by the presentations the notes name; the hook stays |
 | a `fired-off-map` disposition, or an `escapes` term the passes kept naming | activation — boundary | `hook-edit`: re-shape the hook; the term is the vocabulary review's |
 | `recall` or `structural_zero`: needed and unreached | activation — recall | `hook-edit`: re-key on what was presented |
 | `credit`: recalled, applied, and the oracle still regressed (a steer indicts the payload) | payload | `new-decision` superseding it: re-abstract or re-derive |
