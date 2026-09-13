@@ -1,0 +1,809 @@
+{
+  "arm": "qwen-strict-detached",
+  "experiment": "reasoning-core",
+  "lessons": {
+    "reasoning-core-strict": {
+      "first_mention_pass": null,
+      "first_sight": [
+        22,
+        24
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        24
+      ],
+      "quality": {
+        "economy": 0.5555555555555556,
+        "transfer": null,
+        "turns": 0.6597222222222222
+      },
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713\u2713\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 4,
+          "quality": {
+            "economy": 0.5833333333333334,
+            "transfer": null,
+            "turns": 0.7083333333333333
+          },
+          "tasks": 4
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713\u2713\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 4,
+          "quality": {
+            "economy": 0.6666666666666666,
+            "transfer": null,
+            "turns": 0.75
+          },
+          "tasks": 4
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713\u2713\u2713W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 3,
+          "passed": 3,
+          "quality": {
+            "economy": 0.375,
+            "transfer": null,
+            "turns": 0.4583333333333333
+          },
+          "tasks": 4
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713\u2713\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 4,
+          "quality": {
+            "economy": 0.7083333333333334,
+            "transfer": null,
+            "turns": 0.7916666666666666
+          },
+          "tasks": 4
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713\u2713\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 4,
+          "quality": {
+            "economy": 0.625,
+            "transfer": null,
+            "turns": 0.75
+          },
+          "tasks": 4
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713\u2713\u2713E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 6,
+          "passed": 3,
+          "quality": {
+            "economy": 0.375,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 4
+        }
+      ],
+      "tier": null
+    }
+  },
+  "mode": "detached",
+  "model": "Qwen/Qwen3.6-35B-A3B",
+  "passes": [
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "894405d35f46",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 1,
+      "pass_rate": 1.0,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.5833333333333334,
+        "transfer": null,
+        "turns": 0.7083333333333333
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c62-1c16-7e3d-a395-37aaca72e5b2",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '(i)([Ql4])([BUq]*)+?' 'iQB'"
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "iQB",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/regex_08",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c62-1c14-7da0-b2d0-f4f280acfc37",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 << 'EOF'\nimport nltk\nfrom nltk.parse import earleychart\n\ngrammar_str = \"\"\"\nS -> A\nA -> B\nB -> C\nC -> D\nC -> '[' C ']'\nD -> 'success'\nD -> 'because'\n\"\"\"\n\ncfg = nltk.CFG.fromstring(grammar_str)\nparser = earleychart.EarleyChartParser(cfg)\n\n# Test candidate: [ [ [ success ] ] ]\ntest = \"[ [ [ success ] ] ]\".split()\nprint(\"Testing:\", test)\n\nfor tree in parser.parse(test):\n    print(\"Accepted! Tree:\", tree)\n    break\nelse:\n    print(\"Rejected\")\nEOF",
+            "pip install nltk 2>&1 | tail -5"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "[ [ [ success ] ] ]",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/cfg_07",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c62-1c10-7cbe-82e2-6c517a7309a6",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 << 'EOF'\nimport nltk\nfrom nltk.parse import earleychart\n\ngrammar_str = \"\"\"\nS -> 'floor' | 'boy' S | '<' S '>' | 'support' | A | 'floor' A | 'key'\nA -> 'boy' | 'support' | 'business'\n\"\"\"\n\ncfg = nltk.CFG.fromstring(grammar_str)\nparser = earleychart.EarleyChartParser(cfg)\n\ntest_string = \"boy boy boy boy boy < boy boy boy floor >\"\ntokens = test_string.split()\nprint(f\"Testing: {test_string}\")\nprint(f\"Token count: {len(tokens)}\")\n\nfor tree in parser.parse(tokens):\n    print(f\"Derivation found: {tree}\")\n    print(f\"Tree: {tree}\")\n    break\nelse:\n    print(\"No derivation found!\")\nEOF",
+            "pip install nltk -q 2>&1 | tail -3"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "boy boy boy boy boy < boy boy boy floor >",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/cfg_00",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c62-1c11-79d8-9df2-43fdc8cd0231",
+          "calls": {
+            "http": 0,
+            "shell": 3,
+            "turns": 4
+          },
+          "commands": [
+            "python3 << 'EOF'\nimport nltk\nfrom nltk.parse import earleychart\n\ngrammar_str = \"\"\"\nS -> A | 'value' C | S 'central'\nC -> A 'standard' | 'enough' B | '<' C '>' | 'someone'\nA -> B | A S | C 'central'\nB -> C | 'gun'\n\"\"\"\n\ncfg = nltk.CFG.fromstring(grammar_str)\nparser = earleychart.EarleyChartParser(cfg)\n\n# Test the candidate string\ntest_string = \"value < someone > central standard central central\"\ntokens = test_string.split()\nprint(f\"Testing: {test_string}\")\nprint(f\"Tokens: {tokens}\")\nprint(f\"Token count: {len(tokens)}\")\n\nfor tree in parser.parse(tokens):\n    print(f\"Valid derivation found!\")\n    print(tree)\n    break\nelse:\n    print(\"No valid derivation found.\")\nEOF",
+            "pip install nltk 2>&1 | tail -5",
+            "python3 << 'EOF'\n# Let me verify the grammar manually\n# S -> A | 'value' C | S 'central'\n# C -> A 'standard' | 'enough' B | '<' C '>' | 'someone'\n# A -> B | A S | C 'central'\n# B -> C | 'gun'\n\n# Derivation of: value someone central standard central central central central central\n# S => S 'central' => S 'central' 'central' => ... => S 'central' 'central' 'central' 'central' 'central' 'central'\n# => 'value' C 'central' 'central' 'central' 'central' 'central' 'central'\n# => 'value' A 'standard' 'central' 'central' 'central' 'central' 'central' 'central'\n# => 'value' C 'central' 'standard' 'central' 'central' 'central' 'central' 'central'\n# => 'value' 'someone' 'central' 'standard' 'central' 'central' 'central' 'central' 'central'\n\n# Let me try a simpler approach - build from terminals\n# C -> 'someone'\n# A -> C 'central' => 'someone central'\n# C -> A 'standard' => 'someone central standard'\n# S -> 'value' C => 'value someone central standard'\n# S -> S 'central' => 'value someone central standard central'\n# S -> S 'central' => 'value someone central standard central central'\n# S -> S 'central' => 'value someone central standard central central central'\n# S -> S 'central' => 'value someone central standard central central central central'\n# S -> S 'central' => 'value someone central standard central central central central central'\n\n# That's 9 tokens\ntest = \"value someone central standard central central central central central\"\nprint(f\"Tokens: {test.split()}\")\nprint(f\"Count: {len(test.split())}\")\nEOF"
+          ],
+          "economy": 0.3333333333333333,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "value someone central standard central central central central central central",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/cfg_01",
+          "transfer": null,
+          "turns": 0.5
+        }
+      ],
+      "session": "S-0001",
+      "symptoms": {
+        "pass": 4
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 2,
+      "consolidation": null,
+      "hash": "abc2c1aad92e",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 2,
+      "pass_rate": 1.0,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.6666666666666666,
+        "transfer": null,
+        "turns": 0.75
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c62-97ad-751f-a460-5a3e8ceb1d06",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '(?:(?:piece{3}[^Y1F]\\w*))' 'pieceeeeX'"
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "pieceeeeX",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/regex_11",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c62-97ad-764a-8282-55418a51c5a4",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '(((last){2,5})[DfM]?\\Bz\\+\\b[IbE]|([cx2])(?:respond|J))' 'lastlastz+I'"
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "lastlastz+I",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/regex_07",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c62-97ac-7e59-9bc3-802b8f8bc3d8",
+          "calls": {
+            "http": 0,
+            "shell": 3,
+            "turns": 4
+          },
+          "commands": [
+            "python3 << 'EOF'\nimport nltk\nfrom nltk.parse import earleychart\n\ngrammar_str = \"\"\"\nS -> A | 'near'\nA -> 'area' | B\nB -> 'tax' | C | C 'movie' | '<' B '>'\nC -> 'tax'\n\"\"\"\n\ncfg = nltk.CFG.fromstring(grammar_str)\nparser = earleychart.EarleyChartParser(cfg)\n\ntest_string = \"< < tax movie > >\"\ntokens = test_string.split()\nprint(f\"Testing: {test_string}\")\nprint(f\"Tokens ({len(tokens)}): {tokens}\")\n\nfor tree in parser.parse(tokens):\n    print(f\"Derivation found: {tree}\")\n    print(f\"Tree: {tree}\")\n    break\nelse:\n    print(\"No derivation found!\")\nEOF",
+            "pip install nltk 2>&1 | tail -3",
+            "python3 << 'EOF'\n# Manual verification of the grammar derivation\n# Grammar:\n# A -> 'area'\n# B -> 'tax'\n# S -> A\n# B -> C\n# B -> C 'movie'\n# C -> 'tax'\n# B -> '<' B '>'\n# A -> B\n# S -> 'near'\n\n# Derivation:\n# S => A => B => '<' B '>' => '<' '<' B '>' '>' => '<' '<' '<' B '>' '>' '>' => '<' '<' '<' C 'movie' '>' '>' '>' => '<' '<' '<' 'tax' 'movie' '>' '>' '>'\n\nresult = \"< < < tax movie > > >\"\ntokens = result.split()\nprint(f\"Tokens ({len(tokens)}): {tokens}\")\nassert len(tokens) >= 8, f\"Need at least 8 tokens, got {len(tokens)}\"\nprint(\"All tokens are valid terminals: <, tax, movie, >\")\nprint(\"Result:\", result)\nEOF"
+          ],
+          "economy": 0.3333333333333333,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "< < < tax movie > > >",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/cfg_04",
+          "transfer": null,
+          "turns": 0.5
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c62-97ac-7b63-845d-512984c9a560",
+          "calls": {
+            "http": 0,
+            "shell": 3,
+            "turns": 4
+          },
+          "commands": [
+            "python3 << 'EOF'\nimport nltk\nfrom nltk.parse import earleychart\n\ngrammar_str = \"\"\"\nS -> A | A 'interview'\nA -> B\nB -> C D | C\nC -> D\nD -> '[' D ']' | E\nE -> F | 'interview' F\nF -> 'scene'\n\"\"\"\n\ncfg = nltk.CFG.fromstring(grammar_str)\nparser = earleychart.EarleyChartParser(cfg)\n\ntest_string = \"[ [ scene ] ] scene interview\".split()\nprint(\"Testing:\", test_string)\n\nfor tree in parser.parse(test_string):\n    print(\"Accepted! Tree:\", tree)\n    break\nelse:\n    print(\"Rejected\")\nEOF",
+            "pip install nltk 2>&1 | tail -3",
+            "python3 << 'PYEOF'\n# Simple CYK parser to verify membership\ndef parse_cyk(tokens, rules):\n    n = len(tokens)\n    # rules: list of (lhs, rhs) where rhs is a tuple of symbols\n    # terminals are quoted strings like 'scene', 'interview', '['\n    \n    # Build lookup for terminal rules\n    term_rules = {}  # terminal -> list of nonterminals that produce it\n    nonterm_rules = {}  # (A, B) -> list of C where C -> A B\n    \n    for lhs, rhs in rules:\n        if len(rhs) == 1 and rhs[0].startswith(\"'\") and rhs[0].endswith(\"'\"):\n            t = rhs[0].strip(\"'\")\n            if t not in term_rules:\n                term_rules[t] = []\n            term_rules[t].append(lhs)\n        elif len(rhs) == 2:\n            key = (rhs[0], rhs[1])\n            if key not in nonterm_rules:\n                nonterm_rules[key] = []\n            nonterm_rules[key].append(lhs)\n    \n    # CYK table\n    table = [[set() for _ in range(n)] for _ in range(n)]\n    \n    # Fill diagonal (length 1)\n    for i in range(n):\n        t = tokens[i]\n        if t in term_rules:\n            for nt in term_rules[t]:\n                table[i][i].add(nt)\n    \n    # Fill rest\n    for length in range(2, n+1):\n        for i in range(n - length + 1):\n            j = i + length - 1\n            for k in range(i, j):\n                for A, B in nonterm_rules:\n                    if A in table[i][k] and B in table[k+1][j]:\n                        for C in nonterm_rules[(A, B)]:\n                            table[i][j].add(C)\n    \n    return 'S' in table[0][n-1]\n\n# Define grammar rules\nrules = [\n    ('S', ('A',)),\n    ('S', ('A', \"'interview'\")),\n    ('A', ('B',)),\n    ('B', ('C', 'D')),\n    ('B', ('C',)),\n    ('C', ('D',)),\n    ('D', (\"'['\", 'D', \"']'\")),  # D -> '[' D ']'\n    ('D', ('E',)),\n    ('E', ('F',)),\n    ('E', (\"'interview'\", 'F')),\n    ('F', (\"'scene'\")),\n]\n\n# Hmm, D -> '[' D ']' is 3 symbols. Let me handle that.\n# Actually let me just use a recursive descent / recursive approach\n\ndef can_derive(nonterm, tokens):\n    \"\"\"Check if nonterm can derive the given token list\"\"\"\n    if nonterm == 'S':\n        # S -> A or S -> A 'interview'\n        if can_derive('A', tokens):\n            return True\n        if len(tokens) >= 1 and tokens[-1] == 'interview':\n            if can_derive('A', tokens[:-1]):\n                return True\n        return False\n    elif nonterm == 'A':\n        return can_derive('B', tokens)\n    elif nonterm == 'B':\n        # B -> C D or B -> C\n        if can_derive('C', tokens):\n            return True\n        for i in range(1, len(tokens)):\n            if can_derive('C', tokens[:i]) and can_derive('D', tokens[i:]):\n                return True\n        return False\n    elif nonterm == 'C':\n        return can_derive('D', tokens)\n    elif nonterm == 'D':\n        # D -> '[' D ']' or D -> E\n        if can_derive('E', tokens):\n            return True\n        if len(tokens) >= 3 and tokens[0] == '[' and tokens[-1] == ']':\n            if can_derive('D', tokens[1:-1]):\n                return True\n        return False\n    elif nonterm == 'E':\n        # E -> F or E -> 'interview' F\n        if can_derive('F', tokens):\n            return True\n        if len(tokens) >= 2 and tokens[0] == 'interview':\n            if can_derive('F', tokens[1:]):\n                return True\n        return False\n    elif nonterm == 'F':\n        return tokens == ['scene']\n    return False\n\ntest = ['[', '[', '[', 'scene', ']', ']', ']', '[', '[', 'scene', ']', ']', 'interview']\nprint(\"Test string:\", ' '.join(test))\nprint(\"Length:\", len(test))\nprint(\"Derives:\", can_derive('S', test))\n\n# Simpler test\ntest2 = ['[', '[', 'scene', ']', ']', 'scene', 'interview']\nprint(\"\\nTest string:\", ' '.join(test2))\nprint(\"Length:\", len(test2))\nprint(\"Derives:\", can_derive('S', test2))\nPYEOF"
+          ],
+          "economy": 0.3333333333333333,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "[ [ interview scene ] ] scene interview",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/cfg_10",
+          "transfer": null,
+          "turns": 0.5
+        }
+      ],
+      "session": "S-0002",
+      "symptoms": {
+        "pass": 4
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 3,
+      "consolidation": null,
+      "hash": "e897d6029cd0",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 3,
+      "pass_rate": 0.75,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.375,
+        "transfer": null,
+        "turns": 0.4583333333333333
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c63-0f6a-7bbf-9463-6cf1fc7e46cd",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '((thousand|[JgV]|.?)*)v((0)){2}' 'v00'",
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '((thousand|[JgV]|.?)*)v((0)){2}' 'Jv00'"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "v00",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/regex_05",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c63-0f6a-7935-b298-16f7339011d2",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 << 'EOF'\nimport nltk\nfrom nltk.parse import earleychart\n\ngrammar_str = \"\"\"\nS -> 'collection' A | A | 'tax' S\nA -> A 'discussion' | 'PM' | 'do'\n\"\"\"\n\ncfg = nltk.CFG.fromstring(grammar_str)\nparser = earleychart.EarleyChartParser(cfg)\n\n# Test candidate strings\ncandidates = [\n    \"tax tax collection PM discussion\",\n    \"tax collection PM discussion discussion\",\n    \"collection PM discussion\",\n]\n\nfor s in candidates:\n    tokens = s.split()\n    for tree in parser.parse(tokens):\n        print(f\"VALID: {s}\")\n        break\n    else:\n        print(f\"INVALID: {s}\")\nEOF",
+            "pip install nltk 2>&1 | tail -3"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "tax tax collection PM discussion discussion",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/cfg_05",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c63-0f6a-7086-89c0-cea5a9f111c7",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 4
+          },
+          "commands": [
+            "python3 << 'EOF'\nimport nltk\nfrom nltk.parse import earleychart\n\ngrammar_str = \"\"\"\nS -> A B\nS -> A\nA -> B 'compare'\nA -> B\nA -> '[' A ']'\nA -> 'state' B\nA -> 'now'\nA -> 'conference'\nB -> '<' B '>'\nB -> B B\nB -> 'state'\nB -> 'compare'\n\"\"\"\n\ncfg = nltk.CFG.fromstring(grammar_str)\nparser = earleychart.EarleyChartParser(cfg)\n\n# Test candidate: '[' '[' '[' 'now' ']' ']' ']' 'state'\ntest_string = \"[ [ [ now ] ] ] ] state\".split()\nprint(\"Testing:\", test_string)\n\nfor tree in parser.parse(test_string):\n    print(\"Valid derivation found!\")\n    print(tree)\n    break\nelse:\n    print(\"No valid derivation found for this string.\")\n\n# Let's also try a simpler one to verify the parser works\ntest_string2 = \"now state\".split()\nprint(\"\\nTesting:\", test_string2)\nfor tree in parser.parse(test_string2):\n    print(\"Valid derivation found!\")\n    print(tree)\n    break\nelse:\n    print(\"No valid derivation found for this string.\")\nEOF",
+            "pip install nltk 2>&1 | tail -5"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "[ [ now ] ] state compare",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/cfg_08",
+          "transfer": null,
+          "turns": 0.5
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c63-0f6b-7a8e-ac5c-f7d925c9bbc0",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 7
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '(?:\\d*+\\bthese?+)(these|[17R]\\b)' 'thethese'",
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '(?:\\d*+\\bthese?+)(these|[17R]\\b)' 'these1'"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "1these1",
+          "symptom": "wrong",
+          "task": "reasoning-core-strict/regex_09",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0003",
+      "symptoms": {
+        "pass": 3,
+        "wrong": 1
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 4,
+      "consolidation": null,
+      "hash": "f85689e7e962",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 4,
+      "pass_rate": 1.0,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.7083333333333334,
+        "transfer": null,
+        "turns": 0.7916666666666666
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c63-f721-76c2-b0d5-f0b3a16471fa",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '(\\w{1,3})\\?{1,4}' 'a??'"
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "a??",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/regex_00",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c63-f722-78c0-b8f1-5fd8b35b7c23",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '(?:(\\d|([EHO])+))among|([xOv]){2}' '1among'",
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '(?:(\\d|([EHO])+))among|([xOv]){2}' '1among'"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "1among",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/regex_02",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c63-f722-7e1d-9e99-d29a703480fa",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '([kiO][Adq]{3,5})|\\bnear{1}?' 'kAdq'"
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "kAdq",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/regex_03",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c63-f721-7553-ad65-4e525a9ebd61",
+          "calls": {
+            "http": 0,
+            "shell": 3,
+            "turns": 4
+          },
+          "commands": [
+            "python3 -c \"\nimport nltk\nfrom nltk.parse import earleychart\n\ngrammar_str = '''\nS -> A\nA -> B\nA -> \\\"<\\\" A \\\">\\\"\nB -> \\\"per\\\" D\nB -> \\\"[\\\" B \\\"]\\\"\nB -> C\nC -> D\nD -> E\nE -> F\nE -> \\\"coach\\\"\nF -> \\\"hotel\\\"\n'''\n\ncfg = nltk.CFG.fromstring(grammar_str)\nparser = earleychart.EarleyChartParser(cfg)\n\ntest = '< < [ [ per hotel ] ] > >'.split()\nprint('Testing:', test)\nfor tree in parser.parse(test):\n    print('Valid derivation:', tree)\n    break\nelse:\n    print('No valid derivation found')\n\"",
+            "pip install nltk 2>&1 | tail -5",
+            "python3 << 'EOF'\n# Manual verification of the grammar derivation\n# Grammar:\n# S -> A\n# A -> B | '<' A '>'\n# B -> 'per' D | '[' B ']' | C\n# C -> D\n# D -> E\n# E -> F | 'coach'\n# F -> 'hotel'\n\n# Derivation of \"[ [ per hotel ] ]\":\n# S -> A -> B -> '[' B ']' -> '[' '[' B ']' ']' -> '[' '[' 'per' D ']' ']' -> '[' '[' 'per' E ']' ']' -> '[' '[' 'per' F ']' ']' -> '[' '[' 'per' 'hotel' ']' ']'\n\n# Derivation of \"< < per hotel > >\":\n# S -> A -> '<' A '>' -> '<' '<' A '>' '>' -> '<' '<' B '>' '>' -> '<' '<' 'per' D '>' '>' -> '<' '<' 'per' E '>' '>' -> '<' '<' 'per' F '>' '>' -> '<' '<' 'per' 'hotel' '>' '>'\n\n# Both are valid. Let's pick one with 6+ tokens.\n# \"[ [ per hotel ] ]\" = 6 tokens\n# \"< < per hotel > >\" = 6 tokens\n\n# Let's also try \"< < [ per hotel ] > >\" = 8 tokens\n# S -> A -> '<' A '>' -> '<' '<' A '>' '>' -> '<' '<' B '>' '>' -> '<' '<' '[' B ']' '>' '>' -> '<' '<' '[' 'per' D ']' '>' '>' -> '<' '<' '[' 'per' 'hotel' ']' '>' '>'\n\nprint(\"Candidate: '< < [ per hotel ] > >'\")\ntokens = '< < [ per hotel ] > >'.split()\nprint(f\"Tokens ({len(tokens)}): {tokens}\")\n\n# Verify each token is a terminal:\nterminals = {'per', 'hotel', 'coach', '[', ']', '<', '>'}\nfor t in tokens:\n    assert t in terminals, f\"Token '{t}' is not a terminal\"\nprint(\"All tokens are terminals. \u2713\")\nEOF"
+          ],
+          "economy": 0.3333333333333333,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "< < [ per hotel ] > >",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/cfg_09",
+          "transfer": null,
+          "turns": 0.5
+        }
+      ],
+      "session": "S-0004",
+      "symptoms": {
+        "pass": 4
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 5,
+      "consolidation": null,
+      "hash": "bda53ab32e56",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 5,
+      "pass_rate": 1.0,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.625,
+        "transfer": null,
+        "turns": 0.75
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c64-3478-7caa-90bb-8e8528c363fe",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '(?:((F)Y)+)' 'FY'"
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "FY",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/regex_04",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c64-3478-7b9f-9b38-a9d0291875e3",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 -c \"\nimport nltk\nfrom nltk.parse import earleychart\n\ngrammar_str = '''\nS -> B \\\"some\\\" | \\\"every\\\" | \\\"ground\\\" | C B | A\nA -> B | \\\"which\\\" | S \\\"water\\\"\nB -> C | \\\"<\\\" B \\\">\\\"\nC -> D\nD -> \\\"some\\\"\n'''\n\ncfg = nltk.CFG.fromstring(grammar_str)\nparser = earleychart.EarleyChartParser(cfg)\n\ntest = '< < some > > some'.split()\nprint('Testing:', test)\nfor tree in parser.parse(test):\n    print('Accepted:', tree)\n    break\nelse:\n    print('Not accepted')\n\"",
+            "pip install nltk 2>&1 | tail -3"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "some < < some > >",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/cfg_02",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c64-3478-7e66-8375-6a321448392f",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '(?:\\b[DmA][^6-e]*occur{1}$)' 'Doccur'",
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '(?:\\b[DmA][^6-e]*occur{1}$)' 'Doccur'"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "Doccur",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/regex_01",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c64-347a-7538-8c6e-e8c5e4a2ac9e",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '\\B\\btwo|((?:[bTY]+){3,5})*' 'bbb'",
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '\\B\\btwo|((?:[bTY]+){3,5})*' 'bbb'"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "bbb",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/regex_06",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        }
+      ],
+      "session": "S-0005",
+      "symptoms": {
+        "pass": 4
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 6,
+      "consolidation": null,
+      "hash": "f19d6c3c515a",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 6,
+      "pass_rate": 0.75,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.375,
+        "transfer": null,
+        "turns": 0.5
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c64-71d4-7dab-9a8e-5bda3744d50d",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 << 'EOF'\nimport nltk\nfrom nltk.parse.earleychart import EarleyChartParser\n\ngrammar_str = \"\"\"\nS -> A 'nearly'\nS -> '<' S '>'\nS -> 'authority'\nS -> A\nA -> 'court'\nA -> B\nB -> 'authority'\nB -> 'nearly' B\n\"\"\"\n\ncfg = nltk.CFG.fromstring(grammar_str)\nparser = EarleyChartParser(cfg)\n\n# Test candidate: \"nearly nearly nearly nearly nearly authority nearly\"\ntest_string = \"nearly nearly nearly nearly nearly authority nearly\"\ntokens = test_string.split()\nprint(f\"Testing: {test_string}\")\nprint(f\"Token count: {len(tokens)}\")\n\nfor tree in parser.parse(tokens):\n    print(f\"Derivation found: {tree}\")\n    print(f\"Tree: {tree}\")\n    break\nelse:\n    print(\"No derivation found!\")\nEOF",
+            "pip install nltk 2>&1 | tail -5"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "nearly nearly nearly nearly nearly authority nearly",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/cfg_06",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c64-71d4-7f47-bd24-0147479d64d2",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 << 'EOF'\nimport nltk\nfrom nltk.parse import earleychart\n\ngrammar_str = \"\"\"\nS -> A\nA -> B\nB -> 'yes'\nB -> '[' B ']'\nB -> S S\nB -> 'seat'\nS -> 'yes' A\nS -> 'because' A\n\"\"\"\n\ncfg = nltk.CFG.fromstring(grammar_str)\nparser = earleychart.EarleyChartParser(cfg)\n\n# Test candidate strings\ncandidates = [\n    \"yes yes yes yes yes yes yes yes\",\n    \"yes yes yes yes yes yes yes yes yes\",\n]\n\nfor s in candidates:\n    tokens = s.split()\n    print(f\"Testing: {s} ({len(tokens)} tokens)\")\n    try:\n        chart = parser.parse(tokens)\n        result = next(chart, None)\n        if result:\n            print(f\"  ACCEPTED! Derivation: {result}\")\n        else:\n            print(f\"  REJECTED\")\n    except Exception as e:\n        print(f\"  Error: {e}\")\nEOF",
+            "pip install nltk 2>&1 | tail -3"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "yes yes yes yes yes yes yes yes",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/cfg_03",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c64-71d5-770a-9d37-e44a43ed5762",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 << 'EOF'\nimport nltk\nfrom nltk.parse import earleychart\n\ngrammar_str = \"\"\"\nS -> B 'rather'\nS -> 'rather' C\nS -> A\nA -> B\nB -> C\nB -> 'common'\nB -> S 'challenge'\nC -> 'agreement'\nC -> 'challenge'\nC -> 'common'\nC -> C 'this'\nC -> C 'agreement'\n\"\"\"\n\ncfg = nltk.CFG.fromstring(grammar_str)\nparser = earleychart.EarleyChartParser(cfg)\n\ntest_string = \"agreement this this this agreement rather\"\ntokens = test_string.split()\nprint(f\"Testing: {test_string}\")\nprint(f\"Tokens: {tokens}\")\n\nfor tree in parser.parse(tokens):\n    print(f\"Valid derivation found!\")\n    print(tree)\n    break\nelse:\n    print(\"No valid derivation found.\")\nEOF",
+            "pip install nltk 2>&1 | tail -5"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core-strict",
+          "result": "rather agreement this this this this",
+          "symptom": "pass",
+          "task": "reasoning-core-strict/cfg_11",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c64-71d5-71ff-a9d1-09eae5e4b00e",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 4
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '[1MV](?:futureimportant{1,3}[rzu])+' 'Mfutureimportr'",
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '[1MV](?:futureimportant{1,3}[rzu])+' 'Mfutureimportr'"
+          ],
+          "economy": 0.0,
+          "error": {
+            "cause": null,
+            "message": "final reply was not JSON"
+          },
+          "lesson": "reasoning-core-strict",
+          "result": null,
+          "symptom": "error:not-json",
+          "task": "reasoning-core-strict/regex_10",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0006",
+      "symptoms": {
+        "error:not-json": 1,
+        "pass": 3
+      },
+      "work_shape": []
+    }
+  ],
+  "records": [],
+  "roster": {
+    "adjudicator": "deepseek-ai/DeepSeek-V4-Pro",
+    "coder": "deepseek-ai/DeepSeek-V4-Pro",
+    "consolidator": "deepseek-ai/DeepSeek-V4-Pro",
+    "examiner": "deepseek-ai/DeepSeek-V4-Pro",
+    "pass": "Qwen/Qwen3.6-35B-A3B",
+    "reauthor": "deepseek-ai/DeepSeek-V4-Pro"
+  },
+  "stream": {
+    "batch": 4,
+    "batches": 6,
+    "families": [
+      "reasoning-core-strict"
+    ],
+    "faults": {
+      "http_budget": null,
+      "http_fault_calls": 1,
+      "http_fault_fraction": 0.0,
+      "shell_output_limit": null
+    },
+    "revisit": [
+      1,
+      2
+    ],
+    "seed": 0
+  },
+  "warning": null
+}

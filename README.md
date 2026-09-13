@@ -716,6 +716,61 @@ stronger teacher parsed on every request and wrote the same generic drafts
 as `gpt-oss-120b` does, so what the run measures is the request, not the
 model (carry-forward items 48–52).
 
+### The reasoning-core stream on `Qwen/Qwen3.6-35B-A3B` and `gpt-oss-20b`, taught by `deepseek-ai/DeepSeek-V4-Pro`
+
+`experiments/reasoning-core.toml`, run on 2026-09-13 over W&B Inference: the
+24 pinned Reasoning Core instances — twelve regex-following, twelve
+cfg-generation — dealt by seed 0 into six batches of four, a consolidation
+every two batches, batches 1 and 2 met again after the stream; the strict
+pool is the same instances at exactly the one verification call. The roles
+are split as in the text-to-SQL run: the forward pass on the actor, every
+other role on `deepseek-ai/DeepSeek-V4-Pro`. `Qwen3.6-35B-A3B` runs attached,
+detached and on both strict arms; `gpt-oss-20b` attached under the same
+teacher. The two `*-seeded` arms have not run. The logs are derived from the
+arm stores (`experiments/results/reasoning-core/`), traced to
+[`slavazinevich-worldvue/hgi-experiments`](https://wandb.ai/slavazinevich-worldvue/hgi-experiments/weave).
+
+This run is confounded, and the confound is the finding to carry. The arms
+were launched with the venv's interpreter directly rather than through `uv
+run`, so the shell tool's `python3` was the system interpreter and every
+`import nltk` in a grammar row failed — the Qwen arms hit `No module named
+'nltk'` on twelve of twelve cfg rows apiece, spent their spare call on `pip
+install`, and answered without a verified candidate (carry-forward decision
+95(d) names this dependency; a launcher must put `.venv/bin` first on PATH).
+Every decision the three attached arms admitted — verify a library before
+importing it, install it or fall back to the standard library, plan the
+calls to fit the budget — describes that launch environment, not the world
+of regexes and grammars. Read the pass rates as the actor's unaided produce
+rate and the economy series as contaminated on the cfg rows.
+
+First sight per batch, every arm on the same four instances:
+
+| batch | 1 | 2 | 3 | 4 | 5 | 6 | stream |
+|---|---|---|---|---|---|---|---|
+| qwen attached | 0.75 | 1.00 | 1.00 | 0.50 | 0.75 | 0.75 | 0.79 |
+| qwen detached | 0.75 | 1.00 | 1.00 | 0.75 | 0.75 | 1.00 | 0.88 |
+| 20b attached | 0.75 | 0.50 | 1.00 | 0.50 | 0.75 | 1.00 | 0.75 |
+| qwen strict | 0.75 | 1.00 | 0.75 | 1.00 | 1.00 | 0.75 | 0.88 |
+| qwen strict detached | 1.00 | 1.00 | 0.75 | 1.00 | 1.00 | 0.75 | 0.92 |
+| in context, qwen attached | — | — | D-0001 D-0002 | D-0001 D-0002 | D-0001–D-0003 | D-0001–D-0003 | |
+| consolidation after, qwen attached | | K-0001: D-0001 D-0002 | | K-0002: D-0003 | | K-0003: D-0004 D-0005 | |
+
+Both detached arms score at or above their attached siblings, within two
+rows over 24, and the strict pool scores above the lax one: the budget fails
+no task here, because a row is graded on its answer and the shell refusing a
+call past the budget leaves the actor free to answer from its own derivation
+(`tool_budget_respected` sat between 0.00 and 0.75 on rows that passed).
+Revisits: the qwen attached arm met batch 1 again at 1.00 (0.75 at first
+sight) and batch 2 at 0.50 (1.00); the strict arm at 1.00 (0.75) and 1.00
+(1.00); the 20b arm at 1.00 (0.75) and 0.50 (0.50). In the strict arm the
+teacher's own decision to "enforce a strict budget of one shell call" had
+its premise reversed one consolidation later on the evidence that
+over-budget passes went unpunished. For the pool to measure the store the
+answer has to depend on the shell — grade only a candidate the row
+verified, or fail an over-budget row outright — and the level-3 regexes
+and level-2 grammars are near saturation for a 35B actor regardless
+(carry-forward items 47 and 53).
+
 ### The incidents pool on `openai/gpt-oss-120b` and `gpt-oss-20b`
 
 `experiments/incidents.toml`, run on 2026-09-13 over W&B Inference and traced

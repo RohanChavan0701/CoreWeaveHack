@@ -85,8 +85,8 @@ be right and why it may not.
   reasoning-core ablations still running; the stores are under
   `runs/reasoning-core/` and `runs/text2sql/`, the logs beside them. Neither
   pool separated the arms on pass rate: reasoning-core because the budget
-  fails no task (item 47), text2sql because the store admitted nothing about
-  the schema (items 48–50) — the detached text2sql arm matched the attached
+  fails no task (item 47) and its shell lacked `nltk` (item 53), text2sql
+  because the store admitted nothing about the schema (items 48–50) — the detached text2sql arm matched the attached
   arm on seven of its eight first-sight batches and was one row under on
   the eighth. The results files and the README section wait on the last
   wave.
@@ -734,6 +734,29 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     The retrofit (`hgi experiment retrofit`, running on the stream and
     economy arms) reproduces item 48's artifact by construction, since it
     re-runs the same close; read its stores with that in mind.
+53. **The reasoning-core arms ran with the system `python3` in the shell,
+    so every grammar verification failed** (reasoning-core run). The
+    launcher started each arm as `.venv/bin/python -c "from hgi.cli import
+    main; ..."` from the pinned worktree, which puts the venv's interpreter
+    in the process and nothing on PATH, so the shell tool's `python3` was
+    the system one: `ModuleNotFoundError: No module named 'nltk'` on all
+    twelve cfg rows of each Qwen arm, `pip install nltk` as the next call,
+    the budget then refused, and the answer given unverified. Decision 95(d)
+    named the dependency; it was not read before launch. Every decision the
+    three attached arms admitted is about library availability or budget
+    planning — the environment, not the world — and the economy series on
+    the cfg rows grade the install attempts. What stands from the run: the
+    unaided produce rate (0.79 attached, 0.88 detached on Qwen; 0.75 on
+    gpt-oss-20b; 0.88/0.92 on the strict pool), which is the saturation
+    reading of item 47 either way. Fixes: (a) a launcher must export
+    `PATH=<tree>/.venv/bin:$PATH` or go through `uv run`; (b) the arm
+    runner should refuse to start a `reasoning-core` arm whose shell
+    `python3` cannot import `nltk` and `regex` — a preflight the family can
+    declare (`suite/families/reasoning_core.py`, a `requires` on the
+    family) and `run_arm` check before pass 1; (c) the rerun is the natural
+    next step and costs about eighty minutes of endpoint for the five arms
+    in three waves; the `*-seeded` twins should join it, since the seed's
+    derive-then-verify method needs the same shell.
 
 ## Decisions taken, and their risk
 

@@ -1,0 +1,1576 @@
+{
+  "arm": "20b-attached",
+  "experiment": "reasoning-core",
+  "lessons": {
+    "reasoning-core": {
+      "first_mention_pass": null,
+      "first_sight": [
+        18,
+        24
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        24
+      ],
+      "quality": {
+        "economy": 0.517361111111111,
+        "transfer": null,
+        "turns": 0.5077380952380952
+      },
+      "revisit": [
+        [
+          1,
+          4,
+          4
+        ],
+        [
+          2,
+          2,
+          4
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713\u2713\u2713E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 1,
+          "passed": 3,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5833333333333333
+          },
+          "tasks": 4
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713\u2713EE",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 2,
+          "passed": 2,
+          "quality": {
+            "economy": 0.375,
+            "transfer": null,
+            "turns": 0.29166666666666663
+          },
+          "tasks": 4
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713\u2713\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 3,
+          "passed": 4,
+          "quality": {
+            "economy": 0.7083333333333334,
+            "transfer": null,
+            "turns": 0.6458333333333333
+          },
+          "tasks": 4
+        },
+        {
+          "batch": 4,
+          "grid": "E\u2713\u2713E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 4,
+          "passed": 2,
+          "quality": {
+            "economy": 0.3125,
+            "transfer": null,
+            "turns": 0.35
+          },
+          "tasks": 4
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713\u2713\u2713E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 5,
+          "passed": 3,
+          "quality": {
+            "economy": 0.4583333333333333,
+            "transfer": null,
+            "turns": 0.4464285714285714
+          },
+          "tasks": 4
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713\u2713\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 4,
+          "quality": {
+            "economy": 0.75,
+            "transfer": null,
+            "turns": 0.7291666666666666
+          },
+          "tasks": 4
+        },
+        {
+          "batch": 1,
+          "grid": "\u2713\u2713\u2713\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 4,
+          "quality": {
+            "economy": 0.7083333333333334,
+            "transfer": null,
+            "turns": 0.6130952380952381
+          },
+          "tasks": 4
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713\u2713EE",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 8,
+          "passed": 2,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 4
+        }
+      ],
+      "tier": null
+    }
+  },
+  "mode": "attached",
+  "model": "openai/gpt-oss-20b",
+  "passes": [
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "9e2eef0cc0bd",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0001",
+          "noticed": "The task reasoning-core/cfg_02 failed to produce a CFG derivation string in the first attempt; the row did not produce a result, missing the convention of returning a valid derivation string.",
+          "shape": [
+            "other(missing valid derivation string)"
+          ],
+          "state": "dismissed"
+        },
+        {
+          "name": "O-0002",
+          "noticed": "The first attempt failed due to missing nltk import in task reasoning-core/cfg_07",
+          "shape": [
+            "other(missing nltk import)"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0003",
+          "noticed": "The task reasoning-core/cfg_02 failed due to turn limit reached.",
+          "shape": [
+            "tool-budget"
+          ],
+          "state": "dismissed"
+        }
+      ],
+      "pass": 1,
+      "pass_rate": 0.75,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.5,
+        "transfer": null,
+        "turns": 0.5833333333333333
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4c-ea5e-7a66-97da-d6c2d397dc91",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 1
+          },
+          "commands": [],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "Afoooccur",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_01",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4c-ea60-792d-89e1-675fff4cac9f",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '[1MV](?:futureimportant{1,3}[rzu])+' '1futureimportantr'",
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '[1MV](?:futureimportant{1,3}[rzu])+' '1futureimportanttr'"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "1futureimportantr",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_10",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4c-ea58-7ffd-814c-b007a99dc937",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 - << 'PY'\nimport nltk\ncfg_str = \"\"\"\nC -> D\nB -> C\nD -> 'success'\nS -> A\nD -> 'because'\nA -> B\nC -> '[' C ']' \n\"\"\"\nparser = nltk.parse.earleychart.EarleyChartParser(nltk.CFG.fromstring(cfg_str))\nstring = \"[ [ [ success ] ] ]\"\nprint('Tokens:', string.split())\nprint('Parse:', list(parser.parse(string.split())))\nPY",
+            "python3 - << 'PY'\nimport sys\n\ndef parse(tokens, pos, symbol, memo):\n    key=(pos,symbol)\n    if key in memo:\n        return memo[key]\n    results=[]\n    if symbol=='S':\n        results+=parse(tokens,pos,'A',memo)\n    elif symbol=='A':\n        results+=parse(tokens,pos,'B',memo)\n    elif symbol=='B':\n        results+=parse(tokens,pos,'C',memo)\n    elif symbol=='C':\n        # C -> D\n        results+=parse(tokens,pos,'D',memo)\n        # C -> '[' C ']'\n        if pos < len(tokens) and tokens[pos]=='[':\n            for mid in parse(tokens,pos+1,'C',memo):\n                if mid < len(tokens) and tokens[mid]==']':\n                    results.append(mid+1)\n    elif symbol=='D':\n        # D -> 'success'\n        if pos < len(tokens) and tokens[pos]=='success':\n            results.append(pos+1)\n        # D -> 'because'\n        if pos < len(tokens) and tokens[pos]=='because':\n            results.append(pos+1)\n    memo[key]=results\n    return results\n\ntokens='[ [ [ success ] ] ]'.split()\nprint('tokens',tokens)\nres=parse(tokens,0,'S',{})\nprint('res',res)\nPY"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "[ [ [ success ] ] ]",
+          "symptom": "pass",
+          "task": "reasoning-core/cfg_07",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4c-ea56-725a-8eb2-145ab3bb055d",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 8
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": {
+            "cause": "8 turns without a final answer",
+            "message": "turn limit reached"
+          },
+          "lesson": "reasoning-core",
+          "result": null,
+          "symptom": "error:turn-limit",
+          "task": "reasoning-core/cfg_02",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0001",
+      "symptoms": {
+        "error:turn-limit": 1,
+        "pass": 3
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 2,
+      "consolidation": {
+        "admitted": [],
+        "anchoring": {
+          "anchored to weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4c-ea56-725a-8eb2-145ab3bb055d": 3,
+          "anchored to weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4c-ea58-7ffd-814c-b007a99dc937": 1,
+          "anchored to weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4e-12ee-7698-916d-e810c24db099": 1,
+          "anchored to weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4e-12ee-79d9-9275-601f79ad0185": 2
+        },
+        "dismissed": [
+          "O-0003",
+          "O-0005"
+        ],
+        "expired": [],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0002",
+              "O-0006"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ],
+            "shape": [
+              "other(missing import)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0007",
+              "O-0008"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "other(unspecified failure)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0001"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "other(valid derivation string)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0004"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "shell-tool"
+            ]
+          }
+        ],
+        "groups_at_bar": 1,
+        "id": "K-0001",
+        "nominations": [
+          {
+            "outcome": "refused by the floor: 1 distinct session(s) in the evidence (S-0001) against the bar 2; the adjudicator's decline(insufficient independence) was overridden: a decline stands only on an upheld premise kill",
+            "rung": "hook-edit",
+            "subject": "missing-import"
+          }
+        ],
+        "outcomes": {
+          "refused by the floor: 1 distinct session": 1
+        },
+        "retired": []
+      },
+      "hash": "872ff0e9c026",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0004",
+          "noticed": "The task reasoning-core/cfg_04 failed because the first shell call attempted to run Python but the environment lacked a python executable, violating the convention that shell calls must use a valid interpreter.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0005",
+          "noticed": "Task reasoning-core/cfg_03 failed to produce a string because the grammar's recursive rule B -> S S was not applied, causing the parser to run out of turns.",
+          "shape": [
+            "tool-budget"
+          ],
+          "state": "dismissed"
+        },
+        {
+          "name": "O-0006",
+          "noticed": "The first attempt failed due to missing nltk module, violating the Python import convention.",
+          "shape": [
+            "other(missing nltk import)"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0007",
+          "noticed": "Failed task reasoning-core/cfg_04",
+          "shape": [
+            "other(missing valid derivation string)"
+          ],
+          "state": "dismissed"
+        },
+        {
+          "name": "O-0008",
+          "noticed": "Failed task reasoning-core/cfg_03",
+          "shape": [
+            "other(missing valid derivation string)"
+          ],
+          "state": "dismissed"
+        }
+      ],
+      "pass": 2,
+      "pass_rate": 0.5,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.375,
+        "transfer": null,
+        "turns": 0.29166666666666663
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4e-12f1-7743-a5bf-2719e5a21f4c",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 - <<'PY'\nimport re, sys\npattern = r\"\\B\\btwo|((?:[bTY]+){3,5})*\"\nprint('pattern', pattern)\nfor candidate in ['bbb','bbbb','atwo','two','bTYbTYbTY']:\n    m = re.fullmatch(pattern, candidate)\n    print(candidate, bool(m))\nPY",
+            "python3 - <<'PY'\nimport re\npattern = r\"\\B\\btwo|((?:[bTY]+){3,5})*\"\nprint(bool(re.fullmatch(pattern, '!!two')))\nPY"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "bbb",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_06",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4e-12ef-7f59-a835-3f36d4e60a75",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 4
+          },
+          "commands": [
+            "python3 - << 'PY'\nimport nltk\ncfg_str = \"\"\"\nA -> A 'discussion'\nA -> 'PM'\nS -> 'collection' A\nA -> 'do'\nS -> A\nS -> 'tax' S\n\"\"\"\nCFG = nltk.CFG.fromstring(cfg_str)\nparser = nltk.parse.earleychart.EarleyChartParser(CFG)\nstring = \"tax tax collection PM discussion discussion discussion\"\nprint('Tokens:', string.split())\nfor tree in parser.parse(string.split()):\n    print('Parsed!')\n    print(tree)\n    break\nelse:\n    print('Not parsed')\nPY"
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "tax collection PM discussion discussion discussion",
+          "symptom": "pass",
+          "task": "reasoning-core/cfg_05",
+          "transfer": null,
+          "turns": 0.5
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4e-12ee-7698-916d-e810c24db099",
+          "calls": {
+            "http": 0,
+            "shell": 3,
+            "turns": 8
+          },
+          "commands": [
+            "python - <<'PY'\nimport nltk\nfrom nltk import CFG\nfrom nltk.parse.earleychart import EarleyChartParser\n\ngrammar_str = \"\"\"A -> 'area'\nB -> 'tax'\nS -> A\nB -> C\nB -> C 'movie'\nC -> 'tax'\nB -> '<' B '>'\nA -> B\nS -> 'near'\"\"\"\ncfg = CFG.fromstring(grammar_str)\nparser = EarleyChartParser(cfg)\nsentence = \"< < < tax movie > > >\".split()\nfor tree in parser.parse(sentence):\n    print(tree)\n    break\nelse:\n    print(\"No parse\")\nPY",
+            "python3 - <<'PY'\nprint('test')\nPY",
+            "python3 - <<'PY'\nimport nltk\nfrom nltk import CFG\nfrom nltk.parse.earleychart import EarleyChartParser\n\ngrammar_str = \"\"\"A -> 'area'\nB -> 'tax'\nS -> A\nB -> C\nB -> C 'movie'\nC -> 'tax'\nB -> '<' B '>'\nA -> B\nS -> 'near'\"\"\"\ncfg = CFG.fromstring(grammar_str)\nparser = EarleyChartParser(cfg)\n# try a sentence\nsentence = \"< < < tax movie > > >\".split()\nprint('sentence tokens:', sentence)\nfor tree in parser.parse(sentence):\n    print(tree)\n    break\nelse:\n    print('No parse')\nPY"
+          ],
+          "economy": 0.0,
+          "error": {
+            "cause": "8 turns without a final answer",
+            "message": "turn limit reached"
+          },
+          "lesson": "reasoning-core",
+          "result": null,
+          "symptom": "error:turn-limit",
+          "task": "reasoning-core/cfg_04",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4e-12ee-79d9-9275-601f79ad0185",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 8
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": {
+            "cause": "8 turns without a final answer",
+            "message": "turn limit reached"
+          },
+          "lesson": "reasoning-core",
+          "result": null,
+          "symptom": "error:turn-limit",
+          "task": "reasoning-core/cfg_03",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0002",
+      "symptoms": {
+        "error:turn-limit": 2,
+        "pass": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 3,
+      "consolidation": null,
+      "hash": "9f7e1e9f160c",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0009",
+          "noticed": "The first shell command failed because the 'python' interpreter was not found; the convention of using 'python3' was missed.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 3,
+      "pass_rate": 1.0,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.7083333333333334,
+        "transfer": null,
+        "turns": 0.6458333333333333
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c50-52af-7155-8ba9-1c86c5add173",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" \"(?:((F)Y)+)\" \"FY\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "FY",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_04",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c50-52ad-703f-a17c-ff2ce795d537",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 3
+          },
+          "commands": [
+            "python3 - <<'PY'\nimport re, sys\npattern = r'(?:(\\d|([EHO])+))among|([xOv]){2}'\nprint(bool(re.fullmatch(pattern, 'xx')))\nPY"
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "xx",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_02",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c50-52ad-77ea-ab93-72490f8b1e14",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python3 - <<'PY'\nimport re, sys\npattern = r'([kiO][Adq]{3,5})|\\bnear{1}?'  # raw string\ncandidate = 'kAdqA'\nprint(bool(re.fullmatch(pattern, candidate)))\nPY",
+            "python3 - <<'PY'\nimport re, sys\npattern = r'([kiO][Adq]{3,5})|\\bnear{1}?'  # raw string\ncandidate = 'near'\nprint(bool(re.fullmatch(pattern, candidate)))\nPY"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "kAdqA",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_03",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c50-52ac-7aa7-9794-f0679ae632f1",
+          "calls": {
+            "http": 0,
+            "shell": 3,
+            "turns": 8
+          },
+          "commands": [
+            "python - <<'PY'\nimport nltk\nfrom nltk import CFG\nfrom nltk.parse.earleychart import EarleyChartParser\n\ngrammar_str = \"\"\"\nS -> 'floor'\nS -> 'boy' S\nS -> '<' S '>'\nS -> 'support'\nA -> 'boy'\nS -> A\nS -> 'floor' A\nS -> 'key'\nA -> 'support'\nA -> 'business'\n\"\"\"\n\ncfg = CFG.fromstring(grammar_str)\nparser = EarleyChartParser(cfg)\n\nsentence = ['boy','boy','boy','boy','boy','boy','boy','boy','boy','boy','floor']\nprint('Sentence:', sentence)\n\nfound = False\nfor tree in parser.parse(sentence):\n    print(tree)\n    found = True\n    break\nif not found:\n    print('No parse found')\nPY",
+            "python3 - <<'PY'\nprint('test')\nPY",
+            "python3 - <<'PY'\nimport sys\nprint(sys.version)\nPY"
+          ],
+          "economy": 0.3333333333333333,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "boy boy boy boy boy boy boy boy boy boy floor support",
+          "symptom": "pass",
+          "task": "reasoning-core/cfg_00",
+          "transfer": null,
+          "turns": 0.25
+        }
+      ],
+      "session": "S-0003",
+      "symptoms": {
+        "pass": 4
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 4,
+      "consolidation": {
+        "admitted": [
+          "D-0001"
+        ],
+        "anchoring": {},
+        "dismissed": [
+          "O-0001",
+          "O-0007",
+          "O-0008",
+          "O-0010",
+          "O-0011",
+          "O-0013",
+          "O-0014"
+        ],
+        "expired": [
+          "01a09c4f-8312-7097-acfe-215dc81ea322"
+        ],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0002",
+              "O-0006"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ],
+            "shape": [
+              "other(missing nltk import)"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0004",
+              "O-0009"
+            ],
+            "sessions": [
+              "S-0002",
+              "S-0003"
+            ],
+            "shape": [
+              "other(missing valid interpreter)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0012"
+            ],
+            "sessions": [
+              "S-0004"
+            ],
+            "shape": [
+              "other(unsupported possessive quantifier in regex)"
+            ]
+          }
+        ],
+        "groups_at_bar": 2,
+        "id": "K-0002",
+        "nominations": [
+          {
+            "outcome": "admitted D-0001",
+            "rung": "new-decision",
+            "subject": "missing-import"
+          },
+          {
+            "outcome": "draft refused at parse: a hook-edit supersedes exactly one record; got []",
+            "rung": "hook-edit",
+            "subject": "missing-interpreter"
+          },
+          {
+            "outcome": "decline(tool-budget is already a registered term covering the shape; the coder found it, so the boundary stays open); the coder read the presentations as ['tool-budget']",
+            "rung": "hook-edit",
+            "subject": "work-shape/presentation"
+          }
+        ],
+        "outcomes": {
+          "admitted D-0001": 1,
+          "decline": 1,
+          "draft refused at parse: a hook-edit supersedes exactly one record; got []": 1
+        },
+        "retired": []
+      },
+      "hash": "004de4959553",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0010",
+          "noticed": "The task reasoning-core/cfg_09 failed to produce a final answer within the turn limit, missing the convention of providing a derivation string.",
+          "shape": [
+            "other(missing valid derivation string)"
+          ],
+          "state": "dismissed"
+        },
+        {
+          "name": "O-0011",
+          "noticed": "Task reasoning-core/cfg_01 failed to produce a final answer within 8 turns; the first attempt did not meet the convention of providing a string of at least 9 space-separated tokens derived from the grammar.",
+          "shape": [
+            "other(missing valid derivation string)"
+          ],
+          "state": "dismissed"
+        },
+        {
+          "name": "O-0012",
+          "noticed": "The first attempt for task reasoning-core/regex_09 failed due to an unsupported possessive quantifier in the regex pattern.",
+          "shape": [
+            "other(regex possessive quantifier unsupported)"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0013",
+          "noticed": "The reasoning-core/cfg_09 task failed due to turn limit reached.",
+          "shape": [
+            "other(missing valid derivation string)"
+          ],
+          "state": "dismissed"
+        },
+        {
+          "name": "O-0014",
+          "noticed": "The reasoning-core/cfg_01 task failed due to turn limit reached.",
+          "shape": [
+            "other(missing valid derivation string)"
+          ],
+          "state": "dismissed"
+        }
+      ],
+      "pass": 4,
+      "pass_rate": 0.5,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.3125,
+        "transfer": null,
+        "turns": 0.35
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c51-d32e-7ee7-a09e-9dd16dcce1a3",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 8
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": {
+            "cause": "8 turns without a final answer",
+            "message": "turn limit reached"
+          },
+          "lesson": "reasoning-core",
+          "result": null,
+          "symptom": "error:turn-limit",
+          "task": "reasoning-core/cfg_09",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c51-d330-7e43-90c6-68f2bd9bc636",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "python3 - <<'PY'\nimport re, sys\npattern = r'(?:(?:piece{3}[^Y1F]\\w*))'\nprint(bool(re.fullmatch(pattern, 'pieceeeA')))\nPY"
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "pieceeeA",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_11",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c51-d32f-7830-9b8c-b1ce01d1232f",
+          "calls": {
+            "http": 0,
+            "shell": 4,
+            "turns": 5
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(r'(?:\\d*+\\bthese?+)(these|[17R]\\b)', 'the1')) )\"",
+            "python3 -c \"import re,sys; pattern=r'(?:\\d*+\\bthese?+)(these|[17R]\\b)'; for s in ['the1','the7','theR','thethese','these1','these7','theseR','these','thesethese','the','theseR']:\n    print(s, bool(re.fullmatch(pattern,s)))\"",
+            "python3 - <<'PY'\nimport re\npattern=r'(?:\\d*+\\bthese?+)(these|[17R]\\b)'\nprint(bool(re.fullmatch(pattern,'thesthese')))\nPY",
+            "python3 -c \"import re; pattern=r'(?:\\d*+\\bthese?+)(these|[17R]\\b)'; print(bool(re.fullmatch(pattern,'these1')) )\""
+          ],
+          "economy": 0.25,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "thes1",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_09",
+          "transfer": null,
+          "turns": 0.4
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c51-d32e-7f04-8e5c-57d28414f66d",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 8
+          },
+          "commands": [
+            "echo hello"
+          ],
+          "economy": 0.0,
+          "error": {
+            "cause": "8 turns without a final answer",
+            "message": "turn limit reached"
+          },
+          "lesson": "reasoning-core",
+          "result": null,
+          "symptom": "error:turn-limit",
+          "task": "reasoning-core/cfg_01",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0004",
+      "symptoms": {
+        "error:turn-limit": 2,
+        "pass": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 5,
+      "consolidation": null,
+      "hash": "09e3866bd193",
+      "in_context": [
+        "D-0001"
+      ],
+      "kind": "stream",
+      "mentions": {
+        "decoy-dependency": [
+          "D-0001"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0015",
+          "noticed": "The task reasoning-core/cfg_06 failed to produce a final answer within the turn limit; the first attempt did not generate a string of at least 7 tokens, violating the task's requirement.",
+          "shape": [
+            "other(task output length requirement)"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0016",
+          "noticed": "The first attempt failed due to missing python binary, a non-transient fault.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 5,
+      "pass_rate": 0.75,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.4583333333333333,
+        "transfer": null,
+        "turns": 0.4464285714285714
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c54-999f-71da-b279-d46b5c1fe481",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" \"(i)([Ql4])([BUq]*)+?\" \"iQ\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "iQ",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_08",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c54-999d-7d61-8547-4cfa9bfb2b1a",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 4
+          },
+          "commands": [
+            "python3 - <<'PY'\nimport re\npattern=r\"(((last){2,5})[DfM]?\\Bz\\+\\b[IbE]|([cx2])(?:respond|J))\"\nprint(re.fullmatch(pattern,'lastlastz+I'))\nPY",
+            "python3 - <<'PY'\nimport re\npattern=r\"(((last){2,5})[DfM]?\\Bz\\+\\b[IbE]|([cx2])(?:respond|J))\"\nprint(bool(re.fullmatch(pattern,'lastlastz+I')))\nPY"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "lastlastz+I",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_07",
+          "transfer": null,
+          "turns": 0.5
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c54-999c-7069-9a44-76c588a5a24d",
+          "calls": {
+            "http": 0,
+            "shell": 3,
+            "turns": 7
+          },
+          "commands": [
+            "python - <<'EOF'\nimport nltk\ngrammar = nltk.CFG.fromstring(\"\"\"\nS -> A interview\nS -> A\nA -> B\nB -> C D\nB -> C\nC -> D\nD -> '[' D ']'\nD -> E\nE -> interview F\nE -> F\nF -> scene\n\"\"\")\nparser = nltk.parse.earleychart.EarleyChartParser(grammar)\ntokens = [\"[\", \"interview\", \"scene\", \"]\", \"interview\", \"scene\", \"interview\"]\ntry:\n    parses = list(parser.parse(tokens))\n    print(\"YES\" if parses else \"NO\")\nexcept Exception as e:\n    print(\"NO\", e)\nEOF",
+            "python3 - <<'EOF'\nprint('hello')\nEOF",
+            "python3 - <<'EOF'\nimport nltk\nfrom nltk import CFG\nfrom nltk.parse.earleychart import EarleyChartParser\n\ngrammar_str = \"\"\"\nS -> A interview\nS -> A\nA -> B\nB -> C D\nB -> C\nC -> D\nD -> '[' D ']'\nD -> E\nE -> interview F\nE -> F\nF -> scene\n\"\"\"\n\ngrammar = CFG.fromstring(grammar_str)\nparser = EarleyChartParser(grammar)\n\ntokens = ['[', 'scene', ']', 'interview', 'scene', 'interview', 'scene']\nparses = list(parser.parse(tokens))\nprint('parses', len(parses))\nfor p in parses:\n    print(p)\nEOF"
+          ],
+          "economy": 0.3333333333333333,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "[ interview scene ] [ interview scene ] interview",
+          "symptom": "pass",
+          "task": "reasoning-core/cfg_10",
+          "transfer": null,
+          "turns": 0.2857142857142857
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c54-999c-7824-b9d7-fc0aa8fe0fe2",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 8
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": {
+            "cause": "8 turns without a final answer",
+            "message": "turn limit reached"
+          },
+          "lesson": "reasoning-core",
+          "result": null,
+          "symptom": "error:turn-limit",
+          "task": "reasoning-core/cfg_06",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0005",
+      "symptoms": {
+        "error:turn-limit": 1,
+        "pass": 3
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 6,
+      "consolidation": {
+        "admitted": [
+          "D-0002"
+        ],
+        "anchoring": {},
+        "dismissed": [],
+        "expired": [],
+        "flipped": [
+          "D-0001"
+        ],
+        "groups": [
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0012"
+            ],
+            "sessions": [
+              "S-0004"
+            ],
+            "shape": [
+              "other(regex possessive quantifier unsupported)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0015"
+            ],
+            "sessions": [
+              "S-0005"
+            ],
+            "shape": [
+              "other(task output length requirement)"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0004",
+              "O-0009",
+              "O-0016",
+              "O-0017",
+              "O-0018",
+              "O-0019"
+            ],
+            "sessions": [
+              "S-0002",
+              "S-0003",
+              "S-0005",
+              "S-0006"
+            ],
+            "shape": [
+              "shell-tool"
+            ]
+          }
+        ],
+        "groups_at_bar": 1,
+        "id": "K-0003",
+        "nominations": [
+          {
+            "outcome": "admitted D-0002; the payload was promoted on the examiner's abstraction claim",
+            "rung": "hook-edit",
+            "subject": "shell-interpreter"
+          }
+        ],
+        "outcomes": {
+          "admitted D-0002; the payload was promoted on the examiner's abstraction claim": 1
+        },
+        "retired": []
+      },
+      "hash": "0294edc14081",
+      "in_context": [
+        "D-0001"
+      ],
+      "kind": "stream",
+      "mentions": {
+        "decoy-dependency": [
+          "D-0001"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0017",
+          "noticed": "The task 'reasoning-core/cfg_11' failed on first attempt due to missing Python and NLTK modules.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0018",
+          "noticed": "The task 'reasoning-core/cfg_11' succeeded on second attempt after installing missing dependencies.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0019",
+          "noticed": "The first attempt failed due to missing 'nltk' module and missing pip, a non-transient fault that was corrected on retry.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 6,
+      "pass_rate": 1.0,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.75,
+        "transfer": null,
+        "turns": 0.7291666666666666
+      },
+      "rows": [
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c58-5fc4-7772-8d21-9d723d0730c5",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" \"(\\w{1,3})\\?{1,4}\" \"abc??\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "abc??",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_00",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c58-5fc4-7cdb-8466-7dd482a9c660",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" \"((thousand|[JgV]|.?)*)v((0)){2}\" \"v00\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "v00",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_05",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c58-5fc3-768b-ba78-7a0272d34bde",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "python - <<'PY'\nimport nltk, sys\ngrammar_str = \"\"\"B -> S 'challenge'\nB -> 'common'\nC -> C 'this'\nA -> B\nS -> A\nC -> 'agreement'\nS -> B 'rather'\nC -> 'common'\nC -> C 'agreement'\nC -> 'challenge'\nS -> 'rather' C\nB -> C\"\"\"\ng = nltk.CFG.fromstring(grammar_str)\nparser = nltk.parse.earleychart.EarleyChartParser(g)\nsentence = \"challenge this agreement this agreement rather\".split()\nfor tree in parser.parse(sentence):\n    print(tree)\n    sys.exit(0)\nprint(\"No parse\")\nPY",
+            "python3 - <<'PY'\nimport nltk, sys\nprint('test')\nPY"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "challenge this agreement this this rather",
+          "symptom": "pass",
+          "task": "reasoning-core/cfg_11",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c58-5fc3-7f7d-9c7a-2bf88d48576b",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 8
+          },
+          "commands": [
+            "python3 - <<'PY'\nimport nltk\nfrom nltk import CFG\nfrom nltk.parse.earleychart import EarleyChartParser\n\ngrammar_str = \"\"\"\nS -> A B\nS -> A\nA -> B 'compare'\nA -> B\nA -> '[' A ']'\nA -> 'now'\nA -> 'conference'\nA -> 'state' B\nB -> B B\nB -> '<' B '>'\nB -> 'state'\nB -> 'compare'\n\"\"\"\ncfg = CFG.fromstring(grammar_str)\nparser = EarleyChartParser(cfg)\n\nsentence = \"state compare state compare state compare compare\"\ntokens = sentence.split()\nfor tree in parser.parse(tokens):\n    print('Parsed')\n    break\nelse:\n    print('No parse')\nPY",
+            "pip install nltk"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "state state compare < state state >",
+          "symptom": "pass",
+          "task": "reasoning-core/cfg_08",
+          "transfer": null,
+          "turns": 0.25
+        }
+      ],
+      "session": "S-0006",
+      "symptoms": {
+        "pass": 4
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "9e2eef0cc0bd",
+      "in_context": [
+        "D-0002"
+      ],
+      "kind": "revisit",
+      "mentions": {
+        "decoy-dependency": [
+          "D-0002"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0020",
+          "noticed": "In task reasoning-core/regex_10, the first attempt produced the string 'Mfutureimportantu', which does not match the regex because it misspells 'futureimportant'.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0021",
+          "noticed": "The first attempt failed due to missing nltk module.",
+          "shape": [],
+          "state": "open"
+        }
+      ],
+      "pass": 7,
+      "pass_rate": 1.0,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.7083333333333334,
+        "transfer": null,
+        "turns": 0.6130952380952381
+      },
+      "rows": [
+        {
+          "applied": [
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5b-8e54-7ce5-9870-5b82cdd494dd",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 1
+          },
+          "commands": [],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "Aoccur",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_01",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5b-8e54-7212-af98-0427489b3fb5",
+          "calls": {
+            "http": 0,
+            "shell": 3,
+            "turns": 7
+          },
+          "commands": [
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" \"[1MV](?:futureimportant{1,3}[rzu])+\" \"Mfutureimportantz\"",
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" \"[1MV](?:futureimportant{1,3}[rzu])+\" \"Mfutureimportt\"",
+            "python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" \"[1MV](?:futureimportant{1,3}[rzu])+\" \"Mfutureimportantz\""
+          ],
+          "economy": 0.3333333333333333,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "Mfutureimportantu",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_10",
+          "transfer": null,
+          "turns": 0.2857142857142857
+        },
+        {
+          "applied": [
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5b-8e54-7167-8deb-339e971c2e43",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 3
+          },
+          "commands": [],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "[ [ [ success ] ] ]",
+          "symptom": "pass",
+          "task": "reasoning-core/cfg_07",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5b-8e53-7dbc-9a4d-06bac1215e7c",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 4
+          },
+          "commands": [
+            "cat <<'EOF' > /tmp/parse.py\nimport nltk\nfrom nltk import CFG\nfrom nltk.parse.earleychart import EarleyChartParser\n\ncfg_str = '''D -> 'some'\nC -> D\nS -> B 'some'\nS -> 'every'\nA -> B\nS -> 'ground'\nA -> 'which'\nS -> C B\nA -> S 'water'\nB -> C\nS -> A\nB -> '<' B '>' '''\n\ngrammar = CFG.fromstring(cfg_str)\nparser = EarleyChartParser(grammar)\n\nsentence = '< < some > > some water'\nprint('Result', bool(list(parser.parse(sentence.split()))))\nEOF\npython3 /tmp/parse.py",
+            "pip install nltk -q"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "< < some > > some",
+          "symptom": "pass",
+          "task": "reasoning-core/cfg_02",
+          "transfer": null,
+          "turns": 0.5
+        }
+      ],
+      "session": "S-0007",
+      "symptoms": {
+        "pass": 4
+      },
+      "work_shape": [
+        "shell-tool"
+      ]
+    },
+    {
+      "batch": 2,
+      "consolidation": null,
+      "hash": "872ff0e9c026",
+      "in_context": [
+        "D-0002"
+      ],
+      "kind": "revisit",
+      "mentions": {
+        "decoy-dependency": [
+          "D-0002"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0022",
+          "noticed": "The task 'reasoning-core/cfg_03' failed because the shell could not find the python interpreter; the missing\u2011dependency handling record D-0002 should have fired to address this.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0023",
+          "noticed": "The task reasoning-core/cfg_04 failed because the first attempt did not invoke the shell tool to parse the grammar, missing the required runtime dependency; the record D-0002 should have fired to install or skip the task.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0024",
+          "noticed": "Task reasoning-core/cfg_03 failed due to missing python interpreter.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0025",
+          "noticed": "Task reasoning-core/cfg_04 failed due to turn limit reached.",
+          "shape": [],
+          "state": "open"
+        }
+      ],
+      "pass": 8,
+      "pass_rate": 0.5,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.5,
+        "transfer": null,
+        "turns": 0.5
+      },
+      "rows": [
+        {
+          "applied": [
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5d-bdf4-70f2-8a49-5ed19ee16329",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 1
+          },
+          "commands": [],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "tax tax tax PM discussion discussion",
+          "symptom": "pass",
+          "task": "reasoning-core/cfg_05",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5d-bdf4-7728-bda3-8e33d507fcbb",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "python3 - <<'PY'\nimport re, sys\npattern = r'\\B\\btwo|((?:[bTY]+){3,5})*'\nprint(bool(re.fullmatch(pattern, 'bbb')))\nPY"
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "reasoning-core",
+          "result": "bbb",
+          "symptom": "pass",
+          "task": "reasoning-core/regex_06",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5d-bdf1-72c0-9729-ac43dbd26345",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 8
+          },
+          "commands": [
+            "python - <<'PY'\nimport nltk\nfrom nltk.parse.earleychart import EarleyChartParser\n\ncfg_str = \"\"\"\nS -> A\nS -> 'yes' A\nS -> 'because' A\nA -> B\nB -> 'yes'\nB -> '[' B ']'\nB -> S S\nB -> 'seat'\n\"\"\"\n\ngrammar = nltk.CFG.fromstring(cfg_str)\nparser = EarleyChartParser(grammar)\n\nsentence = \"yes yes yes yes yes yes yes yes\".split()\n\nfor tree in parser.parse(sentence):\n    print(tree)\n    break\nelse:\n    print(\"No parse\")\nPY"
+          ],
+          "economy": 0.0,
+          "error": {
+            "cause": "8 turns without a final answer",
+            "message": "turn limit reached"
+          },
+          "lesson": "reasoning-core",
+          "result": null,
+          "symptom": "error:turn-limit",
+          "task": "reasoning-core/cfg_03",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5d-bdf2-7429-a96f-608c0c916b30",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 8
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": {
+            "cause": "8 turns without a final answer",
+            "message": "turn limit reached"
+          },
+          "lesson": "reasoning-core",
+          "result": null,
+          "symptom": "error:turn-limit",
+          "task": "reasoning-core/cfg_04",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0008",
+      "symptoms": {
+        "error:turn-limit": 2,
+        "pass": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    }
+  ],
+  "records": [
+    {
+      "admitted_after_pass": 4,
+      "decision": "When a task fails because a required module is not installed, the first attempt should detect the missing dependency and either install it or skip the task, rather than retrying the same failing call.",
+      "hook": [
+        "tool-budget",
+        "shell-tool"
+      ],
+      "id": "D-0001",
+      "mentions": [
+        "decoy-dependency"
+      ],
+      "status": null
+    },
+    {
+      "admitted_after_pass": 6,
+      "decision": "When a task fails because a required runtime dependency is absent, the first attempt should detect the missing dependency and either install it or skip the task, rather than retrying the same failing call.",
+      "hook": [
+        "shell-tool"
+      ],
+      "id": "D-0002",
+      "mentions": [
+        "decoy-dependency"
+      ],
+      "status": null
+    }
+  ],
+  "roster": {
+    "adjudicator": "deepseek-ai/DeepSeek-V4-Pro",
+    "coder": "deepseek-ai/DeepSeek-V4-Pro",
+    "consolidator": "deepseek-ai/DeepSeek-V4-Pro",
+    "examiner": "deepseek-ai/DeepSeek-V4-Pro",
+    "pass": "openai/gpt-oss-20b",
+    "reauthor": "deepseek-ai/DeepSeek-V4-Pro"
+  },
+  "stream": {
+    "batch": 4,
+    "batches": 6,
+    "families": [
+      "reasoning-core"
+    ],
+    "faults": {
+      "http_budget": null,
+      "http_fault_calls": 1,
+      "http_fault_fraction": 0.0,
+      "shell_output_limit": null
+    },
+    "revisit": [
+      1,
+      2
+    ],
+    "seed": 0
+  },
+  "warning": null
+}
