@@ -166,6 +166,91 @@ def test_an_endpoint_failure_on_a_turn_fails_the_row_with_its_cause_instead_of_d
     assert s.evaluation.scores["task_pass_rate"].value == 0.0
 
 
+def test_a_malformed_tool_call_is_wrapped_so_the_replayed_history_stays_valid_and_the_model_gets_another_turn(store):
+    from hgi import model as _model
+    from suite.agent import Agent
+    from suite.tools import Tools
+
+    class Flub(_model.Backend):
+        """Emits a tool call whose ``arguments`` string is not valid JSON, then answers on the next turn — as a model would
+        once it reads the "bad tool call" result, if the replayed history stayed sendable."""
+
+        model_id = "flub"
+
+        def __init__(self):
+            self.seen: list[list[dict]] = []
+
+        def chat(self, messages, *, json_mode, tools=None):
+            self.seen.append(messages)
+            if len(self.seen) == 1:
+                return {"content": "", "tool_calls": [{"id": "call_1", "name": "shell", "arguments": "{command: 'ls'}"}]}
+            return {"content": '{"result": "ok", "error": null, "applied": []}', "tool_calls": []}
+
+    backend = Flub()
+    world = build(SuiteSpec())
+    token = _suite.use(world)
+    _model.use(backend, role="pass")
+    try:
+        agent = Agent(policy="model", records=[])
+        out = agent._model("genesis/schema_answer", "Return it.", {}, Tools(task="genesis/schema_answer", workdir=tmp_dir()))
+    finally:
+        _model.use(None, role="pass")
+        _suite.reset(token)
+    assert out["result"] == "ok" and out["turns"] == 2, "the wasted turn on the bad call still counts, and the model recovers on the next"
+    assert len(backend.seen) == 2, "the endpoint took a second request instead of the row being refused outright"
+    replayed = backend.seen[1]
+    assistant_turn = next(m for m in replayed if m["role"] == "assistant" and m.get("tool_calls"))
+    replayed_arguments = assistant_turn["tool_calls"][0]["function"]["arguments"]
+    assert json.loads(replayed_arguments) == {"_raw": "{command: 'ls'}"}, "wrapped as a valid JSON object string, the raw text kept"
+    tool_result = next(m for m in replayed if m["role"] == "tool")
+    assert "bad tool call" in tool_result["content"], "dispatch still sees the original raw string and reports the real cause"
+
+
+def test_a_genuine_endpoint_fault_and_one_that_follows_a_malformed_tool_call_read_apart(store):
+    from suite import lessons as _lessons
+    from hgi import model as _model
+    from suite.agent import Agent
+    from suite.tools import Tools
+
+    class Broken(_model.Backend):
+        model_id = "broken"
+
+        def chat(self, messages, *, json_mode, tools=None):
+            raise RuntimeError("HTTP 503 from the endpoint")
+
+    class FlubThenBreak(_model.Backend):
+        model_id = "flub-then-break"
+
+        def __init__(self):
+            self.calls = 0
+
+        def chat(self, messages, *, json_mode, tools=None):
+            self.calls += 1
+            if self.calls == 1:
+                return {"content": "", "tool_calls": [{"id": "call_1", "name": "shell", "arguments": "not json"}]}
+            raise RuntimeError("HTTP 503 from the endpoint")
+
+    world = build(SuiteSpec())
+    token = _suite.use(world)
+    try:
+        _model.use(Broken(), role="pass")
+        try:
+            genuine = Agent(policy="model", records=[])._model("genesis/schema_answer", "Return it.", {}, Tools(task="genesis/schema_answer", workdir=tmp_dir()))
+        finally:
+            _model.use(None, role="pass")
+        _model.use(FlubThenBreak(), role="pass")
+        try:
+            after_malformed = Agent(policy="model", records=[])._model("genesis/schema_answer", "Return it.", {}, Tools(task="genesis/schema_answer", workdir=tmp_dir()))
+        finally:
+            _model.use(None, role="pass")
+    finally:
+        _suite.reset(token)
+    assert genuine["error"]["message"] == "model call failed" and _lessons.error_class(genuine["error"]) == "endpoint"
+    assert after_malformed["error"]["message"] == "model call failed after a malformed tool call"
+    assert _lessons.error_class(after_malformed["error"]) == "malformed-tool-call"
+    assert _lessons.error_class(genuine["error"]) != _lessons.error_class(after_malformed["error"])
+
+
 def test_the_model_policy_keeps_only_applied_ids_that_were_in_context(store, monkeypatch):
     from hgi import model as _model
     from suite.agent import Agent

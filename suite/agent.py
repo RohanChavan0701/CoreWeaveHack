@@ -151,15 +151,31 @@ class Agent(weave.Model):
         budgets = "; ".join(f"{k} calls: {v}" for k, v in tools.budgets.items())
         user = f"Task {task}: {prompt}\nOutput schema: {json.dumps(schema)}" + (f"\nBudgets — {budgets}" if budgets else "")
         messages: list[dict[str, Any]] = [{"role": "system", "content": system}, {"role": "user", "content": user}]
+        malformed_tool_call = False
         for turn in range(1, MAX_TURNS + 1):
             try:
                 reply, _ = _model.chat_with_tools("pass", messages, Tools.SCHEMA, session=self.session, pass_=self.pass_,
                                                   records_in_context=[r["id"] for r in self.records])
-            except Exception as e:  # the endpoint failed the turn: the row fails with the cause, and is scored, not dropped
-                return _envelope(task, tools, error={"message": "model call failed", "cause": f"endpoint {type(e).__name__}: {str(e)[:200]}"}, turns=turn)
+            except Exception as e:  # the endpoint failed the turn: the row fails with the cause, and is scored, not dropped. A malformed
+                # tool call earlier in this conversation is a distinct cause from the endpoint's own fault: it is the model's arguments
+                # string the endpoint refuses on replay, not a genuine fault, and reads apart so the two are not counted together.
+                message = "model call failed after a malformed tool call" if malformed_tool_call else "model call failed"
+                return _envelope(task, tools, error={"message": message, "cause": f"endpoint {type(e).__name__}: {str(e)[:200]}"}, turns=turn)
             if reply["tool_calls"]:
-                messages.append({"role": "assistant", "content": reply["content"] or None,
-                                 "tool_calls": [{"id": tc["id"], "type": "function", "function": {"name": tc["name"], "arguments": tc["arguments"]}} for tc in reply["tool_calls"]]})
+                replayed = []
+                for tc in reply["tool_calls"]:
+                    arguments = tc["arguments"]
+                    try:
+                        json.loads(arguments or "{}")
+                    except (json.JSONDecodeError, TypeError):
+                        # the model's own arguments string is not valid JSON; dispatch below reports the bad call to the model as a
+                        # tool result, but the raw string replayed into history verbatim would make the *next* request invalid too
+                        # (an OpenAI-compatible endpoint validates a past assistant turn's tool_calls, not just the current one) —
+                        # wrap it as a valid JSON object string so the conversation stays sendable and the model gets the turn back.
+                        malformed_tool_call = True
+                        arguments = json.dumps({"_raw": arguments})
+                    replayed.append({"id": tc["id"], "type": "function", "function": {"name": tc["name"], "arguments": arguments}})
+                messages.append({"role": "assistant", "content": reply["content"] or None, "tool_calls": replayed})
                 for tc in reply["tool_calls"]:
                     messages.append({"role": "tool", "tool_call_id": tc["id"], "content": tools.dispatch(tc["name"], tc["arguments"])})
                 continue
