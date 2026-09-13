@@ -118,6 +118,8 @@ class ArmSpec(BaseModel):
     """One run of the loop with every per-run decision fixed."""
 
     mode: Literal["attached", "detached"] = "attached"
+    """Attached: boot, evaluate, close every pass, consolidate every round. Detached: the ablation — the same agent and suite
+    with no store, so its passes are independent draws of one evaluation and are drawn concurrently."""
     rounds: int = Field(default=3, ge=1)
     """Consolidation cycles. A detached arm has no consolidation; its rounds only size the run."""
     passes_per_round: int = Field(default=2, ge=1)
@@ -264,21 +266,26 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         if cli.main([args[0], *argv, *args[1:]]) != 0:
             raise SystemExit(f"hgi {args[0]} failed in arm {arm}")
 
+    def progress() -> None:
+        # sorted by id, not pass: a detached arm draws its passes concurrently, so the
+        # session ids are minted in lock-acquisition order — the set is stable, the order is not.
+        record["sessions"] = sorted(s.id for s in _sessions(store, spec.mode))
+        record["curve"] = curve(store, spec.mode)
+        _write(where / "arm.json", record)
+
     try:
         _commit_arm(where, store, commit, f"Genesis for {exp.name}/{arm}: priced for {roster['pass']}, {spec.rounds} rounds of {spec.passes_per_round}")
-        for n in range(1, spec.passes + 1):
-            if spec.mode == "attached":
+        if spec.mode == "attached":
+            for n in range(1, spec.passes + 1):
                 session = store.mint("session")
                 hgi("boot", "--session", session, "--pass", str(n))
                 hgi("evaluate", "--session", session)
                 hgi("close", "--session", session)
                 if n % spec.passes_per_round == 0:
                     hgi("consolidate")
-            else:
-                hgi("evaluate", "--detached", "--pass", str(n))  # the detached command mints its own session
-            record["sessions"] = [s.id for s in _sessions(store, spec.mode)]
-            record["curve"] = curve(store, spec.mode)
-            _write(where / "arm.json", record)
+                progress()
+        else:
+            _detached_passes(spec, store, hgi, progress)
         hgi("lint", "--model", roster["pass"])
     finally:
         record["finished_at"] = _now()
@@ -293,6 +300,29 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         else:
             os.environ["HGI_STORE"] = previous_store
     return record
+
+
+DETACHED_AT_ONCE = 3
+"""Detached passes evaluated concurrently; each already runs its tasks ``concurrency`` at a time."""
+
+
+def _detached_passes(spec: ArmSpec, store, hgi, progress) -> None:
+    """A detached arm's passes are draws of one evaluation — no boot, no close, nothing carried between them — so they are
+    drawn concurrently, each in a copy of the runner's context, and written without a commit each; the arm commits once."""
+    import contextvars
+    from concurrent.futures import ThreadPoolExecutor
+
+    from hgi import index as _index
+
+    def draw(n: int) -> None:
+        hgi("evaluate", "--detached", "--pass", str(n), "--no-commit")  # the detached command mints its own session
+
+    with ThreadPoolExecutor(max_workers=min(DETACHED_AT_ONCE, spec.passes)) as pool:
+        futures = [pool.submit(contextvars.copy_context().run, draw, n) for n in range(1, spec.passes + 1)]
+        for f in futures:
+            f.result()
+            progress()
+    _index.regenerate(store)
 
 
 def _commit_arm(where: Path, store, commit: bool, message: str) -> None:

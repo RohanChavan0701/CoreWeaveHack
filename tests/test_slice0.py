@@ -132,3 +132,15 @@ def test_two_registries_over_one_store_never_mint_the_same_id(store):
     third = store.mint("session")
     assert (first, second, third) == ("S-0001", "S-0002", "S-0003")
     assert store.mint("consolidation") == "K-0001" and other.mint("K") == "K-0002"
+
+
+def test_concurrent_minters_never_share_an_id(store):
+    from concurrent.futures import ThreadPoolExecutor
+
+    from hgi import registry as _registry
+
+    registries = [_registry.load(store.root) for _ in range(8)]
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        ids = list(pool.map(lambda r: [r.mint("S") for _ in range(5)], registries))
+    flat = [i for group in ids for i in group]
+    assert len(set(flat)) == 40 and store.mint("session") == "S-0041"

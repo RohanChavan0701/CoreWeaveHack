@@ -19,9 +19,11 @@ Files under ``<store>/registry/``:
 
 from __future__ import annotations
 
+import fcntl
 import json
 import os
 import re
+import tempfile
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -163,11 +165,17 @@ class Registry:
         runner and the commands it drives — never hand out the same id.
         """
         ids_path = self.path("ids")
-        if ids_path.exists():
-            self.ids = read_json(ids_path)
-        n = self.ids.get(prefix, 0) + 1
-        self.ids[prefix] = n
-        self.save("ids")
+        ids_path.parent.mkdir(parents=True, exist_ok=True)
+        with (self.dir / ".ids.lock").open("a+") as lock:  # concurrent minters — threads or processes — take turns
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            try:
+                if ids_path.exists():
+                    self.ids = read_json(ids_path)
+                n = self.ids.get(prefix, 0) + 1
+                self.ids[prefix] = n
+                self.save("ids")
+            finally:
+                fcntl.flock(lock, fcntl.LOCK_UN)
         return f"{prefix}-{n:04d}"
 
     # --- persistence ---------------------------------------------------
@@ -206,11 +214,21 @@ def read_json(path: Path) -> Any:
 
 
 def write_json(path: Path, payload: Any) -> None:
-    """Write canonical JSON: sorted keys, two-space indent, trailing newline — so regeneration is byte-stable."""
+    """Write canonical JSON: sorted keys, two-space indent, trailing newline — so regeneration is byte-stable.
+
+    The write is atomic (a sibling temporary file renamed into place), so a
+    concurrent reader sees the old file or the new one, never a torn one.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w") as f:
-        json.dump(payload, f, indent=2, sort_keys=True, ensure_ascii=False)
-        f.write("\n")
+    fd, tmp = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(payload, f, indent=2, sort_keys=True, ensure_ascii=False)
+            f.write("\n")
+        os.replace(tmp, path)
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise
 
 
 def load(root: Path | str) -> Registry:
