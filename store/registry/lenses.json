@@ -19,7 +19,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -46,7 +47,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -73,7 +75,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -100,7 +103,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -130,7 +134,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -160,7 +165,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -190,7 +196,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -220,7 +227,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],

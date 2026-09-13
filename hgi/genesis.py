@@ -248,7 +248,7 @@ def seed(root: Path | str, model_id: str | None = None, now: datetime | None = N
     write_json(reg_dir / "constitution.json", CONSTITUTION_CAP)
     write_json(reg_dir / "lenses.json", [
         {"status": "live", "warrant": {"evidence": "genesis", "anchors": []}, **lens, "kind": "lens", "priced_for": {"model_id": model_id},
-         "telemetry": {"answer_variance": "design-stage", "decoy_rejection": "design-stage", "miss_stream": "steers/ citing this lens"}}
+         "telemetry": {"answer_variance": "design-stage", "decoy_rejection": "design-stage", "signal_caught": "design-stage", "miss_stream": "steers/ citing this lens"}}
         for lens in LENSES
     ])
     write_json(reg_dir / "ids.json", {"C": len(ARTICLES)})

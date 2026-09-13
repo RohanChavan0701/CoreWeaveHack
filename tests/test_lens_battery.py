@@ -80,6 +80,30 @@ def test_the_battery_scores_decoy_rejection_and_computes_telemetry(store):
     assert result.facts["signal_caught"].value == 0.5     # L-0004 catches both, L-0003 misses both
 
 
+def test_the_battery_attaches_signal_caught_per_lens(store):
+    result = lb.run_battery(store)
+
+    # the per-lens signal-caught cell is populated off design-stage and carries the battery's name as provenance
+    for lens_id in ("L-0003", "L-0004"):
+        assert "design-stage" not in result.telemetry[lens_id].signal_caught
+        assert lb.LENS_BATTERY in result.telemetry[lens_id].signal_caught
+    # L-0004 files its noticing on both genuine signals; L-0003's honest stub files nothing, so it misses every signal
+    assert result.telemetry["L-0004"].signal_caught.startswith("1.00")
+    assert result.telemetry["L-0003"].signal_caught.startswith("0.00")
+    # a lens missing its signals reads a fraction strictly below one — the partial signal-miss the decoy axis alone hides
+    fraction = float(result.telemetry["L-0003"].signal_caught.split(" ", 1)[0])
+    assert fraction < 1.0
+
+
+def test_the_signal_caught_cell_lands_on_the_lens_register(store):
+    result = lb.run_battery(store)
+    lb.populate_telemetry(store, result.telemetry)
+    telemetry = {l.id: l.telemetry for l in Store(store.root).registry.lenses()}
+    assert telemetry["L-0004"].signal_caught.startswith("1.00")
+    assert telemetry["L-0003"].signal_caught.startswith("0.00")
+    assert telemetry["L-0001"].signal_caught == "design-stage"  # boot lenses untouched
+
+
 def test_boot_lenses_are_not_battered(store):
     result = lb.run_battery(store)
     assert set(result.telemetry) == {"L-0003", "L-0004"}  # L-0001/L-0002 are boot lenses, no decoy dataset

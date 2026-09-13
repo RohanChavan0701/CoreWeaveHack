@@ -359,7 +359,12 @@ def _variance(xs: list[float]) -> float:
 
 
 def telemetry_from(outputs: list[dict[str, Any]]) -> dict[str, LensTelemetry]:
-    """Per-lens telemetry, computed from the battery run: the decoy-rejection fraction and the filing variance."""
+    """Per-lens telemetry, computed from the battery run: the decoy-rejection fraction, the signal-caught fraction and the filing variance.
+
+    ``decoy_rejection`` and ``signal_caught`` are the two halves of the same run — the fraction of decoys the lens filed
+    nothing for and the fraction of genuine signals it filed — so a lens that rejects every decoy but catches only half
+    its signals reads a partial signal-miss on the register the decoy axis alone would hide.
+    """
     by_lens: dict[str, list[dict]] = defaultdict(list)
     for o in outputs:
         by_lens[o["lens"]].append(o)
@@ -367,15 +372,22 @@ def telemetry_from(outputs: list[dict[str, Any]]) -> dict[str, LensTelemetry]:
     for lens_id, rows in by_lens.items():
         decoys = [r for r in rows if r["is_decoy"]]
         rejected = [r for r in decoys if not r["filed"]]
+        signals = [r for r in rows if not r["is_decoy"]]
+        caught = [r for r in signals if r["filed"]]
         variance = _variance([1.0 if r["filed"] else 0.0 for r in rows])
         if decoys:
             fraction = len(rejected) / len(decoys)
             decoy = f"{fraction:.2f} — {len(rejected)}/{len(decoys)} planted decoys rejected ({LENS_BATTERY})"
         else:
             decoy = f"unevaluable — no decoy in the battery ({LENS_BATTERY})"
+        if signals:
+            fraction = len(caught) / len(signals)
+            signal = f"{fraction:.2f} — {len(caught)}/{len(signals)} planted signals caught ({LENS_BATTERY})"
+        else:
+            signal = f"unevaluable — no signal in the battery ({LENS_BATTERY})"
         spread = ("filings vary across" if variance > 0 else "the same filing on all") + f" {len(rows)} battery items"
         telemetry[lens_id] = LensTelemetry(answer_variance=f"{variance:.2f} — {spread} ({LENS_BATTERY})",
-                                           decoy_rejection=decoy)
+                                           decoy_rejection=decoy, signal_caught=signal)
     return telemetry
 
 
