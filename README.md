@@ -126,6 +126,7 @@ hgi close       --session S-nnnn            # dispositions, observations, steers
 hgi consolidate                             # the backward pass over the ledgers
 hgi lint                                    # the floor
 hgi index                                   # regenerate projections
+hgi price       --model <id>                # the size of a model swap over the conditioning records
 hgi lineage     D-0007                      # the admitting commit, and the path query over the lineage DAG
 ```
 
@@ -136,6 +137,13 @@ so `hgi lineage` reads it back as the oldest commit naming the id.
 `./demo.sh` runs the whole demonstration; `uv run marimo run dashboard.py`
 opens the projection surface and the escalation queue; `uv run hgi mirror`
 publishes the ledgers to Weave for the analyst.
+
+Every lens, article and accepted decision records the frozen model its text
+was authored against, and a model swap re-prices all of them in both
+directions. `hgi price` names what a swap costs; `hgi price --restamp` moves
+the stamp without claiming the text moved with it, keeping
+`priced_for.authored_for` at the model that authored it, so the
+`model-pricing` check goes on warning until the text is re-authored.
 
 ## Experiments
 

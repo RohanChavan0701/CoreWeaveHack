@@ -134,6 +134,18 @@ class Store:
     def observations(self, state: str | None = "open") -> list[Observation]:
         return [o for o in self.all("observation") if state is None or o.disposition.state == state]
 
+    def conditioning(self) -> list[tuple[str, Any]]:
+        """Every live record carrying authored conditioning text, as ``(kind, record)``.
+
+        A lens's angle, an article and a decision's sentence are read by the
+        model as conditioning, so each records the model it was priced for
+        (spec § 6, § 9.6) and a model swap re-prices all of them. This is the
+        set :mod:`hgi.price` re-prices and ``model-pricing`` checks.
+        """
+        return ([("lens", l) for l in self.registry.lenses()]
+                + [("constitution", a) for a in self.articles()]
+                + [("decision", d) for d in self.decisions("accepted")])
+
     def find(self, id: str) -> BaseModel | None:
         """Any record by id, across every file-layout kind."""
         for kind, (_, layout) in LAYOUTS.items():

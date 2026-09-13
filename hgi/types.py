@@ -199,7 +199,11 @@ class Latch(Strict):
 
 class Priced(Strict):
     model_id: str | None = None
-    """The frozen model the conditioning text was authored against; ``None`` reads as unpriced."""
+    """The frozen model this record is priced for; ``None`` reads as unpriced."""
+    authored_for: str | None = None
+    """Set when the stamp has been moved without the text being re-authored: the
+    model the text was actually written against. ``None`` means the stamp and the
+    authoring agree, which is the case until ``hgi price --restamp`` moves one."""
 
 
 class Enforcement(Strict):

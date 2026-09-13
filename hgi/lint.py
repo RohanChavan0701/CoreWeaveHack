@@ -340,15 +340,18 @@ def check_acyclic(store: Store) -> list[Finding]:
 
 @check("model-pricing", "boot", "the size of the re-pricing")
 def check_pricing(store: Store, model_id: str | None = None) -> list[Finding]:
+    """Warn on a conditioning record the session's model did not condition — priced for another
+    model, or restamped for this one without its text being re-authored (:mod:`hgi.price`)."""
     out = []
     if model_id is None:
         return out
-    for lens in store.registry.lenses():
-        if lens.priced_for.model_id != model_id:
-            out.append(warn("model-pricing", lens.id, f"priced for {lens.priced_for.model_id!r}, the session runs {model_id!r}"))
-    for d in store.decisions("accepted"):
-        if d.priced_for.model_id != model_id:
-            out.append(warn("model-pricing", d.id, f"priced for {d.priced_for.model_id!r}, the session runs {model_id!r}"))
+    for _, record in store.conditioning():
+        priced = record.priced_for
+        if priced.model_id != model_id:
+            out.append(warn("model-pricing", record.id, f"priced for {priced.model_id!r}, the session runs {model_id!r}"))
+        elif priced.authored_for:
+            out.append(warn("model-pricing", record.id,
+                            f"stamped for {model_id!r} by a re-price; the text is authored for {priced.authored_for!r}"))
     return out
 
 

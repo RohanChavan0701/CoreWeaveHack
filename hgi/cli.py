@@ -7,6 +7,7 @@
     hgi consolidate                              # the backward pass over the ledgers
     hgi lint                                     # the floor
     hgi index                                    # regenerate projections
+    hgi price       --model <id> --restamp       # re-price the conditioning records for a model
     hgi lineage     D-0007                       # the admitting commit and the path query over the DAG
     hgi experiment  run experiments/x.toml       # every arm of an experiment file, each in its own store
 
@@ -163,10 +164,10 @@ def build_parser() -> argparse.ArgumentParser:
 def _register_pass_commands(add) -> None:
     """The forward- and backward-pass commands register themselves as their modules land."""
     try:
-        from hgi import boot, close, consolidate, evaluate, experiment, mirror  # noqa: F401
+        from hgi import boot, close, consolidate, evaluate, experiment, mirror, price  # noqa: F401
     except ImportError:
         return
-    for module in (boot, evaluate, close, consolidate, mirror, experiment):
+    for module in (boot, evaluate, close, consolidate, mirror, experiment, price):
         module.register(add, _store, _finish)
 
 
