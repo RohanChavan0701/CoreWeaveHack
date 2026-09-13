@@ -86,6 +86,19 @@ def test_an_arm_runs_in_its_own_store_and_the_report_reads_its_curve_back(tmp_pa
     assert "| attached | stub | attached | 1×2 |" in table and "| detached | stub | detached | 1×2 | 0.50 | 0.50 | nothing |" in table
 
 
+def test_arm_json_records_the_tree_commit(tmp_path, monkeypatch):
+    """The runner's own tree, not the arm's store repository — pinned at the arm's start so a log written
+    under a later commit can be told apart from the tree that actually ran (item 35)."""
+    monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
+    exp = _experiment.load(EXPERIMENTS / "smoke.toml")
+    record = _experiment.run_arm(exp, "attached", tmp_path, commit=False)
+    assert record["commit"] == git("rev-parse", "HEAD")
+
+
+def test_tree_commit_is_null_outside_a_checkout(tmp_path):
+    assert _experiment._tree_commit(tmp_path) is None
+
+
 def test_rerunning_an_arm_needs_force(tmp_path, monkeypatch):
     monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
     exp = _experiment.load(EXPERIMENTS / "smoke.toml")

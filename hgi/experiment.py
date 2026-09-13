@@ -52,8 +52,10 @@ and drives the same commands ``demo.sh`` drives — ``boot``, ``evaluate``,
 ``close``, ``consolidate`` at each round's end, ``evaluate --detached`` for
 a detached arm — through the command surface, so an arm is exactly what a
 hand-run would be. ``arm.json`` beside the store records what the arm
-resolved to and, at the end, its curve; the report reads every arm's curve
-back from its store.
+resolved to, the code tree's commit at the moment it started (``null``
+outside a checkout — a running arm outlives a commit that lands on the tree
+under it, item 35), and, at the end, its curve; the report reads every
+arm's curve back from its store.
 """
 
 from __future__ import annotations
@@ -61,6 +63,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import subprocess
 import sys
 import tomllib
 from copy import deepcopy
@@ -71,6 +74,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 import suite as _suite
+from hgi import evolution
 from hgi import model as _model
 from hgi import registry as _registry
 from hgi import tracing
@@ -290,6 +294,7 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         "stream": {"batches": [_stream.batch_record(n, b) for n, b in enumerate(batches, 1)], "revisit": spec.revisits,
                    "passes": {n: n for n in range(1, spec.passes + 1)} | {spec.passes + k: r for k, r in enumerate(spec.revisits, 1)}} if batches else None,
         "weave_project": tracing.project_name(), "started_at": _now(), "finished_at": None, "sessions": [], "curve": {},
+        "commit": _tree_commit(),
     }
     _write(where / "arm.json", record)
     previous_store = os.environ.get("HGI_STORE")
@@ -334,8 +339,6 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         record["finished_at"] = _now()
         _write(where / "arm.json", record)
         if batches:
-            from hgi import evolution
-
             evolution.write(exp, arm, root)
         _commit_arm(where, store, commit, f"Arm {exp.name}/{arm} finished: {_curve_line(record['curve'])}")
         tracing.run()
@@ -412,6 +415,19 @@ def _write(path: Path, payload: dict[str, Any]) -> None:
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _tree_commit(root: Path | None = None) -> str | None:
+    """The git HEAD of the tree this process runs from — not the arm's own store repository, the code
+    repository above it (``root``, default this file's directory). Pinned into ``arm.json`` at the arm's
+    start: a long-running arm's process keeps the module it imported even after a later commit changes the
+    tree under it (item 35), so the record says which tree actually ran. ``None`` outside a git checkout."""
+    from hgi.store import git
+
+    try:
+        return git("rev-parse", "HEAD", cwd=root or Path(__file__).resolve().parent)
+    except (subprocess.CalledProcessError, FileNotFoundError, NotADirectoryError):
+        return None
 
 
 # --- reading arms back ----------------------------------------------------------------------
@@ -510,8 +526,6 @@ def _cmd(args) -> int:
         print(report(exp))
         return 0
     if args.action == "evolution":
-        from hgi import evolution
-
         print(evolution.write_experiment(exp))
         return 0
     for arm in args.arm or list(exp.arms):
@@ -520,7 +534,5 @@ def _cmd(args) -> int:
         print(f"{exp.name}/{arm}: {_curve_line(record['curve'])}", file=sys.stderr)
     print(report(exp))
     if any(exp.resolve(a).stream is not None for a in exp.arms):
-        from hgi import evolution
-
         print(evolution.write_experiment(exp))
     return 0
