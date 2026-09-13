@@ -13,11 +13,14 @@ ledger records the pair. None of them settles anything by count.
   genesis`` and no anchor; the consolidator proposes an instance from the
   loop's own ledgers, the adjudicator says whether it exemplifies the
   article, and an article still unanchored past the deadline is evicted.
-- :func:`vocabulary` — the route-before-mint ladder's last rung for a term:
-  the same ``other(<what>)`` escape from independent passes nominates it, the
-  blind coder recodes the presentations with the candidate withheld, the
+- :func:`vocabulary` — the route-before-mint ladder's last rung for a term,
+  for every closed vocabulary whose escapes the loop keeps (a pass's
+  work-shape, a latch's key-space, a species' verdict): the same
+  ``other(<what>)`` escape from independent occasions nominates it, the blind
+  coder recodes the presentations with the candidate withheld, the
   adjudicator admits or declines, and the committer mints through the
-  registry.
+  registry — except a vocabulary a verdict seam routes, whose recurrence is
+  surfaced but not grown in place without a companion route act.
 """
 
 from __future__ import annotations
@@ -29,6 +32,7 @@ from typing import Any
 from hgi import coder as _coder
 from hgi import index as _index
 from hgi import model as _model
+from hgi import registry as _registry
 from hgi import roles
 from hgi.registry import ESCAPE, is_escape, route_table
 from hgi.store import Store, now
@@ -185,12 +189,57 @@ def term_of(escape: str) -> str | None:
     return what if TERM.match(what) else None
 
 
-def escape_clusters(store: Store, vocab: str = "work-shape") -> list[dict[str, Any]]:
-    """Same-shaped escapes across attached passes, with the sessions that made them — the recurrence counter, never the verdict.
+def _pass_of(store: Store) -> dict[str, int]:
+    """The pass an occasion belongs to: a session by its own pass, a consolidation by the pass it read to,
+    a ledger entry by the pass whose session filed it. What an escape's recurrence and re-count gate count on."""
+    of: dict[str, int] = {}
+    for s in store.all("session"):
+        of[s.id] = s.pass_  # type: ignore[attr-defined]
+        for eid in s.ledger_entries:  # type: ignore[attr-defined]
+            of[eid] = s.pass_  # type: ignore[attr-defined]
+    for k in store.all("consolidation"):
+        of[k.id] = k.after_pass  # type: ignore[attr-defined]
+    return of
 
-    An escape already adjudicated counts again only from passes after the
-    consolidation that adjudicated it, so a declined term is re-nominated by
-    new recurrence and not by the same two sessions forever.
+
+def escape_events(store: Store, vocab: str) -> list[tuple[str, int, str]]:
+    """Every ``other(<what>)`` kept for ``vocab``, as ``(occasion, pass, escape)`` — the independent occurrences the recurrence counts.
+
+    The escapes of a closed vocabulary are kept wherever that vocabulary is
+    written: a ``work-shape`` on the pass that named it, a ``key-space`` on
+    the latch that carries it, a ``<species>-verdict`` on the ledger entry
+    that carries it. The occasion is the session, the record-and-latch, or
+    the entry the escape was written on; two escapes on one occasion are one
+    datum, as two on one pass always were.
+    """
+    of = _pass_of(store)
+    events: list[tuple[str, int, str]] = []
+    if vocab == "work-shape":
+        for s in store.all("session"):
+            if s.attached and s.closed_at is not None:  # type: ignore[attr-defined]
+                events += [(s.id, s.pass_, escape) for escape in s.work_shape.escapes]  # type: ignore[attr-defined]
+    elif vocab == "key-space":
+        for host in [*store.decisions(), *store.drafts()]:
+            hid = host.id if isinstance(host, Decision) else host.uid
+            events += [(f"{hid}#{i}", of.get(host.admission.proposed_by if isinstance(host, Decision) else host.proposed_by, 0), latch.key_space)
+                       for i, latch in enumerate(host.all_latches()) if is_escape(latch.key_space)]
+    elif vocab.endswith("-verdict"):
+        species = vocab[: -len("-verdict")]
+        events += [(e.id, of.get(e.id, 0), e.verdict) for e in store.all("hypothesis")  # type: ignore[attr-defined]
+                   if e.species == species and is_escape(e.verdict)]  # type: ignore[attr-defined]
+    return sorted(events, key=lambda e: (e[1], e[0]))
+
+
+def escape_clusters(store: Store, vocab: str = "work-shape") -> list[dict[str, Any]]:
+    """Same-shaped escapes of a closed vocabulary across independent occasions — the recurrence counter, never the verdict.
+
+    The escapes of any closed vocabulary cluster the same way: ``work-shape``
+    on the sessions that named them, a latch ``key-space`` or a
+    ``<species>-verdict`` on the records that carry them. An escape already
+    adjudicated counts again only from occasions after the consolidation that
+    adjudicated it, so a declined term is re-nominated by new recurrence and
+    not by the same two occasions forever; an occasion of unknown pass is not
+    gated by the re-count, its own uniqueness carrying the datum.
     """
     adjudicated: dict[str, int] = {}
     for e in store.all("hypothesis"):
@@ -198,20 +247,45 @@ def escape_clusters(store: Store, vocab: str = "work-shape") -> list[dict[str, A
             adjudicated[e.subject.split("/", 1)[1]] = max(adjudicated.get(e.subject.split("/", 1)[1], 0), int(e.contradiction.coding.get("after_pass", 0)))  # type: ignore[attr-defined]
     registered = set(store.registry.terms(vocab))
     seen: dict[str, dict[str, Any]] = defaultdict(lambda: {"sessions": [], "escapes": []})
-    for s in sorted((s for s in store.all("session") if s.attached and s.closed_at is not None), key=lambda s: s.pass_):  # type: ignore[attr-defined]
-        for escape in s.work_shape.escapes:  # type: ignore[attr-defined]
-            what = term_of(escape)
-            if what is None or what in registered or s.pass_ <= adjudicated.get(what, 0):  # type: ignore[attr-defined]
-                continue
-            cluster = seen[what]
-            if s.id not in cluster["sessions"]:  # type: ignore[attr-defined]
-                cluster["sessions"].append(s.id)  # type: ignore[attr-defined]
-            cluster["escapes"].append({"session": s.id, "pass": s.pass_, "escape": escape})  # type: ignore[attr-defined]
+    for occasion, pass_, escape in escape_events(store, vocab):
+        what = term_of(escape)
+        if what is None or what in registered or (pass_ and pass_ <= adjudicated.get(what, 0)):
+            continue
+        cluster = seen[what]
+        if occasion not in cluster["sessions"]:
+            cluster["sessions"].append(occasion)
+        cluster["escapes"].append({"session": occasion, "pass": pass_, "escape": escape})
     return [{"vocabulary": vocab, "term": what, **c} for what, c in sorted(seen.items())]
 
 
-def vocabulary(store: Store, record: Consolidation, vocab: str = "work-shape") -> list[Nomination]:
-    """Escape recurrence nominates a term; the blind coder contradicts; the adjudicator verdicts; the registry grows."""
+def reviewable_vocabularies(store: Store) -> list[str]:
+    """The closed vocabularies whose escapes the loop keeps and this review clusters: the pass's work-shape,
+    a latch's key-space, and every species' verdict — the sources :func:`escape_events` reads."""
+    verdicts = [f"{sp}-verdict" for sp in store.registry.terms("species") if f"{sp}-verdict" in store.registry.vocabularies]
+    return ["work-shape", "key-space", *verdicts]
+
+
+def _routed(vocab: str) -> bool:
+    """Whether a verdict seam routes ``vocab``: growing a routed vocabulary in place would leave the seam
+    without an act for the new head, so this review surfaces the recurrence but does not mint it there."""
+    return any(v == vocab for _, v, _ in _registry.ROUTE_TABLES)
+
+
+def vocabulary(store: Store, record: Consolidation, vocab: str | None = None) -> list[Nomination]:
+    """Escape recurrence nominates a term; the blind coder contradicts; the adjudicator verdicts; a vocabulary no seam routes grows.
+
+    Called for one vocabulary or, by default, for every closed vocabulary
+    whose escapes the loop keeps (:func:`reviewable_vocabularies`), so a shape
+    no term of a latch key-space or a verdict covers is surfaced, not the
+    work-shape escapes alone.
+    """
+    out: list[Nomination] = []
+    for v in ([vocab] if vocab is not None else reviewable_vocabularies(store)):
+        out += _grow_vocabulary(store, record, v)
+    return out
+
+
+def _grow_vocabulary(store: Store, record: Consolidation, vocab: str) -> list[Nomination]:
     import suite as _suite
 
     bar = store.registry.bars.get("vocabulary", {}).get("independent_escapes", 2)
@@ -220,7 +294,7 @@ def vocabulary(store: Store, record: Consolidation, vocab: str = "work-shape") -
         if len(cluster["sessions"]) < bar:
             continue
         what = cluster["term"]
-        n = Nomination(rung="hook-edit", rung_why=f"escape recurrence: other({what}) from {len(cluster['sessions'])} independent passes; the route-before-mint ladder's last rung for a term",
+        n = Nomination(rung="hook-edit", rung_why=f"escape recurrence: other({what}) from {len(cluster['sessions'])} independent occasions in {vocab}; the route-before-mint ladder's last rung for a term",
                        subject=f"{vocab}/{what}", evidence=[e["session"] for e in cluster["escapes"]])
         text = " ".join(p["prompt"] for p in _suite.current().presentations())
         coded, coder_call = _coder.code([{"name": what, "noticed": text}], store.registry.terms(vocab), session=record.id, records_in_context=[])
@@ -241,10 +315,12 @@ def vocabulary(store: Store, record: Consolidation, vocab: str = "work-shape") -
                             outcome=v if not admitted else f"admit: {out_.get('means', '')}", rung="hook-edit")
         store.append(entry)
         n.ledger_entry = entry.id
-        if admitted:
+        if admitted and not _routed(vocab):
             store.registry.add_term(vocab, what, str(out_.get("means") or f"minted from {len(cluster['sessions'])} independent escapes"), since=now().date().isoformat())
             record.minted.append(f"{vocab}/{what}")
             n.outcome = f"minted {vocab}/{what}"
+        elif admitted:
+            n.outcome = f"admitted; {vocab} is routed at a verdict seam, so the term is surfaced but not minted without a companion route act"
         else:
             n.outcome = v + (f"; the coder read the presentations as {covered}" if covered else "") + ("; waits for new recurrence" if act == "wait" else "")
         out.append(n)

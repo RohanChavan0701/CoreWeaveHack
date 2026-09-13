@@ -136,10 +136,17 @@ each with why it may be right and why it may not.
     a decisions-only roster; every wiring latch is written with `check`.
     The rule tier's adoption cells and a belief's evidence state are the
     fields `re-derive` is for.
-12. **Escape recurrence counts only the sessions' work-shape escapes.**
-    Escapes in other closed vocabularies (a latch key-space, a verdict) are
-    parsed and kept but not clustered; the review takes a vocabulary name
-    and is called for `work-shape` alone.
+12. ~~**Escape recurrence counts only the sessions' work-shape escapes.**~~
+    *Done (this build).* `reviews.escape_events` reads an `other(<what>)`
+    wherever its closed vocabulary is kept — a work-shape on the pass, a
+    key-space on the latch, a `<species>-verdict` on the ledger entry — and
+    `escape_clusters` counts those occasions the same way it counted
+    sessions. `reviews.vocabulary` runs for every reviewable vocabulary by
+    default (decision 40; `tests/test_escape_vocabularies.py`). Left: the
+    verdict source reads a species-verdict off the ledger entry but not an
+    `adjudicator-verdict` escape off a decision's admission (none is written
+    today); a latch-key-space cluster keys on `record#index`, its occasion,
+    not on the record's admitting session.
 13. **The pass's own proposals** (close step 6) parse and file, and a
     consolidation adopts one whose lesson a ratified group earns; the stub
     adopts (`tests/test_proposals.py`), and the real model may draft its own.
@@ -165,10 +172,14 @@ each with why it may be right and why it may not.
     <exp>/<arm>: priced for …`), so `hgi lineage C-0003` finds no admitting
     commit in an arm's store, where `hgi genesis`'s message would. One line
     in `hgi/experiment.py`, left to whoever owns that file next.
-16. **The watch a model sketches** is sometimes a watch on success
-    (`task_pass_rate == 1.0`, seen in a nominate try): the revisit latch
-    then fires when the record works. Nothing checks a watch's direction
-    against the decision's stakes; the examiner could, and does not yet.
+16. ~~**The watch a model sketches** is sometimes a watch on success.~~
+    *Done (this build).* `drafting.fires_on_success` reads a revisit watch's
+    direction against the oracle's convention (a higher-is-better score in
+    `[0, 1]`, `1.0` ideal): a predicate the ideal satisfies but a failing
+    score does not fires when the record works. The examiner lands a
+    `warrant:watch-direction` claim on such a watch and the adjudicator
+    declines it (decision 41; the examiner and adjudicator prompts carry the
+    same check; `tests/test_watch_direction.py`).
 17. **Executing model-written code.** `mbpp` tasks run `python3 tests.py`
     over a file the model wrote, on this machine, with a timeout and
     nothing else; the shell tool already ran model commands the same way.
@@ -412,6 +423,32 @@ each with why it may be right and why it may not.
     close is refused, and the lint's `fire-completeness` check reads the
     close seam. *Risk:* no latch in the decisions-only roster names the
     working pass as its disposer yet, so the path is proven by tests only.
+
+40. **Escape recurrence clusters every closed vocabulary through one
+    counter, keyed on the occasion the escape was written on** — a session
+    for a work-shape, a `record#index` for a latch key-space, a ledger entry
+    for a `<species>-verdict` — and `reviews.vocabulary` runs for each by
+    default. A vocabulary no verdict seam routes (work-shape, key-space)
+    grows in place on admit; a routed verdict vocabulary is surfaced but not
+    minted, because growing it in place would leave the seam without an act
+    for the new head (`registry.route_table` coverage). *Right:* one
+    clustering law, and the demonstration store has no such escapes so the
+    extra passes are no-ops there. *Risk:* an occasion of unknown pass (a
+    verdict entry no session filed) is not gated by the after-pass re-count,
+    so it can re-nominate each consolidation until adjudicated — its own
+    uniqueness is the only guard; and the coder's contradiction still recodes
+    the *suite presentations*, which are a work-shape signal, so its reading
+    is weak evidence for a key-space or a verdict term.
+41. **A revisit watch's direction is checked against the oracle's
+    convention, not the prose stakes** — every scorer is a success rate in
+    `[0, 1]` with `1.0` ideal, so a predicate the ideal satisfies but a
+    failing score does not fires on success. The examiner (its stub logic
+    and its prompt) lands `warrant:watch-direction` and the adjudicator
+    declines. *Right:* the mechanical check needs only the two sentinels the
+    suite's scorers share, and catches `task_pass_rate == 1.0` and `>= 0.9`
+    alike. *Risk:* a scorer where lower is better, or one outside `[0, 1]`,
+    would read backwards; the convention holds for `suite/scorers.py` today
+    and is asserted nowhere the suite could not silently break.
 
 ## Housekeeping
 

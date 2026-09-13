@@ -14,6 +14,8 @@ import json
 import re
 from typing import Any, Callable
 
+from hgi import drafting as _drafting
+
 HANDLERS: dict[str, Callable[[dict[str, Any]], Any]] = {}
 
 
@@ -319,6 +321,13 @@ def _attack(req):
     copied = any(t in decision for t in ev.get("task_ids", []))
     claims.append({"target": "payload:abstraction", "refutation": "the payload names a task instead of the transferable shape",
                    "reading_taken": True, "landed": copied, "evidence": ["the payload text"]})
+    watch = _drafting.revisit_watch(draft["body"])
+    if watch is not None:
+        wrong_way = _drafting.fires_on_success(watch["comparator"], float(watch["value"]))
+        claims.append({"target": "warrant:watch-direction",
+                       "refutation": "the revisit watch fires when the record succeeds; a revisit must fire on the failure or regression the stakes name, not on a passing score",
+                       "reading_taken": True, "landed": wrong_way,
+                       "evidence": [f"{watch['scorer']} {watch['comparator']} {watch['value']}"]})
     return {"claims": claims}
 
 
@@ -334,6 +343,8 @@ def _verdict(req):
             return {"verdict": "decline(bar unmet: observations are not independent)", "amendment": None}
         if c["landed"] and c["target"] == "payload:abstraction":
             return {"verdict": "decline(payload is a copied instance; promotion raises abstraction)", "amendment": None}
+        if c["landed"] and c["target"] == "warrant:watch-direction":
+            return {"verdict": "decline(the revisit watch fires on success; it must fire on the failure or regression the stakes name)", "amendment": None}
     scorer = req.get("watch_scorer")
     series = oracle.get("series", {}).get(scorer, [])
     if scorer and series and all(v is None for v in series):
