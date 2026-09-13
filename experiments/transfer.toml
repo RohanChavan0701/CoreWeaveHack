@@ -44,3 +44,10 @@ description = "the ablation on this suite; one run is the whole record"
 [arms.20b-attached]
 model = "gpt-oss-20b"
 description = "a weaker actor, likelier to overfit a path or a filename the re-dressing then breaks"
+
+# The seeded twin: the attached arm started from the conventions seed, so the re-dressed clothes meet records that
+# were never admitted on their own family — transfer of an injected lesson, against 120b-attached's own admissions.
+[arms.120b-seeded]
+mode = "attached"
+seed = "conventions"
+description = "gpt-oss-120b from the conventions seed: do injected lessons score on the re-dressed family"

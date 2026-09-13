@@ -79,3 +79,17 @@ mode = "detached"
 description = "the strict pool's ablation"
 [arms.120b-strict-detached.stream]
 families = ["incidents-strict"]
+
+# The seeded twins: the same arms started from experiments/seeds/incidents — the three decoy shapes already admitted —
+# against the unseeded arms above on the same batches. What the injected shapes buy, paired per batch.
+[arms.120b-seeded]
+mode = "attached"
+seed = "incidents"
+description = "gpt-oss-120b from the seed store: the decoy shapes already admitted"
+
+[arms.120b-strict-seeded]
+mode = "attached"
+seed = "incidents"
+description = "the strict pool from the seed store: does the injected shape keep the walk in budget"
+[arms.120b-strict-seeded.stream]
+families = ["incidents-strict"]

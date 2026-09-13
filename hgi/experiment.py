@@ -157,9 +157,9 @@ class ArmSpec(BaseModel):
     running several arms together this way put 429s past the client's retries into the detached rows on
     a real endpoint (decision 36). ``False`` restores the old concurrent draw, sound alone or with headroom
     under the endpoint's ceiling."""
-    seed: str | None = None
-    """A hand-authored seed store injected before pass 1 (:mod:`hgi.seeds`): a directory, a path relative to the
-    experiment file, or a world name under ``experiments/seeds``. The compare/contrast against the same arm unseeded."""
+    seed: str | list[str] | None = None
+    """Hand-authored seed stores injected before pass 1, in order (:mod:`hgi.seeds`): each a directory, a path relative
+    to the experiment file, or a world name under ``experiments/seeds``. The compare/contrast against the same arm unseeded."""
     description: str = ""
 
     model_config = ConfigDict(extra="forbid")
@@ -268,9 +268,9 @@ def seed_arm(exp: Experiment, arm: str, spec: ArmSpec, root: Path, roster: dict[
     reg = seed(root, model_id=roster["pass"])
     bars = _merge(_merge(dict(reg.bars), {"consolidation_every_passes": spec.passes_per_round}), spec.bars)
     _registry.write_json(root / "registry" / "bars.json", bars)
-    if spec.seed:
+    for name in ([spec.seed] if isinstance(spec.seed, str) else spec.seed or []):
         from hgi import seeds as _seeds
-        _seeds.inject(root, _seeds.resolve(spec.seed, exp.path), model_id=roster["pass"])
+        _seeds.inject(root, _seeds.resolve(name, exp.path), model_id=roster["pass"])
     return _registry.load(root)
 
 

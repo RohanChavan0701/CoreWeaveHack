@@ -91,9 +91,12 @@ def inject(store_root: Path, seed_dir: Path, *, model_id: str | None, now: datet
         _index.regenerate(store)
     finally:
         _registry.reset(token)
-    manifest = {"seed": str(seed_dir), "injected": injected, "terms_added": added_terms, "at": now.isoformat(),
-                "warnings": [f"{f.check} {f.record}: {f.message}" for f in report.findings if f.level != "fail"]}
-    write_json(store_root / "seed.json", manifest)
+    manifest_path = store_root / "seed.json"
+    previous = read_json(manifest_path) if manifest_path.exists() else {"seed": [], "injected": [], "terms_added": [], "warnings": []}
+    manifest = {"seed": (previous["seed"] if isinstance(previous["seed"], list) else [previous["seed"]]) + [str(seed_dir)],
+                "injected": previous["injected"] + injected, "terms_added": previous["terms_added"] + added_terms, "at": now.isoformat(),
+                "warnings": previous["warnings"] + [f"{f.check} {f.record}: {f.message}" for f in report.findings if f.level != "fail"]}
+    write_json(manifest_path, manifest)
     return manifest
 
 
@@ -107,7 +110,7 @@ def register(add, store_of, finish) -> None:
 def _cmd(args, store_of) -> int:
     store = store_of(args)
     manifest = inject(store.root, resolve(args.seed), model_id=args.model)
-    print(f"injected {len(manifest['injected'])} decision(s) from {manifest['seed']} into {store.root}")
+    print(f"injected {len(manifest['injected'])} decision(s) from {', '.join(manifest['seed'])} into {store.root}")
     for r in manifest["injected"]:
         print(f"  {r['id']} (seed {r['seed_id']}): {r['decision'][:100]}")
     for w in manifest["warnings"]:

@@ -57,3 +57,17 @@ mode = "detached"
 description = "the strict pool's ablation"
 [arms.120b-strict-detached.stream]
 families = ["curriculum-strict"]
+
+# The seeded twins: the same arms started from experiments/seeds/conventions — the seven lessons already admitted —
+# against the unseeded arms above on the same batches. What the injected lessons buy, paired per batch.
+[arms.120b-seeded]
+mode = "attached"
+seed = "conventions"
+description = "gpt-oss-120b from the seed store: every lesson of the world already admitted"
+
+[arms.120b-strict-seeded]
+mode = "attached"
+seed = "conventions"
+description = "the strict pool from the seed store: does the injected lesson save the discovery call"
+[arms.120b-strict-seeded.stream]
+families = ["curriculum-strict"]

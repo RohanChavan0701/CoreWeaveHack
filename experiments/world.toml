@@ -48,3 +48,10 @@ consolidator = "gpt-oss-120b"
 examiner = "gpt-oss-120b"
 adjudicator = "gpt-oss-120b"
 coder = "gpt-oss-120b"
+
+# The seeded twin: the attached arm started from the conventions seed and the world seed together — the lessons of the
+# hand-written families and the recurring shapes of mbpp, tables and api already admitted — against 120b-attached.
+[arms.120b-seeded]
+mode = "attached"
+seed = ["conventions", "world"]
+description = "gpt-oss-120b from both seed stores: does the arm start where the attached arm ended"

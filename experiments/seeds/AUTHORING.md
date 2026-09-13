@@ -29,13 +29,19 @@ Rules a seed decision must satisfy (`hgi lint` in a seeded scratch store is gree
   `admission.rung` is `"new-decision"`.
 - `status` is `"accepted"`; `priced_for.model_id` is `null` (the injector prices
   it for the arm's pass model).
-- Every consultation latch keys on registered work-shape terms
-  (`error-wrapping file-tool http-tool output-schema shell-tool task-planning
-  test-failure-triage tool-budget tool-call-retry`) or on terms declared in
-  `vocabulary.json`, and carries `not_this` exclusions.
+- Every consultation latch keys on registered work-shape terms — the
+  seventeen a fresh genesis registers (`hgi genesis` then
+  `registry/vocabulary.json`: the nine tool-major terms `error-wrapping
+  file-tool http-tool output-schema shell-tool task-planning
+  test-failure-triage tool-budget tool-call-retry` and the convention-major
+  ones such as `listing-paged`) — or on terms declared in `vocabulary.json`,
+  and carries `not_this` exclusions. The pass sees only the decision's id,
+  terms, stakes and decision text at boot (`suite/agent.py`), so the symptom
+  signature and the exclusions must live in the decision sentence too.
 - The counterfactual cites an anchor. A seed has no observations, so the
-  anchor is a `path:line` into the family or data file that shows the
-  overshoot (for example `suite/families/text2sql.py:97`), and
-  `warrant.anchors` lists the same path anchors.
+  anchor is a `path:line` into a Python file that shows the overshoot (for
+  example `suite/families/text2sql.py:97`; the anchor pattern in
+  `hgi/types.py` recognises `.py:N` only, so a data-file line does not
+  count), and `warrant.anchors` lists the same path anchors.
 - Premises carry falsifiers; the retirement latch is present and live.
 - Ids are `D-0001 …` per seed; the injector renumbers past the store's own.

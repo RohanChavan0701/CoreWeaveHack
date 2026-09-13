@@ -85,3 +85,23 @@ def test_resolve_finds_a_world_under_experiments_seeds(tmp_path):
     assert _seeds.resolve("w", tmp_path / "x.toml") == tmp_path / "seeds" / "w"
     with pytest.raises(SystemExit, match="no directory"):
         _seeds.resolve("nowhere", tmp_path / "x.toml")
+
+
+def test_two_seeds_inject_in_order_and_the_manifest_holds_both(tmp_path):
+    a = _seed_from(ROOT / "store" / "decisions" / "D-0003.json", tmp_path / "a")
+    b = _seed_from(ROOT / "store" / "decisions" / "D-0003.json", tmp_path / "b")
+    store = tmp_path / "store"
+    _genesis.seed(store, model_id="stub")
+    _seeds.inject(store, a, model_id="stub")
+    manifest = _seeds.inject(store, b, model_id="stub")
+    assert [r["id"] for r in manifest["injected"]] == ["D-0001", "D-0002"] and manifest["seed"] == [str(a), str(b)]
+    assert (store / "decisions" / "D-0002.json").exists()
+
+
+def test_every_seeded_arm_in_the_experiment_files_resolves():
+    for toml in sorted((ROOT / "experiments").glob("*.toml")):
+        exp = _experiment.load(toml)
+        for arm in exp.arms:
+            spec = exp.resolve(arm)
+            for name in ([spec.seed] if isinstance(spec.seed, str) else spec.seed or []):
+                assert (_seeds.resolve(name, exp.path) / "decisions").is_dir(), f"{toml.name}/{arm}: seed {name}"

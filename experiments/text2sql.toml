@@ -84,3 +84,19 @@ description = "the strict pool's ablation"
 [arms.120b-strict-detached.stream]
 families = ["text2sql-strict"]
 batches = 5
+
+# The seeded twins: the same arms started from experiments/seeds/text2sql — the store a mature loop would hold, injected
+# before pass 1 — against the unseeded arms above on the same batches. What the injected decisions buy, paired per batch.
+[arms.120b-seeded]
+mode = "attached"
+seed = "text2sql"
+description = "gpt-oss-120b from the seed store: the schema and dialect conventions already admitted"
+
+[arms.120b-strict-seeded]
+mode = "attached"
+passes_per_round = 1
+seed = "text2sql"
+description = "the strict pool from the seed store: does the injected schema save the discovery call"
+[arms.120b-strict-seeded.stream]
+families = ["text2sql-strict"]
+batches = 5

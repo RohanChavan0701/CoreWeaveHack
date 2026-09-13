@@ -370,6 +370,18 @@ hgi experiment models                                # the ids the endpoint serv
 | `experiments/stream-probe.toml` | `gpt-oss-120b` attached and detached, two batches of five | a stream arm end to end on the endpoint |
 | `experiments/stream-smoke.toml` | stub, attached and detached, four batches of four | the stream runner end to end offline; the tests run it |
 | `experiments/incidents-smoke.toml` | stub, attached and detached on `incidents`, attached on `incidents-strict`, twelve batches of three | the incidents stream end to end offline over the three decoy shapes, the naive walk dying on the budget on both pools; the tests run it |
+| `experiments/reasoning-core.toml` | `Qwen3.6-35B-A3B` attached and detached, `gpt-oss-20b` attached, the backward pass on `DeepSeek-V4-Pro`, on the `reasoning-core` pool; the Qwen actor attached and detached on `reasoning-core-strict`; 24 tasks as six batches of four, consolidation every two, batches 1 and 2 revisited | first-sight produce-and-verify on unseen regexes and grammars: whether a method — verify with the checker before answering — transfers as a record; on the strict pool, whether it saves the repair call |
+| `experiments/text2sql.toml` | `gpt-oss-120b` attached and detached, `gpt-oss-20b` attached, the backward pass on `DeepSeek-V4-Pro`, on the `text2sql` and `text2sql-holdout` pools; `gpt-oss-120b` attached and detached on `text2sql-strict`; 16 questions as eight batches of two, consolidation every two, batches 1 and 2 revisited | first-sight text-to-SQL over one schema: whether the database's own conventions (TEXT dates, integer division, coded literals, a reserved column name) transfer as records to unseen questions; on the strict pool, whether the store saves the schema-discovery call |
+
+**Seeded arms.** Each of `stream`, `transfer`, `world`, `incidents`,
+`reasoning-core` and `text2sql` also carries `*-seeded` arms: the same arm
+started from a hand-authored mature store under `experiments/seeds/<world>/`
+(`seed = "<world>"` on the arm, injected before pass 1 by `hgi/seeds.py`)
+instead of the empty genesis store. Seeded against attached against detached
+on the same batches reads what the injected decisions buy, what learning them
+costs, and — on the strict pools — whether an injected record saves the call
+the budget does not hold; `experiments/seeds/README.md` is the design and
+`experiments/seeds/AUTHORING.md` the rule a seed follows.
 
 The shipped files run on W&B Inference (`https://api.inference.wandb.ai/v1`):
 the key is `$WANDB_API_KEY` or the netrc entry `wandb login` wrote, and the
