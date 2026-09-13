@@ -1,0 +1,121 @@
+{
+  "bar": 2,
+  "curve": [
+    {
+      "ari": 0.1964,
+      "clusters": 12,
+      "completeness": 0.3895,
+      "cross_lesson_clusters": 9,
+      "homogeneity": 0.4495,
+      "lessons_at_bar": 0,
+      "lessons_at_bar_names": [],
+      "tau": "1.0",
+      "tau_value": 1.0,
+      "v_measure": 0.4173
+    },
+    {
+      "ari": 0.1964,
+      "clusters": 12,
+      "completeness": 0.3895,
+      "cross_lesson_clusters": 9,
+      "homogeneity": 0.4495,
+      "lessons_at_bar": 0,
+      "lessons_at_bar_names": [],
+      "tau": "0.67",
+      "tau_value": 0.666667,
+      "v_measure": 0.4173
+    },
+    {
+      "ari": 0.0078,
+      "clusters": 3,
+      "completeness": 0.2762,
+      "cross_lesson_clusters": 3,
+      "homogeneity": 0.0879,
+      "lessons_at_bar": 0,
+      "lessons_at_bar_names": [],
+      "tau": "0.5",
+      "tau_value": 0.5,
+      "v_measure": 0.1334
+    },
+    {
+      "ari": 0.0078,
+      "clusters": 3,
+      "completeness": 0.2762,
+      "cross_lesson_clusters": 3,
+      "homogeneity": 0.0879,
+      "lessons_at_bar": 0,
+      "lessons_at_bar_names": [],
+      "tau": "0.33",
+      "tau_value": 0.333333,
+      "v_measure": 0.1334
+    },
+    {
+      "ari": 0.0078,
+      "clusters": 3,
+      "completeness": 0.2762,
+      "cross_lesson_clusters": 3,
+      "homogeneity": 0.0879,
+      "lessons_at_bar": 0,
+      "lessons_at_bar_names": [],
+      "tau": "0.25",
+      "tau_value": 0.25,
+      "v_measure": 0.1334
+    },
+    {
+      "ari": 0.0,
+      "clusters": 1,
+      "completeness": 1.0,
+      "cross_lesson_clusters": 1,
+      "homogeneity": 0.0,
+      "lessons_at_bar": 0,
+      "lessons_at_bar_names": [],
+      "tau": "~0",
+      "tau_value": 0.0,
+      "v_measure": 0.0
+    }
+  ],
+  "dataset": {
+    "arms": [
+      "120b-attached",
+      "120b-strict",
+      "20b-attached"
+    ],
+    "bar": 2,
+    "generated": false,
+    "n_labeled": 104,
+    "n_lessons": 6,
+    "n_sessions": 27,
+    "per_arm": {
+      "120b-attached": {
+        "kept": 38,
+        "no_label": 0,
+        "no_shape": 5,
+        "observations": 43
+      },
+      "120b-strict": {
+        "kept": 44,
+        "no_label": 0,
+        "no_shape": 8,
+        "observations": 52
+      },
+      "20b-attached": {
+        "kept": 22,
+        "no_label": 0,
+        "no_shape": 4,
+        "observations": 26
+      }
+    },
+    "run_root": "/Users/slavazinevich/GenDev/CoreWeaveHack/runs/stream"
+  },
+  "grid": [
+    "1.0",
+    "0.67",
+    "0.5",
+    "0.33",
+    "0.25",
+    "~0"
+  ],
+  "justification": "no \u03c4 keeps every cluster within one lesson \u2014 the blind coder's shape vocabulary already gives two lessons the same shape, so exact match itself conflates them; \u03c4=1.0 is named as the baseline, and widening the radius cannot recover a precision the join never had. Fix the coding, not the radius.",
+  "recommended_tau": "1.0",
+  "recommended_tau_value": 1.0
+}
