@@ -1,0 +1,46 @@
+# Transfer, not breadth: a suite that holds a convention twice, in different clothes. `conventions` and
+# `api` carry the world's conventions — files with no trailing newline, a paged API, an API moved under
+# /v2 — and `transfer` re-dresses those same conventions on different file names, a different API surface
+# and different endpoints. So a record admitted while scoring `conventions` or `api` is scored again on
+# `transfer`: a hook that reads the convention transfers and the attached curve holds up on the re-dressed
+# tasks; a hook that memorised a path or a filename does not, and the attached arm scores no better than
+# the detached one on `transfer` however well it did on its source. Attached leads; one detached arm is
+# the ablation and needs no rerun — with no store it sees the same world every time.
+#
+# Ids are W&B Inference ids as listed on 2026-09-12; `hgi experiment models` lists today's.
+name = "transfer"
+description = "does a record admitted on one family score on the same convention re-dressed as another"
+weave_project = "hgi-experiments"
+
+[models.gpt-oss-120b]
+id = "openai/gpt-oss-120b"
+
+[models.gpt-oss-20b]
+id = "openai/gpt-oss-20b"
+
+[defaults]
+model = "gpt-oss-120b"
+rounds = 3
+passes_per_round = 2
+concurrency = 6
+
+[defaults.suite]
+# `genesis` and `conventions` and `transfer` whole; `api` sampled — the source conventions and their
+# re-dressing are both present, so an admitted record meets the same convention twice.
+families = ["genesis", "conventions", "api", "transfer"]
+size = 12
+seed = 0
+
+[defaults.suite.faults]
+http_fault_calls = 2
+
+[arms.120b-attached]
+mode = "attached"
+
+[arms.120b-detached]
+mode = "detached"
+description = "the ablation on this suite; one run is the whole record"
+
+[arms.20b-attached]
+model = "gpt-oss-20b"
+description = "a weaker actor, likelier to overfit a path or a filename the re-dressing then breaks"
