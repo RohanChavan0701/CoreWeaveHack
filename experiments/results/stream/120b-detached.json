@@ -1,0 +1,1926 @@
+{
+  "arm": "120b-detached",
+  "experiment": "stream",
+  "lessons": {
+    "bom": {
+      "first_mention_pass": null,
+      "first_sight": [
+        11,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        11
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 3,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 2,
+          "tasks": 2
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "csv-quoted": {
+      "first_mention_pass": null,
+      "first_sight": [
+        7,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        4,
+        12
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 1,
+          "tasks": 2
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 2,
+          "tasks": 2
+        }
+      ],
+      "tier": "visible"
+    },
+    "footer-row": {
+      "first_mention_pass": null,
+      "first_sight": [
+        0,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        9,
+        11
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 6,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 0,
+          "tasks": 1
+        }
+      ],
+      "tier": "visible"
+    },
+    "moved-v2": {
+      "first_mention_pass": null,
+      "first_sight": [
+        6,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        6,
+        12
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 2,
+          "tasks": 2
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 2
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "paged-api": {
+      "first_mention_pass": null,
+      "first_sight": [
+        8,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        2,
+        12
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 2,
+          "tasks": 2
+        },
+        {
+          "batch": 3,
+          "grid": "W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 2,
+          "tasks": 2
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "tasks": 1
+        }
+      ],
+      "tier": "visible"
+    },
+    "token-route": {
+      "first_mention_pass": null,
+      "first_sight": [
+        11,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        11
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 3,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 2,
+          "tasks": 2
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "trailing-newline": {
+      "first_mention_pass": null,
+      "first_sight": [
+        0,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        11,
+        11
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 8,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 0,
+          "tasks": 1
+        }
+      ],
+      "tier": "invisible"
+    }
+  },
+  "mode": "detached",
+  "model": "openai/gpt-oss-120b",
+  "passes": [
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "3bfb611015e2",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 1,
+      "pass_rate": 0.625,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-0794-7538-a9d6-c54452fd4393",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum/csv_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-07a1-7fd8-9967-8cffdca720d1",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 14,
+          "symptom": "naive",
+          "task": "curriculum/newline_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-079a-7a14-9f45-5070d19b586b",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5,
+          "symptom": "naive",
+          "task": "curriculum/footer_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-079c-70fc-87f6-f6fc1f71b799",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Ken",
+          "symptom": "pass",
+          "task": "curriculum/moved_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-079b-79ea-9399-f19950a33443",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Linus",
+          "symptom": "pass",
+          "task": "curriculum/moved_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-0793-718b-8b44-908c33c2e925",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "board": "Q3-2022",
+            "count": 4
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-18ae-787d-8566-5fdfb375568c",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 190,
+          "symptom": "pass",
+          "task": "curriculum/paged_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-1a36-7cbc-947b-39421267c3e9",
+          "error": null,
+          "lesson": "token-route",
+          "result": 6017,
+          "symptom": "pass",
+          "task": "curriculum/token_02"
+        }
+      ],
+      "session": "S-0001",
+      "symptoms": {
+        "naive": 3,
+        "pass": 5
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 2,
+      "consolidation": null,
+      "hash": "c18fec0fa080",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 2,
+      "pass_rate": 0.75,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": null,
+          "error": {
+            "cause": "endpoint BadRequestError: Error code: 400 - {'message': 'Validation: `messages[2].tool_calls[0].function.arguments` must be a valid JSON object string: invalid escape at line 1 column 22', 'type': 'Bad Request', 'code': 400}",
+            "message": "model call failed"
+          },
+          "lesson": "footer-row",
+          "result": null,
+          "symptom": "error:model-call",
+          "task": "curriculum/footer_04"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Lin",
+          "symptom": "pass",
+          "task": "curriculum/moved_00"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 7,
+            "name": "Q2-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_01"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 12,
+          "symptom": "naive",
+          "task": "curriculum/newline_00"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "paged-api",
+          "result": 406,
+          "symptom": "pass",
+          "task": "curriculum/paged_00"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 292.3,
+          "symptom": "pass",
+          "task": "curriculum/csv_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-13a4-71d0-a012-6389086e610e",
+          "error": null,
+          "lesson": "token-route",
+          "result": 766,
+          "symptom": "pass",
+          "task": "curriculum/token_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-0ee1-77a4-bcd5-7e21e83c979f",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 306,
+          "symptom": "pass",
+          "task": "curriculum/paged_06"
+        }
+      ],
+      "session": "S-0002",
+      "symptoms": {
+        "error:model-call": 1,
+        "naive": 1,
+        "pass": 6
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 3,
+      "consolidation": null,
+      "hash": "5045d3fbff52",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 3,
+      "pass_rate": 0.375,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 15,
+          "symptom": "naive",
+          "task": "curriculum/newline_03"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum/footer_11"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/nodes/36",
+            "message": "Failed to GET /nodes/36"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_03"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum/csv_04"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "board": "Q4-2022",
+            "count": 7
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-1835-7593-99a1-7d89be0a0dca",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 2,
+          "symptom": "wrong",
+          "task": "curriculum/paged_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-1947-7dc8-ac07-0666775257c1",
+          "error": null,
+          "lesson": "token-route",
+          "result": 3004,
+          "symptom": "pass",
+          "task": "curriculum/token_06"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1785.05,
+          "symptom": "pass",
+          "task": "curriculum/csv_03"
+        }
+      ],
+      "session": "S-0003",
+      "symptoms": {
+        "naive": 4,
+        "pass": 3,
+        "wrong": 1
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 4,
+      "consolidation": null,
+      "hash": "b34b718c4d9e",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 4,
+      "pass_rate": 0.5,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-3613-7fe2-873a-9ff3e8a1aecb",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 1,
+          "symptom": "naive",
+          "task": "curriculum/paged_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-360f-7111-82be-ee6fcbfb5822",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 2312,
+          "symptom": "naive",
+          "task": "curriculum/footer_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-360f-792e-8994-50d4e981dfd0",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Margaret",
+          "symptom": "pass",
+          "task": "curriculum/moved_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-3610-7359-93c4-da35316a5264",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 13,
+          "symptom": "naive",
+          "task": "curriculum/newline_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-360e-7d86-9a89-1dd9112a9461",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "release": "Q2-2027"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-360e-7499-a79a-24bb1d6f2202",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum/csv_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-45be-7406-9937-f8168a5f36c1",
+          "error": null,
+          "lesson": "token-route",
+          "result": 4568,
+          "symptom": "pass",
+          "task": "curriculum/token_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-4255-7256-b2e0-ae1ab47d1345",
+          "error": null,
+          "lesson": "token-route",
+          "result": 4024,
+          "symptom": "pass",
+          "task": "curriculum/token_08"
+        }
+      ],
+      "session": "S-0004",
+      "symptoms": {
+        "naive": 4,
+        "pass": 4
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 5,
+      "consolidation": null,
+      "hash": "ae0d63239f69",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 5,
+      "pass_rate": 0.375,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-389a-7f19-9ee3-2e0dfe8e7a0d",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum/newline_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-3898-7600-a58f-1aae6badbfa1",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/fleets/75",
+            "message": "GET request failed"
+          },
+          "lesson": "moved-v2",
+          "result": null,
+          "symptom": "naive",
+          "task": "curriculum/moved_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-3895-71d1-90cd-0f2a3f2aaed7",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 3050,
+          "symptom": "naive",
+          "task": "curriculum/footer_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-3896-76ce-aebd-23edf756c478",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 8,
+          "symptom": "naive",
+          "task": "curriculum/footer_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-3895-7d77-b13a-b90a942ab393",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 2,
+            "project": "Q2-2025"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-3895-7e57-bc8e-5265ee1bfce4",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 3,
+          "symptom": "pass",
+          "task": "curriculum/csv_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-52ee-7c22-8da4-bf6f6873e98c",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 3,
+          "symptom": "wrong",
+          "task": "curriculum/paged_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-561f-797b-bd3f-946cf5e39678",
+          "error": null,
+          "lesson": "token-route",
+          "result": 3729,
+          "symptom": "pass",
+          "task": "curriculum/token_01"
+        }
+      ],
+      "session": "S-0005",
+      "symptoms": {
+        "naive": 4,
+        "pass": 3,
+        "wrong": 1
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 6,
+      "consolidation": null,
+      "hash": "81a5fa242cd0",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 6,
+      "pass_rate": 0.5,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-641e-713a-acd6-9c2b9ed6371a",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 21,
+          "symptom": "naive",
+          "task": "curriculum/newline_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-641b-774e-9bec-34919568dc9a",
+          "error": {
+            "cause": "endpoint BadRequestError: Error code: 400 - {'message': 'Validation: `messages[2].tool_calls[0].function.arguments` must be a valid JSON object string: invalid escape at line 1 column 22', 'type': 'Bad Request', 'code': 400}",
+            "message": "model call failed"
+          },
+          "lesson": "footer-row",
+          "result": null,
+          "symptom": "error:model-call",
+          "task": "curriculum/footer_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-641c-7835-ae00-593492148cf8",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/devices/69",
+            "message": "GET request failed"
+          },
+          "lesson": "moved-v2",
+          "result": null,
+          "symptom": "naive",
+          "task": "curriculum/moved_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-641a-79cd-9b65-44eef0e6d76e",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 4,
+            "title": "Q4-2020"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-641a-794c-9942-652a8b4e91b1",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "project": "Q3-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-7d51-72ef-a7f9-aae56a8db48a",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 126,
+          "symptom": "pass",
+          "task": "curriculum/paged_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-8437-78bf-9402-2c4a14aa6f2b",
+          "error": null,
+          "lesson": "token-route",
+          "result": 4616,
+          "symptom": "pass",
+          "task": "curriculum/token_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-641b-7b7f-b032-ff10abd06fab",
+          "error": {
+            "cause": null,
+            "message": "final reply was not JSON"
+          },
+          "lesson": "csv-quoted",
+          "result": null,
+          "symptom": "error:not-json",
+          "task": "curriculum/csv_00"
+        }
+      ],
+      "session": "S-0006",
+      "symptoms": {
+        "error:model-call": 1,
+        "error:not-json": 1,
+        "naive": 2,
+        "pass": 4
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 7,
+      "consolidation": null,
+      "hash": "73f471fb90e8",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 7,
+      "pass_rate": 0.375,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-692a-7182-9411-3fba3864ab2c",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 18,
+          "symptom": "naive",
+          "task": "curriculum/newline_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-6926-7573-8bec-082e791862e3",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 17,
+          "symptom": "naive",
+          "task": "curriculum/newline_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-6924-75d2-ade2-22e94b1166ad",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "title": "Q3-2025"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-7967-7676-986f-c71e8aa590d3",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 2,
+          "symptom": "naive",
+          "task": "curriculum/paged_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-6925-77ef-a5d5-d0f6ee9ff2a5",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 2392,
+          "symptom": "naive",
+          "task": "curriculum/footer_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-6926-7ab5-8afa-8ee8d321fc0e",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/teams/81",
+            "message": "Failed to retrieve team name"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-80d7-7701-af20-f91bce0aac85",
+          "error": null,
+          "lesson": "token-route",
+          "result": 5609,
+          "symptom": "pass",
+          "task": "curriculum/token_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-6925-70ed-b416-641390007376",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1757.28,
+          "symptom": "pass",
+          "task": "curriculum/csv_11"
+        }
+      ],
+      "session": "S-0007",
+      "symptoms": {
+        "naive": 5,
+        "pass": 3
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 8,
+      "consolidation": null,
+      "hash": "73f5915bcf78",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 8,
+      "pass_rate": 0.625,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-797c-76e5-b6ee-a8ddebc4c404",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Tim",
+          "symptom": "pass",
+          "task": "curriculum/moved_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-797b-7fae-a285-c54e3a791e9c",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 4,
+          "symptom": "naive",
+          "task": "curriculum/footer_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-797d-7812-a9ad-a477bbedcca5",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 17,
+          "symptom": "naive",
+          "task": "curriculum/newline_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-797c-7b65-9d39-8e07794b584a",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/stores/24",
+            "message": "Failed to GET /stores/24"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-797b-763e-bdae-240fa25ce5c1",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 5,
+            "label": "Q2-2021"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-9439-7a52-a5b2-57804f205e21",
+          "error": null,
+          "lesson": "token-route",
+          "result": 82,
+          "symptom": "pass",
+          "task": "curriculum/token_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-8e5f-7a1f-894d-23e56e67b043",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 4,
+          "symptom": "pass",
+          "task": "curriculum/paged_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-797b-7d91-addd-55d9cb79b78e",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 440.99,
+          "symptom": "pass",
+          "task": "curriculum/csv_07"
+        }
+      ],
+      "session": "S-0008",
+      "symptoms": {
+        "naive": 3,
+        "pass": 5
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 9,
+      "consolidation": null,
+      "hash": "7fdeede9ee54",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 9,
+      "pass_rate": 0.5,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-c108-7872-8db8-2dfa8b7a3b68",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum/csv_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-c109-7cda-aa03-d48c28302d9e",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 13,
+          "symptom": "naive",
+          "task": "curriculum/newline_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-c108-7236-8296-e6c0926e2985",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5198,
+          "symptom": "naive",
+          "task": "curriculum/footer_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-c107-7e39-9b8f-23deef2daf4a",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 2,
+            "label": "H1-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-c10c-7cb3-b405-4b86d4a73e25",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 4,
+          "symptom": "pass",
+          "task": "curriculum/paged_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-c108-75ef-a754-eeb2e200cb4e",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/agents/14",
+            "message": "ok field not true"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-d549-740c-99fb-200227a7e31c",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 256,
+          "symptom": "pass",
+          "task": "curriculum/paged_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-d9f7-7345-8bbe-3bf9eb9a117d",
+          "error": null,
+          "lesson": "token-route",
+          "result": 349,
+          "symptom": "pass",
+          "task": "curriculum/token_07"
+        }
+      ],
+      "session": "S-0009",
+      "symptoms": {
+        "naive": 4,
+        "pass": 4
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 10,
+      "consolidation": null,
+      "hash": "b4680543a73f",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 10,
+      "pass_rate": 0.75,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-c1c8-7544-a981-f7c0cce7a140",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5,
+          "symptom": "naive",
+          "task": "curriculum/footer_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-c1cb-7365-b828-1e194646d355",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum/newline_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-c1c9-7e14-8b1e-e994fd3b4ee4",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "ok",
+          "symptom": "pass",
+          "task": "curriculum/moved_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-c1c7-7bbd-bd14-0c491533ef68",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 6,
+            "release": "Q4-2022"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-c1c7-7423-96d4-585ea7c76b93",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 269.11,
+          "symptom": "pass",
+          "task": "curriculum/csv_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-dbc3-7933-8497-f95f1d3e978d",
+          "error": null,
+          "lesson": "token-route",
+          "result": 1780,
+          "symptom": "pass",
+          "task": "curriculum/token_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-c1c7-7edd-b082-8d330ac95afe",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 53.91,
+          "symptom": "pass",
+          "task": "curriculum/csv_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c7-da01-7d75-a7fe-7bae946215cc",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 305,
+          "symptom": "pass",
+          "task": "curriculum/paged_08"
+        }
+      ],
+      "session": "S-0010",
+      "symptoms": {
+        "naive": 2,
+        "pass": 6
+      },
+      "work_shape": []
+    }
+  ],
+  "records": [],
+  "roster": {
+    "adjudicator": "openai/gpt-oss-120b",
+    "coder": "openai/gpt-oss-120b",
+    "consolidator": "openai/gpt-oss-120b",
+    "examiner": "openai/gpt-oss-120b",
+    "pass": "openai/gpt-oss-120b",
+    "reauthor": "openai/gpt-oss-120b"
+  },
+  "stream": {
+    "batch": 8,
+    "batches": 10,
+    "families": [
+      "curriculum"
+    ],
+    "faults": {
+      "http_budget": null,
+      "http_fault_calls": 1,
+      "http_fault_fraction": 0.0,
+      "shell_output_limit": null
+    },
+    "revisit": [
+      1,
+      2
+    ],
+    "seed": 0
+  },
+  "warning": null
+}

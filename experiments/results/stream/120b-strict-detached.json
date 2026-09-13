@@ -1,0 +1,1968 @@
+{
+  "arm": "120b-strict-detached",
+  "experiment": "stream",
+  "lessons": {
+    "bom": {
+      "first_mention_pass": null,
+      "first_sight": [
+        11,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        11
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 3,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 2,
+          "tasks": 2
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "csv-quoted": {
+      "first_mention_pass": null,
+      "first_sight": [
+        6,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        5,
+        12
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "NE",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 1,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 2,
+          "tasks": 2
+        }
+      ],
+      "tier": "visible"
+    },
+    "footer-row": {
+      "first_mention_pass": null,
+      "first_sight": [
+        0,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        11,
+        11
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 0,
+          "tasks": 1
+        }
+      ],
+      "tier": "visible"
+    },
+    "moved-v2": {
+      "first_mention_pass": null,
+      "first_sight": [
+        0,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        12,
+        12
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 0,
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "paged-api": {
+      "first_mention_pass": null,
+      "first_sight": [
+        9,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        2,
+        12
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 2,
+          "tasks": 2
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 3,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 2,
+          "tasks": 2
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "tasks": 1
+        }
+      ],
+      "tier": "visible"
+    },
+    "token-route": {
+      "first_mention_pass": null,
+      "first_sight": [
+        0,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        11,
+        11
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 5,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 0,
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "trailing-newline": {
+      "first_mention_pass": null,
+      "first_sight": [
+        0,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        11,
+        11
+      ],
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 8,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 0,
+          "tasks": 1
+        }
+      ],
+      "tier": "invisible"
+    }
+  },
+  "mode": "detached",
+  "model": "openai/gpt-oss-120b",
+  "passes": [
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "0707b1fbe41b",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 1,
+      "pass_rate": 0.25,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_09"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/plans/49",
+            "message": "Failed to retrieve plan"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_04"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/csv_02"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": {
+            "cause": "No remaining HTTP budget to query the correct endpoint /v2/zones/90.",
+            "message": "Failed to retrieve zone name: HTTP 410 Gone; endpoint /zones/90 is deprecated."
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_06"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 14,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-2f89-7bee-a5b3-55446a2548df",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 190,
+          "symptom": "pass",
+          "task": "curriculum-strict/paged_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-3ef4-7892-b79e-fc854c357831",
+          "error": {
+            "cause": "Only one HTTP GET call is allowed, but two were attempted.",
+            "message": "Failed to retrieve ledger due to HTTP call budget exceeded."
+          },
+          "lesson": "token-route",
+          "result": null,
+          "symptom": "naive",
+          "task": "curriculum-strict/token_02"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "board": "Q3-2022",
+            "count": 4
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_05"
+        }
+      ],
+      "session": "S-0002",
+      "symptoms": {
+        "naive": 6,
+        "pass": 2
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 2,
+      "consolidation": null,
+      "hash": "1ef042320eba",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 2,
+      "pass_rate": 0.375,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-1b18-7c95-adb3-4eff860ca74d",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 7,
+            "name": "Q2-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-1b1d-7349-90b2-97093d225db2",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 4030,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-1b19-7a40-a4b7-4dbb4373d585",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/csv_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-1b20-7a24-8281-3035c80a3678",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/projects/82",
+            "message": "Failed to GET project"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-1b21-7df9-b79f-500461605e91",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 406,
+          "symptom": "pass",
+          "task": "curriculum-strict/paged_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-1b21-7cea-b301-559ceb57defc",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 12,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-3955-70bb-a2e7-b3367149416f",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 306,
+          "symptom": "pass",
+          "task": "curriculum-strict/paged_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-3ae2-7c97-ae83-bd75dc616f57",
+          "error": {
+            "cause": "Only one HTTP GET allowed; token retrieval required a second GET.",
+            "message": "Failed to retrieve credits due to HTTP call budget exceeded."
+          },
+          "lesson": "token-route",
+          "result": null,
+          "symptom": "naive",
+          "task": "curriculum-strict/token_03"
+        }
+      ],
+      "session": "S-0001",
+      "symptoms": {
+        "naive": 5,
+        "pass": 3
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 3,
+      "consolidation": null,
+      "hash": "b009fabb5607",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 3,
+      "pass_rate": 0.25,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 15,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_03"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_11"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/csv_04"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "board": "Q4-2022",
+            "count": 7
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_11"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/nodes/36",
+            "message": "Response 'ok' field not true or unavailable"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-3136-7395-8ad1-fc17ae002634",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 7,
+          "symptom": "pass",
+          "task": "curriculum-strict/paged_09"
+        },
+        {
+          "applied": [],
+          "call": null,
+          "error": {
+            "cause": "Only one shell call allowed, previous call failed",
+            "message": "Shell call budget exceeded, cannot compute sum"
+          },
+          "lesson": "csv-quoted",
+          "result": null,
+          "symptom": "error:budget",
+          "task": "curriculum-strict/csv_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-371a-71bf-acab-46ff50e28509",
+          "error": {
+            "cause": "Only one HTTP call is allowed, but two were needed: one to read the token and one to fetch the audit.",
+            "message": "Failed to retrieve audit field due to exhausted HTTP call budget."
+          },
+          "lesson": "token-route",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/token_06"
+        }
+      ],
+      "session": "S-0003",
+      "symptoms": {
+        "error:budget": 1,
+        "naive": 5,
+        "pass": 2
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 4,
+      "consolidation": null,
+      "hash": "4139dd189603",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 4,
+      "pass_rate": 0.25,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-7167-71ab-9135-be70625f0882",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 2312,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-7168-7eec-9476-d5db211bd3b6",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 13,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-7166-78ac-94f2-461d8a5c65ea",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "release": "Q2-2027"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-7169-74fc-9a00-2b5dc0322b9f",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 4,
+          "symptom": "wrong",
+          "task": "curriculum-strict/paged_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-7168-738f-80ae-8aa04f112a4d",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/sites/4",
+            "message": "Failed to retrieve site information"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-9087-7abc-9911-1b495d41e013",
+          "error": {
+            "cause": "Only one HTTP call allowed; second call with token could not be made",
+            "message": "Failed to retrieve tally due to HTTP call budget exceeded"
+          },
+          "lesson": "token-route",
+          "result": null,
+          "symptom": "naive",
+          "task": "curriculum-strict/token_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-849b-778c-b626-3a75d1c3f74c",
+          "error": {
+            "cause": "call budget of 1 exceeded at call 2",
+            "message": "HTTP call budget exceeded"
+          },
+          "lesson": "token-route",
+          "result": null,
+          "symptom": "naive",
+          "task": "curriculum-strict/token_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-7167-7b9f-8adf-2753bfcca01f",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 2,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_08"
+        }
+      ],
+      "session": "S-0004",
+      "symptoms": {
+        "naive": 5,
+        "pass": 2,
+        "wrong": 1
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 5,
+      "consolidation": null,
+      "hash": "1a01b1c76b2b",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 5,
+      "pass_rate": 0.25,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-9c94-7da5-9bf7-fd3586546f9f",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 3050,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-9c94-7faa-afc2-c662cced482b",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 8,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-9c99-7b2d-a79e-2f94318b257b",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-9c93-7525-95fc-da00aea0c4ac",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 2,
+            "project": "Q2-2025"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-9c93-7f2e-a64e-f7d351ff46c1",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 3,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-b88c-785a-a999-ddd5c40ce477",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 1,
+          "symptom": "naive",
+          "task": "curriculum-strict/paged_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-9c95-7ab7-9a91-28ea28f05476",
+          "error": {
+            "cause": "Condition not met",
+            "message": "Response 'ok' field not true; GET request failed with HTTP 410 Gone."
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-be9e-7015-a36b-dd154b08859a",
+          "error": {
+            "cause": "Only one HTTP GET allowed, but token was needed for authorized request.",
+            "message": "HTTP call budget exceeded; unable to retrieve quota."
+          },
+          "lesson": "token-route",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/token_01"
+        }
+      ],
+      "session": "S-0005",
+      "symptoms": {
+        "naive": 6,
+        "pass": 2
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 6,
+      "consolidation": null,
+      "hash": "c1788d2522a7",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 6,
+      "pass_rate": 0.375,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-b6a0-7830-a3ba-f25599d3e88a",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 3282,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-b6a2-7bc8-9e83-ce8b1ffac4b9",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 21,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-b69f-7d11-a2e4-202dcd3ebb95",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/csv_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-b69e-770a-9e56-3cd19134e5ce",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 4,
+            "title": "Q4-2020"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-b69f-78f1-82d8-74e59d374a65",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "project": "Q3-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-d4c6-74fe-8e61-6a7d12ed6757",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 126,
+          "symptom": "pass",
+          "task": "curriculum-strict/paged_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-b6a1-7db8-94d9-f0f3ae271d01",
+          "error": {
+            "cause": "Non-transient error, cannot retrieve ok field",
+            "message": "GET request failed with HTTP 410 Gone"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-d9dd-7fe5-924b-a3bf7a31499c",
+          "error": {
+            "cause": "http call budget of 1 exceeded at call 2",
+            "message": "Budget exceeded, cannot retrieve limits"
+          },
+          "lesson": "token-route",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/token_05"
+        }
+      ],
+      "session": "S-0006",
+      "symptoms": {
+        "naive": 5,
+        "pass": 3
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 7,
+      "consolidation": null,
+      "hash": "737f84167761",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 7,
+      "pass_rate": 0.25,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-f2ce-7587-b00c-52eaf23591a3",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 2392,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-f2cd-758e-95b5-b714793cd91a",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "title": "Q3-2025"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-f2cf-75de-a8bd-ac6ad9801822",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 17,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-0a68-7784-b9bf-827d7afd86ce",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 2,
+          "symptom": "naive",
+          "task": "curriculum-strict/paged_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-f2d2-73d1-80fc-8428cd936223",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 18,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-f2cf-7437-aeee-3d5c85450e54",
+          "error": {
+            "cause": "HTTP call budget exhausted after first failed attempt",
+            "message": "Failed to retrieve team name"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c8-f2ce-712a-9a39-76b6a87e0969",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1757.28,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-126d-7419-b272-e63a32c41e6c",
+          "error": {
+            "cause": "Only one HTTP GET allowed, but two were attempted.",
+            "message": "HTTP call budget exceeded; unable to retrieve balance."
+          },
+          "lesson": "token-route",
+          "result": null,
+          "symptom": "naive",
+          "task": "curriculum-strict/token_00"
+        }
+      ],
+      "session": "S-0007",
+      "symptoms": {
+        "naive": 6,
+        "pass": 2
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 8,
+      "consolidation": null,
+      "hash": "ac0c04ce7294",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 8,
+      "pass_rate": 0.25,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-0c8e-7f8d-a907-1adf7164534b",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 17,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-0c89-7daa-809b-2b8198cd625f",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 4,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-0c88-7573-86dc-74af724c1ba8",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 5,
+            "label": "Q2-2021"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-0c8c-73d3-bd85-9c1564267bc1",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/stores/24",
+            "message": "GET request failed"
+          },
+          "lesson": "moved-v2",
+          "result": null,
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-0c8c-79a6-bf88-1c2be01c19f5",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/vaults/76; cannot retry due to call budget",
+            "message": "GET /vaults/76 failed"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-0c88-76ba-ab8d-217fb493a809",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/csv_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-2d37-7982-b438-85a9b9ef798c",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 4,
+          "symptom": "pass",
+          "task": "curriculum-strict/paged_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-2efc-74ec-b115-7228b1fa2825",
+          "error": {
+            "cause": "Attempted a second GET request after the allowed single HTTP call",
+            "message": "HTTP call budget exceeded"
+          },
+          "lesson": "token-route",
+          "result": null,
+          "symptom": "naive",
+          "task": "curriculum-strict/token_09"
+        }
+      ],
+      "session": "S-0008",
+      "symptoms": {
+        "naive": 6,
+        "pass": 2
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 9,
+      "consolidation": null,
+      "hash": "e571b801a0f8",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 9,
+      "pass_rate": 0.5,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-277c-77b0-be03-d3ca46f51e28",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 4,
+          "symptom": "pass",
+          "task": "curriculum-strict/paged_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-2778-78c1-89fe-39fa27adc52e",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5198,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-277a-7a6b-b883-e58d13804000",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 13,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-2777-7f3d-b974-fcf89b21ce05",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 2,
+            "label": "H1-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-439a-760a-af51-e92608f01935",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 256,
+          "symptom": "pass",
+          "task": "curriculum-strict/paged_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-2778-72a9-b9eb-4b3028f020e3",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/agents/14",
+            "message": "ok field not true in response"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-2777-79b4-86bd-b60f41f8e8d8",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 3,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-4b00-7a5e-879e-4f2f26899e89",
+          "error": {
+            "cause": "Only one HTTP call allowed; second GET with token could not be made",
+            "message": "HTTP call budget exceeded"
+          },
+          "lesson": "token-route",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/token_07"
+        }
+      ],
+      "session": "S-0009",
+      "symptoms": {
+        "naive": 4,
+        "pass": 4
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 10,
+      "consolidation": null,
+      "hash": "cb232a13c3ee",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 10,
+      "pass_rate": 0.5,
+      "proposals": 0,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-5073-7f62-90ed-fd4cbddcac07",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-5075-72ba-8e71-82ce69bd41d3",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-5075-7161-b58e-062f82a70ec1",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/pools/18",
+            "message": "Failed to retrieve ok field"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-5070-7b78-bbc8-cbdf7026b4bf",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 6,
+            "release": "Q4-2022"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-6936-79d8-a469-8e098378c570",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 305,
+          "symptom": "pass",
+          "task": "curriculum-strict/paged_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-5072-7e48-bea0-5372b8b9315c",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 269.11,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-7d63-79c7-aa51-28a92460fdb3",
+          "error": {
+            "cause": "Only one HTTP GET allowed; token was read after first call, preventing authorized request.",
+            "message": "Failed to retrieve meter due to HTTP call budget exceeded."
+          },
+          "lesson": "token-route",
+          "result": null,
+          "symptom": "naive",
+          "task": "curriculum-strict/token_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c9-5071-7a5c-b415-8273825e280d",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 53.91,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_05"
+        }
+      ],
+      "session": "S-0010",
+      "symptoms": {
+        "naive": 4,
+        "pass": 4
+      },
+      "work_shape": []
+    }
+  ],
+  "records": [],
+  "roster": {
+    "adjudicator": "openai/gpt-oss-120b",
+    "coder": "openai/gpt-oss-120b",
+    "consolidator": "openai/gpt-oss-120b",
+    "examiner": "openai/gpt-oss-120b",
+    "pass": "openai/gpt-oss-120b",
+    "reauthor": "openai/gpt-oss-120b"
+  },
+  "stream": {
+    "batch": 8,
+    "batches": 10,
+    "families": [
+      "curriculum-strict"
+    ],
+    "faults": {
+      "http_budget": null,
+      "http_fault_calls": 1,
+      "http_fault_fraction": 0.0,
+      "shell_output_limit": null
+    },
+    "revisit": [
+      1,
+      2
+    ],
+    "seed": 0
+  },
+  "warning": null
+}
