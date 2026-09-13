@@ -1,0 +1,1687 @@
+{
+  "arm": "20b-attached",
+  "experiment": "text2sql",
+  "lessons": {
+    "text2sql": {
+      "first_mention_pass": null,
+      "first_sight": [
+        3,
+        10
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        10
+      ],
+      "quality": {
+        "economy": 0.3125,
+        "transfer": null,
+        "turns": 0.3333333333333333
+      },
+      "revisit": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.6666666666666666
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 2,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 3,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 4,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "WW",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 7,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 8,
+          "grid": "WW",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 8,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "W",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 10,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        }
+      ],
+      "tier": null
+    },
+    "text2sql-holdout": {
+      "first_mention_pass": null,
+      "first_sight": [
+        3,
+        6
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        6
+      ],
+      "quality": {
+        "economy": 0.4166666666666667,
+        "transfer": null,
+        "turns": 0.4444444444444444
+      },
+      "revisit": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.6666666666666666
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 2,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 3,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 5,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "W",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 10,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        }
+      ],
+      "tier": null
+    }
+  },
+  "mode": "attached",
+  "model": "openai/gpt-oss-20b",
+  "passes": [
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "3aab3e4e2d46",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 1,
+      "pass_rate": 1.0,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.5,
+        "transfer": null,
+        "turns": 0.6666666666666666
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4c-f369-7b93-b132-ea3dfaff32a1",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\"",
+            "sqlite3 financial.sqlite \"SELECT DISTINCT district_id, A2 FROM district LIMIT 5\""
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "text2sql-holdout",
+          "result": "SELECT COUNT(DISTINCT a.account_id) FROM account a JOIN district d ON a.district_id = d.district_id JOIN loan l ON a.account_id = l.account_id WHERE d.district_id = 1 AND l.status IN ('C','D');",
+          "symptom": "pass",
+          "task": "text2sql-holdout/q137",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4c-f36b-7f5a-802d-41d10f13c674",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\"",
+            "sqlite3 financial.sqlite \"SELECT district_id, A11 FROM district LIMIT 5\""
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "text2sql",
+          "result": "SELECT COUNT(*) FROM district WHERE A11 > 6000 AND A11 < 10000;",
+          "symptom": "pass",
+          "task": "text2sql/q92",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        }
+      ],
+      "session": "S-0001",
+      "symptoms": {
+        "pass": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 2,
+      "consolidation": {
+        "admitted": [],
+        "anchoring": {
+          "anchored to weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4f-192b-752b-9977-ad6613e20201": 6,
+          "moot: not anchored": 1
+        },
+        "dismissed": [],
+        "expired": [],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0002"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "other(missing weekly issuance statement in output)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0003",
+              "O-0004"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "other(no rule)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0001"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "output-schema"
+            ]
+          }
+        ],
+        "groups_at_bar": 0,
+        "id": "K-0001",
+        "nominations": [
+          {
+            "outcome": "refused by the floor: 1 distinct session(s) in the evidence (S-0002) against the bar 2; the adjudicator's decline(insufficient independence) was overridden: a decline stands only on an upheld premise kill",
+            "rung": "new-decision",
+            "subject": "output-schema"
+          },
+          {
+            "outcome": "refused by the floor: 1 distinct session(s) in the evidence (S-0002) against the bar 2; the adjudicator's decline(independence floor not met) was overridden: a decline stands only on an upheld premise kill",
+            "rung": "new-decision",
+            "subject": "no-rule"
+          },
+          {
+            "outcome": "refused by the floor: 1 distinct session(s) in the evidence (S-0002) against the bar 2; the adjudicator's decline(warrant:independence landed: the draft is below the independence floor (N=1 against the bar 2), and the floor refuses it whatever the verdict) was overridden: a decline stands only on an upheld premise kill",
+            "rung": "new-decision",
+            "subject": "weekly-issuance"
+          }
+        ],
+        "outcomes": {
+          "refused by the floor: 1 distinct session": 3
+        },
+        "retired": []
+      },
+      "hash": "ccbd49094c54",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0001",
+          "noticed": "The first attempt in this pass was wrong: it used the .schema command instead of the SELECT query.",
+          "shape": [
+            "other(used .schema instead of SELECT)"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0002",
+          "noticed": "Task text2sql/q98: the first attempt returned a SELECT statement that omitted the required weekly issuance statement, missing the convention of including the statement in the output.",
+          "shape": [
+            "other(omitted required weekly issuance statement)"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0003",
+          "noticed": "Task text2sql-holdout/q168 had no rule.",
+          "shape": [
+            "other(no rule for task shape)"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0004",
+          "noticed": "Task text2sql/q98 had no rule.",
+          "shape": [
+            "other(no rule for task shape)"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 2,
+      "pass_rate": 0.0,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4f-192b-752b-9977-ad6613e20201",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-holdout",
+          "result": "SELECT 100.0 * SUM(CASE WHEN gender='F' THEN 1 ELSE 0 END) / COUNT(*) AS pct\nFROM (\n  SELECT DISTINCT c.client_id, c.gender\n  FROM client c\n  JOIN disp d ON c.client_id = d.client_id\n  JOIN account a ON d.account_id = a.account_id\n  JOIN district di ON a.district_id = di.district_id\n  WHERE di.A11 > 10000\n) t;",
+          "symptom": "wrong",
+          "task": "text2sql-holdout/q168",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4f-192c-7c83-8443-3e3a2a0a9caa",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql",
+          "result": "SELECT a.account_id\nFROM account a\nJOIN loan l ON a.account_id = l.account_id\nWHERE a.frequency = 'POPLATEK TYDNE'\n  AND l.status = 'approved'\n  AND l.date BETWEEN '1997-01-01' AND '1997-12-31'\n  AND l.amount = (\n    SELECT MIN(amount)\n    FROM loan l2\n    JOIN account a2 ON a2.account_id = l2.account_id\n    WHERE a2.frequency = 'POPLATEK TYDNE'\n      AND l2.status = 'approved'\n      AND l2.date BETWEEN '1997-01-01' AND '1997-12-31'\n  );",
+          "symptom": "wrong",
+          "task": "text2sql/q98",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0002",
+      "symptoms": {
+        "wrong": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 3,
+      "consolidation": null,
+      "hash": "5662bbad2b58",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0005",
+          "noticed": "Task text2sql/q119: The first attempt incorrectly filtered on account date instead of transaction date, causing the query to miss accounts with statements issued after transactions in 1993.",
+          "shape": [
+            "other(filtered on account date instead of transaction date)"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0006",
+          "noticed": "In task text2sql-holdout/q192, the first attempt produced a SELECT query that omitted the condition for status 'D', causing the hidden check to fail.",
+          "shape": [
+            "other(omitted condition for status 'D')"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0007",
+          "noticed": "Failed task text2sql/q119",
+          "shape": [
+            "other(failed task)"
+          ],
+          "state": "dismissed"
+        },
+        {
+          "name": "O-0008",
+          "noticed": "Failed task text2sql-holdout/q192",
+          "shape": [
+            "other(failed task)"
+          ],
+          "state": "dismissed"
+        }
+      ],
+      "pass": 3,
+      "pass_rate": 0.0,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c51-23af-721d-b29a-80ae04bcddb0",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql",
+          "result": "SELECT DISTINCT a.account_id, d.A2, d.A3\nFROM account a\nJOIN district d ON a.district_id = d.district_id\nJOIN disp ds ON ds.account_id = a.account_id\nJOIN card c ON c.disp_id = ds.disp_id\nJOIN trans t ON t.account_id = a.account_id\nWHERE a.date BETWEEN '1993-01-01' AND '1993-12-31'\n  AND c.issued > t.date;",
+          "symptom": "wrong",
+          "task": "text2sql/q119",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c51-23af-74b4-a179-c3455da86d27",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\"",
+            "sqlite3 financial.sqlite \"SELECT DISTINCT operation FROM trans LIMIT 10\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-holdout",
+          "result": "SELECT AVG(amount) FROM loan l WHERE l.status IN ('C','D') AND EXISTS (SELECT 1 FROM trans t WHERE t.account_id = l.account_id AND t.operation = 'POPLATEK PO OBRATU');",
+          "symptom": "wrong",
+          "task": "text2sql-holdout/q192",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0003",
+      "symptoms": {
+        "wrong": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 4,
+      "consolidation": {
+        "admitted": [
+          "D-0001"
+        ],
+        "anchoring": {
+          "anchored to weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4f-192b-752b-9977-ad6613e20201": 1
+        },
+        "dismissed": [
+          "O-0007",
+          "O-0008",
+          "O-0010"
+        ],
+        "expired": [],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0009"
+            ],
+            "sessions": [
+              "S-0004"
+            ],
+            "shape": [
+              "other(counted loans instead of distinct accounts)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0005"
+            ],
+            "sessions": [
+              "S-0003"
+            ],
+            "shape": [
+              "other(filtered on account date instead of transaction date)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0003",
+              "O-0004"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "other(no rule)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0006"
+            ],
+            "sessions": [
+              "S-0003"
+            ],
+            "shape": [
+              "other(omitted condition for status 'D')"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0002"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "other(omitted required weekly issuance statement)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0001"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "other(used .schema instead of SELECT)"
+            ]
+          }
+        ],
+        "groups_at_bar": 0,
+        "id": "K-0002",
+        "nominations": [
+          {
+            "outcome": "admitted D-0001",
+            "rung": "new-decision",
+            "subject": "SQL-query-accuracy"
+          },
+          {
+            "outcome": "decline(escapes name a shape already covered by registered terms: 'Presentation' is a concrete instance of 'output-schema' or 'field-quoted', not a distinct shape; the coder found a registered term, keeping the boundary open)",
+            "rung": "hook-edit",
+            "subject": "work-shape/presentation"
+          }
+        ],
+        "outcomes": {
+          "admitted D-0001": 1,
+          "decline": 1
+        },
+        "retired": []
+      },
+      "hash": "c338c3c037b9",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0009",
+          "noticed": "In task text2sql/q136, the first attempt incorrectly counted loans instead of distinct accounts, missing the requirement to count per account.",
+          "shape": [
+            "other(counted loans instead of distinct accounts)"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0010",
+          "noticed": "text2sql/q136 failed",
+          "shape": [
+            "other(failed task)"
+          ],
+          "state": "dismissed"
+        }
+      ],
+      "pass": 4,
+      "pass_rate": 0.5,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.5,
+        "transfer": null,
+        "turns": 0.5
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c54-a97d-78a8-91db-cd12bc991abb",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 1
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql",
+          "result": "SELECT COUNT(*) FROM loans WHERE amount >= 250000 AND frequency = 'POPLATEK MESICNE' AND approval_date BETWEEN '1995-01-01' AND '1997-12-31';",
+          "symptom": "wrong",
+          "task": "text2sql/q136",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c54-a97d-7287-8e66-61543d62cab5",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "text2sql-holdout",
+          "result": "WITH min_birth AS (\n  SELECT MIN(birth_date) AS min_birth_date\n  FROM client\n  WHERE gender='F'\n),\noldest_clients AS (\n  SELECT c.client_id, c.birth_date, di.A11\n  FROM client c\n  JOIN district di ON c.district_id = di.district_id\n  WHERE c.gender='F' AND c.birth_date = (SELECT min_birth_date FROM min_birth)\n),\nmin_salary AS (\n  SELECT MIN(A11) AS min_A11\n  FROM oldest_clients\n)\nSELECT a.account_id\nFROM account a\nJOIN disp d ON a.account_id = d.account_id\nJOIN client c ON d.client_id = c.client_id\nJOIN district di ON c.district_id = di.district_id\nWHERE c.gender='F'\n  AND c.birth_date = (SELECT min_birth_date FROM min_birth)\n  AND di.A11 = (SELECT min_A11 FROM min_salary);",
+          "symptom": "pass",
+          "task": "text2sql-holdout/q189",
+          "transfer": null,
+          "turns": 1.0
+        }
+      ],
+      "session": "S-0004",
+      "symptoms": {
+        "pass": 1,
+        "wrong": 1
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 5,
+      "consolidation": null,
+      "hash": "b382f7068c12",
+      "in_context": [
+        "D-0001"
+      ],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0011",
+          "noticed": "In task text2sql-holdout/q125, the first attempt produced a SQL query with an ambiguous column name 'client_id', causing a shell error; the correct query should qualify the column with its table alias.",
+          "shape": [
+            "schema-coded-value"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0012",
+          "noticed": "The store has no rule for the text2sql-holdout shape.",
+          "shape": [
+            "other(no rule for task shape)"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 5,
+      "pass_rate": 0.5,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.5,
+        "transfer": null,
+        "turns": 0.5
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c56-c593-7ff2-83d7-aeb29b13c984",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "text2sql",
+          "result": "SELECT d.A2 FROM client c JOIN disp d1 ON c.client_id = d1.client_id JOIN account a ON d1.account_id = a.account_id JOIN district d ON a.district_id = d.district_id WHERE c.gender='F' AND c.birth_date='1976-01-29';",
+          "symptom": "pass",
+          "task": "text2sql/q112",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c56-c593-700b-8e9c-9c7464be1d60",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\"",
+            "sqlite3 financial.sqlite \"SELECT DISTINCT client_id FROM client JOIN disp ON client.client_id=disp.client_id JOIN loan ON disp.account_id=loan.account_id WHERE loan.status='D'\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-holdout",
+          "result": "SELECT d.district_id, d.A2 AS district, d.A3 AS state,\n       ((d.A13 - d.A12)/d.A12)*100 AS unemployment_increment\nFROM loan l\nJOIN disp dp ON l.account_id = dp.account_id\nJOIN client c ON dp.client_id = c.client_id\nJOIN district d ON c.district_id = d.district_id\nWHERE l.status = 'D'\n  AND d.A12 IS NOT NULL\n  AND d.A13 IS NOT NULL;",
+          "symptom": "wrong",
+          "task": "text2sql-holdout/q125",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0005",
+      "symptoms": {
+        "pass": 1,
+        "wrong": 1
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 6,
+      "consolidation": {
+        "admitted": [
+          "D-0002"
+        ],
+        "anchoring": {},
+        "dismissed": [],
+        "expired": [
+          "01a09c54-7aea-712a-ae93-3d1f18b3317a"
+        ],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0011"
+            ],
+            "sessions": [
+              "S-0005"
+            ],
+            "shape": [
+              "other(ambiguous column name in SQL query)"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0003",
+              "O-0004",
+              "O-0012"
+            ],
+            "sessions": [
+              "S-0002",
+              "S-0005"
+            ],
+            "shape": [
+              "other(no rule for task shape)"
+            ]
+          }
+        ],
+        "groups_at_bar": 1,
+        "id": "K-0003",
+        "nominations": [
+          {
+            "outcome": "admitted D-0002",
+            "rung": "new-decision",
+            "subject": "text2sql-generation"
+          }
+        ],
+        "outcomes": {
+          "admitted D-0002": 1
+        },
+        "retired": []
+      },
+      "hash": "e371a1351571",
+      "in_context": [
+        "D-0001"
+      ],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 6,
+      "pass_rate": 1.0,
+      "proposals": 1,
+      "quality": {
+        "economy": 1.0,
+        "transfer": null,
+        "turns": 1.0
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c58-c6e1-7f2d-9cf6-25a6321c211d",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "text2sql",
+          "result": "SELECT (SUM(CASE WHEN status='A' THEN amount ELSE 0 END) * 100.0 / SUM(amount)) AS percentage FROM loan;",
+          "symptom": "pass",
+          "task": "text2sql/q117",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c58-c6e0-724f-a32d-189a0f5f87fd",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "text2sql-holdout",
+          "result": "SELECT d.A2, COUNT(*) AS female_count FROM client c JOIN district d ON c.district_id = d.district_id WHERE c.gender = 'F' GROUP BY d.A2 ORDER BY female_count DESC LIMIT 9;",
+          "symptom": "pass",
+          "task": "text2sql-holdout/q128",
+          "transfer": null,
+          "turns": 1.0
+        }
+      ],
+      "session": "S-0006",
+      "symptoms": {
+        "pass": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 7,
+      "consolidation": null,
+      "hash": "add2f6b76a32",
+      "in_context": [
+        "D-0001",
+        "D-0002"
+      ],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0013",
+          "noticed": "In task text2sql/q118, the first attempt incorrectly used the loan table instead of the accounts table, violating the requirement to match the requested aggregation target and filtering conditions.",
+          "shape": [
+            "output-schema"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0014",
+          "noticed": "Task text2sql/q93: first attempt used hint column names A2, A3, A11 instead of actual column names, causing the query to be rejected by the hidden check.",
+          "shape": [
+            "output-schema"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 7,
+      "pass_rate": 0.0,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "rows": [
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5b-149e-7665-9fec-13f486e634e0",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql",
+          "result": "SELECT ((SUM(CASE WHEN status='C' THEN amount ELSE 0 END) / SUM(amount)) * 100) AS percentage FROM loan WHERE amount < 100000;",
+          "symptom": "wrong",
+          "task": "text2sql/q118",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5b-149e-777b-8920-52270a68726e",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 1
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql",
+          "result": "SELECT COUNT(*) FROM customers WHERE A2='M' AND A3='North Bohemia' AND A11>8000;",
+          "symptom": "wrong",
+          "task": "text2sql/q93",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0007",
+      "symptoms": {
+        "wrong": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 8,
+      "consolidation": {
+        "admitted": [
+          "D-0003"
+        ],
+        "anchoring": {},
+        "dismissed": [],
+        "expired": [
+          "01a09c58-959e-749c-85f0-a986b6d62ddc",
+          "01a09c5a-90d9-7646-a95a-2ab995314f48"
+        ],
+        "flipped": [
+          "D-0001",
+          "D-0002"
+        ],
+        "groups": [
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0017"
+            ],
+            "sessions": [
+              "S-0008"
+            ],
+            "shape": [
+              "other(aggregation target mismatch)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0018"
+            ],
+            "sessions": [
+              "S-0008"
+            ],
+            "shape": [
+              "other(shell call budget exceeded)"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0013",
+              "O-0014",
+              "O-0015"
+            ],
+            "sessions": [
+              "S-0007",
+              "S-0008"
+            ],
+            "shape": [
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0011"
+            ],
+            "sessions": [
+              "S-0005"
+            ],
+            "shape": [
+              "schema-coded-value"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0016"
+            ],
+            "sessions": [
+              "S-0008"
+            ],
+            "shape": [
+              "tool-budget"
+            ]
+          }
+        ],
+        "groups_at_bar": 1,
+        "id": "K-0004",
+        "nominations": [
+          {
+            "outcome": "admitted D-0003",
+            "rung": "new-decision",
+            "subject": "SQL-Constraint-Precision"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0001"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0002"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0003"
+          },
+          {
+            "outcome": "still-holds: kept",
+            "rung": "counterfactual-edit",
+            "subject": "L-0009"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0010"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0006"
+          },
+          {
+            "outcome": "moot: retired through the variance-collapse door; the cacheable answer is [{\"target\": \"payload:abstraction\", \"landed\": false}]",
+            "rung": "counterfactual-edit",
+            "subject": "L-0007"
+          },
+          {
+            "outcome": "decline(escapes map to existing terms: 'prompt' is covered by 'task-planning' and 'tool-budget' as a work-shape, and the coder found a registered term); the coder read the presentations as ['task-planning']",
+            "rung": "hook-edit",
+            "subject": "work-shape/prompt"
+          },
+          {
+            "outcome": "decline(escapes name a shape already covered by registered terms: 'shell-tool' and 'tool-budget' are both registered, and the coder found them too \u2014 no gap to fill); the coder read the presentations as ['shell-tool', 'tool-budget']",
+            "rung": "hook-edit",
+            "subject": "work-shape/task"
+          }
+        ],
+        "outcomes": {
+          "admitted D-0003": 1,
+          "decline": 2,
+          "moot: retired through the genesis-deadline door": 5,
+          "moot: retired through the variance-collapse door; the cacheable answer is [{\"target\": \"payload:abstraction\", \"landed\": false}]": 1,
+          "still-holds: kept": 1
+        },
+        "retired": [
+          "L-0001",
+          "L-0002",
+          "L-0003",
+          "L-0010",
+          "L-0006",
+          "L-0007"
+        ]
+      },
+      "hash": "88505119a2bc",
+      "in_context": [
+        "D-0001",
+        "D-0002"
+      ],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0015",
+          "noticed": "Task text2sql/q99: the first attempt returned an extra column (date) not requested, so it did not match the aggregation target.",
+          "shape": [
+            "output-schema"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0016",
+          "noticed": "Task text2sql/q89: first attempt used 4 shell calls exceeding the budget, violating the shell\u2011tool call limit; the correct approach would have used only 3 calls and fully qualified column references as per D\u20110002.",
+          "shape": [
+            "tool-budget"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0017",
+          "noticed": "text2sql/q99 failed",
+          "shape": [
+            "other(aggregation target mismatch)"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0018",
+          "noticed": "text2sql/q89 failed",
+          "shape": [
+            "other(shell call budget exceeded)"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 8,
+      "pass_rate": 0.0,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "rows": [
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5c-6e53-753d-9386-9e8c91c1ad61",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql",
+          "result": "SELECT DISTINCT a.account_id, a.date\nFROM account a\nJOIN loan l ON a.account_id = l.account_id\nWHERE l.duration > 12\n  AND strftime('%Y', a.date) = '1993'\n  AND l.amount = (\n    SELECT MAX(l2.amount)\n    FROM loan l2\n    JOIN account a2 ON l2.account_id = a2.account_id\n    WHERE l2.duration > 12\n      AND strftime('%Y', a2.date) = '1993'\n  );",
+          "symptom": "wrong",
+          "task": "text2sql/q99",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5c-6e52-7850-a135-7f791151a092",
+          "calls": {
+            "http": 0,
+            "shell": 4,
+            "turns": 6
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\"",
+            "sqlite3 financial.sqlite \"SELECT DISTINCT A3 FROM district\"",
+            "sqlite3 financial.sqlite \"SELECT DISTINCT type FROM trans\"",
+            "sqlite3 financial.sqlite \"SELECT DISTINCT type FROM trans WHERE type LIKE '%POPLATEK%'\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql",
+          "result": "SELECT COUNT(DISTINCT trans.account_id) FROM trans JOIN account ON trans.account_id = account.account_id JOIN district ON account.district_id = district.district_id WHERE trans.type = 'POPLATEK PO OBRATU' AND district.A3 = 'east Bohemia';",
+          "symptom": "wrong",
+          "task": "text2sql/q89",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0008",
+      "symptoms": {
+        "wrong": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "3aab3e4e2d46",
+      "in_context": [
+        "D-0003"
+      ],
+      "kind": "revisit",
+      "mentions": {},
+      "observations": [],
+      "pass": 9,
+      "pass_rate": 1.0,
+      "proposals": 1,
+      "quality": {
+        "economy": 1.0,
+        "transfer": null,
+        "turns": 1.0
+      },
+      "rows": [
+        {
+          "applied": [
+            "D-0003"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5e-8354-7b69-af1d-e66a148b9295",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "text2sql-holdout",
+          "result": "SELECT COUNT(DISTINCT a.account_id) FROM account a JOIN loan l ON a.account_id = l.account_id WHERE a.district_id = 1 AND l.status IN ('C','D');",
+          "symptom": "pass",
+          "task": "text2sql-holdout/q137",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [
+            "D-0003"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5e-8354-78b4-bcef-bcbc73ea52a2",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "text2sql",
+          "result": "SELECT COUNT(*) FROM district WHERE A11 > 6000 AND A11 < 10000;",
+          "symptom": "pass",
+          "task": "text2sql/q92",
+          "transfer": null,
+          "turns": 1.0
+        }
+      ],
+      "session": "S-0009",
+      "symptoms": {
+        "pass": 2
+      },
+      "work_shape": [
+        "shell-tool"
+      ]
+    },
+    {
+      "batch": 2,
+      "consolidation": null,
+      "hash": "ccbd49094c54",
+      "in_context": [
+        "D-0003"
+      ],
+      "kind": "revisit",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0019",
+          "noticed": "Task text2sql/q98: The first attempt filtered on a.frequency instead of l.frequency for weekly issuance, missing the correct filtering convention.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0020",
+          "noticed": "Task text2sql-holdout/q168: the first attempt used only a schema inspection call and did not generate the SELECT statement required by the prompt, violating the rule that the query must be produced by a shell call that returns the SQL text.",
+          "shape": [],
+          "state": "open"
+        }
+      ],
+      "pass": 10,
+      "pass_rate": 0.0,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "rows": [
+        {
+          "applied": [
+            "D-0003"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5f-abd4-7564-b27f-cddd04832530",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql",
+          "result": "SELECT a.account_id\nFROM account a\nJOIN loan l ON a.account_id = l.account_id\nWHERE a.frequency = 'TYDNE'\n  AND l.status = 'approved'\n  AND strftime('%Y', l.date) = '1997'\n  AND l.amount = (\n    SELECT MIN(amount)\n    FROM loan l2\n    WHERE l2.status = 'approved'\n      AND strftime('%Y', l2.date) = '1997'\n  );",
+          "symptom": "wrong",
+          "task": "text2sql/q98",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c5f-abd4-7d51-a317-01fa4994e395",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-holdout",
+          "result": "SELECT\n  ROUND(100.0 * COUNT(DISTINCT CASE WHEN c.gender = 'F' THEN c.client_id END) / COUNT(DISTINCT c.client_id), 2) AS pct_women\nFROM client c\nJOIN disp d ON d.client_id = c.client_id\nJOIN account a ON a.account_id = d.account_id\nJOIN district di ON di.district_id = a.district_id\nWHERE di.A11 > 10000;",
+          "symptom": "wrong",
+          "task": "text2sql-holdout/q168",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0010",
+      "symptoms": {
+        "wrong": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    }
+  ],
+  "records": [
+    {
+      "admitted_after_pass": 4,
+      "decision": "When generating SQL, the query must precisely match the requested aggregation target and filtering conditions as stated in the natural language prompt, without substituting similar but incorrect entities or omitting required clauses.",
+      "hook": [
+        "task-planning",
+        "file-tool",
+        "shell-tool",
+        "tool-budget"
+      ],
+      "id": "D-0001",
+      "mentions": [],
+      "status": null
+    },
+    {
+      "admitted_after_pass": 6,
+      "decision": "When generating SQL from a natural language prompt, the query must precisely match the requested aggregation target and filtering conditions, and all column references must be fully qualified with their table alias to prevent ambiguity.",
+      "hook": [
+        "task-planning",
+        "shell-tool",
+        "output-schema"
+      ],
+      "id": "D-0002",
+      "mentions": [],
+      "status": null
+    },
+    {
+      "admitted_after_pass": 8,
+      "decision": "When generating SQL from a natural language prompt, the query must precisely match the requested aggregation target and filtering conditions, and all column references must be fully qualified with their table alias to prevent ambiguity.",
+      "hook": [
+        "task-planning",
+        "shell-tool",
+        "output-schema",
+        "file-tool",
+        "tool-budget"
+      ],
+      "id": "D-0003",
+      "mentions": [],
+      "status": null
+    }
+  ],
+  "roster": {
+    "adjudicator": "deepseek-ai/DeepSeek-V4-Pro",
+    "coder": "deepseek-ai/DeepSeek-V4-Pro",
+    "consolidator": "deepseek-ai/DeepSeek-V4-Pro",
+    "examiner": "deepseek-ai/DeepSeek-V4-Pro",
+    "pass": "openai/gpt-oss-20b",
+    "reauthor": "deepseek-ai/DeepSeek-V4-Pro"
+  },
+  "stream": {
+    "batch": 2,
+    "batches": 8,
+    "families": [
+      "text2sql",
+      "text2sql-holdout"
+    ],
+    "faults": {
+      "http_budget": null,
+      "http_fault_calls": 1,
+      "http_fault_fraction": 0.0,
+      "shell_output_limit": null
+    },
+    "revisit": [
+      1,
+      2
+    ],
+    "seed": 0
+  },
+  "warning": null
+}

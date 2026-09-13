@@ -1,0 +1,473 @@
+{
+  "arm": "120b-strict-detached",
+  "experiment": "text2sql",
+  "lessons": {
+    "text2sql-strict": {
+      "first_mention_pass": null,
+      "first_sight": [
+        2,
+        10
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        10
+      ],
+      "quality": {
+        "economy": 0.2,
+        "transfer": null,
+        "turns": 0.2
+      },
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 1,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 2,
+          "grid": "WW",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 2,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 3,
+          "grid": "EW",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 3,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 4,
+          "grid": "WW",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 4,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 5,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 2
+        }
+      ],
+      "tier": null
+    }
+  },
+  "mode": "detached",
+  "model": "openai/gpt-oss-120b",
+  "passes": [
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "e0c4cbbd41b9",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 1,
+      "pass_rate": 0.5,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.5,
+        "transfer": null,
+        "turns": 0.5
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4c-ee8e-7b07-b292-c0f120f3a62b",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT d.A2 FROM client c JOIN disp dp ON c.client_id = dp.client_id JOIN account a ON dp.account_id = a.account_id JOIN district d ON a.district_id = d.district_id WHERE c.gender = 'F' AND c.birth_date = '1976-01-29';",
+          "symptom": "pass",
+          "task": "text2sql-strict/q112",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4c-ee90-7a48-88f8-8c7f3fbc08ef",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT a.account_id\nFROM account a\nJOIN loan l ON a.account_id = l.account_id\nWHERE a.date LIKE '1993-%'\n  AND l.duration > 12\n  AND l.status = 'approved'\n  AND l.amount = (\n    SELECT MAX(l2.amount)\n    FROM loan l2\n    JOIN account a2 ON l2.account_id = a2.account_id\n    WHERE a2.date LIKE '1993-%' AND l2.duration > 12 AND l2.status = 'approved'\n  );",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q99",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0001",
+      "symptoms": {
+        "pass": 1,
+        "wrong": 1
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 2,
+      "consolidation": null,
+      "hash": "307934816fa5",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 2,
+      "pass_rate": 0.0,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4d-6216-7812-b82b-5d4290602dc8",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT COUNT(*) FROM client c JOIN district d ON c.district_id = d.district_id WHERE c.gender = 'M' AND d.A3 = 'North Bohemia' AND d.A11 > 8000;",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q93",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4d-6216-7cbf-8ab5-f6bf392caaee",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\"",
+            "sqlite3 financial.sqlite \"SELECT DISTINCT type FROM trans\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT a.account_id, d.A2 AS district_name, d.A3 AS district_region\nFROM account a\nJOIN district d ON a.district_id = d.district_id\nWHERE strftime('%Y', a.date) = '1993'\n  AND EXISTS (\n    SELECT 1 FROM trans t\n    WHERE t.account_id = a.account_id\n      AND t.type = 'POPLATEK PO OBRATU'\n      AND strftime('%Y', t.date) = '1993'\n  );",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q119",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0002",
+      "symptoms": {
+        "wrong": 2
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 3,
+      "consolidation": null,
+      "hash": "650fae55edfb",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 3,
+      "pass_rate": 0.0,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4d-b47b-724e-8537-da7f6af06d7a",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": {
+            "cause": null,
+            "message": "final reply was not JSON"
+          },
+          "lesson": "text2sql-strict",
+          "result": null,
+          "symptom": "error:not-json",
+          "task": "text2sql-strict/q92",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4d-b47c-7cd4-950a-f08888ee01c5",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT a.account_id\nFROM account a\nJOIN loan l ON a.account_id = l.account_id\nWHERE strftime('%Y', l.date) = '1997'\n  AND l.status = 'approved'\n  AND a.frequency = 'POPLATEK TYDNE'\n  AND l.amount = (\n    SELECT MIN(l2.amount)\n    FROM loan l2\n    JOIN account a2 ON l2.account_id = a2.account_id\n    WHERE strftime('%Y', l2.date) = '1997'\n      AND l2.status = 'approved'\n      AND a2.frequency = 'POPLATEK TYDNE'\n  );",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q98",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0003",
+      "symptoms": {
+        "error:not-json": 1,
+        "wrong": 1
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 4,
+      "consolidation": null,
+      "hash": "663520c4825d",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 4,
+      "pass_rate": 0.0,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4e-7de9-7474-b893-34cb8b519825",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT COUNT(*) FROM loan l JOIN account a ON l.account_id = a.account_id WHERE l.date BETWEEN '1995-01-01' AND '1997-12-31' AND l.amount >= 250000 AND a.frequency = 'POPLATEK MESICNE' AND l.status = 'SCHVALENO';",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q136",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4e-7de9-7a74-b623-91e1da83242d",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\"",
+            "sqlite3 financial.sqlite \"SELECT DISTINCT type FROM disp;\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT COUNT(DISTINCT a.account_id) FROM account a JOIN district d ON a.district_id = d.district_id JOIN disp p ON p.account_id = a.account_id WHERE p.type = 'POPLATEK PO OBRATU' AND d.A3 = 'East Bohemia';",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q89",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0004",
+      "symptoms": {
+        "wrong": 2
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 5,
+      "consolidation": null,
+      "hash": "40394a44d5e5",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 5,
+      "pass_rate": 0.5,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.5,
+        "transfer": null,
+        "turns": 0.5
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4e-fb64-7841-8b8c-bd11d0df3e48",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT (SUM(CASE WHEN status = 'A' THEN amount ELSE 0 END) * 100.0) / SUM(amount) AS percentage FROM loan;",
+          "symptom": "pass",
+          "task": "text2sql-strict/q117",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c4e-fb64-7d86-a92a-b4099a3ed720",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": {
+            "cause": null,
+            "message": "final reply was not JSON"
+          },
+          "lesson": "text2sql-strict",
+          "result": null,
+          "symptom": "error:not-json",
+          "task": "text2sql-strict/q118",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0005",
+      "symptoms": {
+        "error:not-json": 1,
+        "pass": 1
+      },
+      "work_shape": []
+    }
+  ],
+  "records": [],
+  "roster": {
+    "adjudicator": "deepseek-ai/DeepSeek-V4-Pro",
+    "coder": "deepseek-ai/DeepSeek-V4-Pro",
+    "consolidator": "deepseek-ai/DeepSeek-V4-Pro",
+    "examiner": "deepseek-ai/DeepSeek-V4-Pro",
+    "pass": "openai/gpt-oss-120b",
+    "reauthor": "deepseek-ai/DeepSeek-V4-Pro"
+  },
+  "stream": {
+    "batch": 2,
+    "batches": 5,
+    "families": [
+      "text2sql-strict"
+    ],
+    "faults": {
+      "http_budget": null,
+      "http_fault_calls": 1,
+      "http_fault_fraction": 0.0,
+      "shell_output_limit": null
+    },
+    "revisit": [
+      1,
+      2
+    ],
+    "seed": 0
+  },
+  "warning": null
+}

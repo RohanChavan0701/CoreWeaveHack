@@ -1,0 +1,1505 @@
+{
+  "arm": "120b-strict",
+  "experiment": "text2sql",
+  "lessons": {
+    "text2sql-strict": {
+      "first_mention_pass": null,
+      "first_sight": [
+        1,
+        10
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        10
+      ],
+      "quality": {
+        "economy": 0.1,
+        "transfer": null,
+        "turns": 0.1
+      },
+      "revisit": [
+        [
+          1,
+          2,
+          2
+        ],
+        [
+          2,
+          0,
+          2
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "WW",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 1,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 2,
+          "grid": "WW",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 2,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 3,
+          "grid": "EW",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 3,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 4,
+          "grid": "WW",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 4,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 5,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 1,
+          "grid": "\u2713\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 2,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 2,
+          "grid": "WW",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 7,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        }
+      ],
+      "tier": null
+    }
+  },
+  "mode": "attached",
+  "model": "openai/gpt-oss-120b",
+  "passes": [
+    {
+      "batch": 1,
+      "consolidation": {
+        "admitted": [],
+        "anchoring": {
+          "anchored to H-0001": 1,
+          "anchored to S-0001": 1,
+          "anchored to weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c1c-932b-7629-9be1-6415ba181a8b": 1,
+          "moot: not anchored": 4
+        },
+        "dismissed": [],
+        "expired": [],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0003",
+              "O-0004"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "other(no actions applied)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0002"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "schema-coded-value"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0001"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "tool-budget"
+            ]
+          }
+        ],
+        "groups_at_bar": 0,
+        "id": "K-0001",
+        "nominations": [
+          {
+            "outcome": "refused by the floor: 1 distinct session(s) in the evidence (S-0001) against the bar 2; the adjudicator's decline(insufficient independence) was overridden: a decline stands only on an upheld premise kill",
+            "rung": "hook-edit",
+            "subject": "tool-budget"
+          },
+          {
+            "outcome": "refused by the floor: 1 distinct session(s) in the evidence (S-0001) against the bar 2; the adjudicator's decline(independence floor not met: N=1 against the bar 2) was overridden: a decline stands only on an upheld premise kill",
+            "rung": "new-decision",
+            "subject": "schema-coded-value"
+          },
+          {
+            "outcome": "refused by the floor: 1 distinct session(s) in the evidence (S-0001) against the bar 2; the adjudicator's decline(independence floor not met: 1 distinct session against the bar 2) was overridden: a decline stands only on an upheld premise kill",
+            "rung": "new-decision",
+            "subject": "no-actions-applied"
+          }
+        ],
+        "outcomes": {
+          "refused by the floor: 1 distinct session": 3
+        },
+        "retired": []
+      },
+      "hash": "e0c4cbbd41b9",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0001",
+          "noticed": "In task text2sql\u2011strict/q99 the pass made two shell calls, violating the one\u2011call budget; the correct behavior would have been a single call that returned the query.",
+          "shape": [
+            "tool-budget"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0002",
+          "noticed": "The attempt queried with birth_date = '1976/1/29', which does not match the database's ISO date format and thus would have succeeded with '1976-01-29'.",
+          "shape": [
+            "schema-coded-value"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0003",
+          "noticed": "Task text2sql\u2011strict/q99 failed with no applied actions.",
+          "shape": [
+            "other(no actions applied)"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0004",
+          "noticed": "Task text2sql\u2011strict/q112 failed with no applied actions.",
+          "shape": [
+            "other(no actions applied)"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 1,
+      "pass_rate": 0.0,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c1c-932b-7629-9be1-6415ba181a8b",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\"",
+            "sqlite3 financial.sqlite \"SELECT DISTINCT status FROM loan LIMIT 10;\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT a.account_id\nFROM account a\nJOIN loan l ON a.account_id = l.account_id\nWHERE a.date LIKE '1993-%'\n  AND l.duration > 12\n  AND l.status = 'approved'\n  AND l.amount = (\n    SELECT MAX(l2.amount)\n    FROM loan l2\n    JOIN account a2 ON l2.account_id = a2.account_id\n    WHERE a2.date LIKE '1993-%'\n      AND l2.duration > 12\n      AND l2.status = 'approved'\n  );",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q99",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c1c-9329-7a89-8b6a-d443208dcb87",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT d.A2 FROM client c JOIN disp dp ON dp.client_id = c.client_id JOIN account a ON a.account_id = dp.account_id JOIN district d ON d.district_id = a.district_id WHERE c.gender = 'F' AND c.birth_date = '1976/1/29';",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q112",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0001",
+      "symptoms": {
+        "wrong": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 2,
+      "consolidation": {
+        "admitted": [],
+        "anchoring": {
+          "anchored to weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c1c-932b-7629-9be1-6415ba181a8b": 2,
+          "moot: not anchored": 2
+        },
+        "dismissed": [],
+        "expired": [],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0005"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "other(aggregate instead of row-returning SELECT)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0007",
+              "O-0008"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "other(no applicable rule)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0003",
+              "O-0004"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "other(no applied actions)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0002"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "schema-coded-value"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0001",
+              "O-0006"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ],
+            "shape": [
+              "tool-budget"
+            ]
+          }
+        ],
+        "groups_at_bar": 1,
+        "id": "K-0002",
+        "nominations": [
+          {
+            "outcome": "refused by the floor: 1 distinct session(s) in the evidence (S-0002) against the bar 2; the adjudicator's decline(insufficient independence) was overridden: a decline stands only on an upheld premise kill",
+            "rung": "new-decision",
+            "subject": "tool-budget"
+          }
+        ],
+        "outcomes": {
+          "refused by the floor: 1 distinct session": 1
+        },
+        "retired": []
+      },
+      "hash": "307934816fa5",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0005",
+          "noticed": "In task text2sql-strict/q93, the first attempt generated a COUNT(*) query, but the convention requires a SELECT statement that returns rows, not an aggregate.",
+          "shape": [
+            "output-schema"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0006",
+          "noticed": "In task text2sql-strict/q119 the first attempt made two shell calls, exceeding the allowed budget of 1, so it failed the budget rule.",
+          "shape": [
+            "tool-budget"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0007",
+          "noticed": "Task text2sql\u2011strict/q93 failed with no applicable rule.",
+          "shape": [
+            "other(no applicable rule)"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0008",
+          "noticed": "Task text2sql\u2011strict/q119 failed with no applicable rule.",
+          "shape": [
+            "other(no applicable rule)"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 2,
+      "pass_rate": 0.0,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c1f-a3c3-70a9-88ce-f9985da98b58",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT COUNT(*) FROM client c JOIN district d ON c.district_id = d.district_id WHERE c.gender = 'M' AND d.A3 = 'North Bohemia' AND d.A11 > 8000;",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q93",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c1f-a3c2-79aa-9633-faf773b904c2",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\"",
+            "sqlite3 financial.sqlite \"SELECT DISTINCT type FROM card;\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT a.account_id, d.A2 AS district_name, d.A3 AS district_region\nFROM account a\nJOIN district d ON a.district_id = d.district_id\nJOIN card c ON a.account_id = c.account_id\nWHERE strftime('%Y', a.date) = '1993'\n  AND c.type = 'POPLATEK PO OBRATU'\n  AND EXISTS (SELECT 1 FROM trans t WHERE t.account_id = a.account_id AND t.date < c.issued);",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q119",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0002",
+      "symptoms": {
+        "wrong": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 3,
+      "consolidation": {
+        "admitted": [
+          "D-0001"
+        ],
+        "anchoring": {
+          "anchored to weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c1c-932b-7629-9be1-6415ba181a8b": 1,
+          "moot: not anchored": 1
+        },
+        "dismissed": [],
+        "expired": [],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0005"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "other(aggregate instead of row-returning SELECT)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0011"
+            ],
+            "sessions": [
+              "S-0003"
+            ],
+            "shape": [
+              "other(final reply not JSON)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0010"
+            ],
+            "sessions": [
+              "S-0003"
+            ],
+            "shape": [
+              "other(missing trailing semicolon)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0003",
+              "O-0004"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "other(no actions applied)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0007",
+              "O-0008"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "other(no applicable rule)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0012"
+            ],
+            "sessions": [
+              "S-0003"
+            ],
+            "shape": [
+              "other(no rule covered the work)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0009"
+            ],
+            "sessions": [
+              "S-0003"
+            ],
+            "shape": [
+              "other(schema inspection instead of SQL query)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0002"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "schema-coded-value"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0001",
+              "O-0006"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ],
+            "shape": [
+              "tool-budget"
+            ]
+          }
+        ],
+        "groups_at_bar": 1,
+        "id": "K-0003",
+        "nominations": [
+          {
+            "outcome": "refused by the floor: 1 distinct session(s) in the evidence (S-0003) against the bar 2; the adjudicator's decline(insufficient independence) was overridden: a decline stands only on an upheld premise kill",
+            "rung": "hook-edit",
+            "subject": "output-schema"
+          },
+          {
+            "outcome": "admitted D-0001",
+            "rung": "new-decision",
+            "subject": "tool-budget"
+          },
+          {
+            "outcome": "draft refused at parse: a hook-edit supersedes exactly one record; got []",
+            "rung": "hook-edit",
+            "subject": "schema-coded-value"
+          },
+          {
+            "outcome": "decline(escapes name a shape already covered by registered terms: the blind coder's escape 'other(multiple questions in one prompt)' matches the existing term 'task-planning', and the escape 'other(presentation)' is too vague to distinguish from 'output-schema' or 'schema-coded-value')",
+            "rung": "hook-edit",
+            "subject": "work-shape/presentation"
+          }
+        ],
+        "outcomes": {
+          "admitted D-0001": 1,
+          "decline": 1,
+          "draft refused at parse: a hook-edit supersedes exactly one record; got []": 1,
+          "refused by the floor: 1 distinct session": 1
+        },
+        "retired": []
+      },
+      "hash": "650fae55edfb",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0009",
+          "noticed": "In task text2sql-strict/q92, the initial attempt ran a schema inspection command rather than providing the required SELECT query, violating the convention that the answer must be the SQL statement itself.",
+          "shape": [
+            "output-schema"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0010",
+          "noticed": "In task text2sql-strict/q98 the attempt produced a SQL query without a trailing semicolon, violating the convention that queries must end with a semicolon.",
+          "shape": [
+            "other(missing trailing semicolon)"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0011",
+          "noticed": "Task text2sql\u2011strict/q92 failed with error: final reply was not JSON.",
+          "shape": [
+            "other(non-JSON reply)"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0012",
+          "noticed": "Task text2sql\u2011strict/q98 ran but the pass still failed because no rule covered this work.",
+          "shape": [
+            "other(no rule covered the work)"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 3,
+      "pass_rate": 0.0,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c22-4d31-7da3-9019-07b8de3c97d2",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": {
+            "cause": null,
+            "message": "final reply was not JSON"
+          },
+          "lesson": "text2sql-strict",
+          "result": null,
+          "symptom": "error:not-json",
+          "task": "text2sql-strict/q92",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c22-4d31-7a05-be55-495391984d8f",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT a.account_id FROM account a JOIN loan l ON a.account_id = l.account_id WHERE strftime('%Y', l.date) = '1997' AND l.status = 'approved' AND a.frequency = 'TYDNE' AND l.amount = (SELECT MIN(l2.amount) FROM loan l2 JOIN account a2 ON l2.account_id = a2.account_id WHERE strftime('%Y', l2.date) = '1997' AND l2.status = 'approved' AND a2.frequency = 'TYDNE');",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q98",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0003",
+      "symptoms": {
+        "error:not-json": 1,
+        "wrong": 1
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 4,
+      "consolidation": {
+        "admitted": [
+          "D-0002"
+        ],
+        "anchoring": {
+          "anchored to H-0019": 1
+        },
+        "dismissed": [],
+        "expired": [],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0003",
+              "O-0004",
+              "O-0007",
+              "O-0008",
+              "O-0011",
+              "O-0012"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002",
+              "S-0003"
+            ],
+            "shape": [
+              "other(no convention identified)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0010"
+            ],
+            "sessions": [
+              "S-0003"
+            ],
+            "shape": [
+              "other(query must end with semicolon)"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0005",
+              "O-0009"
+            ],
+            "sessions": [
+              "S-0002",
+              "S-0003"
+            ],
+            "shape": [
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0013"
+            ],
+            "sessions": [
+              "S-0004"
+            ],
+            "shape": [
+              "output-schema",
+              "tool-budget"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0002"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "schema-coded-value"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0014",
+              "O-0015",
+              "O-0016"
+            ],
+            "sessions": [
+              "S-0004"
+            ],
+            "shape": [
+              "tool-budget"
+            ]
+          }
+        ],
+        "groups_at_bar": 2,
+        "id": "K-0004",
+        "nominations": [
+          {
+            "outcome": "admitted D-0002",
+            "rung": "new-decision",
+            "subject": "output-schema"
+          },
+          {
+            "outcome": "refused by the floor: 1 distinct session(s) in the evidence (S-0001) against the bar 2; the adjudicator's decline(warrant:independence landed: the anchored observations come from 1 distinct session (S-0001) against the bar of 2; the floor refuses this draft whatever the verdict) was overridden: a decline stands only on an upheld premise kill",
+            "rung": "new-decision",
+            "subject": "schema-coded-value"
+          },
+          {
+            "outcome": "refused by the floor: 1 distinct session(s) in the evidence (S-0003) against the bar 2; the adjudicator's decline(warrant:independence landed: the draft's evidence (O-0010) comes from a single session (S-0003), below the bar of 2 distinct sessions, so the floor refuses it.) was overridden: a decline stands only on an upheld premise kill",
+            "rung": "new-decision",
+            "subject": "semicolon-termination"
+          },
+          {
+            "outcome": "refused by the floor: 1 distinct session(s) in the evidence (S-0004) against the bar 2; the adjudicator's decline(warrant:independence landed: the evidence shows 1 distinct session (S-0004) against the bar of 2, so the floor refuses the draft) was overridden: a decline stands only on an upheld premise kill",
+            "rung": "hook-edit",
+            "subject": "tool-budget-recall"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0001"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0002"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0003"
+          },
+          {
+            "outcome": "still-holds: kept",
+            "rung": "counterfactual-edit",
+            "subject": "L-0009"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0010"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0006"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0007"
+          },
+          {
+            "outcome": "decline(escapes name a shape already covered by registered terms: 'prompt' is a partition of 'task-planning' and 'tool-call-retry', not a missing peer; the blind coder found a registered term, keeping the boundary open)",
+            "rung": "hook-edit",
+            "subject": "work-shape/prompt"
+          },
+          {
+            "outcome": "minted work-shape/task",
+            "rung": "hook-edit",
+            "subject": "work-shape/task"
+          }
+        ],
+        "outcomes": {
+          "admitted D-0002": 1,
+          "decline": 1,
+          "minted work-shape/task": 1,
+          "moot: retired through the genesis-deadline door": 6,
+          "refused by the floor: 1 distinct session": 3,
+          "still-holds: kept": 1
+        },
+        "retired": [
+          "L-0001",
+          "L-0002",
+          "L-0003",
+          "L-0010",
+          "L-0006",
+          "L-0007"
+        ]
+      },
+      "hash": "663520c4825d",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0013",
+          "noticed": "In task text2sql-strict/q89, the first attempt made two shell calls, exceeding the budget of 1, and returned a COUNT query rather than the required SELECT statement, violating the single\u2011call and query\u2011format conventions.",
+          "shape": [
+            "output-schema",
+            "tool-budget"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0014",
+          "noticed": "In task text2sql-strict/q136 the attempt made two shell calls, violating the budget of 1; the second call was refused, so the query was not checked against the reference.",
+          "shape": [
+            "tool-budget"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0015",
+          "noticed": "Task text2sql\u2011strict/q89 failed with a budget\u2011exceeded shell call error.",
+          "shape": [
+            "tool-budget"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0016",
+          "noticed": "Task text2sql\u2011strict/q136 failed with a budget\u2011exceeded shell call error.",
+          "shape": [
+            "tool-budget"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 4,
+      "pass_rate": 0.0,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c26-3ff7-747b-b6f1-067243bc1d60",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\"",
+            "sqlite3 financial.sqlite \"SELECT DISTINCT frequency FROM account;\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT COUNT(*) FROM account a JOIN district d ON a.district_id = d.district_id WHERE a.frequency = 'POPLATEK PO OBRATU' AND d.A3 = 'East Bohemia';",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q89",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c26-3ff5-7587-a655-3b48c1b4b037",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\"",
+            "sqlite3 financial.sqlite \"SELECT DISTINCT status FROM loan\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT COUNT(*) FROM loan l JOIN account a ON l.account_id = a.account_id WHERE a.frequency = 'POPLATEK MESICNE' AND l.status = 'APPROVED' AND l.amount >= 250000 AND l.date BETWEEN '1995-01-01' AND '1997-12-31';",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q136",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0004",
+      "symptoms": {
+        "wrong": 2
+      },
+      "work_shape": [
+        "shell-tool"
+      ]
+    },
+    {
+      "batch": 5,
+      "consolidation": {
+        "admitted": [],
+        "anchoring": {},
+        "dismissed": [],
+        "expired": [
+          "01a09c27-c2b6-70c0-b50c-a18a4d76639a"
+        ],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0010"
+            ],
+            "sessions": [
+              "S-0003"
+            ],
+            "shape": [
+              "other(missing trailing semicolon)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0003",
+              "O-0004"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "other(no actions applied)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0007",
+              "O-0008"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "other(no applicable rule)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0012"
+            ],
+            "sessions": [
+              "S-0003"
+            ],
+            "shape": [
+              "other(no rule covered the work)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0017"
+            ],
+            "sessions": [
+              "S-0005"
+            ],
+            "shape": [
+              "other(non-JSON reply and missing SELECT statement)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0011"
+            ],
+            "sessions": [
+              "S-0003"
+            ],
+            "shape": [
+              "other(non-JSON reply)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0002"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "schema-coded-value"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0014",
+              "O-0015",
+              "O-0016"
+            ],
+            "sessions": [
+              "S-0004"
+            ],
+            "shape": [
+              "tool-budget"
+            ]
+          }
+        ],
+        "groups_at_bar": 0,
+        "id": "K-0005",
+        "nominations": [
+          {
+            "outcome": "draft refused at parse: sketch: a drafting reply carries a `sketch` object",
+            "rung": "new-decision",
+            "subject": "none"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0009"
+          }
+        ],
+        "outcomes": {
+          "draft refused at parse: sketch: a drafting reply carries a `sketch` object": 1,
+          "moot: retired through the genesis-deadline door": 1
+        },
+        "retired": [
+          "L-0009"
+        ]
+      },
+      "hash": "40394a44d5e5",
+      "in_context": [
+        "D-0001",
+        "D-0002"
+      ],
+      "kind": "stream",
+      "mentions": {
+        "csv-quoted": [
+          "D-0002"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0017",
+          "noticed": "The first attempt tried to inspect the database schema via a shell call and produced a non\u2011JSON reply, missing the required SELECT statement for the task.",
+          "shape": [
+            "other(non-JSON reply and missing SELECT statement)"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 5,
+      "pass_rate": 0.5,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.5,
+        "transfer": null,
+        "turns": 0.5
+      },
+      "rows": [
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c29-5dd0-7f2b-a7ab-6ee2fe1bc4d6",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT (SUM(CASE WHEN status = 'A' THEN amount ELSE 0 END) * 100.0) / SUM(amount) AS percentage FROM loan;",
+          "symptom": "pass",
+          "task": "text2sql-strict/q117",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c29-5dd0-710f-b389-f06c01f47181",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": {
+            "cause": null,
+            "message": "final reply was not JSON"
+          },
+          "lesson": "text2sql-strict",
+          "result": null,
+          "symptom": "error:not-json",
+          "task": "text2sql-strict/q118",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0005",
+      "symptoms": {
+        "error:not-json": 1,
+        "pass": 1
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "e0c4cbbd41b9",
+      "in_context": [
+        "D-0001",
+        "D-0002"
+      ],
+      "kind": "revisit",
+      "mentions": {
+        "csv-quoted": [
+          "D-0002"
+        ]
+      },
+      "observations": [],
+      "pass": 6,
+      "pass_rate": 1.0,
+      "proposals": 0,
+      "quality": {
+        "economy": 1.0,
+        "transfer": null,
+        "turns": 1.0
+      },
+      "rows": [
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c2b-0cf1-7ce2-a1d0-ff96caf07a8e",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT a.account_id FROM account a JOIN loan l ON a.account_id = l.account_id WHERE a.date LIKE '1993-%' AND l.duration > 12 AND l.amount = (SELECT MAX(l2.amount) FROM loan l2 JOIN account a2 ON l2.account_id = a2.account_id WHERE a2.date LIKE '1993-%' AND l2.duration > 12);",
+          "symptom": "pass",
+          "task": "text2sql-strict/q99",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c2b-0cf0-73fb-ac28-a178ae4ab68c",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT d.A2 FROM client c JOIN disp dp ON c.client_id = dp.client_id JOIN account a ON dp.account_id = a.account_id JOIN district d ON a.district_id = d.district_id WHERE c.gender = 'F' AND c.birth_date = '1976-01-29';",
+          "symptom": "pass",
+          "task": "text2sql-strict/q112",
+          "transfer": null,
+          "turns": 1.0
+        }
+      ],
+      "session": "S-0006",
+      "symptoms": {
+        "pass": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 2,
+      "consolidation": null,
+      "hash": "307934816fa5",
+      "in_context": [
+        "D-0001",
+        "D-0002"
+      ],
+      "kind": "revisit",
+      "mentions": {
+        "csv-quoted": [
+          "D-0002"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0018",
+          "noticed": "In task text2sql\u2011strict/q119 the attempt generated a SELECT with unnecessary joins, breaching the rule that the final answer must be a plain SELECT returning rows.",
+          "shape": [],
+          "state": "open"
+        }
+      ],
+      "pass": 7,
+      "pass_rate": 0.0,
+      "proposals": 1,
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "rows": [
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c2c-3bd0-75dc-bd95-e7417b279213",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT COUNT(*) FROM client JOIN district USING (district_id) WHERE gender = 'M' AND A3 = 'North Bohemia' AND A11 > 8000;",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q93",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09c2c-3bcf-7898-b499-3a864a1795ae",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "sqlite3 financial.sqlite \".schema\""
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "text2sql-strict",
+          "result": "SELECT a.account_id, d.A2 AS district_name, d.A3 AS district_region\nFROM account a\nJOIN district d ON a.district_id = d.district_id\nJOIN disp dp ON dp.account_id = a.account_id\nJOIN card c ON c.disp_id = dp.disp_id\nJOIN trans t ON t.account_id = a.account_id\nWHERE strftime('%Y', a.date) = '1993'\n  AND c.issued > t.date;",
+          "symptom": "wrong",
+          "task": "text2sql-strict/q119",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0007",
+      "symptoms": {
+        "wrong": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "tool-budget"
+      ]
+    }
+  ],
+  "records": [
+    {
+      "admitted_after_pass": 3,
+      "decision": "Every pass must respect the tool-call budget. If a pass makes more tool calls than the budget allows, the system must abort the pass and report the budget violation.",
+      "hook": [
+        "tool-budget"
+      ],
+      "id": "D-0001",
+      "mentions": [],
+      "status": null
+    },
+    {
+      "admitted_after_pass": 4,
+      "decision": "When generating SQL, the final answer must be a SELECT statement that returns rows, not an aggregate function, a schema inspection command, or any other non-SELECT output.",
+      "hook": [
+        "output-schema",
+        "file-tool",
+        "shell-tool",
+        "tool-budget"
+      ],
+      "id": "D-0002",
+      "mentions": [
+        "csv-quoted"
+      ],
+      "status": null
+    }
+  ],
+  "roster": {
+    "adjudicator": "deepseek-ai/DeepSeek-V4-Pro",
+    "coder": "deepseek-ai/DeepSeek-V4-Pro",
+    "consolidator": "deepseek-ai/DeepSeek-V4-Pro",
+    "examiner": "deepseek-ai/DeepSeek-V4-Pro",
+    "pass": "openai/gpt-oss-120b",
+    "reauthor": "deepseek-ai/DeepSeek-V4-Pro"
+  },
+  "stream": {
+    "batch": 2,
+    "batches": 5,
+    "families": [
+      "text2sql-strict"
+    ],
+    "faults": {
+      "http_budget": null,
+      "http_fault_calls": 1,
+      "http_fault_fraction": 0.0,
+      "shell_output_limit": null
+    },
+    "revisit": [
+      1,
+      2
+    ],
+    "seed": 0
+  },
+  "warning": null
+}

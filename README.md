@@ -656,6 +656,66 @@ the row met, the malformed assistant turn replayed with arguments the
 endpoint accepts. The rerun that would show whether any of them changes
 this table has not been run. Every count here is a floor from one run.
 
+### The text-to-SQL stream on `openai/gpt-oss-120b` and `gpt-oss-20b`, taught by `deepseek-ai/DeepSeek-V4-Pro`
+
+`experiments/text2sql.toml`, run on 2026-09-13 over W&B Inference: the ten
+graded `text2sql` questions and the six `text2sql-holdout` ones — sixteen
+BIRD `financial` questions over one pinned SQLite database — dealt by seed 0
+into eight batches of two, one of each group per batch, a consolidation
+every two batches, batches 1 and 2 met again after the stream; the strict
+pool is the ten graded questions alone at one shell call, five batches of
+two consolidated every pass. The roles are split: the forward pass runs on
+the actor and every other role — consolidator, examiner, adjudicator, blind
+coder, re-author — on `deepseek-ai/DeepSeek-V4-Pro`. `gpt-oss-120b` runs
+attached, detached and on both strict arms; `gpt-oss-20b` attached under
+the same teacher. The two `*-seeded` arms have not run. The logs are derived
+from the arm stores (`experiments/results/text2sql/`), traced to
+[`slavazinevich-worldvue/hgi-experiments`](https://wandb.ai/slavazinevich-worldvue/hgi-experiments/weave).
+
+First sight per batch, every arm on the same two questions:
+
+| batch | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | stream |
+|---|---|---|---|---|---|---|---|---|---|
+| 120b attached | 0.50 | 0.50 | 0.00 | 0.00 | 0.50 | 1.00 | 0.00 | 0.50 | 0.38 |
+| 120b detached | 0.50 | 0.50 | 0.00 | 0.00 | 0.50 | 1.00 | 0.00 | 0.00 | 0.31 |
+| 20b attached | 1.00 | 0.00 | 0.00 | 0.50 | 0.50 | 1.00 | 0.00 | 0.00 | 0.38 |
+| 120b strict | 0.00 | 0.00 | 0.00 | 0.00 | 0.50 | | | | 0.10 |
+| 120b strict detached | 0.50 | 0.00 | 0.00 | 0.00 | 0.50 | | | | 0.20 |
+| in context, 120b attached | — | — | — | — | — | — | D-0002 | D-0002 | |
+| consolidation after, 120b attached | | K-0001: nothing | | K-0002: D-0001 | | K-0003: D-0002 D-0003 D-0004 | | K-0004: D-0005 D-0006 D-0007 | |
+
+The attached and detached `gpt-oss-120b` arms score the same on seven of
+the eight batches and differ by one row on the eighth; the strict pool's
+rise to 0.50 on batch 5 is matched by its ablation. Per group the attached
+arm is 4/10 on the graded questions and 2/6 on the holdout, the detached
+3/10 and 2/6. Revisits: the 120b attached arm met batch 1 again at 0.50
+(0.50 at first sight) and batch 2 at 0.00 (0.50) with four records in
+context; the strict arm met batch 1 at 1.00 (0.00) and batch 2 at 0.00
+(0.00) with both its records in context; the 20b arm reproduced its
+first-sight scores on both.
+
+What the store holds decides the run where the curve cannot. The failed
+queries carry the family's conventions — `status = 'approved'` where the
+code is `'A'`, on three strict-arm rows; `frequency = 'TYDNE'` for
+`'POPLATEK TYDNE'`; a date column read from the wrong table — beside genuine
+logic misses and three rows where the actor dumped the schema and returned
+no answer. The seven decisions the 120b arm admitted name none of these.
+Three are copies of the other three with the latch widened onto the tool
+terms every task presents. The four live ones say the output must conform
+to the schema, the SQL must translate the requirements correctly, and the
+pass must consult the store's rules before executing — the last built on
+seven observations that are the actor's answers to a close lens about which
+record should have fired, filed as facts of the world. The strict arm's
+second decision — the answer must be a row-returning `SELECT`, not an
+aggregate — misreads three `COUNT(*)` questions that failed on the coded
+status, and was in context when one of them failed again. The seeded
+`schema-coded-value` term was never used; the blind coder read every miss
+as `output-schema` or `shell-tool`. The 20b arm's three decisions say the
+query must match the requested aggregation and qualify its columns. The
+stronger teacher parsed on every request and wrote the same generic drafts
+as `gpt-oss-120b` does, so what the run measures is the request, not the
+model (carry-forward items 48–52).
+
 ### The incidents pool on `openai/gpt-oss-120b` and `gpt-oss-20b`
 
 `experiments/incidents.toml`, run on 2026-09-13 over W&B Inference and traced
