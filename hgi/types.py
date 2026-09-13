@@ -540,6 +540,10 @@ class AttackClaim(Strict):
     reading_taken: bool
     landed: bool
     evidence: list[str] = Field(default_factory=list)
+    lens: str | None = None
+    """The examiner lens whose angle produced the claim — one angle per context (the fan law); ``None`` for a single-context attack."""
+    call: str | None = None
+    """That context's Weave call URI, so each angle's product is joinable to its own trace."""
 
 
 class Attack(Strict):
@@ -680,6 +684,10 @@ class Lens(Strict):
     product: str
     consumer: str
     host: Term("lens-host")
+    claims: list[str] = Field(default_factory=list)
+    """For an examiner-hosted lens: the attack-claim target classes its angle may land on, as prefixes (``premise:``,
+    ``warrant:independence``). A claim outside them is another angle's product and is dropped — a distinct product per
+    angle is what makes the fan an ensemble rather than a longer prompt."""
     priced_for: Priced = Field(default_factory=Priced)
     telemetry: LensTelemetry = Field(default_factory=LensTelemetry)
 

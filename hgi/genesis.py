@@ -190,6 +190,27 @@ LENSES = [
      "externality": {"contact": "artifact", "terminates_in": "the trace: a call URI per finding"},
      "product": "for the failed task in the subject, at most one {noticed, anchor, recheck_when}: `noticed` names the task, what its first attempt did, and what would have passed — the convention of this world it missed — in one or two sentences; `anchor` is {call: the row's call URI, path: null}; `recheck_when` says when to look for the same miss again; empty when the failure was not the pass's to avoid",
      "consumer": "the observation ledger; the backward pass"},
+    # the examiner fan: the attack's angles, one context each (the fan law), hosted where independence is structural (the host law)
+    {"id": "L-0005", "host": "examiner", "purpose": "adjudicative", "claims": ["warrant:independence"],
+     "angle": "Do the draft's anchored observations come from independent passes, or is one context counted twice? Read the sessions the evidence names and land `warrant:independence` when they are fewer than the bar.",
+     "counterfactual": "The overshoot: landing independence on every draft whose observations share a task — independence is by session, never by task; two passes meeting the same fault are the recurrence the bar asks for.",
+     "externality": {"contact": "record", "terminates_in": "the observations' session ids, as the evidence lists them"},
+     "product": "claims on `warrant:independence`, each naming the sessions read", "consumer": "the adjudicator"},
+    {"id": "L-0006", "host": "examiner", "purpose": "adjudicative", "claims": ["premise:"],
+     "angle": "For each premise of the warrant: what reading of the oracle's evidence would show it false — and taken, did it? The premise kill is the highest-value attack; land `premise:<id>` only on a reading you took.",
+     "counterfactual": "The overshoot: killing a premise from what the evidence does not show — a series with no evaluable value is `unevaluable`, never a refutation; a kill needs a reading that came back false.",
+     "externality": {"contact": "oracle", "terminates_in": "the fault rate, the series and the scores in the evidence"},
+     "product": "one claim per premise, `premise:<id>`, its refutation the premise's own falsifier read against the evidence", "consumer": "the adjudicator"},
+    {"id": "L-0007", "host": "examiner", "purpose": "adjudicative", "claims": ["payload:"],
+     "angle": "Does the payload name the transferable shape, or an instance — a task id, a file name, a path, a single tool's failure? Land `payload:abstraction` on a copied instance; promotion raises abstraction.",
+     "counterfactual": "The overshoot: reading every concrete noun as an instance — a payload about the HTTP tool may name HTTP; what it may not name is the one task or file it was seen in.",
+     "externality": {"contact": "record", "terminates_in": "the payload text against the task ids in the evidence"},
+     "product": "a claim on `payload:abstraction`", "consumer": "the adjudicator"},
+    {"id": "L-0008", "host": "examiner", "purpose": "adjudicative", "claims": ["warrant:watch-direction"],
+     "angle": "Does the revisit watch fire on the failure the stakes name — a low score on a higher-is-better scorer — or on success? A predicate a passing score satisfies and a failing score does not (`task_pass_rate == 1.0`, `>= 0.9`) fires when the record works and stays silent when it regresses: land `warrant:watch-direction`.",
+     "counterfactual": "The overshoot: landing on a watch a failing score also satisfies (`!= 1.0`, `>= 0.0`) — it fires on the regression too, so it still returns the loop to the record.",
+     "externality": {"contact": "oracle", "terminates_in": "the watch predicate against the scorers' convention: success rates in [0, 1], 1.0 ideal"},
+     "product": "a claim on `warrant:watch-direction`, its evidence the predicate", "consumer": "the adjudicator"},
 ]
 
 

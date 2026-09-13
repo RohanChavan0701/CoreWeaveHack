@@ -144,8 +144,13 @@ def _draft(store: Store, args) -> tuple[Draft, dict[str, Any]]:
 
 @builder("attack")
 def _attack(store, args):
+    """One angle of the examiner fan: ``--lens`` names the examiner lens (default the first registered); a register with no
+    examiner lens builds the single-context attack."""
     draft, brief = _draft(store, args)
-    return "examiner", roles.request("attack", draft=draft.model_dump(by_alias=True, mode="json"), evidence=_consolidate.evidence_pack(store, draft, brief))
+    lenses = store.registry.lenses("examiner")
+    lens = next((l for l in lenses if l.id == args.lens), lenses[0] if lenses else None)
+    named = {"lens": {"id": lens.id, "angle": lens.angle, "counterfactual": lens.counterfactual, "claims": lens.claims, "product": lens.product}} if lens else {}
+    return "examiner", roles.request("attack", **named, draft=draft.model_dump(by_alias=True, mode="json"), evidence=_consolidate.evidence_pack(store, draft, brief))
 
 
 @builder("verdict")
@@ -257,7 +262,7 @@ def register(add, store_of, finish) -> None:
     p.add_argument("action", choices=["try", "pricing"])
     p.add_argument("request", nargs="?", help=f"for `try`: one of {sorted(BUILDERS)}")
     p.add_argument("--session", help="the session the request is built from (default: the latest evaluated attached one)")
-    p.add_argument("--lens", help="for `lens`: the lens id (default L-0004)")
+    p.add_argument("--lens", help="for `lens`: the lens id (default L-0004); for `attack`: the examiner lens whose angle is walked (default the first)")
     p.add_argument("--draft", help="for `attack` and `verdict`: a proposal uid in the store")
     p.add_argument("--out", help="a directory for the reply log")
     p.add_argument("--show", type=int, default=4000, help="characters of the raw reply to print")

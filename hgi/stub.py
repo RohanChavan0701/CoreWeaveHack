@@ -342,6 +342,9 @@ def _attack(req):
                        "refutation": "the revisit watch fires when the record succeeds; a revisit must fire on the failure or regression the stakes name, not on a passing score",
                        "reading_taken": True, "landed": wrong_way,
                        "evidence": [f"{watch['scorer']} {watch['comparator']} {watch['value']}"]})
+    lens = req.get("lens")
+    if lens:  # one angle per context: the stub answers the lens's claim classes and nothing else
+        claims = [c for c in claims if any(c["target"].startswith(prefix) for prefix in lens.get("claims", []))]
     return {"claims": claims}
 
 

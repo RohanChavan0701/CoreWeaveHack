@@ -36,6 +36,7 @@ from hgi import model as _model
 from hgi import reviews as _reviews
 from hgi import roles
 from hgi import tracing
+import suite as _suite
 from hgi.registry import route_table, term_head
 from hgi.store import Store, now
 from suite.scorers import SERIES
@@ -333,15 +334,34 @@ def evidence_pack(store: Store, draft: Draft, brief: dict[str, Any]) -> dict[str
     series = {watch: [sc.get(watch) for sc in brief["scores"].values()]} if watch else {}
     evaluation = next((s.evaluation.evaluation for s in store.all("session") if s.attached and s.evaluation), "suite-v1")  # type: ignore[attr-defined]
     return {"observation_sessions": sessions, "bar_independent": store.registry.bars["decision"]["independent_observations"],
-            "fault_rate": (len(faults) / rows) if rows else None, "task_ids": [row["task"] for row in []],
+            "fault_rate": (len(faults) / rows) if rows else None, "task_ids": [t.id for t in _suite.current().tasks],
             "series": series, "watch_scorer": watch, "scores": brief["scores"], "evaluation": evaluation}
 
 
 def attack(store: Store, record: Consolidation, draft: Draft, evidence: dict[str, Any]) -> tuple[dict[str, Any], _model.Completion]:
-    c = _model.complete("examiner", roles.request("attack", draft=draft.model_dump(by_alias=True, mode="json"), evidence=evidence), session=record.id)
-    out = c.json()
-    claims = [x for x in (out.get("claims", []) if isinstance(out, dict) else []) if isinstance(x, dict)]
-    return {"claims": claims, "verdict": "pending"}, c
+    """The examiner attacks the verbatim draft, one angle per context: each examiner-hosted lens is walked in a fresh call
+    and contributes the claims of its own class; the fan's product is their union, each claim naming the angle and the
+    call that produced it. A fan walked in one context is a longer prompt, not an ensemble (the fan law), and the
+    examiner is where tree-facing lenses live because its independence from the draft is structural (the host law).
+    A register with no examiner lens falls back to the single-context attack, which is the same product with no angles.
+    """
+    lenses = store.registry.lenses("examiner")
+    payload = dict(draft=draft.model_dump(by_alias=True, mode="json"), evidence=evidence)
+    if not lenses:
+        c = _model.complete("examiner", roles.request("attack", **payload), session=record.id)
+        out = c.json()
+        claims = [x for x in (out.get("claims", []) if isinstance(out, dict) else []) if isinstance(x, dict)]
+        return {"claims": claims, "verdict": "pending"}, c
+    claims, first = [], None
+    for lens in lenses:
+        c = _model.complete("examiner", roles.request("attack", lens={"id": lens.id, "angle": lens.angle, "counterfactual": lens.counterfactual,
+                                                                       "claims": lens.claims, "product": lens.product}, **payload), session=record.id)
+        first = first or c
+        out = c.json()
+        for x in (out.get("claims", []) if isinstance(out, dict) else []):
+            if isinstance(x, dict) and any(str(x.get("target", "")).startswith(prefix) for prefix in lens.claims):
+                claims.append({**x, "lens": lens.id, "call": c.call})
+    return {"claims": claims, "verdict": "pending"}, first  # type: ignore[return-value]
 
 
 def verdict(store: Store, record: Consolidation, draft: Draft, attack_payload: dict[str, Any], evidence: dict[str, Any]) -> tuple[str, dict[str, Any], _model.Completion]:

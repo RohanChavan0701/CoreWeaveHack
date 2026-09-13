@@ -86,5 +86,105 @@
       "decoy_rejection": "design-stage",
       "miss_stream": "steers/ citing this lens"
     }
+  },
+  {
+    "angle": "Do the draft's anchored observations come from independent passes, or is one context counted twice? Read the sessions the evidence names and land `warrant:independence` when they are fewer than the bar.",
+    "claims": [
+      "warrant:independence"
+    ],
+    "consumer": "the adjudicator",
+    "counterfactual": "The overshoot: landing independence on every draft whose observations share a task — independence is by session, never by task; two passes meeting the same fault are the recurrence the bar asks for.",
+    "externality": {
+      "contact": "record",
+      "terminates_in": "the observations' session ids, as the evidence lists them"
+    },
+    "host": "examiner",
+    "id": "L-0005",
+    "kind": "lens",
+    "priced_for": {
+      "model_id": "stub"
+    },
+    "product": "claims on `warrant:independence`, each naming the sessions read",
+    "purpose": "adjudicative",
+    "telemetry": {
+      "answer_variance": "design-stage",
+      "decoy_rejection": "design-stage",
+      "miss_stream": "steers/ citing this lens"
+    }
+  },
+  {
+    "angle": "For each premise of the warrant: what reading of the oracle's evidence would show it false — and taken, did it? The premise kill is the highest-value attack; land `premise:<id>` only on a reading you took.",
+    "claims": [
+      "premise:"
+    ],
+    "consumer": "the adjudicator",
+    "counterfactual": "The overshoot: killing a premise from what the evidence does not show — a series with no evaluable value is `unevaluable`, never a refutation; a kill needs a reading that came back false.",
+    "externality": {
+      "contact": "oracle",
+      "terminates_in": "the fault rate, the series and the scores in the evidence"
+    },
+    "host": "examiner",
+    "id": "L-0006",
+    "kind": "lens",
+    "priced_for": {
+      "model_id": "stub"
+    },
+    "product": "one claim per premise, `premise:<id>`, its refutation the premise's own falsifier read against the evidence",
+    "purpose": "adjudicative",
+    "telemetry": {
+      "answer_variance": "design-stage",
+      "decoy_rejection": "design-stage",
+      "miss_stream": "steers/ citing this lens"
+    }
+  },
+  {
+    "angle": "Does the payload name the transferable shape, or an instance — a task id, a file name, a path, a single tool's failure? Land `payload:abstraction` on a copied instance; promotion raises abstraction.",
+    "claims": [
+      "payload:"
+    ],
+    "consumer": "the adjudicator",
+    "counterfactual": "The overshoot: reading every concrete noun as an instance — a payload about the HTTP tool may name HTTP; what it may not name is the one task or file it was seen in.",
+    "externality": {
+      "contact": "record",
+      "terminates_in": "the payload text against the task ids in the evidence"
+    },
+    "host": "examiner",
+    "id": "L-0007",
+    "kind": "lens",
+    "priced_for": {
+      "model_id": "stub"
+    },
+    "product": "a claim on `payload:abstraction`",
+    "purpose": "adjudicative",
+    "telemetry": {
+      "answer_variance": "design-stage",
+      "decoy_rejection": "design-stage",
+      "miss_stream": "steers/ citing this lens"
+    }
+  },
+  {
+    "angle": "Does the revisit watch fire on the failure the stakes name — a low score on a higher-is-better scorer — or on success? A predicate a passing score satisfies and a failing score does not (`task_pass_rate == 1.0`, `>= 0.9`) fires when the record works and stays silent when it regresses: land `warrant:watch-direction`.",
+    "claims": [
+      "warrant:watch-direction"
+    ],
+    "consumer": "the adjudicator",
+    "counterfactual": "The overshoot: landing on a watch a failing score also satisfies (`!= 1.0`, `>= 0.0`) — it fires on the regression too, so it still returns the loop to the record.",
+    "externality": {
+      "contact": "oracle",
+      "terminates_in": "the watch predicate against the scorers' convention: success rates in [0, 1], 1.0 ideal"
+    },
+    "host": "examiner",
+    "id": "L-0008",
+    "kind": "lens",
+    "priced_for": {
+      "model_id": "stub"
+    },
+    "product": "a claim on `warrant:watch-direction`, its evidence the predicate",
+    "purpose": "adjudicative",
+    "telemetry": {
+      "answer_variance": "design-stage",
+      "decoy_rejection": "design-stage",
+      "miss_stream": "steers/ citing this lens"
+    }
   }
 ]
