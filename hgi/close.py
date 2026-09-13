@@ -98,17 +98,18 @@ def dispose(store: Store, session: Session) -> list[Disposition]:
 
 
 def file_observations(store: Store, session: Session) -> list[Observation]:
-    """Step 3a. Each L-0004 finding with an anchor becomes an observation; a finding with no anchor is not filed."""
+    """Step 3a. Each L-0004 finding with an anchor and a ``noticed`` becomes an observation; a finding with no anchor, or
+    with nothing noticed (a reply that dropped the field), is not filed — an observation states what happened."""
     out = []
     for answer in session.lens_answers:
         if answer.lens != "L-0004":
             continue
         for f in answer.findings:
             anchor = dict(f.get("anchor") or {})
-            if not any(anchor.values()):
+            if not any(anchor.values()) or not str(f.get("noticed") or "").strip():
                 continue
             o = Observation(uid=store.new_uid(), name=store.next_name("O"), noticed_at=now(), session=session.id,
-                            noticed=f["noticed"], anchor=anchor, recheck_when=f.get("recheck_when"))
+                            noticed=str(f["noticed"]), anchor=anchor, recheck_when=f.get("recheck_when"))
             store.write(o)
             session.observations_filed.append(o.name)
             out.append(o)
