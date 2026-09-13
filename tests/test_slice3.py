@@ -10,9 +10,9 @@ from hgi import index as _index
 from hgi import lint as _lint
 from hgi.store import now
 from hgi.types import Observation, Session
-import suite as _suite
+from suite.tasks import TASKS
 
-NAMES = [t.id for t in _suite.current().tasks]
+NAMES = [t.id for t in TASKS]
 
 
 def _session(store, pass_: int, rows: list[dict], scores: dict[str, float | None]) -> Session:
@@ -61,7 +61,7 @@ def test_same_session_observations_do_not_meet_the_bar(store):
     s2 = _session(store, 2, [FAULTED], {"task_pass_rate": 0.5})
     _observe(store, s1, NO_CAUSE), _observe(store, s1, NO_CAUSE)
     record = _consolidate.consolidate(store)
-    assert record.admitted == [] and record.nominations == []
+    assert record.admitted == [] and [n for n in record.nominations if n.draft] == []
     assert all(o.disposition.state == "open" for o in store.observations(state=None))
 
 
@@ -101,7 +101,7 @@ def test_verdict_authority_and_role_separation_on_the_ledger(store):
     s2 = _session(store, 2, [FAULTED], {"task_pass_rate": 0.5, "error_cause_present": 0.0})
     _observe(store, s1, NO_CAUSE), _observe(store, s2, NO_CAUSE)
     _consolidate.consolidate(store)
-    for entry in store.all("hypothesis"):
+    for entry in (e for e in store.all("hypothesis") if e.species == "attack"):
         assert entry.contradiction.attack.verdict == "pending"
         assert entry.verdict != "pending" and entry.adjudicator is not None and entry.adjudicator.role == "adjudicator"
         assert {entry.proposer.role, entry.contradiction.source.role, entry.adjudicator.role} == {"consolidator", "examiner", "adjudicator"}

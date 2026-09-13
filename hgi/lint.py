@@ -14,14 +14,17 @@ settlement-test              write          fails a projection cell carrying a c
 verdict-authority            write          fails a proposal or attack payload carrying a verdict; fails a ledger     whether the adjudicator's verdict is right
                                             verdict with no adjudicator call
 fire-disposer                write          fails a fire naming no disposer                                           whether the disposer discharged it well
+settlement-authority         write          fails a settled latch whose settlement cites no adjudicated ledger entry,  whether the settlement was right
+                                            dispositive fire or admitted successor
 ports                        write          fails a latch off its port declaration without a warrant; fails a         whether the declaration is right
                                             required latch type that is absent
 constitution-cap             write          fails a store exceeding max_articles or max_bytes                         the ranking
 disposition-completeness     close          fails a closed session with a consulted record lacking a disposition      whether the disposition was honest
+fire-completeness            close          fails a closed session that saw a fire owed to the working pass and left   whether the discharge was honest
+                                            it undischarged
 projection-coherence         commit         fails when index/ differs from regeneration                               nothing — total
 consumer-edge-acyclicity     commit         fails a cycle over wiring edges                                           undeclared edges
-model-pricing                boot           warns on a lens or decision priced for a model other than the session's,  the size of the re-pricing
-                                            and on a role prompt not priced for the model the role runs on
+model-pricing                boot           warns on a lens or decision priced for a model other than the session's   the size of the re-pricing
 oracle-honesty               runtime        fails a fact carrying both a zero value and an unevaluable reason         a scorer measuring the wrong quantity
 genesis-anchor               consolidation  warns on a genesis article past its anchor deadline with no anchor         whether the anchor exemplifies the article
 
@@ -216,6 +219,27 @@ def check_complement_law(store: Store) -> list[Finding]:
     return out
 
 
+# --- settlement authority ----------------------------------------------------------
+
+@check("settlement-authority", "write", "whether the settlement was right")
+def check_settlement_authority(store: Store) -> list[Finding]:
+    """A corroborating fire nominates and never settles; every settled latch names what licensed it and the licence holds."""
+    out = []
+    hosts = [(d.id, d.all_latches()) for d in store.decisions()] + [(p.name, p.all_latches()) for p in store.drafts()]
+    for host, latches in hosts:
+        for i, latch in enumerate(latches):
+            if latch.lifecycle.status != "settled":
+                continue
+            if not latch.lifecycle.settled_by:
+                out.append(fail("settlement-authority", host, f"latch {i} is settled by nothing"))
+                continue
+            try:
+                store.license(latch.lifecycle.settled_by)
+            except PermissionError as e:
+                out.append(fail("settlement-authority", host, f"latch {i}: {e}"))
+    return out
+
+
 # --- ports ----------------------------------------------------------------------
 
 @check("ports", "write", "whether the declaration is right")
@@ -304,6 +328,25 @@ def check_dispositions(store: Store) -> list[Finding]:
     return out
 
 
+@check("fire-completeness", "close", "whether the discharge was honest")
+def check_fires_discharged(store: Store) -> list[Finding]:
+    """A fire owed to the working pass is discharged by the pass that saw it, or that pass's close was not a close."""
+    from hgi.boot import WORKING_PASS
+
+    out = []
+    for s in store.all("session"):
+        s: Session
+        if s.closed_at is None or not s.attached:
+            continue
+        for fid in s.fires_seen:
+            if not store.exists("fire", fid):
+                continue
+            f = store.read("fire", fid)
+            if f.disposer == WORKING_PASS and not f.disposition.discharged:  # type: ignore[attr-defined]
+                out.append(fail("fire-completeness", s.id, f"fire {fid} owed to the working pass was seen at boot and left undischarged at close"))
+    return out
+
+
 # --- projection coherence --------------------------------------------------------
 
 @check("projection-coherence", "commit", "nothing — total")
@@ -341,22 +384,18 @@ def check_acyclic(store: Store) -> list[Finding]:
 
 @check("model-pricing", "boot", "the size of the re-pricing")
 def check_pricing(store: Store, model_id: str | None = None) -> list[Finding]:
+    """Warn on a conditioning record the session's model did not condition — priced for another
+    model, or restamped for this one without its text being re-authored (:mod:`hgi.price`)."""
     out = []
     if model_id is None:
         return out
-    for lens in store.registry.lenses():
-        if lens.priced_for.model_id != model_id:
-            out.append(warn("model-pricing", lens.id, f"priced for {lens.priced_for.model_id!r}, the session runs {model_id!r}"))
-    for d in store.decisions("accepted"):
-        if d.priced_for.model_id != model_id:
-            out.append(warn("model-pricing", d.id, f"priced for {d.priced_for.model_id!r}, the session runs {model_id!r}"))
-    from hgi import model as _model
-    from hgi import roles
-
-    for role in roles.ROLES:
-        runs = _model.model_id(role) if role != "pass" else model_id
-        if not roles.is_priced_for(role, runs):
-            out.append(warn("model-pricing", f"roles/{role}.md", f"priced for {roles.priced_for(role)!r}, the role runs {runs!r}"))
+    for _, record in store.conditioning():
+        priced = record.priced_for
+        if priced.model_id != model_id:
+            out.append(warn("model-pricing", record.id, f"priced for {priced.model_id!r}, the session runs {model_id!r}"))
+        elif priced.authored_for:
+            out.append(warn("model-pricing", record.id,
+                            f"stamped for {model_id!r} by a re-price; the text is authored for {priced.authored_for!r}"))
     return out
 
 

@@ -142,9 +142,9 @@ BARS = {
         "independence": "observations from distinct sessions",
     },
     "retirement": {"applied_over_considered_below": 0.1, "window_passes": 6},
+    "vocabulary": {"independent_escapes": 2, "independence": "escapes from distinct sessions; two from one pass are one datum"},
     "consolidation_every_passes": 2,
     "genesis_anchor_deadline_consolidations": 3,
-    "proposal_ttl_consolidations": 2,
 }
 
 CONSTITUTION_CAP = {"max_articles": 7, "max_bytes": 4096}
@@ -186,8 +186,7 @@ LENSES = [
      "angle": "The first attempt in this pass was wrong somewhere — where, and which record should have fired?",
      "counterfactual": "The overshoot: grading the pass's own lesson as settled — the answer is an observation at the floor, never a rule.",
      "externality": {"contact": "artifact", "terminates_in": "the trace: a call URI per finding"},
-     "product": "for the failed task in the subject, at most one {noticed, anchor, recheck_when}: `noticed` names the task, what its first attempt did, and what would have passed — the convention of this world it missed — in one or two sentences; `anchor` is {call: the row's call URI, path: null}; `recheck_when` says when to look for the same miss again; empty when the failure was not the pass's to avoid",
-     "consumer": "the observation ledger; the backward pass"},
+     "product": "a list of {noticed, anchor}; each becomes an observation", "consumer": "the observation ledger; the backward pass"},
 ]
 
 

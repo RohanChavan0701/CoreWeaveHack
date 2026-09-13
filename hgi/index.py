@@ -17,9 +17,9 @@ import re
 from collections import defaultdict
 from typing import Any, Callable
 
-from hgi.registry import read_json, write_json
+from hgi.registry import is_escape, read_json, write_json
 from hgi.store import Store
-from hgi.types import Decision, Disposition, Fire, Session
+from hgi.types import Decision, Disposition, Draft, Fire, Session
 
 FORBIDDEN_CELL_KEYS = frozenset({"decision", "duty", "then", "article", "context", "options"})
 """Fields whose content a reader could obey directly from a cell; the settlement test evicts them."""
@@ -43,13 +43,22 @@ def tokens(text: str) -> set[str]:
 # --- projections --------------------------------------------------------------
 
 def hooks(store: Store) -> dict[str, list[dict[str, Any]]]:
-    """Hook-major: for each work-shape term, the accepted decisions whose consultation latches carry it."""
+    """Hook-major: for each registered work-shape term, the accepted decisions whose consultation latches carry it.
+
+    An ``other(<what>)`` escape in a guard is legal to write and reaches
+    nothing here: no boot classifies into an escape, so a record keyed only
+    on escapes is a structural zero until the term is minted and the hook
+    re-keyed. A latch is worth exactly as much as the governance of its
+    key-space.
+    """
     out: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for d in store.decisions("accepted"):
         for i, latch in enumerate(d.all_latches()):
             if latch.type != "consultation" or latch.lifecycle.status != "live":
                 continue
             for term in latch.guard.terms:
+                if is_escape(term):
+                    continue
                 out[term].append({
                     "record": d.id,
                     "latch": d.summary.latch,
@@ -70,14 +79,50 @@ def summaries(store: Store) -> list[dict[str, Any]]:
     ]
 
 
+def watch_hosts(store: Store) -> list[tuple[str, list]]:
+    """Every record the oracle's next run can move: accepted decisions and deferred drafts, with their latch fans.
+
+    A draft's own fan is not yet live — nothing a draft proposes is yet true —
+    so only its deferral latch is exposed, at the index a fire's ``latch.index``
+    reads; the body's positions are held by ``None``.
+    """
+    hosts: list[tuple[str, list]] = [(d.id, d.all_latches()) for d in store.decisions("accepted")]
+    hosts += [(p.uid, [None] * len(p.body.all_latches()) + [p.deferral.until]) for p in store.drafts() if p.deferral]
+    return hosts
+
+
 def triggers(store: Store) -> list[dict[str, Any]]:
-    """Live revisit latches keyed on world-state, with their predicates."""
+    """Live revisit latches keyed on world-state, with their predicates — on decisions and on deferred drafts alike."""
     out = []
-    for d in store.decisions("accepted"):
-        for i, latch in enumerate(d.all_latches()):
-            if latch.type == "revisit" and latch.lifecycle.status == "live" and latch.edge.predicate:
-                out.append({"record": d.id, "latch_index": i, "predicate": latch.edge.predicate.model_dump(),
+    for host, latches in watch_hosts(store):
+        for i, latch in enumerate(latches):
+            if latch is not None and latch.type == "revisit" and latch.lifecycle.status == "live" and latch.edge.predicate:
+                out.append({"record": host, "latch_index": i, "predicate": latch.edge.predicate.model_dump(),
                             "disposer": latch.consumer, "owed_act": latch.owed_act.class_})
+    return out
+
+
+def deferred(store: Store) -> list[dict[str, Any]]:
+    """Drafts re-queued on a ``defer(<until>)`` verdict, with the condition each waits on."""
+    out = []
+    for p in store.drafts():
+        if not p.deferral:
+            continue
+        until = p.deferral.until
+        out.append({"draft": p.uid, "name": p.name, "ledger_entry": p.deferral.ledger_entry, "after_pass": p.deferral.after_pass,
+                    "key_space": until.key_space, "predicate": until.edge.predicate.model_dump() if until.edge.predicate else None,
+                    "over_passes": until.guard.over_passes, "disposer": until.consumer})
+    return out
+
+
+def wiring(store: Store) -> list[dict[str, Any]]:
+    """Live neighbour-keyed latches: which record watches which, and the status each neighbour was last seen in."""
+    out = []
+    for d in store.decisions():
+        for i, latch in enumerate(d.all_latches()):
+            if latch.type == "wiring" and latch.lifecycle.status == "live":
+                out.append({"record": d.id, "status": d.status, "latch_index": i, "neighbours": latch.guard.records,
+                            "seen": latch.guard.statuses, "owed_act": latch.owed_act.class_, "disposer": latch.consumer})
     return out
 
 
@@ -91,9 +136,8 @@ def undischarged_fires(store: Store) -> list[dict[str, Any]]:
 
 def competence(store: Store) -> list[dict[str, Any]]:
     """applied ÷ considered per record over the review window — the demotion nominator, never a verdict."""
-    window = store.registry.bars["retirement"]["window_passes"]
-    sessions: list[Session] = sorted((s for s in store.all("session") if s.attached and s.closed_at is not None), key=lambda s: s.pass_)  # type: ignore[misc]
-    recent = {s.id for s in sessions[-window:]}
+    sessions, window = _window(store)
+    recent = {s.id for s in sessions}
     tally: dict[str, dict[str, int]] = defaultdict(lambda: {"considered": 0, "applied": 0, "guard_failed": 0, "off_map": 0})
     for u in store.all("disposition"):
         u: Disposition
@@ -117,8 +161,78 @@ def competence(store: Store) -> list[dict[str, Any]]:
     return rows
 
 
+def _window(store: Store) -> tuple[list[Session], int]:
+    """The closed attached sessions of the review window, oldest first, and the window's length."""
+    window = store.registry.bars["retirement"]["window_passes"]
+    sessions: list[Session] = sorted((s for s in store.all("session") if s.attached and s.closed_at is not None), key=lambda s: s.pass_)  # type: ignore[misc]
+    return sessions[-window:], window
+
+
+def _applied_by_session(store: Store, sessions: list[Session]) -> dict[str, dict[str, bool]]:
+    """record → {session id → applied?} over the window, from the disposition ledger."""
+    recent = {s.id for s in sessions}
+    out: dict[str, dict[str, bool]] = defaultdict(dict)
+    for u in store.all("disposition"):
+        u: Disposition
+        if u.session in recent and u.guard_passed:
+            out[u.record][u.session] = u.disposition == "applied"
+    return out
+
+
+def fusion(store: Store) -> list[dict[str, Any]]:
+    """Dispositions by matched sub-shape per accepted record — the split nominator of § 10.6.
+
+    A record applied cleanly whenever one work-shape term matched it and never
+    when only another did is a fused record; ``bimodal`` marks the rows where
+    both sub-shapes were seen at least twice and their applied ratios sit at
+    the two ends. The row nominates; the consolidator drafts the leaves and
+    the adjudicator ratifies them against the raw anchors, never the labels.
+    """
+    sessions, _ = _window(store)
+    applied = _applied_by_session(store, sessions)
+    matched = {s.id: {c.record: c.terms_matched for c in s.considered if c.via == "index"} for s in sessions}
+    rows = []
+    for d in store.decisions("accepted"):
+        by_term: dict[str, dict[str, int]] = defaultdict(lambda: {"considered": 0, "applied": 0})
+        for sid, was_applied in applied.get(d.id, {}).items():
+            for term in matched.get(sid, {}).get(d.id, []):
+                by_term[term]["considered"] += 1
+                by_term[term]["applied"] += int(was_applied)
+        if len(by_term) < 2:
+            continue
+        seen_twice = {t: c for t, c in by_term.items() if c["considered"] >= 2}
+        always = sorted(t for t, c in seen_twice.items() if c["applied"] == c["considered"])
+        never = sorted(t for t, c in seen_twice.items() if c["applied"] == 0)
+        rows.append({"record": d.id, "by_term": dict(sorted(by_term.items())), "applied_on": always, "never_on": never,
+                     "bimodal": bool(always and never)})
+    return rows
+
+
+def convergence(store: Store) -> list[dict[str, Any]]:
+    """Accepted pairs whose activation overlaps and whose applications coincide — the fold nominator of § 10.6.
+
+    Two records applied in the same passes on the same hook have put their
+    differentiation under stress; whether their payloads entail one another is
+    the consolidator's reading and the adjudicator's verdict, never this row's.
+    """
+    sessions, _ = _window(store)
+    applied = _applied_by_session(store, sessions)
+    accepted = store.decisions("accepted")
+    rows = []
+    for i, a in enumerate(accepted):
+        for b in accepted[i + 1:]:
+            shared = sorted(set(a.consultation_terms) & set(b.consultation_terms))
+            if not shared:
+                continue
+            on_a = {s for s, x in applied.get(a.id, {}).items() if x}
+            on_b = {s for s, x in applied.get(b.id, {}).items() if x}
+            rows.append({"records": [a.id, b.id], "shared_terms": shared, "identical_hooks": set(a.consultation_terms) == set(b.consultation_terms),
+                         "co_applied": len(on_a & on_b), "applied_apart": len(on_a ^ on_b)})
+    return rows
+
+
 def structural_zero(store: Store) -> list[str]:
-    """Accepted decisions no live consultation hook reaches."""
+    """Accepted decisions no live consultation hook on a registered term reaches — stored, unreachable, never recalled."""
     reached = {cell["record"] for cells in hooks(store).values() for cell in cells}
     return [d.id for d in store.decisions("accepted") if d.id not in reached]
 
@@ -163,8 +277,12 @@ PROJECTIONS: dict[str, Callable[[Store], Any]] = {
     "hooks": hooks,
     "summaries": summaries,
     "triggers": triggers,
+    "deferred": deferred,
+    "wiring": wiring,
     "fires": undischarged_fires,
     "competence": competence,
+    "fusion": fusion,
+    "convergence": convergence,
     "structural_zero": structural_zero,
     "lineage": lineage,
     "matrix": matrix,

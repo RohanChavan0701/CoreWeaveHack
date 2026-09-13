@@ -7,14 +7,14 @@
     hgi consolidate                              # the backward pass over the ledgers
     hgi lint                                     # the floor
     hgi index                                    # regenerate projections
-    hgi lineage     D-0007                       # the path query over the DAG
+    hgi price       --model <id> --restamp       # re-price the conditioning records for a model
+    hgi lineage     D-0007                       # the admitting commit and the path query over the DAG
     hgi experiment  run experiments/x.toml       # every arm of an experiment file, each in its own store
-    hgi suite       show                         # the task suite in scope: families, counts, hash, faults
-    hgi roles       try nominate --store <arm>   # one role request against a copy of a store; how the reply parsed
 
 Every command that writes ends in a commit whose message names the record
 ids it admitted, flipped or retired. ``--store`` (or ``$HGI_STORE``) names
-the store root; ``--no-commit`` leaves the tree for the caller to commit.
+the store root and ``--no-commit`` leaves the tree for the caller to commit;
+both take either side of the subcommand.
 
 Every surface the environment configures — the inference endpoint
 (``$HGI_INFERENCE_BASE_URL``, ``$HGI_INFERENCE_API_KEY``, ``$HGI_MODEL_ID``),
@@ -36,7 +36,7 @@ from pathlib import Path
 from hgi import index as _index
 from hgi import lint as _lint
 from hgi import registry as _registry
-from hgi.store import Store, commit
+from hgi.store import Store, admitting_commit, commit
 
 
 ENV_FILE = ".env"
@@ -75,9 +75,13 @@ def load_env(path: Path | None = None) -> dict[str, str]:
     return loaded
 
 
+def _root(args) -> Path:
+    """The store root the invocation names: ``--store`` in either position, else ``$HGI_STORE`` or ``./store``."""
+    return Path(args.store) if args.store else _registry.default_root()
+
+
 def _store(args) -> Store:
-    root = Path(args.store) if args.store else _registry.default_root()
-    return Store(root)
+    return Store(_root(args))
 
 
 def _finish(store: Store, args, message: str) -> None:
@@ -93,7 +97,7 @@ def _finish(store: Store, args, message: str) -> None:
 def cmd_genesis(args) -> int:
     from hgi.genesis import seed
 
-    root = Path(args.store) if args.store else _registry.default_root()
+    root = _root(args)
     if any(root.glob("registry/*.json")) and not args.force:
         print(f"{root} already holds a registry; pass --force to reseed", file=sys.stderr)
         return 1
@@ -125,18 +129,54 @@ def cmd_index(args) -> int:
 
 def cmd_lineage(args) -> int:
     store = _store(args)
-    paths = _index.paths_to(store, args.id)
-    for p in paths:
+    at = admitting_commit(store, args.id)
+    print(f"admitted in {at['sha']} on {at['date']}: {at['subject']}" if at
+          else f"no commit over this store names {args.id}")
+    for p in _index.paths_to(store, args.id):
         print(" -> ".join(p))
     return 0
 
 
+COMMON_DEFAULTS = {"store": None, "no_commit": False}
+"""What the common flags mean when nobody passes them; see :class:`_Parser` for why they live here."""
+
+
+class _Parser(argparse.ArgumentParser):
+    """The top-level parser, which seeds the common flags on the namespace it parses into.
+
+    A subparser parses into a namespace of its own and then copies every
+    attribute it holds onto the top-level one, so a default declared on the
+    common flags reaches the namespace twice: once before the subcommand is
+    read, and once after it has been parsed. The second write is the one that
+    lands, which silently discarded ``--store`` passed before the subcommand —
+    ``hgi --store /elsewhere genesis --force`` reseeded ``./store``. The flags
+    therefore declare ``argparse.SUPPRESS`` as their default, so that a
+    subparser writes them only when the caller actually passed them, and the
+    fallback is seeded on the namespace instead, where no later parse
+    overwrites it. Only the top-level parser seeds: the subparsers are plain
+    ones (:func:`build_parser` says so when it makes them), or each would seed
+    the namespace it parses into and overwrite again. ``set_defaults`` is not
+    the route either: it writes the default onto the actions, and a parent's
+    actions are the same objects every subparser holds, so it would put the
+    overwriting default back on all of them.
+    """
+
+    def parse_known_args(self, args=None, namespace=None):
+        return super().parse_known_args(args, argparse.Namespace(**COMMON_DEFAULTS) if namespace is None else namespace)
+
+
 def build_parser() -> argparse.ArgumentParser:
+    """The command surface: the common flags on a parent every subcommand inherits, and one subparser a command.
+
+    ``--store`` and ``--no-commit`` are declared once and work on either side
+    of the subcommand, so that ``hgi --store X lineage D-0001`` and ``hgi
+    lineage D-0001 --store X`` are the same command.
+    """
     common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("--store", help="the store root (default: $HGI_STORE or ./store)")
-    common.add_argument("--no-commit", action="store_true", help="write without committing")
-    parser = argparse.ArgumentParser(prog="hgi", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, parents=[common])
-    sub = parser.add_subparsers(dest="command", required=True)
+    common.add_argument("--store", default=argparse.SUPPRESS, help="the store root (default: $HGI_STORE or ./store)")
+    common.add_argument("--no-commit", action="store_true", default=argparse.SUPPRESS, help="write without committing")
+    parser = _Parser(prog="hgi", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter, parents=[common])
+    sub = parser.add_subparsers(dest="command", required=True, parser_class=argparse.ArgumentParser)
 
     def add(name, help):
         return sub.add_parser(name, help=help, parents=[common])
@@ -152,7 +192,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = add("index", "regenerate projections")
     p.set_defaults(fn=cmd_index)
 
-    p = add("lineage", "the path query over the DAG")
+    p = add("lineage", "the admitting commit and the path query over the DAG")
     p.add_argument("id")
     p.set_defaults(fn=cmd_lineage)
 
@@ -163,10 +203,10 @@ def build_parser() -> argparse.ArgumentParser:
 def _register_pass_commands(add) -> None:
     """The forward- and backward-pass commands register themselves as their modules land."""
     try:
-        from hgi import boot, close, consolidate, contract, evaluate, experiment, mirror, world  # noqa: F401
+        from hgi import boot, close, consolidate, evaluate, experiment, mirror, price  # noqa: F401
     except ImportError:
         return
-    for module in (boot, evaluate, close, consolidate, mirror, experiment, world, contract):
+    for module in (boot, evaluate, close, consolidate, mirror, experiment, price):
         module.register(add, _store, _finish)
 
 

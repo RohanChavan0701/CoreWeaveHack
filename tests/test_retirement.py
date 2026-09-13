@@ -27,8 +27,8 @@ def test_never_applied_decision_retires_on_telemetry(store):
     assert row["applied_over_considered"] == 0.0 and row["passes_in_window"] == window
     record = _consolidate.consolidate(store, force=True)
     assert record.flipped == [decision.id]
-    n = record.nominations[-1]
-    assert n.subject == decision.id and n.outcome == "moot" and n.evidence == ["applied_over_considered=0.0"]
+    n = next(n for n in record.nominations if n.subject == decision.id)
+    assert n.outcome == "moot" and n.evidence == ["applied_over_considered=0.0"]
     flipped = store.read("decision", decision.id)
     assert flipped.status == "moot" and all(l.lifecycle.status == "settled" for l in flipped.all_latches())
     _index.regenerate(store)

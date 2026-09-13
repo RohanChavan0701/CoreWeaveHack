@@ -1,74 +1,31 @@
-"""The task suite as an object: tasks composed from families under one fault profile, pinned by hash.
-
-A :class:`Task` states its presentation (the work-shape terms a boot may
-classify it under), its prompt, its budgets, its output schema, the world it
-runs in (files in the working directory, routes on the mock API), a hidden
-check over the agent's result, and — for the deterministic harness — an
-optional scripted policy. A :class:`Suite` is the tasks a :class:`SuiteSpec`
-composes: which families, how many tasks of each (a seeded sample), and the
-:class:`suite.faults.FaultProfile` every tool call runs under.
-"""
+"""The fixed task suite. Each task states its presentation (the work-shape terms a boot may classify it
+under), its prompt, its budget, its output schema, and a hidden test over the agent's result."""
 
 from __future__ import annotations
 
 import hashlib
 import json
-import os
-import random
-import tomllib
 from dataclasses import dataclass, field
-from functools import cached_property
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
-
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Any, Callable
 
 from suite import EVALUATION
-from suite.faults import FaultProfile
-
-if TYPE_CHECKING:
-    from suite.agent import Script
-
-Check = Callable[[Any, Path], bool]
-"""The hidden test: the agent's ``result`` and its working directory after the task."""
-
-Scripted = Callable[["Script"], Any]
-"""A scripted policy for the deterministic stub: reads the same records the model would, applies them by keyword."""
 
 
 @dataclass(frozen=True)
 class Task:
     id: str
-    """``<family>/<name>``; unique across the suite."""
     prompt: str
     shapes: tuple[str, ...]
     """The presentation, in registry work-shape terms — what a boot classifies, never what a hook reads."""
     schema: dict[str, Any]
-    check: Check
+    check: Callable[[Any], bool]
     shell_budget: int | None = None
-    http_budget: int | None = None
     files: dict[str, str] = field(default_factory=dict)
-    """The working directory at task start."""
-    routes: dict[str, Any] = field(default_factory=dict)
-    """The mock API: path → JSON body, or ``{"$error": {"message", "cause"}}`` for a route that answers with an error."""
-    stub: Scripted | None = None
-
-    @property
-    def family(self) -> str:
-        return self.id.split("/", 1)[0]
-
-    @property
-    def http(self) -> bool:
-        return bool(self.routes)
+    http: bool = False
 
     def row(self) -> dict[str, Any]:
-        """What the oracle's dataset holds and the agent is shown: the presentation, never the hidden test."""
-        return {"task": self.id, "prompt": self.prompt, "schema": self.schema, "shell_budget": self.shell_budget,
-                "http_budget": self.http_budget, "http": self.http}
-
-    def world(self) -> dict[str, Any]:
-        """The part of the task the agent reaches only through tools; hashed with the presentation."""
-        return {"files": self.files, "routes": self.routes}
+        return {"task": self.id, "prompt": self.prompt, "schema": self.schema, "shell_budget": self.shell_budget, "http": self.http}
 
     def setup(self, workdir: Path) -> None:
         workdir.mkdir(parents=True, exist_ok=True)
@@ -76,90 +33,40 @@ class Task:
             (workdir / name).write_text(content)
 
 
-class SuiteSpec(BaseModel):
-    """What composes a suite; the experiment file's ``[suite]`` table, or ``$HGI_SUITE`` for a hand-run."""
+_LINES = {f"{c}.txt": "\n".join(f"line {i}" for i in range(n)) + "\n" for c, n in zip("abcde", (3, 5, 2, 7, 1))}
 
-    families: list[str] = Field(default_factory=lambda: ["genesis"])
-    size: int | None = Field(default=None, ge=1)
-    """Tasks taken from each family — a sample seeded by ``seed`` — or every task when absent."""
-    seed: int = 0
-    faults: FaultProfile = Field(default_factory=FaultProfile)
+TASKS: list[Task] = [
+    Task("sum_numbers", "GET /numbers from the API and return the sum of the list as result.", ("http-tool", "error-wrapping"),
+         {"type": "object", "required": ["result"], "properties": {"result": {"type": "integer"}}}, lambda r: r == 50, http=True),
+    Task("fetch_user_name", "GET /users/7 and return the user's name as result.", ("http-tool", "error-wrapping"),
+         {"type": "object", "required": ["result"], "properties": {"result": {"type": "string"}}}, lambda r: r == "Ada", http=True),
+    Task("status_ok", "GET /status and return the string 'ok' as result when the response's ok field is true.", ("http-tool", "error-wrapping"),
+         {"type": "object", "required": ["result"], "properties": {"result": {"type": "string"}}}, lambda r: r == "ok", http=True),
+    Task("count_lines", "Five files a.txt..e.txt are in the working directory. Return the total number of lines across them as result, using the shell tool. You have a budget of 2 shell calls.",
+         ("shell-tool", "tool-budget"), {"type": "object", "required": ["result"], "properties": {"result": {"type": "integer"}}},
+         lambda r: r == 18, shell_budget=2, files=_LINES),
+    Task("write_report", "Read config.json, then write report.json containing {\"title\": <config.title>, \"count\": <length of config.items>} and return that object as result.",
+         ("file-tool", "output-schema"), {"type": "object", "required": ["result"], "properties": {"result": {"type": "object", "required": ["title", "count"]}}},
+         lambda r: isinstance(r, dict) and r.get("title") == "Q3" and r.get("count") == 3,
+         files={"config.json": json.dumps({"title": "Q3", "items": ["a", "b", "c"]})}),
+    Task("schema_answer", "Return result = {\"answer\": 42, \"unit\": \"n\"} exactly.", ("output-schema",),
+         {"type": "object", "required": ["result"], "properties": {"result": {"type": "object", "required": ["answer", "unit"]}}},
+         lambda r: r == {"answer": 42, "unit": "n"}),
+]
 
-    model_config = ConfigDict(extra="forbid")
-
-
-@dataclass
-class Suite:
-    spec: SuiteSpec
-    tasks: list[Task]
-
-    @cached_property
-    def by_id(self) -> dict[str, Task]:
-        return {t.id: t for t in self.tasks}
-
-    @property
-    def faults(self) -> FaultProfile:
-        return self.spec.faults
-
-    @property
-    def name(self) -> str:
-        return "+".join(self.spec.families)
-
-    @cached_property
-    def hash(self) -> str:
-        """The composition guard: a digest of every task's presentation and world, and the fault profile."""
-        payload = json.dumps({"tasks": [{**t.row(), "world": t.world()} for t in self.tasks], "faults": self.spec.faults.model_dump()}, sort_keys=True)
-        return hashlib.sha256(payload.encode()).hexdigest()[:12]
-
-    def rows(self) -> list[dict[str, Any]]:
-        return [t.row() for t in self.tasks]
-
-    def presentations(self) -> list[dict[str, Any]]:
-        """What the boot classifies: the task prompts, without their hidden tests."""
-        return [{"task": t.id, "prompt": t.prompt} for t in self.tasks]
-
-    def dataset_name(self) -> str:
-        return f"{EVALUATION}-{self.hash}"
-
-    def families(self) -> dict[str, int]:
-        out: dict[str, int] = {}
-        for t in self.tasks:
-            out[t.family] = out.get(t.family, 0) + 1
-        return out
-
-    def describe(self) -> str:
-        return f"suite {self.name} ({self.hash}): {len(self.tasks)} tasks " + ", ".join(f"{f}={n}" for f, n in self.families().items()) + \
-               f"; faults {json.dumps(self.spec.faults.model_dump(), sort_keys=True)}"
+BY_ID = {t.id: t for t in TASKS}
 
 
-def build(spec: SuiteSpec) -> Suite:
-    """Compose the suite the spec names: each family's tasks, sampled to ``size`` by the seed, in id order."""
-    from suite.families import FAMILIES
-
-    tasks: list[Task] = []
-    for name in spec.families:
-        if name not in FAMILIES:
-            raise SystemExit(f"no task family {name!r}; families are {sorted(FAMILIES)}")
-        family = sorted(FAMILIES[name].tasks(), key=lambda t: t.id)
-        if not family:
-            raise SystemExit(f"task family {name!r} holds no tasks; " + (FAMILIES[name].how_to_fetch or "it is empty"))
-        if spec.size is not None and len(family) > spec.size:
-            family = sorted(random.Random(f"{spec.seed}:{name}").sample(family, spec.size), key=lambda t: t.id)
-        tasks += family
-    ids = [t.id for t in tasks]
-    if len(set(ids)) != len(ids):
-        raise SystemExit(f"duplicate task ids across families: {sorted({i for i in ids if ids.count(i) > 1})}")
-    return Suite(spec=spec, tasks=tasks)
+def suite_hash() -> str:
+    """The composition guard: a digest of every task's presentation, prompt, schema and budget."""
+    payload = json.dumps([t.row() for t in TASKS], sort_keys=True)
+    return hashlib.sha256(payload.encode()).hexdigest()[:12]
 
 
-def load_spec(path: Path | str) -> SuiteSpec:
-    """A suite spec from a TOML file: its ``[suite]`` table, or the whole document when there is none."""
-    with Path(path).open("rb") as f:
-        raw = tomllib.load(f)
-    return SuiteSpec(**raw.get("suite", raw))
+def presentations() -> list[dict[str, Any]]:
+    """What the boot classifies: the suite's task prompts, without their hidden tests."""
+    return [{"task": t.id, "prompt": t.prompt} for t in TASKS]
 
 
-def from_env() -> Suite:
-    """The suite ``$HGI_SUITE`` names (a TOML file), else the genesis family under the default profile."""
-    path = os.environ.get("HGI_SUITE")
-    return build(load_spec(path) if path else SuiteSpec())
+def dataset_name() -> str:
+    return f"{EVALUATION}-{suite_hash()}"

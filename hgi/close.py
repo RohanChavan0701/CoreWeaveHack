@@ -3,7 +3,8 @@
 1. reflect, streams first — the close lenses walk against the session's
    typed event streams (fires, the evaluation rows) before free recall;
 2. dispositions — every consulted record receives a use-time disposition,
-   or the close is refused;
+   and every fire owed to the working pass its discharge, or the close is
+   refused;
 3. observations file with anchors; caught contradictions file to the ledger
    with the verdict ``pending``;
 4. steer capture — feedback on the session's calls lands as steer records;
@@ -19,16 +20,15 @@ from __future__ import annotations
 import json
 from typing import Any
 
-import suite as _suite
 from hgi import boot as _boot
 from hgi import index as _index
+from hgi import latches as _latches
 from hgi import model as _model
 from hgi import roles
 from hgi import steers as _steers
 from hgi import tracing
 from hgi.store import Store, now
-from suite.scorers import SERIES
-from hgi.types import Decision, Disposition, Draft, LedgerEntry, Observation, RoleCall, Session
+from hgi.types import Decision, Disposition, Draft, Fire, LedgerEntry, Observation, RoleCall, Session
 
 NO_HOOK = "none"
 """The record a fired-off-map disposition names when the work matched no hook at all."""
@@ -40,15 +40,36 @@ def _decision_view(store: Store, record: str) -> dict[str, Any]:
             "premises": [p.model_dump() for p in d.warrant.premises]}
 
 
+def fires_owed(store: Store, session: Session) -> list[Fire]:
+    """The fires the pass saw at boot whose disposer is the working pass and that no one has discharged."""
+    fires = [store.read("fire", f) for f in session.fires_seen if store.exists("fire", f)]
+    return [f for f in fires if f.disposer == _boot.WORKING_PASS and not f.disposition.discharged]  # type: ignore[attr-defined]
+
+
 def dispose(store: Store, session: Session) -> list[Disposition]:
-    """Step 2. One disposition per consulted record; guard-failed considerations are telemetry, written too."""
+    """Step 2. One disposition per consulted record, and one discharge per fire the pass owes; guard-failed considerations are telemetry, written too.
+
+    A fire owed to the working pass is disposed the way a consulted record is:
+    the pass reads what it did about the owed act off its own rows and the
+    fire's disposition lands at close, in the session's commit. A fire the
+    pass does not discharge leaves the close refused, exactly as a consulted
+    record without a disposition does.
+    """
     rows = session.evaluation.rows if session.evaluation else []
     consulted = [_decision_view(store, c.record) for c in session.consulted]
+    owed = fires_owed(store, session)
     verdicts: dict[str, dict[str, Any]] = {}
-    if consulted:
-        c = _model.complete("pass", roles.request("dispose", consulted=consulted, rows=rows, vocabulary=store.registry.terms("use-time-disposition")),
+    discharges: dict[str, str] = {}
+    if consulted or owed:
+        c = _model.complete("pass", roles.request("dispose", consulted=consulted, rows=rows, vocabulary=store.registry.terms("use-time-disposition"),
+                                                  fires_owed=[f.model_dump(by_alias=True, mode="json") for f in owed]),
                             session=session.id, pass_=session.pass_, records_in_context=[x["record"] for x in consulted])
-        verdicts = {v["record"]: v for v in c.json().get("dispositions", [])}
+        reply = c.json()
+        verdicts = {v["record"]: v for v in reply.get("dispositions", []) if isinstance(v, dict)}
+        discharges = {d["fire"]: str(d.get("outcome") or "") for d in reply.get("fires", []) if isinstance(d, dict) and d.get("fire")}
+    for f in owed:
+        if discharges.get(f.id):
+            _latches.discharge(store, f, discharges[f.id], by=session.id)
     out = []
     for c in session.consulted:
         v = verdicts.get(c.record)
@@ -110,20 +131,17 @@ def file_contradictions(store: Store, session: Session) -> list[LedgerEntry]:
     return out
 
 
-def propose_content(store: Store, session: Session) -> dict[str, Any]:
-    """The propose request's content: what the pass filed and scored, and what a draft must draw on."""
-    return {"observations": session.observations_filed, "rows": session.evaluation.rows if session.evaluation else [], "bars": store.registry.bars,
-            "rungs": store.registry.terms("ladder-rung"), "vocabularies": store.registry.vocabulary_terms(), "scorers": SERIES, "model_id": _model.model_id("pass"),
-            "empty_is_legal": roles.EMPTY_IS_LEGAL}
-
-
 def propose(store: Store, session: Session) -> list[Draft]:
     """Step 5. The pass proposes; nothing it proposes is yet true. A draft that fails to parse is not filed."""
-    c = _model.complete("pass", roles.request("propose", **propose_content(store, session)), session=session.id, pass_=session.pass_)
+    rows = session.evaluation.rows if session.evaluation else []
+    c = _model.complete("pass", roles.request("propose", observations=session.observations_filed, rows=rows, bars=store.registry.bars,
+                                              rungs=store.registry.terms("ladder-rung"), vocabularies=store.registry.vocabulary_terms(), model_id=_model.model_id("pass"), empty_is_legal=roles.EMPTY_IS_LEGAL),
+                        session=session.id, pass_=session.pass_)
     out = []
     for raw in roles.drafts_in(c.json(), "drafts"):
         try:
-            draft = roles.draft_of(store, raw, proposed_by=session.id, name=store.next_name("P"), model_id=_model.model_id("pass"))
+            draft = store.parse_as(Draft, {**raw, "body": roles.body_of(raw), "uid": store.new_uid(), "name": store.next_name("P"),
+                                           "drafted_at": now().isoformat(), "proposed_by": session.id})
         except ValueError as e:
             print(f"draft refused: {roles.refusal(e)}")
             continue
@@ -131,25 +149,6 @@ def propose(store: Store, session: Session) -> list[Draft]:
         session.proposals.append(draft.uid)
         out.append(draft)
     return out
-
-
-def lens_subjects(store: Store, session: Session, lens) -> dict[str, Any] | list[dict[str, Any]]:
-    """What a close lens reads. A lens whose contact is the artifact touches the item: it is walked once per failed row, with
-    that row's presentation, output, tool errors and scores. The other close lenses read the whole pass at once."""
-    rows = session.evaluation.rows if session.evaluation else []
-    consulted = [_decision_view(store, c.record) for c in session.consulted]
-    if lens.externality.contact == "artifact":
-        world = _suite.current()
-        return [{"task": row["task"], "prompt": world.by_id[row["task"]].prompt if row["task"] in world.by_id else None, "row": row, "consulted": consulted}
-                for row in rows if not _passed(row)]
-    return {"consulted": consulted, "rows": rows, "failed": [r["task"] for r in rows if not _passed(r)], "fires": session.fires_seen,
-            "scores": {k: f.value for k, f in session.evaluation.scores.items()} if session.evaluation else {}}
-
-
-def _passed(row: dict[str, Any]) -> bool:
-    """Whether the oracle passed the row: its task_pass_rate score, read off the row; an unscored row reads as passed only when it carries no error."""
-    score = (row.get("scores") or {}).get("task_pass_rate") or {}
-    return score.get("value") == 1.0 if "value" in score else not row.get("error")
 
 
 def carry_forward(store: Store, session: Session, dispositions: list[Disposition]) -> str:
@@ -169,11 +168,18 @@ def close(store: Store, session_id: str) -> Session:
         raise SystemExit(f"{session.id} has not been evaluated; run hgi evaluate first")
 
     rows = session.evaluation.rows
-    session.lens_answers += _boot.walk_lenses(store, session, "close", lambda lens: lens_subjects(store, session, lens))
+    session.lens_answers += _boot.walk_lenses(store, session, "close", lambda lens: {
+        "consulted": [_decision_view(store, c.record) for c in session.consulted],
+        "rows": rows, "fires": session.fires_seen,
+        "scores": {k: f.value for k, f in session.evaluation.scores.items()},
+    })
     dispositions = dispose(store, session)
     missing = [c.record for c in session.consulted if c.disposition is None]
     if missing:
         raise SystemExit(f"close refused [disposition-completeness]: consulted records without a disposition: {', '.join(missing)}")
+    undischarged = [f.id for f in fires_owed(store, session)]
+    if undischarged:
+        raise SystemExit(f"close refused [fire-completeness]: fires owed to the working pass left undischarged: {', '.join(undischarged)}")
     file_observations(store, session)
     file_contradictions(store, session)
     _steers.capture(store, session)
@@ -181,15 +187,18 @@ def close(store: Store, session_id: str) -> Session:
     session.carry_forward = carry_forward(store, session, dispositions)
     session.closed_at = now()
     store.write(session)
-    print(report(session, dispositions))
+    print(report(store, session, dispositions))
     return session
 
 
-def report(session: Session, dispositions: list[Disposition]) -> str:
+def report(store: Store, session: Session, dispositions: list[Disposition]) -> str:
     consulted = [u for u in dispositions if u.guard_passed]
+    discharged = [store.read("fire", f) for f in session.fires_seen if store.exists("fire", f)]
+    discharged = [f for f in discharged if f.disposition.by == session.id]  # type: ignore[attr-defined]
     return "\n".join([
         f"== {session.id} closed ==",
         f"consulted {len(consulted)}: " + (", ".join(f"{u.record} {u.disposition}" for u in consulted) or "none"),
+        f"fires discharged {len(discharged)}: " + (", ".join(f"{f.id} {f.disposition.outcome}" for f in discharged) or "none"),
         f"observations filed: {', '.join(session.observations_filed) or 'none'}",
         f"ledger entries: {', '.join(session.ledger_entries) or 'none'}; steers: {', '.join(session.steers_filed) or 'none'}; proposals: {len(session.proposals)}",
         f"carry-forward: {session.carry_forward}",

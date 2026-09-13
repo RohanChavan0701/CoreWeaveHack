@@ -201,39 +201,15 @@ def complete(role: str, user: str, *, json_mode: bool = True, session: str | Non
     """One fresh context for ``role``: its prompt file as the system message, ``user`` as the whole conversation."""
     system = role_prompt(role)
     with tracing.attributes(session=session, pass_=pass_, role=role, records_in_context=records_in_context):
-        result, call = _complete.call(role, system, user, json_mode, __should_raise=True)  # an endpoint error is raised, never a None reply
-    completion = Completion(text=result["content"], model_id=model_id(role), call=tracing.call_uri(call))
-    log_reply(role, user, completion)
-    return completion
-
-
-REPLY_LOG = "HGI_REPLY_LOG"
-"""A directory; when set, every role request and its raw reply land there as one JSON file each, numbered in call order."""
-
-
-def log_reply(role: str, user: str, completion: Completion) -> None:
-    where = os.environ.get(REPLY_LOG)
-    if not where:
-        return
-    from pathlib import Path
-
-    directory = Path(where)
-    directory.mkdir(parents=True, exist_ok=True)
-    try:
-        name = json.loads(user).get("request", "free")
-    except (json.JSONDecodeError, AttributeError, TypeError):
-        name = "free"
-    n = len(list(directory.glob("*.json"))) + 1
-    (directory / f"{n:03d}-{role}-{name}.json").write_text(json.dumps(
-        {"role": role, "request": name, "model_id": completion.model_id, "call": completion.call, "user": user, "reply": completion.text},
-        indent=2, ensure_ascii=False) + "\n")
+        result, call = _complete.call(role, system, user, json_mode)
+    return Completion(text=result["content"], model_id=model_id(role), call=tracing.call_uri(call))
 
 
 def chat_with_tools(role: str, messages: list[dict[str, Any]], tools: list[dict], *, session: str | None = None,
                     pass_: int | None = None, records_in_context: list[str] | None = None) -> tuple[dict[str, Any], str | None]:
     """One turn of a tool-using conversation for the agent under test; returns (message, call uri)."""
     with tracing.attributes(session=session, pass_=pass_, role=role, records_in_context=records_in_context):
-        result, call = _turn.call(role, messages, tools, __should_raise=True)
+        result, call = _turn.call(role, messages, tools)
     return result, tracing.call_uri(call)
 
 
