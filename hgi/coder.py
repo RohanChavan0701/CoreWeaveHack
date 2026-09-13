@@ -37,12 +37,8 @@ def _ask(request: dict[str, Any], **trace) -> _model.Completion:
     vendor = _backend()
     if vendor is None:
         return _model.complete("coder", json.dumps(request), **trace)
-    previous = _model.backend()
-    _model.use(vendor)
-    try:
+    with _model.override("coder", vendor):
         return _model.complete("coder", json.dumps(request), **trace)
-    finally:
-        _model.use(previous)
 
 
 def guard(work_shape: dict[str, Any], hook: dict[str, Any], presentations: list[dict[str, Any]], **trace) -> tuple[bool, str, str | None]:

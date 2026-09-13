@@ -81,15 +81,15 @@ def run(store: Store, session: Session) -> Session:
     agent = Agent(session=session.id, pass_=session.pass_, attached=session.attached,
                   records=context_records(store, session) if session.attached else [],
                   articles=[a.article for a in store.articles()] if session.attached else [],
-                  policy="stub" if isinstance(_model.backend(), _model.Stub) else "model")
+                  policy="stub" if isinstance(_model.backend("pass"), _model.Stub) else "model")
     dataset = weave.Dataset(name=dataset_name(), rows=[t.row() for t in TASKS])
     evaluation = Evaluation(name=EVALUATION, dataset=dataset, scorers=[s() for s in SCORERS],
-                                  evaluation_name=f"{EVALUATION} pass {session.pass_} {'attached' if session.attached else 'detached'}")
+                                  evaluation_name=f"{tracing.run_label()}{EVALUATION} pass {session.pass_} {'attached' if session.attached else 'detached'}")
     with tracing.attributes(session=session.id, pass_=session.pass_, role="pass", attached=session.attached,
                             records_in_context=[r["id"] for r in agent.records]):
         summary, call = asyncio.run(_evaluate(evaluation, agent))
     stamp = now()
-    session.model_id = _model.model_id()
+    session.model_id = _model.model_id("pass")
     session.evaluation = EvaluationResult(evaluation=EVALUATION, run=tracing.call_uri(call), suite_hash=suite_hash(),
                                           scores=facts_from(summary, stamp, tracing.call_uri(call)), rows=agent.outputs)
     if session.trace_root is None:

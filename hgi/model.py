@@ -7,17 +7,22 @@ shared but the store's schemas. Independence is structural, not instructed.
 
 Backends:
 
-- :class:`OpenAICompatible` — the CoreWeave inference endpoint (or any
-  OpenAI-compatible server), configured by ``$HGI_INFERENCE_BASE_URL``,
-  ``$HGI_INFERENCE_API_KEY`` and ``$HGI_MODEL_ID``.
+- :class:`OpenAICompatible` — any OpenAI-compatible server: a CoreWeave
+  inference endpoint, W&B Inference, a local server. From the environment it
+  is configured by ``$HGI_INFERENCE_BASE_URL``, ``$HGI_INFERENCE_API_KEY`` and
+  ``$HGI_MODEL_ID``; an experiment (:mod:`hgi.experiment`) installs it per
+  role instead.
 - :class:`Stub` — a deterministic answerer used when no endpoint is
   configured. It classifies work-shape lexically, answers every lens with the
   empty finding, and attacks and adjudicates by fixed rules stated in its
   methods. It exists so the loop's mechanics run and are testable offline; it
   is not evidence that a model learned anything.
 
-Every call records its model id; every lens and decision records the model
-it was priced for, and the lint warns on a mismatch at boot.
+Roles resolve to backends through :func:`backend`: a role with its own
+backend installed by :func:`use` gets it, every other role gets the default.
+Spec § 9.6: four contexts, one model or several. Every call records its
+model id; every lens and decision records the model it was priced for, and
+the lint warns on a mismatch at boot.
 """
 
 from __future__ import annotations
@@ -25,13 +30,17 @@ from __future__ import annotations
 import json
 import os
 import re
+from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Iterator
 
 import weave
 
 from hgi import tracing
 from hgi.roles import prompt as role_prompt
+
+WANDB_INFERENCE = "https://api.inference.wandb.ai/v1"
+"""W&B Inference: OpenAI-compatible, keyed by the W&B API key, usage attributed to ``entity/project``."""
 
 
 @dataclass
@@ -58,14 +67,24 @@ class Backend:
 
 
 class OpenAICompatible(Backend):
-    def __init__(self, base_url: str, api_key: str, model_id: str):
+    """One OpenAI-compatible endpoint, one model id, deterministic by default.
+
+    ``project`` is sent as the ``OpenAI-Project`` header, which W&B Inference
+    reads as ``entity/project`` for usage attribution. ``max_retries`` covers
+    the endpoint's concurrency 429s with the client's own backoff.
+    """
+
+    def __init__(self, base_url: str, api_key: str, model_id: str, *, temperature: float = 0.0,
+                 project: str | None = None, max_retries: int = 5, timeout: float = 120.0):
         from openai import OpenAI
 
-        self.client = OpenAI(base_url=base_url, api_key=api_key)
+        self.client = OpenAI(base_url=base_url, api_key=api_key, project=project, max_retries=max_retries, timeout=timeout)
+        self.base_url = base_url
         self.model_id = model_id
+        self.temperature = temperature
 
     def chat(self, messages, *, json_mode, tools=None):
-        kwargs: dict[str, Any] = {"model": self.model_id, "messages": messages, "temperature": 0}
+        kwargs: dict[str, Any] = {"model": self.model_id, "messages": messages, "temperature": self.temperature}
         if json_mode:
             kwargs["response_format"] = {"type": "json_object"}
         if tools:
@@ -88,32 +107,90 @@ class Stub(Backend):
         return {"content": answer(messages, tools), "tool_calls": []}
 
 
-_backend: Backend | None = None
+def wandb_api_key() -> str | None:
+    """The W&B API key the way ``wandb`` itself finds it: ``$WANDB_API_KEY``, then the netrc entry ``wandb login`` wrote."""
+    key = os.environ.get("WANDB_API_KEY")
+    if key:
+        return key
+    try:
+        import wandb
+
+        return wandb.api.api_key
+    except Exception:
+        return None
 
 
-def backend() -> Backend:
-    global _backend
-    if _backend is None:
-        base_url = os.environ.get("HGI_INFERENCE_BASE_URL")
-        if base_url and os.environ.get("HGI_MODEL_ID"):
-            _backend = OpenAICompatible(base_url, os.environ.get("HGI_INFERENCE_API_KEY", "none"), os.environ["HGI_MODEL_ID"])
+def from_env() -> Backend:
+    """The backend the environment names: the endpoint of ``$HGI_INFERENCE_BASE_URL`` and ``$HGI_MODEL_ID``, else the stub."""
+    base_url = os.environ.get("HGI_INFERENCE_BASE_URL")
+    model = os.environ.get("HGI_MODEL_ID")
+    if not (base_url and model):
+        return Stub()
+    key = os.environ.get("HGI_INFERENCE_API_KEY") or (wandb_api_key() if base_url.startswith(WANDB_INFERENCE) else None) or "none"
+    project = tracing.project_name() if base_url.startswith(WANDB_INFERENCE) else None
+    return OpenAICompatible(base_url, key, model, project=project)
+
+
+_default: Backend | None = None
+_roles: dict[str, Backend] = {}
+
+
+def backend(role: str | None = None) -> Backend:
+    """The backend serving ``role``: its own when one is installed, else the default."""
+    global _default
+    if role is not None and role in _roles:
+        return _roles[role]
+    if _default is None:
+        _default = from_env()
+    return _default
+
+
+def use(b: Backend | None, role: str | None = None) -> None:
+    """Install ``b`` as the default backend, or as ``role``'s own; ``None`` uninstalls (the default then re-reads the environment)."""
+    global _default
+    if role is None:
+        _default = b
+    elif b is None:
+        _roles.pop(role, None)
+    else:
+        _roles[role] = b
+
+
+def reset() -> None:
+    """Forget every installed backend."""
+    global _default
+    _default = None
+    _roles.clear()
+
+
+@contextmanager
+def override(role: str, b: Backend) -> Iterator[None]:
+    """Serve ``role`` from ``b`` for the duration of the block, whatever is installed."""
+    previous = _roles.get(role)
+    _roles[role] = b
+    try:
+        yield
+    finally:
+        if previous is None:
+            _roles.pop(role, None)
         else:
-            _backend = Stub()
-    return _backend
+            _roles[role] = previous
 
 
-def use(b: Backend | None) -> None:
-    global _backend
-    _backend = b
+def model_id(role: str | None = None) -> str:
+    return backend(role).model_id
 
 
-def model_id() -> str:
-    return backend().model_id
+def roster() -> dict[str, str]:
+    """Every role's model id — the default's, unless the role has its own backend."""
+    from hgi.roles import ROLES
+
+    return {role: model_id(role) for role in ROLES}
 
 
 @weave.op(name="hgi.complete")
 def _complete(role: str, system: str, user: str, json_mode: bool) -> dict[str, Any]:
-    return backend().chat([{"role": "system", "system_role": role, "content": system}, {"role": "user", "content": user}], json_mode=json_mode)
+    return backend(role).chat([{"role": "system", "system_role": role, "content": system}, {"role": "user", "content": user}], json_mode=json_mode)
 
 
 def complete(role: str, user: str, *, json_mode: bool = True, session: str | None = None, pass_: int | None = None,
@@ -122,7 +199,7 @@ def complete(role: str, user: str, *, json_mode: bool = True, session: str | Non
     system = role_prompt(role)
     with tracing.attributes(session=session, pass_=pass_, role=role, records_in_context=records_in_context):
         result, call = _complete.call(role, system, user, json_mode)
-    return Completion(text=result["content"], model_id=backend().model_id, call=tracing.call_uri(call))
+    return Completion(text=result["content"], model_id=model_id(role), call=tracing.call_uri(call))
 
 
 def chat_with_tools(role: str, messages: list[dict[str, Any]], tools: list[dict], *, session: str | None = None,
@@ -135,4 +212,4 @@ def chat_with_tools(role: str, messages: list[dict[str, Any]], tools: list[dict]
 
 @weave.op(name="hgi.turn")
 def _turn(role: str, messages: list[dict[str, Any]], tools: list[dict]) -> dict[str, Any]:
-    return backend().chat(messages, json_mode=False, tools=tools)
+    return backend(role).chat(messages, json_mode=False, tools=tools)

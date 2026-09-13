@@ -90,7 +90,7 @@ def walk_lenses(store: Store, session: Session, host: str, subject_for) -> list[
 
 def boot(store: Store, session_id: str | None, pass_: int) -> Session:
     tracing.init()
-    session = Session(id=session_id or store.mint("session"), pass_=pass_, started_at=now(), model_id=_model.model_id(), attached=True)
+    session = Session(id=session_id or store.mint("session"), pass_=pass_, started_at=now(), model_id=_model.model_id("pass"), attached=True)
     if store.exists("session", session.id):
         raise SystemExit(f"{session.id} already exists")
 

@@ -117,7 +117,7 @@ def build_brief(store: Store, record: Consolidation, sessions: list[Session]) ->
 # --- the four roles ------------------------------------------------------------------------
 
 def nominate(store: Store, record: Consolidation, brief: dict[str, Any]) -> list[dict[str, Any]]:
-    c = _model.complete("consolidator", json.dumps({"request": "nominate", "brief": brief, "bars": store.registry.bars, "model_id": _model.model_id()}, default=str),
+    c = _model.complete("consolidator", json.dumps({"request": "nominate", "brief": brief, "bars": store.registry.bars, "model_id": _model.model_id("consolidator")}, default=str),
                         session=record.id)
     record.brief["consolidator_call"] = c.call
     return list(c.json().get("nominations", []))
