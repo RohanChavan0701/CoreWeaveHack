@@ -97,8 +97,11 @@ class Admission(Strict):
     """Stamped by the committer, never by the proposer.
 
     The admitting commit is not stored on the record because a commit cannot
-    contain its own hash; it is derived from git history by ``hgi lineage``
-    (the commit message names every id it admitted).
+    contain its own hash; it is derived from git history by
+    :func:`hgi.store.admitting_commit`, which ``hgi lineage`` prints. Every
+    commit message names the ids it admitted, flipped or retired — a range
+    such as ``C-0001..C-0007`` naming each id it spans — and the oldest
+    message naming an id is the commit that admitted it.
     """
 
     proposed_by: str

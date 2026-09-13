@@ -126,14 +126,16 @@ hgi close       --session S-nnnn            # dispositions, observations, steers
 hgi consolidate                             # the backward pass over the ledgers
 hgi lint                                    # the floor
 hgi index                                   # regenerate projections
-hgi lineage     D-0007                      # the path query over the lineage DAG
+hgi lineage     D-0007                      # the admitting commit, and the path query over the lineage DAG
 ```
 
 Every command that writes ends in a commit whose message names the record
-ids it admitted, flipped or retired. `./demo.sh` runs the whole
-demonstration; `uv run marimo run dashboard.py` opens the projection surface
-and the escalation queue; `uv run hgi mirror` publishes the ledgers to Weave
-for the analyst.
+ids it admitted, flipped or retired, which is what makes the admitting
+commit derivable: a record carries no hash of the commit that admitted it,
+so `hgi lineage` reads it back as the oldest commit naming the id.
+`./demo.sh` runs the whole demonstration; `uv run marimo run dashboard.py`
+opens the projection surface and the escalation queue; `uv run hgi mirror`
+publishes the ledgers to Weave for the analyst.
 
 ## Experiments
 

@@ -7,7 +7,7 @@
     hgi consolidate                              # the backward pass over the ledgers
     hgi lint                                     # the floor
     hgi index                                    # regenerate projections
-    hgi lineage     D-0007                       # the path query over the DAG
+    hgi lineage     D-0007                       # the admitting commit and the path query over the DAG
     hgi experiment  run experiments/x.toml       # every arm of an experiment file, each in its own store
 
 Every command that writes ends in a commit whose message names the record
@@ -34,7 +34,7 @@ from pathlib import Path
 from hgi import index as _index
 from hgi import lint as _lint
 from hgi import registry as _registry
-from hgi.store import Store, commit
+from hgi.store import Store, admitting_commit, commit
 
 
 ENV_FILE = ".env"
@@ -123,8 +123,10 @@ def cmd_index(args) -> int:
 
 def cmd_lineage(args) -> int:
     store = _store(args)
-    paths = _index.paths_to(store, args.id)
-    for p in paths:
+    at = admitting_commit(store, args.id)
+    print(f"admitted in {at['sha']} on {at['date']}: {at['subject']}" if at
+          else f"no commit over this store names {args.id}")
+    for p in _index.paths_to(store, args.id):
         print(" -> ".join(p))
     return 0
 
@@ -150,7 +152,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = add("index", "regenerate projections")
     p.set_defaults(fn=cmd_index)
 
-    p = add("lineage", "the path query over the DAG")
+    p = add("lineage", "the admitting commit and the path query over the DAG")
     p.add_argument("id")
     p.set_defaults(fn=cmd_lineage)
 

@@ -15,6 +15,7 @@ discharge); everything else that is a ledger is JSON Lines.
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import uuid
 from datetime import datetime, timezone
@@ -293,3 +294,44 @@ def commit(store: Store, message: str) -> str | None:
         return None
     git("commit", "-q", "-m", message, cwd=Path(top))
     return git("rev-parse", "--short", "HEAD", cwd=Path(top))
+
+
+ID_OR_RANGE = re.compile(r"\b([A-Z])-(\d{4})(?:\.\.([A-Z])-(\d{4}))?(?!\d)")
+"""An id in a commit subject, or a range of them of the form ``C-0001..C-0007``."""
+
+
+def ids_named(subject: str) -> set[str]:
+    """Every record id a commit subject names. A range names each id it spans, which is how genesis names its articles."""
+    out: set[str] = set()
+    for prefix, first, last_prefix, last in ID_OR_RANGE.findall(subject):
+        if last and last_prefix == prefix:
+            out |= {f"{prefix}-{n:04d}" for n in range(int(first), int(last) + 1)}
+        else:
+            out.add(f"{prefix}-{first}")
+    return out
+
+
+def commits_naming(store: Store, id: str) -> list[dict[str, str]]:
+    """Every commit over the store whose message names ``id``, newest first; empty outside a repository."""
+    try:
+        top = git("rev-parse", "--show-toplevel", cwd=store.root)
+    except (subprocess.CalledProcessError, FileNotFoundError, NotADirectoryError):
+        return []
+    log = git("log", f"--grep={id.split('-')[0]}-", "--format=%h%x1f%as%x1f%s", "--",
+              str(store.root.resolve()), cwd=Path(top))
+    rows = (line.split("\x1f", 2) for line in log.splitlines())
+    return [{"sha": sha, "date": date, "subject": subject}
+            for sha, date, subject in rows if id in ids_named(subject)]
+
+
+def admitting_commit(store: Store, id: str) -> dict[str, str] | None:
+    """The commit that admitted ``id`` — the oldest one naming it — or ``None`` when nothing has committed it.
+
+    ``admission.commit`` is not a stored field, because a commit cannot contain
+    its own hash. The anchor is git history instead, which the commit messages
+    make legible by naming every id they admit, flip or retire. History is
+    append-only and no message names a record before the commit that wrote it,
+    so the oldest naming is the admission.
+    """
+    naming = commits_naming(store, id)
+    return naming[-1] if naming else None
