@@ -29,7 +29,7 @@ from hgi.drafting import SKETCH_REPLY
 
 HERE = Path(__file__).parent
 
-ROLES = ("pass", "consolidator", "examiner", "adjudicator", "coder")
+ROLES = ("pass", "consolidator", "examiner", "adjudicator", "coder", "reauthor")
 
 REPLIES: dict[str, Any] = {
     "classify": {"terms": ["<a term from `terms` that at least one presentation's prompt plainly instantiates; the union over all tasks; a term that merely might apply is left out>"],
@@ -68,6 +68,7 @@ REPLIES: dict[str, Any] = {
                    "means": "<for admit: one sentence defining the term, as the registry will carry it>"},
     "currency": {"verdict": "<still-holds | reversed | moot>", "why": "<one sentence; a record whose cited anchor (`rotted`) retired still holds only if the anchor's successor stands for it>",
                  "premise": "<for reversed: the id of the premise the reading reversed; null when the warrant as a whole is disputed>"},
+    "reauthor": {"text": {"<the name of a field being re-authored, such as `angle` or `article`>": "<that field's content re-authored to condition the new model: the same claim, the wording that conditions it>"}},
 }
 
 
@@ -159,7 +160,7 @@ def role_models(role: str) -> list[type]:
     from hgi.drafting import Sketch
     from hgi.types import Draft, LedgerEntry, Observation
 
-    return {"pass": [Observation, Sketch], "consolidator": [Sketch], "examiner": [Draft, LedgerEntry], "adjudicator": [Draft, LedgerEntry], "coder": []}[role]
+    return {"pass": [Observation, Sketch], "consolidator": [Sketch], "examiner": [Draft, LedgerEntry], "adjudicator": [Draft, LedgerEntry], "coder": [], "reauthor": []}[role]
 
 
 @cache
