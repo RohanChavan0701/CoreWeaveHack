@@ -58,6 +58,9 @@ REPLIES: dict[str, Any] = {
                           "passes": "<for defer keyed on the schedule: passes to wait before re-adjudication; else null>"}},
     "credit": {"steers": [{"record": "<record id>", "slot": "<payload | activation | warrant>", "signature": "recalled-applied-still-corrected",
                            "correction": "<what the record got wrong>", "why_not_caught": "<why no floor caught it>"}]},
+    "anchor": {"anchors": [{"article": "<a C- id from `articles`>", "anchor": "<one id or URI from `instances` that exemplifies the article>",
+                            "why": "<how that instance instantiates the article's claim>"}]},
+    "exemplifies": {"verdict": "<still-holds if the instance exemplifies the article; reversed if it contradicts it; moot if it does not bear on it>", "why": "<one sentence>"},
     "currency": {"verdict": "<still-holds | reversed | moot>", "why": "<one sentence; a record whose cited anchor (`rotted`) retired still holds only if the anchor's successor stands for it>"},
 }
 

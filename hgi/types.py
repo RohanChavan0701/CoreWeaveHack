@@ -712,6 +712,8 @@ class Consolidation(Strict):
     flipped: list[str] = Field(default_factory=list)
     deferred: list[str] = Field(default_factory=list)
     """Draft uids re-queued with their condition as a latch."""
+    anchored: list[str] = Field(default_factory=list)
+    """Genesis articles that earned an anchor in this pass."""
 
 
 # --- kind table ---------------------------------------------------------------

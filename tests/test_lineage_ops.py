@@ -57,7 +57,7 @@ def test_a_fold_contracts_two_records_into_one_successor(store):
         assert all(l.lifecycle.status == "settled" for l in r.all_latches() if l.type != "wiring")
         assert [l.guard.records for l in r.latches if l.type == "wiring"] == [[fold.id]]
     paths = _index.paths_to(store, fold.id)
-    assert {tuple(p[-2:]) for p in paths} == {(a.id, fold.id), (b.id, fold.id), (store.all("hypothesis")[-1].id, fold.id)}
+    assert {tuple(p[-2:]) for p in paths} == {(a.id, fold.id), (b.id, fold.id), (fold.admission.ledger_entry, fold.id)}
     assert ["O-0001", a.id, fold.id] in paths, "the history of being wrong reads back through the fold"
     _index.regenerate(store)
     assert _lint.run(store).green

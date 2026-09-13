@@ -30,6 +30,7 @@ from hgi import index as _index
 from hgi import latches as _latches
 from hgi import lint as _lint
 from hgi import model as _model
+from hgi import reviews as _reviews
 from hgi import roles
 from hgi import tracing
 from hgi.registry import term_head
@@ -373,35 +374,6 @@ def propagate(store: Store, record: Consolidation) -> list[Fire]:
     return fires
 
 
-def retirement_review(store: Store, record: Consolidation) -> list[Nomination]:
-    """applied ÷ considered nominates, never verdicts; the adjudicator's killer-item check decides mootness."""
-    out = []
-    for row in _index.competence(store):
-        d: Decision = store.read("decision", row["record"])  # type: ignore[assignment]
-        guard = d.lifecycle.retirement.guard
-        if row["applied_over_considered"] is None or guard.applied_over_considered_below is None:
-            continue
-        if row["passes_in_window"] < (guard.over_passes or 0) or row["applied_over_considered"] >= guard.applied_over_considered_below:
-            continue
-        c = _model.complete("adjudicator", roles.request("currency", record=d.id, applied_over_considered=row["applied_over_considered"],
-                                                         threshold=guard.applied_over_considered_below, moot_when=d.lifecycle.moot_when,
-                                                         moot_evidence=row["considered"] > 0 and row["applied"] == 0), session=record.id)
-        v = c.json().get("verdict", "still-holds")
-        entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="currency", subject=d.id,
-                            claim=f"{d.id} applied ÷ considered = {row['applied_over_considered']:.2f} over {row['passes_in_window']} passes",
-                            proposer=RoleCall(role="consolidator", model_id=None, call=None),
-                            contradiction={"source": {"role": "adjudicator", "model_id": c.model_id, "call": c.call}, "coding": row},
-                            verdict=v, adjudicator=RoleCall(role="adjudicator", model_id=c.model_id, call=c.call), rung="counterfactual-edit")
-        store.append(entry)
-        n = Nomination(rung="counterfactual-edit", rung_why="retirement leg: the nominating ratio fell below the guard", subject=d.id,
-                       evidence=[f"applied_over_considered={row['applied_over_considered']}"], ledger_entry=entry.id, outcome=v)
-        if v == "moot":
-            store.flip_status(d, "moot", by=record.id)
-            record.flipped.append(d.id)
-        out.append(n)
-    return out
-
-
 # --- the pass -------------------------------------------------------------------------------
 
 def consolidate(store: Store, analyst_report: str | None = None, force: bool = False) -> Consolidation:
@@ -431,7 +403,8 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
             record.nominations.append(nomination)
     discharge_fires(store, record, brief)
     steers = credit(store, record, brief, sessions)
-    record.nominations += retirement_review(store, record)
+    record.nominations += _reviews.retirement(store, record)
+    record.nominations += _reviews.genesis_anchors(store, record)
     propagate(store, record)
     record.closed_at = now()
     store.write(record)
@@ -446,7 +419,7 @@ def report(record: Consolidation, steers: list[Steer]) -> str:
         lines.append(f"nominated {n.rung} on {n.subject} ({', '.join(n.evidence)}) → {n.ledger_entry}: {n.outcome}")
     lines.append(f"steers: {', '.join(f'{t.id} {t.indicts.record if t.indicts else ''} [{t.matrix_cell}]' for t in steers) or 'none'}")
     lines.append(f"fires discharged: {', '.join(record.fires_discharged) or 'none'}; admitted: {', '.join(record.admitted) or 'none'}; "
-                 f"flipped: {', '.join(record.flipped) or 'none'}; deferred: {', '.join(record.deferred) or 'none'}")
+                 f"flipped: {', '.join(record.flipped) or 'none'}; deferred: {', '.join(record.deferred) or 'none'}; anchored: {', '.join(record.anchored) or 'none'}")
     if record.analyst_report:
         lines.append(f"analyst report: {record.analyst_report}")
     return "\n".join(lines)

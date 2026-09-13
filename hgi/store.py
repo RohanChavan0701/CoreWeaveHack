@@ -324,6 +324,18 @@ class Store:
         self.write(flipped)
         return flipped
 
+    def anchor_article(self, article: ConstitutionArticle, anchor: str) -> ConstitutionArticle:
+        """The one in-place change a genesis warrant takes: an anchor the adjudicator ratified, appended. ``evidence`` stays ``genesis``."""
+        anchored = article.model_copy(update={"warrant": article.warrant.model_copy(update={"anchors": [*article.warrant.anchors, anchor]})})
+        self.write(anchored)
+        return anchored
+
+    def evict_article(self, article: ConstitutionArticle) -> ConstitutionArticle:
+        """Displace an article under the cap: a status flip to ``evicted`` — superseded, never deleted."""
+        evicted = article.model_copy(update={"status": "evicted"})
+        self.write(evicted)
+        return evicted
+
     def _observation_by_uid_or_name(self, key: str) -> Observation | None:
         for o in self.all("observation"):
             if o.uid == key or o.name == key:

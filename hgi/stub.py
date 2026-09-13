@@ -279,6 +279,38 @@ def _nominate(req):
     return {"nominations": nominations}
 
 
+ARTICLE_INSTANCES: list[tuple[str, Callable[[dict[str, Any]], str | None]]] = [
+    ("backward pass admits", lambda i: next((h["id"] for h in i["hypotheses"] if (h.get("outcome") or "").startswith("admitted")), None)),
+    ("count with ids", lambda i: next((u["id"] for u in i["dispositions"]), None)),
+    ("hypothesis with an anchor", lambda i: next((o["name"] for o in i["observations"] if o["anchor"]), None)),
+    ("no context holds two roles", lambda i: next((h["id"] for h in i["hypotheses"] if len(h["roles"]) >= 3), None)),
+    ("raises abstraction", lambda i: next((h["id"] for h in i["hypotheses"] if "payload:abstraction" in h["attack_targets"]), None)),
+    ("discloses its residue", lambda i: next((d["id"] for d in i["decisions"] if d["residue"]), None) or next((f["session"] for f in i["unevaluable_facts"]), None)),
+    ("retirement leg", lambda i: next((d["id"] for d in i["decisions"] if d["status"] == "superseded"), None) or next((d["id"] for d in i["decisions"] if d["retirement_guard"]), None)),
+]
+"""What the stub consolidator reads an article's words as asking for, and where in the instances it looks."""
+
+
+@handles("anchor")
+def _anchor(req):
+    out = []
+    for article in req["articles"]:
+        for cue, pick in ARTICLE_INSTANCES:
+            if cue in article["article"]:
+                anchor = pick(req["instances"])
+                if anchor:
+                    out.append({"article": article["id"], "anchor": anchor, "why": f"the instance {anchor} is what the article's words '{cue}' name"})
+                break
+    return {"anchors": out}
+
+
+@handles("exemplifies")
+def _exemplifies(req):
+    if req.get("instance"):
+        return {"verdict": "still-holds", "why": f"{req['anchor']} exists in the store and is of the kind the article names"}
+    return {"verdict": "moot", "why": "the anchor names nothing"}
+
+
 # --- the examiner ---------------------------------------------------------------------------
 
 @handles("attack")
