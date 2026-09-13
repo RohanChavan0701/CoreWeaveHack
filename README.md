@@ -69,7 +69,7 @@ coordinate (spec § 9).
 | trace store, the world, the steer channel | **W&B Weave** | `@weave.op` on every model and tool call with `hgi.session`, `hgi.pass`, `hgi.role` and `hgi.records_in_context` attributes; the task suite is a `weave.Dataset`, each scorer a `weave.Scorer`, each pass a `weave.Evaluation` run; feedback on calls becomes steer records |
 | the frozen model | **CoreWeave inference endpoint**, or **W&B Inference** | one OpenAI-compatible client per model, installed per role; every call records its model id; every lens records the model it was priced for |
 | the consolidation analyst | **W&B ARIA** | reads the disposition and session ledgers mirrored to Weave as datasets and drafts the consolidation brief; its report URI is recorded on the consolidation session; it nominates, never verdicts |
-| projections and the escalation surface | **marimo** | `dashboard.py` renders the index, the lineage DAG, the detection matrix and the escalation queue live from the demonstration store or any experiment arm's, overlays every arm of an experiment on one chart, and writes only through `hgi` commands |
+| projections and the escalation surface | **marimo** | `dashboard.py` renders the index, the lineage DAG, the detection matrix and the escalation queue live from the demonstration store or any experiment arm's, overlays every arm of an experiment on one chart, charts a stream arm's lessons and what each pass cost, pulls every call's tokens and latency from Weave on request, and writes only through `hgi` commands |
 | the blind second coder, the guard evaluator | **TypeSafe AI System1** | classifies observations against the registry's shape terms without the consolidator's candidate labels; falls back to a second, separately prompted frozen-model context when the vendor is not configured |
 
 ## The demonstration and its acceptance bar
@@ -392,7 +392,17 @@ CoreWeave endpoint is a model entry with its own `base_url` and
 carrying `hgi.experiment` and `hgi.arm`, each evaluation named by its arm.
 The dashboard's store picker lists every arm; choosing one shows its
 projections, its escalation queue and every arm of its experiment on one
-chart, refreshing while the arm runs.
+chart, refreshing while the arm runs. Every chart is an altair chart
+(hover a mark for the row behind it): the score curve over every arm with
+the chosen arm at full ink and a rule where it admitted a record; the
+solution-quality and cost-of-a-pass series as small multiples, one panel a
+measure; a stream arm's lessons as a lesson × pass heatmap and a per-lesson
+bar per arm; the competence projection as one stacked bar a record. The
+Compute tab reads the trace store on request: every model call carries its
+tokens and latency in Weave with `hgi.arm`, `hgi.pass` and `hgi.role` as
+attributes, so one filtered query charts tokens and seconds per pass by
+role and by the model that served the call, the backward pass charged to
+the pass it followed.
 
 ### The stream
 
