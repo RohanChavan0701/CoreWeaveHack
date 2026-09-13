@@ -176,14 +176,24 @@ def propose(store: Store, session: Session) -> list[Draft]:
     return out
 
 
+def _world_facts(row: dict[str, Any]) -> dict[str, Any]:
+    """A failed row stripped of its scores: the observation lens reads the world — the output, the tool errors — never the
+    series it failed. No series name reaches the eliciting brief (the scores dict, and any field named for a series, are
+    dropped), so a finding names the convention the attempt turned on, not the check it scored against."""
+    drop = {"scores", *SERIES}
+    return {k: v for k, v in row.items() if k not in drop}
+
+
 def lens_subjects(store: Store, session: Session, lens) -> dict[str, Any] | list[dict[str, Any]]:
     """What a close lens reads. A lens whose contact is the artifact touches the item: it is walked once per failed row, with
-    that row's presentation, output, tool errors and scores. The other close lenses read the whole pass at once."""
+    that row's presentation, output and tool errors — never its scores, so the finding names the world, not the check.
+    The other close lenses read the whole pass at once."""
     rows = session.evaluation.rows if session.evaluation else []
     consulted = [_decision_view(store, c.record) for c in session.consulted]
     if lens.externality.contact == "artifact":
         world = _suite.current()
-        return [{"task": row["task"], "prompt": world.by_id[row["task"]].prompt if row["task"] in world.by_id else None, "row": row, "consulted": consulted}
+        return [{"task": row["task"], "prompt": world.by_id[row["task"]].prompt if row["task"] in world.by_id else None,
+                 "row": _world_facts(row), "consulted": consulted}
                 for row in rows if not _index.row_passed(row)]
     return {"consulted": consulted, "rows": rows, "failed": [r["task"] for r in rows if not _index.row_passed(r)], "fires": session.fires_seen,
             "scores": {k: f.value for k, f in session.evaluation.scores.items()} if session.evaluation else {}}
