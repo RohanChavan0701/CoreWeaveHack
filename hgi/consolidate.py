@@ -29,6 +29,7 @@ from hgi import coder as _coder
 from hgi import index as _index
 from hgi import lint as _lint
 from hgi import model as _model
+from hgi import roles
 from hgi import tracing
 from hgi.registry import term_head
 from hgi.store import Store, now
@@ -117,8 +118,8 @@ def build_brief(store: Store, record: Consolidation, sessions: list[Session]) ->
 # --- the four roles ------------------------------------------------------------------------
 
 def nominate(store: Store, record: Consolidation, brief: dict[str, Any]) -> list[dict[str, Any]]:
-    c = _model.complete("consolidator", json.dumps({"request": "nominate", "brief": brief, "bars": store.registry.bars, "model_id": _model.model_id("consolidator")}, default=str),
-                        session=record.id)
+    c = _model.complete("consolidator", roles.request("nominate", brief=brief, bars=store.registry.bars, rungs=store.registry.terms("ladder-rung"),
+                                                      model_id=_model.model_id("pass")), session=record.id)
     record.brief["consolidator_call"] = c.call
     return list(c.json().get("nominations", []))
 
@@ -137,16 +138,14 @@ def evidence_pack(store: Store, draft: Draft, brief: dict[str, Any]) -> dict[str
 
 
 def attack(store: Store, record: Consolidation, draft: Draft, evidence: dict[str, Any]) -> tuple[dict[str, Any], _model.Completion]:
-    c = _model.complete("examiner", json.dumps({"request": "attack", "draft": draft.model_dump(by_alias=True, mode="json"), "evidence": evidence}, default=str),
-                        session=record.id)
+    c = _model.complete("examiner", roles.request("attack", draft=draft.model_dump(by_alias=True, mode="json"), evidence=evidence), session=record.id)
     return {"claims": c.json().get("claims", []), "verdict": "pending"}, c
 
 
 def verdict(store: Store, record: Consolidation, draft: Draft, attack_payload: dict[str, Any], evidence: dict[str, Any]) -> tuple[str, str | None, _model.Completion]:
-    c = _model.complete("adjudicator", json.dumps({"request": "verdict", "draft": draft.model_dump(by_alias=True, mode="json"), "attack": attack_payload,
-                                                   "oracle": {"series": evidence["series"], "scores": evidence["scores"]},
-                                                   "watch_scorer": evidence["watch_scorer"], "bars": store.registry.bars}, default=str),
-                        session=record.id)
+    c = _model.complete("adjudicator", roles.request("verdict", draft=draft.model_dump(by_alias=True, mode="json"), attack=attack_payload,
+                                                     oracle={"series": evidence["series"], "scores": evidence["scores"]},
+                                                     watch_scorer=evidence["watch_scorer"], bars=store.registry.bars), session=record.id)
     out = c.json()
     v = str(out.get("verdict", "escalate(adjudicator returned no verdict)"))
     store.registry.check("adjudicator-verdict", v)
@@ -210,7 +209,7 @@ def credit(store: Store, record: Consolidation, brief: dict[str, Any], sessions:
     """Oracle-attributed steers: the adjudicator performs credit assignment on a regression, never the pass that produced it."""
     if not brief["credit"]:
         return []
-    c = _model.complete("adjudicator", json.dumps({"request": "credit", "applied": brief["credit"]}, default=str), session=record.id)
+    c = _model.complete("adjudicator", roles.request("credit", applied=brief["credit"]), session=record.id)
     fired_on = {f.latch.record for f in store.all("fire") if any(f.edge_event.pass_ == s.pass_ for s in sessions)}  # type: ignore[attr-defined]
     out = []
     for s in c.json().get("steers", []):
@@ -231,8 +230,8 @@ def discharge_fires(store: Store, record: Consolidation) -> list[LedgerEntry]:
             continue
         d = store.find(f.latch.record)
         successor = d.lineage.superseded_by if isinstance(d, Decision) else None
-        c = _model.complete("adjudicator", json.dumps({"request": "currency", "record": f.latch.record, "fire": f.model_dump(by_alias=True, mode="json"),
-                                                       "successor": successor}, default=str), session=record.id)
+        c = _model.complete("adjudicator", roles.request("currency", record=f.latch.record, fire=f.model_dump(by_alias=True, mode="json"), successor=successor),
+                            session=record.id)
         out = c.json()
         v = out.get("verdict", "still-holds")
         entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="currency", subject=f.latch.record,
@@ -263,9 +262,9 @@ def retirement_review(store: Store, record: Consolidation) -> list[Nomination]:
             continue
         if row["passes_in_window"] < (guard.over_passes or 0) or row["applied_over_considered"] >= guard.applied_over_considered_below:
             continue
-        c = _model.complete("adjudicator", json.dumps({"request": "currency", "record": d.id, "applied_over_considered": row["applied_over_considered"],
-                                                       "threshold": guard.applied_over_considered_below, "moot_when": d.lifecycle.moot_when,
-                                                       "moot_evidence": row["considered"] > 0 and row["applied"] == 0}, default=str), session=record.id)
+        c = _model.complete("adjudicator", roles.request("currency", record=d.id, applied_over_considered=row["applied_over_considered"],
+                                                         threshold=guard.applied_over_considered_below, moot_when=d.lifecycle.moot_when,
+                                                         moot_evidence=row["considered"] > 0 and row["applied"] == 0), session=record.id)
         v = c.json().get("verdict", "still-holds")
         entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="currency", subject=d.id,
                             claim=f"{d.id} applied ÷ considered = {row['applied_over_considered']:.2f} over {row['passes_in_window']} passes",

@@ -22,6 +22,7 @@ from typing import Any
 from hgi import boot as _boot
 from hgi import index as _index
 from hgi import model as _model
+from hgi import roles
 from hgi import steers as _steers
 from hgi import tracing
 from hgi.store import Store, now
@@ -43,7 +44,7 @@ def dispose(store: Store, session: Session) -> list[Disposition]:
     consulted = [_decision_view(store, c.record) for c in session.consulted]
     verdicts: dict[str, dict[str, Any]] = {}
     if consulted:
-        c = _model.complete("pass", json.dumps({"request": "dispose", "consulted": consulted, "rows": rows}, default=str),
+        c = _model.complete("pass", roles.request("dispose", consulted=consulted, rows=rows, vocabulary=store.registry.terms("use-time-disposition")),
                             session=session.id, pass_=session.pass_, records_in_context=[x["record"] for x in consulted])
         verdicts = {v["record"]: v for v in c.json().get("dispositions", [])}
     out = []
@@ -110,8 +111,9 @@ def file_contradictions(store: Store, session: Session) -> list[LedgerEntry]:
 def propose(store: Store, session: Session) -> list[Draft]:
     """Step 5. The pass proposes; nothing it proposes is yet true. A draft that fails to parse is not filed."""
     rows = session.evaluation.rows if session.evaluation else []
-    c = _model.complete("pass", json.dumps({"request": "propose", "observations": session.observations_filed, "rows": rows,
-                                           "bars": store.registry.bars}, default=str), session=session.id, pass_=session.pass_)
+    c = _model.complete("pass", roles.request("propose", observations=session.observations_filed, rows=rows, bars=store.registry.bars,
+                                              rungs=store.registry.terms("ladder-rung"), model_id=_model.model_id("pass")),
+                        session=session.id, pass_=session.pass_)
     out = []
     for raw in c.json().get("drafts", []):
         try:

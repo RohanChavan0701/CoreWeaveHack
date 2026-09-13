@@ -26,6 +26,7 @@ from hgi import coder as _coder
 from hgi import index as _index
 from hgi import lint as _lint
 from hgi import model as _model
+from hgi import roles
 from hgi import tracing
 from hgi.store import Store, now
 from hgi.types import Considered, Consulted, Decision, LensAnswer, Session, WorkShape
@@ -42,8 +43,7 @@ def previous_session(store: Store, pass_: int) -> Session | None:
 def classify(store: Store, session: Session) -> WorkShape:
     """Step 3: the pass names its work-shape in registry terms; anything the vocabulary lacks is an escape."""
     terms = store.registry.terms("work-shape")
-    c = _model.complete("pass", json.dumps({"request": "classify", "presentations": presentations(), "terms": terms}),
-                        session=session.id, pass_=session.pass_)
+    c = _model.complete("pass", roles.request("classify", presentations=presentations(), terms=terms), session=session.id, pass_=session.pass_)
     out = c.json()
     registered = [t for t in out.get("terms", []) if t in terms]
     escapes = [t for t in out.get("terms", []) if t not in terms and t.startswith("other(")] + list(out.get("escapes", []))
@@ -79,9 +79,9 @@ def walk_lenses(store: Store, session: Session, host: str, subject_for) -> list[
     """One context per angle; the adjudicator is never the answerer; a finding with no id or anchor is not filed."""
     answers = []
     for lens in store.registry.lenses(host):
-        payload = {"request": "lens", "lens": {"id": lens.id, "angle": lens.angle, "counterfactual": lens.counterfactual, "product": lens.product},
-                   "subject": subject_for(lens)}
-        c = _model.complete("pass", json.dumps(payload, default=str), session=session.id, pass_=session.pass_,
+        payload = roles.request("lens", lens={"id": lens.id, "angle": lens.angle, "counterfactual": lens.counterfactual, "product": lens.product},
+                                subject=subject_for(lens))
+        c = _model.complete("pass", payload, session=session.id, pass_=session.pass_,
                             records_in_context=[x.record for x in session.considered if x.guard_passed])
         out = c.json()
         answers.append(LensAnswer(lens=lens.id, answer=str(out.get("answer", "")), findings=list(out.get("findings", [])), call=c.call))

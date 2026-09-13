@@ -134,8 +134,9 @@ class Agent(weave.Model):
         context = "\n".join(f"- {a}" for a in self.articles)
         plan = "\n".join(f"- {r['id']} [{', '.join(r['terms'])}] stakes: {r['stakes']}\n  {r['decision']}" for r in self.records) or "- (none)"
         system = (role_prompt("pass") + "\n\n## Constitution\n" + context + "\n\n## Consultation plan — records in context, each owed `apply`\n" + plan +
-                  "\n\nFinish by replying with one JSON object: {\"result\": <per schema>, \"error\": null | {\"message\": str, \"cause\": str}, "
-                  "\"applied\": [record ids you applied]}. A failed task's error names its root cause.")
+                  "\n\nFinish by replying with one JSON object: {\"result\": ..., \"error\": null | {\"message\": str, \"cause\": str}, "
+                  "\"applied\": [record ids you applied]}. The output schema describes that whole object: `result` is the value its `result` "
+                  "property describes, never wrapped again. A failed task's error names its root cause; a tool failure you recovered from is not an error.")
         messages: list[dict[str, Any]] = [{"role": "system", "content": system},
                                           {"role": "user", "content": f"Task {task}: {prompt}\nOutput schema: {json.dumps(schema)}"}]
         for _ in range(MAX_TURNS):
