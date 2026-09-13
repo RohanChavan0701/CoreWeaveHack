@@ -183,6 +183,7 @@ family is hand-written or transcribed once from a public dataset into
 | `mbpp` | 257 | [google-research-datasets/mbpp](https://huggingface.co/datasets/google-research-datasets/mbpp), sanitized test split, CC-BY-4.0 | write `solution.py`, run `tests.py` under three shell calls; the dataset's own asserts are the hidden check |
 | `tables` | 100 | [TableBench](https://huggingface.co/datasets/Multilingual-Multimodal-NLP/TableBench), Apache-2.0, the scalar-answer rows | one question over `table.csv`, graded by a normalizer with tolerance |
 | `api` | 100 | the same TableBench rows, odd positions | the same questions through a paged JSON API under a budget of pages plus two |
+| `transfer` | 6 | hand-written | the `conventions` conventions re-dressed — the same no-trailing-newline files, paging API and `/v2` move worn as different file names, a different API surface and different endpoints — so a record whose hook reads the convention scores here and one that memorised a path or a filename does not |
 
 The fault profile says how many leading HTTP calls of a faulted task fail,
 whether HTTP calls are budgeted, and whether shell output truncates. An
@@ -190,8 +191,8 @@ experiment file carries the suite as `[suite]` (families, a seeded sample
 size, the profile), deep-merged per arm; a hand-run names a TOML with the
 same table in `$HGI_SUITE`. `hgi suite show` prints the resolved suite and
 its hash. The deterministic stub runs only the families that carry scripted
-policies (`genesis`, and `conventions` naively); every other family fails on
-it honestly.
+policies (`genesis`, and `conventions` and `transfer` naively); every other
+family fails on it honestly.
 
 ## Experiments
 
@@ -221,6 +222,7 @@ hgi experiment models                                # the ids the endpoint serv
 | `experiments/cadence.toml` | `gpt-oss-120b` attached, consolidating every 1, 2 and 3 passes over six | how often to consolidate |
 | `experiments/probe.toml` | `gpt-oss-120b` attached, 2 × 2, the hand-written families | every role request on a real model end to end; the reply log is the evidence |
 | `experiments/world.toml` | `gpt-oss-120b` and `gpt-oss-20b` attached, `gpt-oss-120b` detached, the split roles; 52 tasks from five families, first two HTTP calls faulted | a world with conventions the model cannot already know: does the attached curve separate |
+| `experiments/transfer.toml` | `gpt-oss-120b` attached and detached, `gpt-oss-20b` attached; `genesis`, `conventions`, `api` and `transfer`, first two HTTP calls faulted | a convention held twice in different clothes: does a record admitted on one family score on the same convention re-dressed as another |
 
 The shipped files run on W&B Inference (`https://api.inference.wandb.ai/v1`):
 the key is `$WANDB_API_KEY` or the netrc entry `wandb login` wrote, and the
