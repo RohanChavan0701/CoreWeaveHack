@@ -1,0 +1,78 @@
+# The reasoning-core stream: Reasoning Core's regex-following and cfg-generation instances — 24 tasks, twelve of each
+# generator — dealt into six batches of four, balanced over the two generators; pass k meets batch k at first sight,
+# closes on it, and consolidates every two batches, so every batch is a validation set once and training afterwards.
+# The detached arm meets the same batches with no store, so the comparison is paired per batch. Batches 1 and 2 are
+# met again after the stream by the attached arms, which measures retention against transfer.
+#
+# The lesson here is not a convention of the world but a method: verify a candidate with the checker before answering
+# (`re.fullmatch`; NLTK's Earley membership), and pick a candidate the grammar or pattern provably admits. The lax
+# pool budgets one call beyond the knowing policy's single verification, so a wrong first candidate may be repaired;
+# the strict pool budgets exactly that one call, so only a pass that already produces a member first time stays in
+# budget.
+#
+# The roles are split: the actor is a mid-sized open model, and the backward pass — consolidator, examiner,
+# adjudicator, blind coder — runs on a strong teacher, so what the store admits is the teacher's reading of the actor's
+# misses. A second actor, gpt-oss-20b, meets the same stream under the same teacher; the detached arm is the actor
+# alone. The first-sight rate on the ~0.5 band is the hypothesis this run measures (carry-forward item 88).
+#
+# Ids are W&B Inference ids as listed on 2026-09-13; `hgi experiment models` lists today's.
+name = "reasoning-core"
+description = "first-sight produce-and-verify on unseen regexes and grammars as the store grows, a strong teacher over a mid-sized actor"
+weave_project = "hgi-experiments"
+
+[models.qwen3-35b]
+id = "Qwen/Qwen3.6-35B-A3B"
+
+[models.gpt-oss-20b]
+id = "openai/gpt-oss-20b"
+
+[models.deepseek-pro]
+id = "deepseek-ai/DeepSeek-V4-Pro"
+
+[defaults]
+model = "qwen3-35b"
+passes_per_round = 2
+concurrency = 4
+
+[defaults.roles]
+consolidator = "deepseek-pro"
+examiner = "deepseek-pro"
+adjudicator = "deepseek-pro"
+coder = "deepseek-pro"
+
+[defaults.stream]
+families = ["reasoning-core"]
+batch = 4
+batches = 6
+seed = 0
+revisit = [1, 2]
+
+[defaults.stream.faults]
+http_fault_fraction = 0.0
+
+[arms.qwen-attached]
+mode = "attached"
+description = "Qwen3.6-35B-A3B acting, DeepSeek-V4-Pro consolidating, examining, adjudicating and coding"
+
+[arms.qwen-detached]
+mode = "detached"
+description = "the ablation on the same batches: the actor alone, one run is the whole record"
+
+[arms.20b-attached]
+model = "gpt-oss-20b"
+description = "a weaker actor on the same stream under the same teacher"
+
+# The strict pool: the same instances budgeted at exactly the one verification call, so a wrong first candidate cannot
+# be repaired within budget. Only a pass that already produces a member first time — from the store's method, or from
+# the model — passes.
+[arms.qwen-strict]
+mode = "attached"
+description = "the strict pool: does the store's method save the repair call"
+[arms.qwen-strict.stream]
+families = ["reasoning-core-strict"]
+
+[arms.qwen-strict-detached]
+mode = "detached"
+description = "the strict pool's ablation"
+[arms.qwen-strict-detached.stream]
+families = ["reasoning-core-strict"]

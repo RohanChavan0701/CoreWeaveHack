@@ -1,0 +1,84 @@
+# The text-to-SQL stream: BIRD mini-dev's `financial` questions over one pinned SQLite database. The pool is the ten
+# graded questions and the six held-out ones — 16 tasks over the same schema — dealt into eight batches of two,
+# balanced over the two groups so every batch carries one of each; pass k meets batch k at first sight, closes on it,
+# and consolidates every two batches. In a stream every batch is unseen, so the holdout's template-disjoint questions
+# arrive as more first sights over the same conventions rather than as a separate leg. The detached arm meets the same
+# batches with no store; batches 1 and 2 are met again after the stream, which measures retention against transfer.
+#
+# The lesson of this world is the database's own schema: dates are TEXT reached with STRFTIME (no YEAR()), a ratio
+# needs CAST(... AS REAL) or SQLite integer-divides to a number that executes and is wrong, statuses and frequencies
+# are coded literals, `order` is a reserved word. The evidence in the prompt names the domain mapping, never the
+# dialect, so the convention is met on first contact and, once admitted, transfers to an unseen question over the
+# same schema. Grading re-executes the returned SELECT and compares rows to the gold's rows — a wrong-but-running
+# query fails.
+#
+# The roles are split: the actor is gpt-oss-120b, the model the role contracts were priced on, and the backward pass
+# runs on a strong teacher. gpt-oss-20b meets the same stream under the same teacher as the weaker actor. The strict
+# pool holds the ten graded questions alone (the holdout has no strict twin), five batches of two consolidated every
+# pass, budgeted at the knowing floor of one shell call: only a pass that already knows the schema convention stays in
+# budget. The ~0.5 first-sight rate is the hypothesis this run measures (carry-forward item 89).
+#
+# Ids are W&B Inference ids as listed on 2026-09-13; `hgi experiment models` lists today's.
+name = "text2sql"
+description = "first-sight text-to-SQL on unseen BIRD questions over one schema as the store grows, a strong teacher over the actor"
+weave_project = "hgi-experiments"
+
+[models.gpt-oss-120b]
+id = "openai/gpt-oss-120b"
+
+[models.gpt-oss-20b]
+id = "openai/gpt-oss-20b"
+
+[models.deepseek-pro]
+id = "deepseek-ai/DeepSeek-V4-Pro"
+
+[defaults]
+model = "gpt-oss-120b"
+passes_per_round = 2
+concurrency = 2
+
+[defaults.roles]
+consolidator = "deepseek-pro"
+examiner = "deepseek-pro"
+adjudicator = "deepseek-pro"
+coder = "deepseek-pro"
+
+[defaults.stream]
+families = ["text2sql", "text2sql-holdout"]
+batch = 2
+batches = 8
+seed = 0
+revisit = [1, 2]
+
+[defaults.stream.faults]
+http_fault_fraction = 0.0
+
+[arms.120b-attached]
+mode = "attached"
+description = "gpt-oss-120b acting, DeepSeek-V4-Pro consolidating, examining, adjudicating and coding"
+
+[arms.120b-detached]
+mode = "detached"
+description = "the ablation on the same batches: the actor alone, one run is the whole record"
+
+[arms.20b-attached]
+model = "gpt-oss-20b"
+description = "a weaker actor on the same stream under the same teacher"
+
+# The strict pool: the ten graded questions at exactly one shell call, so discovering the schema costs a call the
+# budget does not hold. Five batches of two, consolidated after every pass.
+[arms.120b-strict]
+mode = "attached"
+passes_per_round = 1
+description = "the strict pool: does the store save the schema-discovery call"
+[arms.120b-strict.stream]
+families = ["text2sql-strict"]
+batches = 5
+
+[arms.120b-strict-detached]
+mode = "detached"
+passes_per_round = 1
+description = "the strict pool's ablation"
+[arms.120b-strict-detached.stream]
+families = ["text2sql-strict"]
+batches = 5
