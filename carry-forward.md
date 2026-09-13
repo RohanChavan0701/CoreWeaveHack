@@ -7,7 +7,7 @@ work left for the full implementation and the decisions taken along the way
 ## Where it stands
 
 - Slices 0–3 of spec § 13 ship with their acceptance tests green
-  (`uv run pytest`, 95 tests). Slice 4 ships the dashboard, the analyst
+  (`uv run pytest`, 104 tests). Slice 4 ships the dashboard, the analyst
   mirror and the retirement leg; the rule tier and the grown floor do not
   exist because the roster is decisions only. Slice 6(e) — split and fold
   as executed operators — ships, with the other backward-pass legs that
@@ -287,6 +287,26 @@ work left for the full implementation and the decisions taken along the way
     adjudicator's own token (`admit` | `decline(<why>)`) is the entry's
     outcome. A declined term is re-nominated only by escapes from passes
     after the verdict.
+
+30. **Every verdict seam routes through a closed table**
+    (`registry.route_table`), and a term the vocabulary admits but the seam
+    has no act for raises `Unrouted`; a test proves every table covers its
+    vocabulary and the escape. *Right:* the `defer` fall-through of the
+    first build cannot recur silently. *Risk:* an act tag is a string the
+    seam dispatches on; the table proves coverage, not that the act is
+    right.
+31. **A settlement cites its licence** — an adjudicated ledger entry, a
+    dispositive fire, or the admitted successor — and the committer refuses
+    any other, so a corroborating fire nominates and never settles. The
+    retirement latch is corroborating, so retirement cites the adjudicator's
+    currency entry, and the lint proves the licence on every settled latch.
+    *Risk:* `evict_article` cites no licence; the deadline in the bars is
+    its only ground.
+32. **A fire owed to the working pass is disposed at close** as a consulted
+    record is — from the pass's own rows, in the session's commit — or the
+    close is refused, and the lint's `fire-completeness` check reads the
+    close seam. *Risk:* no latch in the decisions-only roster names the
+    working pass as its disposer yet, so the path is proven by tests only.
 
 ## Housekeeping
 

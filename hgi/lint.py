@@ -20,6 +20,8 @@ ports                        write          fails a latch off its port declarati
                                             required latch type that is absent
 constitution-cap             write          fails a store exceeding max_articles or max_bytes                         the ranking
 disposition-completeness     close          fails a closed session with a consulted record lacking a disposition      whether the disposition was honest
+fire-completeness            close          fails a closed session that saw a fire owed to the working pass and left   whether the discharge was honest
+                                            it undischarged
 projection-coherence         commit         fails when index/ differs from regeneration                               nothing — total
 consumer-edge-acyclicity     commit         fails a cycle over wiring edges                                           undeclared edges
 model-pricing                boot           warns on a lens or decision priced for a model other than the session's   the size of the re-pricing
@@ -323,6 +325,25 @@ def check_dispositions(store: Store) -> list[Finding]:
         for c in s.consulted:
             if c.disposition is None or c.disposition not in have:
                 out.append(fail("disposition-completeness", s.id, f"consulted record {c.record} has no use-time disposition"))
+    return out
+
+
+@check("fire-completeness", "close", "whether the discharge was honest")
+def check_fires_discharged(store: Store) -> list[Finding]:
+    """A fire owed to the working pass is discharged by the pass that saw it, or that pass's close was not a close."""
+    from hgi.boot import WORKING_PASS
+
+    out = []
+    for s in store.all("session"):
+        s: Session
+        if s.closed_at is None or not s.attached:
+            continue
+        for fid in s.fires_seen:
+            if not store.exists("fire", fid):
+                continue
+            f = store.read("fire", fid)
+            if f.disposer == WORKING_PASS and not f.disposition.discharged:  # type: ignore[attr-defined]
+                out.append(fail("fire-completeness", s.id, f"fire {fid} owed to the working pass was seen at boot and left undischarged at close"))
     return out
 
 

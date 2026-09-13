@@ -107,7 +107,10 @@ def _noticings(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 @handles("dispose")
 def _dispose(req):
     applied_in = {rid for row in req["rows"] for rid in row.get("applied", [])}
-    return {"dispositions": [
+    passed = sum(1 for row in req["rows"] if not row.get("error"))
+    fires = [{"fire": f["id"], "outcome": f"{f['disposition']['act']}: {f['latch']['record']} read against the pass's rows; {passed}/{len(req['rows'])} tasks passed with it in context"}
+             for f in req.get("fires_owed", [])]
+    return {"fires": fires, "dispositions": [
         {"record": c["record"], "disposition": "applied" if c["record"] in applied_in else "considered-not-applicable",
          "note": "applied on " + ", ".join(r["task"] for r in req["rows"] if c["record"] in r.get("applied", [])) if c["record"] in applied_in else "hook matched the pass's presentation; no task bore on it"}
         for c in req["consulted"]
