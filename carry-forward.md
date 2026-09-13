@@ -7,7 +7,7 @@ each with why it may be right and why it may not.
 ## Where it stands
 
 - Slices 0–3 of spec § 13 ship with their acceptance tests green
-  (`uv run pytest`, 154 tests). Slice 4 ships the dashboard, the analyst
+  (`uv run pytest`, 203 tests). Slice 4 ships the dashboard, the analyst
   mirror and the retirement leg; the rule tier and the grown floor do not
   exist because the roster is decisions only. Slice 6(e) — split and fold
   as executed operators — ships, with the other backward-pass legs that
@@ -88,7 +88,10 @@ each with why it may be right and why it may not.
    L-0003 (what the pass made false) names tasks and call URIs where it
    must name a record id, so nothing files from it. Both are walked once
    per pass and cost a call each; neither has a consumer yet that would
-   miss them. The lens battery (§ 9.2, slice 6a) would score exactly this.
+   miss them. The lens battery (§ 9.2, slice 6a) now ships (item 8) and
+   scores decoy rejection over the close lenses, so L-0003 has a scorer;
+   but L-0002's boot-lens answer on a real store is still unconsumed, and
+   L-0003 still names tasks and call URIs where it must name a record id.
 5. **TypeSafe System1.** `hgi/coder.py` assumes an OpenAI-compatible surface
    behind `TYPESAFE_BASE_URL`; the real API shape is unverified (waitlist as
    of 2026-09-12). The role is the invariant; only the adapter changes.
@@ -118,8 +121,19 @@ each with why it may be right and why it may not.
    `nominate` request carries the whole body of every record `fusion` or
    `convergence` names, and neither row has yet appeared on a real-model
    arm.
-8. **The lens battery** (§ 9.2, slice 6a): decoy rejection scored in Weave;
-   `LensTelemetry` fields are all `design-stage`.
+8. ~~**The lens battery** (§ 9.2, slice 6a): decoy rejection scored in Weave;
+   `LensTelemetry` fields are all `design-stage`.~~
+   *Mechanism done (this build); the live Weave scoring is a run.*
+   `hgi/lens_battery.py` plants two decoys and two genuine signals per close
+   lens (L-0003, L-0004) and scores decoy rejection as a traced
+   `weave.Evaluation` (`hgi lens-battery`); `telemetry_from` computes
+   `decoy_rejection` and `answer_variance` and `populate_telemetry` writes
+   them onto `registry/lenses.json`, off `design-stage`
+   (`tests/test_lens_battery.py`). Left for a run: with `HGI_WEAVE_PROJECT`
+   and the real model as the pass backend, confirm the `lens-battery-v1/*`
+   scorer series appear in Weave with a non-null run URI, and commit the
+   demonstration store's real-model telemetry — the committed
+   `store/registry/lenses.json` is deliberately left at `design-stage`.
 9. **The demonstration store's seven articles are still unanchored.** The
    anchoring review exists and runs at every consolidation, and the stub
    anchors all seven from the demo's own ledgers (`tests/test_genesis.py`),
@@ -168,10 +182,14 @@ each with why it may be right and why it may not.
     back through `HGI_REPLY_LOG`. `--reauthor` has not been run on `store/`;
     the Housekeeping note's `--restamp`-or-`genesis --force` choice now has a
     third option that keeps the store and moves the text.
-15. **`hgi experiment`'s genesis message names no article ids** (`Genesis for
+15. ~~**`hgi experiment`'s genesis message names no article ids** (`Genesis for
     <exp>/<arm>: priced for …`), so `hgi lineage C-0003` finds no admitting
-    commit in an arm's store, where `hgi genesis`'s message would. One line
-    in `hgi/experiment.py`, left to whoever owns that file next.
+    commit in an arm's store.~~ *Done (this build).* The arm's genesis commit
+    subject now appends the constitution range (`, constitution
+    C-0001..C-0007`, endpoints derived from `store.articles()`, decision 28),
+    so `hgi lineage <C-id>` resolves an admitting commit inside an arm's store
+    as it does in the demonstration store (`hgi/experiment.py._genesis_message`;
+    `tests/test_experiment.py`).
 16. ~~**The watch a model sketches** is sometimes a watch on success.~~
     *Done (this build).* `drafting.fires_on_success` reads a revisit watch's
     direction against the oracle's convention (a higher-is-better score in
