@@ -30,11 +30,34 @@ that a full cycle needs is present.
 | sessions | one record per pass with its carry-forward | `store/sessions/` |
 | proposals | the pre-admission tier: drafts with a `uid` and a recyclable `name` | `store/proposals/` |
 | queue | proposals whose verdict is `escalate(<why>)`, awaiting a human | `store/queue/` |
-| registry | closed vocabularies, ports, bars, the constitution cap, lenses, id counters | `store/registry/` |
+| registry | closed vocabularies, ports, bars, the constitution cap, the lens register, id counters | `store/registry/` |
 | index | regenerated projections; never hand-edited | `store/index/` |
 
 Traces and facts are not directories. They live in the oracle and are
 referenced by anchor.
+
+The lens register is the composition surface: each lens is a typed question
+with its counterfactual, priced per model, hosted at boot, at close, or in the
+examiner's dispatch. Its warrant is effect evidence derived at consolidation
+from the products that reached a consumer — an observation promoted, a
+contradiction settled, a claim upheld, a steer citing it — and its lifecycle
+is the crystallization law: a lens whose product stops varying, or a seed no
+consumer ever took from, is nominated to the adjudicator and retired on
+`moot`. The examiner's four attack angles are lenses too, walked one context
+per angle.
+
+### The hypothesis ledger, by species
+
+Every entry carries a proposer, a contradiction source and an adjudicator,
+three distinct parties; the lint proves the separation on every line.
+
+| Species | Written by | Contradicted by | Consumed by |
+|---|---|---|---|
+| attack | the consolidator's nomination, through the examiner fan | the examiner, one lens per context | the committer, on the adjudicator's verdict |
+| reality | every observation group at the bar, before nomination | the oracle's rows the observations anchor | the noise filter: an irreducible group is dismissed, a reducible one nominated |
+| currency | a revisit fire, a rotted anchor, the retirement ratio, a genesis anchor, a lens at a door, a port's miss stream, a pass's close-time contradiction | the oracle: the fire, the ratio, the instance, the pass's reading | the backward pass: a status or premise flip, a lens retired, a port widened |
+| coding | an escape recurring across independent occasions | the blind coder, the candidate withheld | the vocabulary review: a term minted or declined |
+| collision, forecast | nothing yet: the species are declared with their verdict vocabularies and no writer — the collision species needs an independent deriver, the forecast species the belief store | — | — |
 
 ## Sponsor stack
 
@@ -87,7 +110,7 @@ carries the cause*), superseding D-0001. Passes 5–6 pass every task.
 | 3. One retirement on telemetry | yes | D-0001 superseded by D-0003; the nominating evidence is the credit table on K-0002 (applied ÷ considered 1.0, `task_pass_rate` on its applied tasks 0.0 → 0.0) and steer T-0001 |
 | 4. Dispositions complete; no fire owed to the working pass undischarged | yes | every consulted record in every attached pass has a `U-` record; `store/index/fires.json` is empty |
 | 5. Calibration over four settled beliefs | no | the belief store is not instantiated in this roster |
-| 6. Floor green; projections equal regeneration | yes | `hgi lint` is green with seven warnings, all `genesis-anchor`: the seven genesis articles passed three consolidation passes without earning an anchor and are due for eviction or anchoring |
+| 6. Floor green; projections equal regeneration | yes | `hgi lint` is green with fifteen warnings, all `genesis-anchor`: the seven genesis articles and the eight genesis lenses passed three consolidation passes without earning an anchor and are due for eviction, retirement or anchoring |
 | 7. Matrix populated: a steer cell and a system-catches cell | yes | `store/index/matrix.json`: one event in `system-misses/oracle-catches` (T-0001), six in `system-catches/none-catches` (applied dispositions on passing tasks) |
 | 8. Roles separate on every ledger entry | yes | H-0001…H-0003 carry a consolidator, an examiner and an adjudicator call, three distinct Weave calls with distinct `hgi.role` attributes |
 
@@ -155,18 +178,28 @@ the committer alone writes. In order:
 
 | Leg | Nominates on | Executes as |
 |---|---|---|
-| nominations | the brief: observations grouped by the blind coder's shapes under the independence bar; `fusion` (dispositions bimodal across matched sub-shapes → split); `convergence` (identical hooks applied together → fold); `structural_zero` (a record no registered hook reaches → hook-edit) | a draft per nomination through attack and verdict; a `hook-edit` or `counterfactual-edit` is a successor derived from the one record it supersedes; a leaf names `split_from`, a fold `folded_from`, and admission writes the DAG move with reciprocal pointers |
+| triage | every observation group at the independence bar, with the rows its anchors name | the adjudicator classifies the recurrence `reducible` (a duty the loop missed) or `irreducible` (nothing a record could have prevented) on a `reality` entry; an irreducible group is dismissed with a pointer to the entry and leaves the brief before any slot can update on it |
+| nominations | the brief: observations grouped by the blind coder's shapes under the independence bar; `fusion` (dispositions bimodal across matched sub-shapes → split); `convergence` (identical hooks applied together → fold); `structural_zero` (a record no registered hook reaches → hook-edit); `recall` (a record the boot lens probed for unconsulted, or a steer indicting activation → hook-edit re-keying on what was presented) | a draft per nomination through attack and verdict; a `hook-edit` or `counterfactual-edit` is a successor derived from the one record it supersedes; a leaf names `split_from`, a fold `folded_from`, and admission writes the DAG move with reciprocal pointers; a nomination at a rung this roster has no operator for (`adoption-row`, `rule-enrollment`, `floor`, `article`) is refused and recorded, never drafted as a decision |
+| attack | the draft, verbatim | the examiner fan: one call per examiner-hosted lens (independence, premise kill, abstraction, watch direction), each contributing only the claims of its own class; the adjudicator, never an angle, joins them |
 | deferrals | a `defer(<until>)` verdict | the condition becomes a latch on the draft — a watch predicate the oracle's next runs fire, or passes to wait — and the fire, owed to the backward pass, re-adjudicates the draft in fresh contexts |
 | fires owed | revisit latches whose predicate held; deferral latches | a decision's by a currency verdict on its warrant; a draft's by re-adjudication; the disposition and any flip land in one commit. A fire owed to the working pass instead is discharged by that pass at close, or the close is refused |
-| credit | the task-level credit table | oracle-attributed steers, credit assigned by the adjudicator |
+| pending contradictions | a `currency` entry a pass filed at close (the close lens named a premise or hook the pass made false), still pending | the adjudicator re-checks the warrant against the finding; the verdict lands on a new entry citing the pending one, and a `reversed` flips the premise |
+| credit | the task-level credit table, each fraction with the counts it is computed from | oracle-attributed steers, credit assigned by the adjudicator |
 | retirement | applied ÷ considered under the record's retirement guard over the window | mootness by the adjudicator's killer-item check |
 | genesis anchoring | a seed article with no anchor | the consolidator names an instance from the ledgers, the adjudicator says whether it exemplifies the article, the committer appends the anchor; past the deadline in the bars an article still unanchored is evicted |
-| vocabulary | the same `other(<what>)` from independent passes | the blind coder recodes the presentations with the candidate withheld, the adjudicator admits or declines, the registry grows in place |
+| lenses | a lens's products that reached a consumer; a seed lens unanchored past the deadline; a product that stopped varying over the review window | anchors are derived and appended to the lens's warrant; a lens at a door — genesis-deadline or variance-collapse — goes to the adjudicator, and `moot` retires it (kept in the register as evidence, walked by nothing) |
+| vocabulary | the same `other(<what>)` from independent occasions — a pass's work-shape, a latch's key-space, a species' verdict | revision routing first reads the pile against the axis's members: a missing peer or a partition of one member is horizontal and proceeds; a distinction that cross-cuts several members is vertical — the axis conflated two questions — and is surfaced, never minted. Then the blind coder recodes the presentations with the candidate withheld, the adjudicator admits or declines, the registry grows in place |
+| ports | a latch type admitted off its port declaration on a warrant by independent records | the adjudicator admits or declines widening the mark from `forbidden` to `optional`; the port table is corrected in place |
 | propagation | a wiring latch whose neighbour left the status it last saw — a tombstone's successor, a warrant's cited record | a mechanical check in the same commit; a rotted anchor goes to the adjudicator as a currency question |
 
 The projections under `store/index/` show each leg's live state: `hooks`,
-`summaries`, `triggers`, `deferred`, `wiring`, `fires`, `competence`,
-`fusion`, `convergence`, `structural_zero`, `lineage`, `matrix`.
+`summaries` (each record's watch, or `unwatched` when no world-state latch
+can send its warrant back), `triggers`, `deferred`, `wiring`, `fires`,
+`competence`, `fusion`, `convergence`, `structural_zero`, `recall` (the
+should-have-fired stream: boot-lens probes and activation steers per
+record), `attacker` (attacker precision per angle, the landings the
+adjudicator upheld or overruled, and the should-have-been-caught-by
+stream — every count a floor), `lineage`, `matrix`.
 
 ## The world
 
@@ -322,4 +355,8 @@ two passes chained through the store (slice 2), admit, decline, escalate,
 the human queue, verdict authority and role separation on the ledger
 (slice 3), the retirement leg, and the backward pass's other legs: split
 and fold on the lineage DAG, the structural-zero audit and the edit rungs,
-deferral latches and propagation, genesis anchoring, and vocabulary growth.
+deferral latches and propagation, genesis anchoring, and vocabulary growth;
+and the doctrine's disciplines over them: the noise filter, the examiner fan,
+attacker precision, the recall stream, the lens lifecycle, revision routing,
+the port miss stream, the key-space floor, and the refusal of a rung with
+no operator.

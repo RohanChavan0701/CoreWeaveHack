@@ -15,6 +15,22 @@ A recurrence is ratified when its group holds observations from at least as many
 
 A promotion raises abstraction: restate the instance object-decoupled, at transferable altitude ("errors that wrap carry their cause", never "fix the http tool"), and keep the instances as anchors. Do not abstract past the evidence — a payload the anchors no longer instantiate is a floating entry and will be refused.
 
+You read the brief's rows into slots, never into "is this record good": each row indicts one slot and names its own rung.
+
+| Row of the brief | Indicts | Rung |
+|---|---|---|
+| `competence`: applied ÷ considered low, fired-but-not-applicable dominating | activation — precision | `counterfactual-edit`: grow `not_this` |
+| a `fired-off-map` disposition, or an `escapes` term the passes kept naming | activation — boundary | `hook-edit`: re-shape the hook; the term is the vocabulary review's |
+| `recall` or `structural_zero`: needed and unreached | activation — recall | `hook-edit`: re-key on what was presented |
+| `credit`: recalled, applied, and the oracle still regressed (a steer indicts the payload) | payload | `new-decision` superseding it: re-abstract or re-derive |
+| `fusion`: applied on one sub-shape, never on another | payload — fused | `new-decision` leaves, `split_from` the parent |
+| `convergence`: two records applied together on one hook | granularity | `new-decision` folding them, `folded_from` both |
+| `groups`: a recurrence of one undecided fork across independent passes | a fork nobody settled | `new-decision` |
+
+The groups you read have already passed the noise filter: the adjudicator triaged every group at the bar as reducible before it reached you, and an irreducible group — a failure no record could have prevented — was dismissed to its reality entry and is not in the brief. What remains is a duty the loop missed; your question is which rung carries it.
+
+Authoring register. Key the hook on the presentation — what the pass holds before the payload has helped: the task's shape, the tool it calls, the fault it meets — never on the conclusion the payload reaches. Bias the hook broad and recover precision through `not_this`, never by shaving the hook: a false fire costs one disposition and doubles as telemetry, a miss is a structural zero nobody sees. Build `terms` from the registered vocabulary only; a shape the vocabulary lacks is an `other(<what>)` escape on the pass, never a term minted inside a hook. Write the counterfactual as a concrete, plausible alternative failure asserted as certain — the overshoot of following the decision too far — citing the observation it was seen in; bare negation ("don't overdo it") bounds nothing. Write each premise's falsifier as the reading of the evidence that would refute it.
+
 The two slot-local rungs are executed as successor records, never as edits in place: a `hook-edit` or `counterfactual-edit` names the one record it supersedes and the fields it changes in `edit`, and its body is derived from that record with the edit applied. A row of the brief's `structural_zero` is a record no registered hook reaches — stored, unreachable, never recalled; re-key it on the terms its cue names and the window presented. A row of the brief's `recall` is the should-have-fired stream: independent passes probed for the record (the boot lens asked which record the work needed and no hook reached) or a steer indicted its activation; when the probing passes meet the independence bar, re-key it with a `hook-edit` adding the `missing` terms they presented — the hook was too narrow, not the payload wrong. Should-have-fired is a floor: a record no pass thought of is not in the row.
 
 Two moves act on granularity rather than tier, and both are moves on the lineage DAG (§ 10.6). **Split** (vertex split): a row of the brief's `fusion` marks a fused record — applied whenever one sub-shape matched it, never when only another did; it splits into leaves, one draft per sub-shape naming the parent in `split_from`, each re-satisfying the whole contract, the parent retiring by coverage migration. **Fold** (edge contraction): a row of the brief's `convergence` marks two records applied together on the same hook; when one payload entails the other, one successor draft names both in `folded_from`. Default fold before split. Derive a leaf or a fold from the bodies the brief carries for those records; every split or fold is ratified against the raw anchors, never the labels, so its `evidence` is the anchors of the records it leaves.

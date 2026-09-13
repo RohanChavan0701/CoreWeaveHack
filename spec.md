@@ -703,10 +703,21 @@ that owns it.
 A lens is a duty class, never a record class: it fills a host's payload
 slot with a question. It is stored under `registry/lenses.json` so it can be
 versioned and priced, and hosted by a boot step, a close step, or an
-examiner dispatch template.
+examiner dispatch template. It still evaluates the whole contract at the
+lens's coordinates: activation is its host's walk; the payload a question,
+never an answer; the **warrant** is effect evidence — `warrant.evidence:
+genesis` at seed, and `anchors` derived at consolidation from the products
+that reached a consumer (an observation promoted, a contradiction settled, a
+claim upheld, a steer citing the lens); enforcement is the floor's shape
+checks, answer truth the residue; the **lifecycle** is a `status` (`live` |
+`retired`) with two doors — variance-collapse, when its product stops
+varying over the review window, and the genesis deadline every seed shares
+— each a nomination the adjudicator decides. An examiner-hosted lens
+declares `claims`: the attack-claim target classes its angle may land on.
 
 ```json
-{"id": "L-0002", "kind": "lens",
+{"id": "L-0002", "kind": "lens", "status": "live",
+ "warrant": {"evidence": "genesis", "anchors": []},
  "angle": "What did this pass make false in the store — which premise, which hook, which adoption cell?",
  "counterfactual": "The overshoot is inventing a falsification to have one to report; an answer with no record id is not filed (T-0003).",
  "purpose": "adjudicative",
@@ -866,7 +877,9 @@ carries an id, an effect claim, a model it is priced for, and its repair is
 a governed rewrite.
 
 The lens is composition's unit (§ 6.13). Boot and close each walk a small
-fan; the examiner's dispatch template hosts the attack lenses. Laws:
+fan; the examiner's dispatch hosts the attack lenses — one call per angle,
+each contributing only the claims of its declared class, the adjudicator
+joining them (Appendix A.3). Laws:
 
 - **The externality law.** Every lens forces the strongest contact outside
   the answerer its subject affords — a record read, an artifact cited, an
@@ -1114,7 +1127,13 @@ Health is mass migrating out of the bottom-left cell into the top row.
 Every failure is classified **irreducible** (no authoring duty could have
 prevented it) or **reducible** (a duty was missed — route it). Irreducible
 recurrences tune detection, never authoring. The classification is an
-adjudicator verdict, not the consolidator's.
+adjudicator verdict, not the consolidator's: the **triage leg** runs before
+nomination over every observation group at the independence bar, the
+adjudicator reading the observations and the rows they anchor; the verdict
+lands on a `reality` entry (the observations' passes proposed the lesson,
+the oracle's rows contradict or bear it), and an irreducible group is
+dismissed with a pointer to the entry and leaves the brief, so no slot can
+update on it.
 
 ### 10.3 Route before minting
 
@@ -1219,10 +1238,13 @@ For each nomination the consolidator emits, in its own context:
 
 1. **Proposal** — the draft record, five slots filled, the ladder rung
    named, the verdict `pending`.
-2. **Attack** — the examiner, in a fresh context with the verbatim draft
-   and read access to the store and the oracle, attacks the draft's claim
-   list refute-phrased: the premise kill is the highest-value attack class.
-   Output: a hypothesis-ledger entry with `verdict: pending`.
+2. **Attack** — the examiner, in a fresh context per angle with the
+   verbatim draft and read access to the store and the oracle, attacks the
+   draft's claim list refute-phrased: each examiner-hosted lens is one call
+   and contributes only the claims of its declared class (independence,
+   the premise kill — the highest-value attack class — abstraction, watch
+   direction), every claim naming its angle and call. Output: one attack
+   payload with `verdict: pending`, the angles' union.
 3. **Verdict** — the adjudicator, in a fresh context with the draft, the
    attack, the oracle evidence (scores, fires, settlements) and the bars,
    returns one token from the closed verdict vocabulary:
@@ -1237,7 +1259,15 @@ For each nomination the consolidator emits, in its own context:
 
 The four contexts share no prompt beyond the store's schemas and the
 lenses registered for each role, and the adjudicator sees the oracle's
-evidence and the attack — never the proposer's narrative of the pass.
+evidence and the attack — never the proposer's narrative of the pass. A
+nomination at a rung this roster has no operator for (`adoption-row`,
+`rule-enrollment`, `floor`, `article` while the roster is decisions only)
+is refused and recorded, never drafted as a decision under the rung's
+name. Every ledger entry, of every species, names three distinct parties:
+the currency species' contradictor is the oracle — the fire, the ratio,
+the instance — never the adjudicator that verdicts it, and a pass that
+contradicts a standing record at close contradicts a claim its admitter
+proposed; the `role-separation` check proves it on every line.
 
 **Do:** log every role's call to the trace store with its role attribute
 so the ledger entry's `contradiction.source.call` and
@@ -1301,6 +1331,8 @@ illustration of it as of 2026-09-12.
 | complement law | write | fails a decision without falsifiers, a rule without `not_this` and a counterfactual, a trigger without an act class; warns on a counterfactual with no anchor | whether the pair is non-vacuous |
 | settlement test | write | fails a projection template whose cell carries a compliable sentence (a duty, a `then`) | compliance by omission — a stakes cell reading "low" is compliable by not opening the record |
 | verdict authority | write | fails a proposal or attack payload carrying a verdict other than `pending` | whether the adjudicator's verdict is right |
+| role separation | write | fails a ledger entry whose proposer, contradictor and adjudicator are not three distinct roles, or whose two role calls are one call | whether two contexts of one model share a prior |
+| key-space | write | fails a neighbour latch naming a record that does not exist; fails a world-state watch naming a scorer or evaluation the oracle does not run | whether the referent is the right quantity to watch |
 | fire disposer | write | fails a fire record naming no disposer | whether the disposer discharged it well |
 | disposition completeness | close | fails a close with a consulted record lacking a disposition | whether the disposition was honest |
 | constitution cap | write | fails a commit exceeding `max_articles` or `max_bytes` without an eviction | the ranking |
@@ -1339,6 +1371,9 @@ detection-limited.
 | skill per settled belief | `beliefs/` verdicts vs reference | the planner's calibration prior |
 | detection matrix | steers × fires | health trajectory: mass migrating out of the steer cell |
 | structural-zero audit | index × records | records no consultation hook reaches |
+| recall stream | the boot recall lens's probes; steers indicting activation | should-have-fired per record — a floor; the `hook-edit` nominator |
+| attacker precision | `ledger/` attack entries: landings upheld ÷ entries with a landing, per angle; the should-have-been-caught-by stream | a persistently-zero landing count interrogates the dispatch bar; a precision of one over zero overrulings is a ceiling artifact |
+| unwatched | `summaries` | a record no world-state watch can send back for re-adjudication — displayed, never defaulted |
 | lens variance and decoy rejection | the lens battery evaluation | crystallization signal; the floor gate of the close lenses |
 | escape recurrence | sessions, ledger | vocabulary and port widening nominations |
 
@@ -1645,13 +1680,23 @@ Boot fan (walked after selection, one context per angle):
 | L-0001 | Which consulted record's hook fired on presentation alone and does not bear on this task? Name it and dispose it `considered-not-applicable`. | The overshoot: disposing every record not-applicable to shorten the read — a record applied nowhere in the pass is a demotion datum, and the trace will show it. | adjudicative · the index |
 | L-0002 | The store holds a record this task needs and no hook reached it — which? | The overshoot: inventing a need to have a finding; an answer with no record id is not filed. | generative · the store |
 
+Examiner fan (one call per angle; each lens declares the claim classes it
+may land on; the adjudicator joins the angles):
+
+| Id | Angle | Claims | Counterfactual |
+|---|---|---|---|
+| L-0005 | Do the draft's anchored observations come from independent passes, or is one context counted twice? | `warrant:independence` | The overshoot: landing independence on every draft whose observations share a task — independence is by session, never by task. |
+| L-0006 | For each premise: what reading of the oracle's evidence would show it false — and taken, did it? | `premise:` | The overshoot: killing a premise from what the evidence does not show — `unevaluable` is never a refutation. |
+| L-0007 | Does the payload name the transferable shape, or an instance — a task id, a file name, a path? | `payload:` | The overshoot: reading every concrete noun as an instance — a payload about the HTTP tool may name HTTP. |
+| L-0008 | Does the revisit watch fire on the failure the stakes name, or on success? | `warrant:watch-direction` | The overshoot: landing on a watch a failing score also satisfies — it fires on the regression too. |
+
 Close fan:
 
 | Id | Angle | Counterfactual | Purpose · contact |
 |---|---|---|---|
 | L-0003 | What did this pass make false in the store — which premise, which hook, which adoption cell? | The overshoot: manufacturing a falsification; empty is a legal answer. | adjudicative · the store, by id |
 | L-0004 | The first attempt in this pass was wrong somewhere — where, and which record should have fired? | The overshoot: grading the pass's own lesson as settled — the answer is an observation at the floor, never a rule. | generative · the trace |
-| L-0005 | What would make the frozen prediction false before its deadline, and is each such event watched? | The overshoot: a watch on a surrogate that is easy to read — `unwatched` with the unblock named beats a precise wrong predicate. | adjudicative · the belief record |
+| L-0009 | What would make the frozen prediction false before its deadline, and is each such event watched? | The overshoot: a watch on a surrogate that is easy to read — `unwatched` with the unblock named beats a precise wrong predicate. | adjudicative · the belief record |
 
 ## Appendix B. Repository layout and command surface
 
@@ -1731,4 +1776,7 @@ illustration dated 2026-09-12.
 | slot | `activation` · `payload` · `warrant` · `enforcement` · `lifecycle` |
 | lens purpose | `adjudicative` · `generative` |
 | lens contact | `record` · `artifact` · `oracle` · `none` |
+| lens host | `boot` · `close` · `examiner` |
+| lens status | `live` · `retired` |
+| role | `pass` · `consolidator` · `examiner` · `adjudicator` · `committer` · `coder` · `human` · `oracle` |
 | retirement reason | `mootness` · `coverage-migration` |

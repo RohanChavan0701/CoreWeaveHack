@@ -1,13 +1,13 @@
 # Carry-forward
 
-State of the build as of 2026-09-12, after the world run, with the work
-left for the full implementation and the decisions taken along the way —
-each with why it may be right and why it may not.
+State of the build as of 2026-09-12, after the world run and the review
+pass, with the work left for the full implementation and the decisions
+taken along the way — each with why it may be right and why it may not.
 
 ## Where it stands
 
 - Slices 0–3 of spec § 13 ship with their acceptance tests green
-  (`uv run pytest`, 203 tests). Slice 4 ships the dashboard, the analyst
+  (`uv run pytest`, 237 tests). Slice 4 ships the dashboard, the analyst
   mirror and the retirement leg; the rule tier and the grown floor do not
   exist because the roster is decisions only. Slice 6(e) — split and fold
   as executed operators — ships, with the other backward-pass legs that
@@ -33,6 +33,14 @@ each with why it may be right and why it may not.
   role prompt is priced for it. The drafting requests answer with a sketch
   (decision 21); the reply logs of the tries are ephemeral (scratch), the
   world run's log is not kept either — `HGI_REPLY_LOG` recreates one.
+- The review pass (doctrine v2, §§ 1–9, 13, 14, 16 read against this
+  roster) landed as decisions 42–52 below: the noise filter, the examiner
+  fan, role separation on every species, consumers for the pending
+  contradictions and the recall probes, the lens lifecycle, attacker
+  precision, revision routing, the port miss stream, and the small floors.
+  The new requests — `triage`, `ports`, the `lens`-bearing `attack` and
+  `currency` — have been read back on the stub only; their reply shapes
+  are not yet priced for `openai/gpt-oss-120b` (see item 18).
 - `experiments/baseline.toml` (the six genesis tasks, one 502) is saturated
   for gpt-oss-120b: 1.00 on every pass of both arms. Its three
   consolidations wrote one file, K-0001, three times (the id-minting bug,
@@ -50,7 +58,8 @@ each with why it may be right and why it may not.
 1. **The belief store** (spec § 4.2, § 6, § 8.5). Records, the per-pass
    prediction at close (step 5), the reference at entry, settlement through
    dispositive fires, the status projection at boot (step 6), the
-   calibration table, lens L-0005. The watch evaluator and fire emission in
+   calibration table, the belief-watch lens (spec Appendix A.3's L-0009;
+   L-0005 to L-0008 are the examiner fan). The watch evaluator and fire emission in
    `hgi/evaluate.py` already run over any record kind that exposes revisit
    latches, so beliefs plug into `index.triggers` and `emit_fires` as-is.
 2. **The rule store** (§ 6.4, § 10.10). Rule records with the hand-authored
@@ -86,12 +95,15 @@ each with why it may be right and why it may not.
 4. **The lenses on the real model.** L-0002 (the boot lens for unreached
    records) answers "no hook reached" for every task on an empty store;
    L-0003 (what the pass made false) names tasks and call URIs where it
-   must name a record id, so nothing files from it. Both are walked once
-   per pass and cost a call each; neither has a consumer yet that would
-   miss them. The lens battery (§ 9.2, slice 6a) now ships (item 8) and
-   scores decoy rejection over the close lenses, so L-0003 has a scorer;
-   but L-0002's boot-lens answer on a real store is still unconsumed, and
-   L-0003 still names tasks and call URIs where it must name a record id.
+   must name a record id, so nothing files from it. Both now have consumers
+   (decisions 45 and 46): L-0002's probes are the brief's `recall` rows and
+   nominate a hook-edit, L-0003's pending entries reach the adjudicator at
+   the next consolidation. What is still unverified is the *content* on a
+   real model — whether a probe names the right record, whether a
+   contradiction names a premise — and the lens review will retire either
+   lens through the genesis-deadline door if nothing it produces is ever
+   consumed, which on the world run's pattern (nothing filed from L-0003)
+   is the likely outcome for L-0003.
 5. **TypeSafe System1.** `hgi/coder.py` assumes an OpenAI-compatible surface
    behind `TYPESAFE_BASE_URL`; the real API shape is unverified (waitlist as
    of 2026-09-12). The role is the invariant; only the adapter changes.
@@ -203,6 +215,35 @@ each with why it may be right and why it may not.
     nothing else; the shell tool already ran model commands the same way.
     A sandbox is a tool-layer concern, not the suite's.
 
+18. **The new role requests are unpriced for the real model.** `triage`
+    (the noise filter), `ports` (the port miss stream), the `lens`-bearing
+    `attack` (one angle per call) and the `lens`- and `finding`-bearing
+    `currency` requests parse on the stub and have not been read back through
+    `hgi roles try` on `openai/gpt-oss-120b`; `role-pricing` will not warn,
+    because the prompt files still list the model. A live run's first
+    consolidation now costs four examiner calls per draft instead of one,
+    plus one triage call per group at the bar.
+19. **The `article` rung has no operator.** The ladder's top rung — a
+    constitution article with a forced eviction — is refused like the rule
+    rungs (decision 42). The constitution is in this roster, so the operator
+    is in scope: a nomination carrying the article, its counterfactual and
+    the article it evicts, through attack and verdict, written with the
+    eviction in one commit under the cap. It needs a draft kind beside the
+    decision draft, which the queue and the committer currently assume.
+20. **No collision species writer.** The species is declared with its
+    verdict vocabulary and nothing writes it; the doctrine's canonical
+    instance — a test author deriving expectations blind from committed
+    artifacts — has no analogue in the loop yet. The blind coder is coded as
+    `coding`, which is its own species.
+21. **The antichain is displayed as a list, not as a conflict.** Two
+    decisions co-applying to one task with no specificity order enter
+    context side by side (never tiebroken, which the doctrine requires), but
+    nothing marks them as a conflict for the pass or the human; the leaf
+    lattice that would give them regions is a split nomination only.
+22. **Yield per steer is not instrumented.** The matrix counts steers and
+    the credit table attributes them; nothing reads how much each steer
+    moved — the quantity the doctrine says to maximize, against steer count,
+    which it says never to target.
 ## Decisions taken, and their risk
 
 1. **Decision-only roster.** Beliefs and rules were dropped by instruction;
@@ -467,6 +508,110 @@ each with why it may be right and why it may not.
     alike. *Risk:* a scorer where lower is better, or one outside `[0, 1]`,
     would read backwards; the convention holds for `suite/scorers.py` today
     and is asserted nowhere the suite could not silently break.
+
+42. **A nomination at a rung with no operator is refused, never drafted.**
+    Before this build a `floor`, `article`, `adoption-row` or
+    `rule-enrollment` nomination fell through `draft_from` and became a
+    decision draft wearing the rung's name. *Right:* refusal is a first-class
+    outcome, and the refusals are the datum that the roster is short a tier.
+    *Risk:* a real consolidator that keeps nominating `floor` learns nothing
+    from the refusal; the outcome is on the consolidation record only.
+43. **The contradictor of a currency entry is the oracle, never the
+    adjudicator.** Retirement, genesis anchoring, propagation and revisit
+    fires wrote the adjudicator's call as the contradiction source, a
+    contradictor = adjudicator collapse in name; the `oracle` role now names
+    the fire, the ratio or the instance, and a pass's close-time contradiction
+    is proposed by the record's admitter and contradicted by the pass. The
+    `role-separation` check proves it on every line. *Risk:* the oracle's
+    "call" is a fire id or a projection key, not a Weave URI, so the
+    contradictor is joinable to the store and not to the trace.
+44. **The noise filter is an adjudicator triage over every group at the
+    bar** (spec § 10.2), before nomination, on a `reality` entry; an
+    irreducible group is dismissed to the entry and never nominated. *Right:*
+    I11 — nothing updates process on an irreducible failure — was a
+    sentence in the spec and nothing in the code. *Risk:* one more adjudicator
+    call per group; the stub classifies by harness markers ("model call
+    failed", "turn limit"), which is the stub's reading of irreducible and
+    not the doctrine's — a real adjudicator may dismiss a convention missed as
+    "the model's own error", which is exactly the reducible case. The
+    dismissed observations' recurrence tunes nothing yet: the reality entries
+    are written and read by no detection-side leg.
+45. **The boot recall lens has a consumer: the `recall` projection.** A
+    probe naming an accepted record the pass did not consult, joined with
+    steers indicting activation, is the should-have-fired stream; at the
+    independence bar the consolidator re-keys the record with a hook-edit on
+    the terms the probing passes presented. *Right:* § 16.21 — a lens whose
+    product lands nowhere is theater. *Risk:* the stub adds every presented
+    term the hook lacks, which widens a hook toward "every term"; the doctrine
+    biases broad, but a real consolidator should add the term that names the
+    presentation, not all of them.
+46. **A pass's pending contradiction reaches the adjudicator at the next
+    consolidation**, on a new entry citing the pending one; the pending line
+    stays as history. *Risk:* the stub reverses a premise only when the
+    finding names its id; a real adjudicator handed a finding with no
+    premise id has only the prose.
+47. **The examiner's angles are lenses, one call each** (the fan law and the
+    host law): L-0005 independence, L-0006 premise kill, L-0007 abstraction,
+    L-0008 watch direction, each declaring the claim classes it may land on,
+    a claim outside its class dropped, every claim naming its angle and call.
+    A register with no examiner lens falls back to the single-context attack.
+    *Right:* one context walking four angles is a longer prompt, not an
+    ensemble. *Risk:* four calls per draft on a real model, and the angles
+    share the draft and the evidence pack, so their decorrelation is of
+    context, not of input; the abstraction angle's `task_ids` are now the
+    suite's task ids, so a payload naming a task is caught where before the
+    list was always empty.
+48. **Attacker precision is a projection and a brief row** (I16): landings
+    upheld ÷ entries with a landing, per angle, with the
+    should-have-been-caught-by misses (a survived record later indicted,
+    reversed or moot) and two notes — zero landings interrogate the dispatch
+    bar, a precision of one over zero overrulings is a ceiling artifact.
+    *Risk:* nothing consumes the row into a nomination; the dispatch bar it
+    interrogates is not a parameter anywhere.
+49. **A lens carries a warrant and a status, and the lens review runs at
+    every consolidation.** Anchors are derived from consumed products — a
+    mechanical join, no adjudicator, because a derivable structure is a
+    projection (I3) — and a lens at a door (genesis deadline, variance
+    collapse over the review window) goes to the adjudicator; `moot` retires
+    it, kept in the register and walked by nothing. `registry.lenses()`
+    returns live lenses only. *Right:* I7 — every threshold has a retirement
+    leg — reached the lens tier. *Risk:* the demonstration store's eight
+    genesis lenses are past the deadline and unanchored (fifteen
+    `genesis-anchor` warnings now, not seven); the next traced consolidation
+    will retire those that were walked and produced nothing, which on the
+    world run's evidence is L-0003, and possibly L-0001 and L-0002. A lens
+    whose product is always empty is read as "no signal" and kept; a lens
+    whose product is always the same non-empty finding is read as
+    crystallized — the stub's L-0004 would be, on a suite with one recurring
+    failure.
+50. **Revision routing runs before a vocabulary grows.** Breadth (how many
+    registered members the escaping occasions also carry) and dependence
+    (the share carrying the most co-occurring member) read the pile as a
+    missing peer, a partition of one member, or a cross-cutting dimension;
+    the last is vertical — surfaced on the consolidation record, never
+    minted, no ledger entry. Under twice the independence bar the reading is
+    ambiguous and horizontal. *Right:* § 7.5 — a wrong axis at genesis
+    outranks any number of missing members. *Risk:* the truth-maker feature
+    is assumed identical for every escape of one vocabulary; a verdict
+    vocabulary's occasions carry one member each, so its escapes always read
+    as missing peers; and a vertical reading has no human seat but the
+    consolidation record.
+51. **The port declaration's miss stream widens a mark.** A latch admitted
+    off its declaration on a warrant, recurring across independent records at
+    the vocabulary's independence bar, is nominated to the adjudicator; admit
+    corrects `registry/ports.json` from `forbidden` to `optional` in place, on
+    a currency entry whose verdict is `reversed`. *Risk:* the only widening is
+    forbidden → optional; nothing earns `required`, and nothing narrows a
+    mark back.
+52. **Four small floors from the activation section.** `summaries` carries
+    each record's watch or `unwatched` and the consultation plan names the
+    unwatched records (§ 16.17); the `key-space` check fails a neighbour key
+    that resolves to nothing and a world-state watch on a scorer the oracle
+    does not run (referents, never aliases); a human steer's note naming a
+    record indicts it, the slot read off the note's words; the credit rows
+    ship the counts their fractions are computed from (itemized, never net).
+    *Risk:* the slot words are a keyword table; a note that says "hook" about
+    a payload indicts activation.
 
 ## Housekeeping
 
