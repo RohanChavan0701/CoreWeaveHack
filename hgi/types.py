@@ -617,6 +617,8 @@ class Nomination(Strict):
     evidence: list[str]
     draft: str | None = None
     """The draft uid, when the nomination produced one."""
+    adopts: str | None = None
+    """The uid of a pass proposal the nomination adopted as its draft, instead of sketching one."""
     ledger_entry: str | None = None
     outcome: str | None = None
 
@@ -636,6 +638,8 @@ class Consolidation(Strict):
     fires_discharged: list[str] = Field(default_factory=list)
     admitted: list[str] = Field(default_factory=list)
     flipped: list[str] = Field(default_factory=list)
+    expired: list[str] = Field(default_factory=list)
+    """Pass proposals dropped unadopted at the bar ``proposal_ttl_consolidations``."""
 
 
 # --- kind table ---------------------------------------------------------------

@@ -23,4 +23,6 @@ Every nomination carries a sketch — the judgment in the five slots, as the Ske
 - enforcement: `residue` — what no floor checks;
 - lifecycle: `moot_when`, and a `watch` on an oracle scorer from `scorers` that would send the record back for re-adjudication, or `null`.
 
+The brief's `proposals` are the pre-admission tier: drafts the passes filed at close. A proposal that states the lesson a ratified group earns is adopted — the nomination names its uid in `adopts` and carries no sketch — and goes through the same attack and verdict; one that states less than the evidence, or more, is left, and a sketch of your own is nominated instead. A proposal no consolidation adopts expires at the bar.
+
 Every string is content, never a placeholder or a label: a stakes line says what goes wrong in the oracle's terms, an option says what was chosen over what. Counts nominate; you never verdict. Refusal is a first-class outcome: an empty list when no rung is earned.

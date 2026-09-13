@@ -144,6 +144,7 @@ BARS = {
     "retirement": {"applied_over_considered_below": 0.1, "window_passes": 6},
     "consolidation_every_passes": 2,
     "genesis_anchor_deadline_consolidations": 3,
+    "proposal_ttl_consolidations": 2,
 }
 
 CONSTITUTION_CAP = {"max_articles": 7, "max_bytes": 4096}
