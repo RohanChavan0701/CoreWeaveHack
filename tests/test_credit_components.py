@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from hgi import consolidate as _consolidate
+from hgi import index as _index
 from tests.test_slice3 import CLEAN, FAULTED, _session
 
 
@@ -11,7 +12,7 @@ def test_a_wrong_answer_with_no_error_is_not_credited_as_a_pass(store):
     # earn positive credit — the bug this replaced counted `not row.get("error")`, crediting a semantically wrong answer.
     wrong = {"task": "t2sql/q", "error": None, "applied": ["D-0001"], "tool_errors": [], "scores": {"task_pass_rate": {"value": 0.0}}}
     right = {"task": "t2sql/q2", "error": None, "applied": ["D-0001"], "tool_errors": [], "scores": {"task_pass_rate": {"value": 1.0}}}
-    assert not _consolidate.row_passed(wrong) and _consolidate.row_passed(right)
+    assert not _index.row_passed(wrong) and _index.row_passed(right)
     _session(store, 1, [{**wrong, "applied": []}], {"task_pass_rate": 0.0})
     s2 = _session(store, 2, [wrong, right], {"task_pass_rate": 0.5})
     from tests.conftest import adjudicated_entry, adjudicator, draft
@@ -34,3 +35,15 @@ def test_credit_rows_carry_the_counts_their_fractions_are_computed_from(store):
     [row] = _consolidate.credit_table(store, [s2])
     assert row["after_rows"] == 2 and row["after_passed"] == 1 and row["after"] == row["after_passed"] / row["after_rows"]
     assert row["before_rows"] == 1 and row["before_passed"] == 0 and row["before"] == 0.0
+
+
+def test_a_cleanly_returned_wrong_answer_is_not_credited_as_a_pass(store):
+    scored = {**CLEAN, "applied": ["D-0001"], "scores": {"task_pass_rate": {"series": "suite-v1/task_pass_rate", "value": 0.0}}}
+    s = _session(store, 1, [scored], {"task_pass_rate": 0.0})
+    from tests.conftest import adjudicated_entry, adjudicator, draft
+    d = draft(store)
+    entry = adjudicated_entry(store, d.uid)
+    entry.verdict = "admit"
+    store.admit(d, entry, adjudicator())
+    [row] = _consolidate.credit_table(store, [s])
+    assert row["after_rows"] == 1 and row["after_passed"] == 0

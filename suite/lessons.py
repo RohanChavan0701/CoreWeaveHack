@@ -55,6 +55,15 @@ LESSONS: dict[str, dict[str, Any]] = {
                     "keywords": ("token", "401", "unauthori", "secure")},
     "bom": {"tier": "loud", "means": "a JSON file opens with a byte order mark that a strict parser refuses",
             "keywords": ("bom", "byte order", "﻿", "utf-8-sig")},
+    "decoy-dependency": {"tier": "visible", "means": "a saturated pool that is the cause: the dependency readings are healthy and the pool readings show it; "
+                                                     "reaching for the dependency first wastes the budget",
+                         "keywords": ("pool", "saturat", "in_use", "waiting", "dependency")},
+    "decoy-saturation": {"tier": "visible", "means": "a saturated pool or hot host that is a consequence, not the cause: read the provider status, the deploy "
+                                                     "history or the queue head before the pool",
+                         "keywords": ("consequence", "symptom", "provider", "deploy", "queue head", "not the cause", "before the pool")},
+    "decoy-state": {"tier": "visible", "means": "an error-rate spike that looks like bad input but follows a deploy: read the release history before the "
+                                                "payload samples",
+                    "keywords": ("deploy", "release", "regression", "not the data")},
 }
 """Every lesson the suite's families name, its tier, and the words a record that carries it would use — the
 mention heuristic the evolution log reads over the records a pass had in context."""
