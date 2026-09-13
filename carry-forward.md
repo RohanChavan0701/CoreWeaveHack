@@ -7,7 +7,7 @@ work left for the full implementation and the decisions taken along the way
 ## Where it stands
 
 - Slices 0–3 of spec § 13 ship with their acceptance tests green
-  (`uv run pytest`, 26 tests). Slice 4 ships the dashboard, the analyst
+  (`uv run pytest`, 60 tests). Slice 4 ships the dashboard, the analyst
   mirror and the retirement leg; the rule tier and the grown floor do not
   exist because the roster is decisions only. Slice 5 (the demo) has run on
   the repository store and is recorded in the README's acceptance table.
@@ -91,9 +91,15 @@ work left for the full implementation and the decisions taken along the way
     `Registry.add_term` with no caller.
 13. **The pass's own proposals** (close step 6) parse and file but the stub
     never drafts any; the real model may.
-14. **`admission.commit`** is not stored (see decision 4 below); `hgi lineage`
-    does not yet read the admitting commit from git history.
-15. **Model-pricing** warns only; nothing re-prices.
+14. **Re-authoring on a re-price.** `hgi price --restamp` moves the stamp and
+    records that the text did not move with it (decision 22); replacing the
+    text against the new model is authoring work and is not mechanized. A
+    role that re-authors a lens's angle or an article would close this, and
+    would meet the same unverified drafting contracts as item 4.
+15. **`hgi experiment`'s genesis message names no article ids** (`Genesis for
+    <exp>/<arm>: priced for …`), so `hgi lineage C-0003` finds no admitting
+    commit in an arm's store, where `hgi genesis`'s message would. One line
+    in `hgi/experiment.py`, left to whoever owns that file next.
 
 ## Decisions taken, and their risk
 
@@ -116,8 +122,9 @@ work left for the full implementation and the decisions taken along the way
    a ledger. *Risk:* a reader expecting `observations.jsonl`.
 4. **`admission.commit` is derived, not stored.** A commit cannot contain its
    own hash; the commit message names the ids it admitted, so the anchor is
-   `git log --grep`. *Risk:* the spec puts the field on the envelope; a
-   consumer expecting it there finds nothing.
+   git history, read by `hgi.store.admitting_commit` and printed by `hgi
+   lineage` (decision 21). *Risk:* the spec puts the field on the envelope;
+   a consumer expecting it there finds nothing.
 5. **Facts are mirrored on the session record** (`evaluation.scores` and
    `evaluation.rows`) with the Weave run URI as `source`, and the watch
    evaluator reads them from the session ledger, not from Weave. *Right:*
@@ -202,14 +209,35 @@ work left for the full implementation and the decisions taken along the way
     per call, and the vocabularies are validated at runtime only — the
     schema still says `string`.
 
+21. **The admitting commit is the oldest commit naming the id**, rather than
+    a commit parsed for the verb that names it. History is append-only and
+    no message names a record before the commit that wrote it, so the oldest
+    naming is the admission, and no vocabulary of message verbs has to be
+    kept in step with the messages. A range such as the genesis message's
+    `C-0001..C-0007` names each id it spans. *Risk:* a message that names an
+    id it did not write — a revert, a plan, a message quoting another —
+    reads as an admission; nothing enforces the convention the messages
+    follow.
+22. **A re-price that does not re-author says so on the record**
+    (`priced_for.authored_for`). *Right:* the stamp cannot launder the swap
+    into a green floor; the warning stands until the text follows, and
+    swapping back clears the field because stamp and authoring agree again.
+    *Wrong if* the two halves are really one act — then a store sits
+    indefinitely priced for a model nothing was authored for, behind a
+    warning nobody reads, which is exactly what `hgi genesis --force`
+    avoided by making a price a fresh seed.
+
 ## Housekeeping
 
 - `smoke_test.py` is the original W&B/Weave connectivity check and is not
   part of the package.
-- The store's genesis articles and lenses are priced for `stub`; reseed with
-  `HGI_MODEL_ID=<model> uv run hgi genesis --force` before a hand-run on a
-  real model (this resets the store). An experiment arm seeds its own store
-  and needs no reseed.
+- The store's genesis articles and lenses are priced for `stub`. Before a
+  hand-run on a real model, either `uv run hgi price --model <model>
+  --restamp`, which keeps the store and leaves `model-pricing` warning that
+  the text is still authored for `stub`, or `HGI_MODEL_ID=<model> uv run hgi
+  genesis --force`, which prices a seed by writing it fresh and resets the
+  store with it. An experiment arm seeds its own store priced for its pass
+  model and needs neither.
 - `runs/smoke/`, `runs/baseline/` and `runs/baseline-precontract/` on this
   machine are the 2026-09-12 runs; they are ignored by git. The first two
   are regenerable; the third is the only record of the pre-contract run.
