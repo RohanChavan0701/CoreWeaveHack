@@ -445,6 +445,9 @@ class Steer(Strict):
     kind: Literal["steer"] = "steer"
     at: datetime
     source: SteerSource
+    session: str | None = None
+    """The session the correction belongs to — the one whose call the note was left on, which for a late note is an earlier
+    session than the close that captured it; ``None`` for an oracle-attributed steer, whose occasion is the consolidation."""
     correction: str
     indicts: Indictment | None = None
     why_not_caught: str | None = None

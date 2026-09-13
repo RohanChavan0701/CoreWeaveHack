@@ -2,9 +2,14 @@
 
 A human note on any call carrying the session's ``hgi.session`` attribute
 becomes a steer with ``source.kind = human`` at close, before the context
-that understood it is destroyed. An oracle-attributed steer — a regression
-whose credit assignment the adjudicator performed — is written by the
-backward pass (:mod:`hgi.consolidate`), never by the pass that produced it.
+that understood it is destroyed. A note left on an earlier session's call
+after that session closed is captured by the next close's sweep over every
+earlier closed attached session, filed once — a call URI no existing steer's
+``source.anchor`` carries — and stamped with the session it belongs to. An
+oracle-attributed steer — a regression whose credit assignment the
+adjudicator performed — is written by the backward pass
+(:mod:`hgi.consolidate`), never by the pass that produced it. The channel is
+best-effort: an unavailable trace store is reported, never fatal.
 """
 
 from __future__ import annotations
@@ -62,14 +67,34 @@ def indictment(store: Store, note: str) -> dict[str, str] | None:
     return {"record": ids[0], "slot": slot, "signature": "human-corrected"}
 
 
+def file_note(store: Store, session: Session, note: dict[str, Any], filed_by: Session) -> Steer:
+    """One note on one of ``session``'s calls as a steer: its credit assignment, its matrix cell (a fire on the indicted record seen
+    by that session is a redundant catch), the session it belongs to, and the id on the closing session that filed it."""
+    indicts = indictment(store, note["note"])
+    fired = indicts is not None and any(store.read("fire", f).latch.record == indicts["record"] for f in session.fires_seen if store.exists("fire", f))  # type: ignore[attr-defined]
+    steer = Steer(id=store.mint("steer"), at=now(), source={"kind": "human", "anchor": note["call"]}, session=session.id, correction=note["note"], indicts=indicts,
+                  matrix_cell="system-catches/human-catches" if fired else "system-misses/human-catches")
+    store.append(steer)
+    filed_by.steers_filed.append(steer.id)
+    return steer
+
+
 def capture(store: Store, session: Session) -> list[Steer]:
+    """Every note on the closing session's calls, then the late sweep: every earlier closed attached session's calls, filing each
+    note whose call URI no existing steer already carries. A note is one steer however many closes see it."""
+    steers = [file_note(store, session, n, session) for n in notes_for(session)]
+    return steers + sweep(store, session)
+
+
+def sweep(store: Store, closing: Session) -> list[Steer]:
+    """The late sweep: notes left on earlier closed attached sessions after their close, captured now and stamped with their session."""
+    carried = {t.source.anchor for t in store.all("steer") if t.source.anchor}  # type: ignore[attr-defined]
     steers = []
-    for n in notes_for(session):
-        indicts = indictment(store, n["note"])
-        fired = indicts is not None and any(store.read("fire", f).latch.record == indicts["record"] for f in session.fires_seen if store.exists("fire", f))  # type: ignore[attr-defined]
-        steer = Steer(id=store.mint("steer"), at=now(), source={"kind": "human", "anchor": n["call"]}, correction=n["note"], indicts=indicts,
-                      matrix_cell="system-catches/human-catches" if fired else "system-misses/human-catches")
-        store.append(steer)
-        steers.append(steer)
-        session.steers_filed.append(steer.id)
+    earlier = sorted((s for s in store.all("session") if s.attached and s.closed_at is not None and s.id != closing.id and s.pass_ < closing.pass_), key=lambda s: s.pass_)  # type: ignore[attr-defined]
+    for s in earlier:
+        for n in notes_for(s):
+            if n["call"] in carried:
+                continue
+            carried.add(n["call"])
+            steers.append(file_note(store, s, n, closing))
     return steers
