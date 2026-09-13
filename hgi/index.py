@@ -475,6 +475,52 @@ def recall(store: Store) -> list[dict[str, Any]]:
     return rows
 
 
+def mint_ladder(store: Store) -> list[dict[str, Any]]:
+    """Should-have-been-covered (§ 10.1, the miss stream climbing to activation): a class of off-map failure that recurs
+    across the independence bar of distinct sessions, and that no accepted record's hook covers, nominates new activation
+    coverage — a consultation hook or a close lens keyed on the work-shape. It is a nominator, never a verdict.
+
+    This is the complement of :func:`recall`. Recall reads the should-have-fired stream for a record the store already
+    holds and nominates a hook-edit to widen that record's key; the ladder reads the failures the store held *nothing* for
+    — a closed attached session that consulted no record and still failed a row (the bottom-right cell :func:`true_misses`
+    counts, and the raw signal :func:`hgi.close.dispose` files ``fired-off-map`` on) — and, keyed on the session's
+    work-shape terms, climbs only at the second distinct session. A single off-map failure is one episode; two are the
+    recurrence the promotion bar reads, mirrored here on the miss rather than the observation. A row an observation was
+    filed from is still a miss of *coverage* — the pass noticed it, no hook did — so the ``noticed`` list records which
+    instances a close lens caught without lowering the nomination. A floor twice over: a session that carried no
+    work-shape term keys no hook and is not classed here, and the count sees only the misses the world has voted on."""
+    bar = int((store.registry.bars.get("decision") or {}).get("independent_observations") or 2)
+    accepted_hooks = {t for d in store.decisions("accepted") for t in d.consultation_terms}
+    by_class: dict[str, dict[str, Any]] = defaultdict(lambda: {"sessions": set(), "instances": set(), "noticed": set()})
+    for s in store.all("session"):
+        s: Session
+        if not s.attached or s.closed_at is None or s.evaluation is None or s.consulted:
+            continue  # off-map is the same gate true_misses reads: a closed attached session that consulted nothing
+        for row in s.evaluation.rows:
+            if row_passed(row):
+                continue
+            instance = f"{s.id}/{row.get('task')}"
+            noticed = observed_from(store, s, row)
+            for term in s.work_shape.terms:  # a session with no work-shape term keys no hook and is not classed
+                agg = by_class[term]
+                agg["sessions"].add(s.id)
+                agg["instances"].add(instance)
+                if noticed:
+                    agg["noticed"].add(instance)
+    rows = []
+    for term in sorted(by_class):
+        agg = by_class[term]
+        n = len(agg["sessions"])
+        if n < bar or term in accepted_hooks:
+            continue
+        rows.append({"class": term, "distinct_sessions": n, "reading": "at the bar" if n == bar else "above the bar",
+                     "instances": sorted(agg["instances"]), "noticed": sorted(agg["noticed"]),
+                     "nominates": "new activation coverage: a consultation hook or a close lens keyed on this work-shape",
+                     "why": f"{n} distinct sessions failed off-map on '{term}' work and no accepted record's hook covers it — the store held nothing for it",
+                     "floor": "detection-limited: it counts the off-map failures of closed attached sessions, a lower bound the world's votes set"})
+    return rows
+
+
 def attacker(store: Store) -> dict[str, Any]:
     """The instruments are instrumented (I16): attacker precision as a tracked floor, and the attacker's misses as a stream.
 
@@ -537,6 +583,7 @@ PROJECTIONS: dict[str, Callable[[Store], Any]] = {
     "matrix": matrix,
     "attacker": attacker,
     "recall": recall,
+    "mint_ladder": mint_ladder,
 }
 
 

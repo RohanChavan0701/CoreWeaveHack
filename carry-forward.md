@@ -1594,3 +1594,29 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     observation lenses answer to. index.py was read but not edited (another
     change owns it); the `true_misses`/matrix interaction above is behavioral,
     through the observation L-0010 now files, not a code change here.
+92. **The mint ladder: the miss stream climbs to activation — two same-class
+    off-map failures nominate new coverage** (commit `f8463c7`). The detection
+    matrix computed the bottom-right cell (`hgi.index.true_misses`, the failed
+    rows nothing caught) and displayed it, but nothing consumed it to nominate a
+    hook or a lens — the miss stream dead-ended. `hgi.index.mint_ladder` is a new
+    read-only projection that joins it to nomination: a class of off-map failure
+    (a closed attached session that consulted no record and failed a row, the
+    same gate `true_misses` reads) that recurs across the independence bar of
+    distinct sessions (`bars.decision.independent_observations`, two) and that no
+    accepted record's consultation hook covers nominates new activation coverage
+    — a consultation hook or a close lens keyed on the session's work-shape term.
+    It is the complement of `recall`: recall reads the should-have-fired stream
+    for a record the store *already holds* and nominates a hook-edit to widen its
+    key; the ladder reads the failures the store held *nothing* for and nominates
+    the coverage that is missing. A row an observation was filed from stays in
+    the `noticed` list — the pass noticed it, no hook did, so it is still a miss
+    of coverage. On the committed store it fires on two classes (`file-tool`,
+    `output-schema`) at the bar. *Right:* the recurring off-map class, which
+    decision 91's L-0010 turned into a per-row observation, now also nominates
+    the *activation* fix — a hook or lens — rather than only feeding a rule
+    candidate; a nominator, never a verdict, mirroring recall. *Risk:* the class
+    is the boot classifier's work-shape term, so a miss on work that carried no
+    term keys no hook and is not classed (a floor, noted in the projection), and
+    two misses of the same term from genuinely different faults would nominate
+    one coverage the human must still shape; the count is detection-limited — a
+    lower bound the world's votes set, never a census.
