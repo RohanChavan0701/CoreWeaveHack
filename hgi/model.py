@@ -115,7 +115,7 @@ def wandb_api_key() -> str | None:
     try:
         import wandb
 
-        return wandb.api.api_key
+        return wandb.Api().api_key
     except Exception:
         return None
 

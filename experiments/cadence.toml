@@ -1,0 +1,30 @@
+# The consolidation cadence over six passes: every pass, every two, every three. The decision bar
+# wants two observations from distinct sessions, and the brief reads the sessions since the last
+# consolidation, so a cadence of one may never admit — that is what this measures. One model.
+name = "cadence"
+description = "how often to consolidate, six passes each"
+weave_project = "hgi-experiments"
+
+[models.gpt-oss-120b]
+id = "openai/gpt-oss-120b"
+
+[defaults]
+model = "gpt-oss-120b"
+concurrency = 4
+
+[arms.every-1]
+rounds = 6
+passes_per_round = 1
+
+[arms.every-2]
+rounds = 3
+passes_per_round = 2
+
+[arms.every-3]
+rounds = 2
+passes_per_round = 3
+
+[arms.detached]
+mode = "detached"
+rounds = 3
+passes_per_round = 2

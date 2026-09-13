@@ -1,0 +1,15 @@
+# The runner's own check: the stub, one round of two passes, memory attached and detached.
+# Runs offline in seconds; the tests run it. Not an experiment about a model.
+name = "smoke"
+description = "the runner end to end on the deterministic stub"
+
+[defaults]
+model = "stub"
+rounds = 1
+passes_per_round = 2
+
+[arms.attached]
+mode = "attached"
+
+[arms.detached]
+mode = "detached"
