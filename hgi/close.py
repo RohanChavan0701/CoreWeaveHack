@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
+import suite as _suite
 from hgi import boot as _boot
 from hgi import index as _index
 from hgi import model as _model
@@ -132,6 +133,19 @@ def propose(store: Store, session: Session) -> list[Draft]:
     return out
 
 
+def lens_subjects(store: Store, session: Session, lens) -> dict[str, Any] | list[dict[str, Any]]:
+    """What a close lens reads. A lens whose contact is the artifact touches the item: it is walked once per failed row, with
+    that row's presentation, output, tool errors and scores. The other close lenses read the whole pass at once."""
+    rows = session.evaluation.rows if session.evaluation else []
+    consulted = [_decision_view(store, c.record) for c in session.consulted]
+    if lens.externality.contact == "artifact":
+        world = _suite.current()
+        return [{"task": row["task"], "prompt": world.by_id[row["task"]].prompt if row["task"] in world.by_id else None, "row": row, "consulted": consulted}
+                for row in rows if not _passed(row)]
+    return {"consulted": consulted, "rows": rows, "failed": [r["task"] for r in rows if not _passed(r)], "fires": session.fires_seen,
+            "scores": {k: f.value for k, f in session.evaluation.scores.items()} if session.evaluation else {}}
+
+
 def _passed(row: dict[str, Any]) -> bool:
     """Whether the oracle passed the row: its task_pass_rate score, read off the row; an unscored row reads as passed only when it carries no error."""
     score = (row.get("scores") or {}).get("task_pass_rate") or {}
@@ -155,11 +169,7 @@ def close(store: Store, session_id: str) -> Session:
         raise SystemExit(f"{session.id} has not been evaluated; run hgi evaluate first")
 
     rows = session.evaluation.rows
-    session.lens_answers += _boot.walk_lenses(store, session, "close", lambda lens: {
-        "consulted": [_decision_view(store, c.record) for c in session.consulted],
-        "rows": rows, "failed": [r["task"] for r in rows if not _passed(r)], "fires": session.fires_seen,
-        "scores": {k: f.value for k, f in session.evaluation.scores.items()},
-    })
+    session.lens_answers += _boot.walk_lenses(store, session, "close", lambda lens: lens_subjects(store, session, lens))
     dispositions = dispose(store, session)
     missing = [c.record for c in session.consulted if c.disposition is None]
     if missing:

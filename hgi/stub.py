@@ -79,7 +79,8 @@ def _guard(req):
 def _lens(req):
     lens, subject = req["lens"], req["subject"]
     if lens["id"] == "L-0004":
-        return {"answer": "read from the rows' tool errors", "findings": _noticings(subject.get("rows", []))}
+        rows = subject.get("rows") or ([subject["row"]] if "row" in subject else [])
+        return {"answer": "read from the rows' tool errors", "findings": _noticings(rows)}
     return {"answer": "nothing found on this reading", "findings": []}
 
 
