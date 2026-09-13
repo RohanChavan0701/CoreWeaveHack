@@ -1631,3 +1631,141 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     it. Re-fetching is rare (only to re-pin) and rewrites both the jsonl and
     the committed 856 KB database, changing the suite hash — the same
     contract as every transcribed family.
+90. **The signal half of the battery lands on the per-lens register, beside
+    the decoy half** (commit `ce19b3d`). The battery scored two axes onto each
+    lens — `decoy_rejection` and `answer_variance` — but the `SignalCaught`
+    scorer's product went only to the global fact series
+    `lens-battery-v1/signal_caught`, never onto the lens register, so a lens
+    that rejected every decoy while catching half its genuine signals read
+    healthy per-lens and the partial signal-miss was invisible. `LensTelemetry`
+    gains a `signal_caught` cell seeded `design-stage` the way the other two
+    are (the genesis seed and the committed lens register carry it), and
+    `telemetry_from` computes the per-lens caught fraction over the signal
+    items exactly as `decoy_rejection` is computed over the decoys —
+    `1.00 — 2/2 planted signals caught (lens-battery-v1)`, or `unevaluable` when
+    a lens has no signal — flowing onto the register through the existing
+    `model_dump`. *Right:* the register now carries both halves of the same
+    run, so a lens's floor gate (reject the decoy) and its recall (catch the
+    signal) are read side by side; on the honest stub L-0004 reads 1.00 and
+    L-0003 reads 0.00, the miss the decoy axis alone showed as a clean 1.00.
+    *Risk:* the fraction is the stub answerer's, a lexical proxy for the pass
+    model's filing, and the two axes share the one battery run — a dataset that
+    plants too few signals reads a coarse fraction (2/2 is the current plant),
+    and a lens with no signal items reads `unevaluable`, never a false 1.00.
+91. **A human steer can cite a lens, and the register reads the steers that
+    cite it** (commit `ecf1d81`). Every lens declared
+    `"miss_stream": "steers/ citing this lens"`, a dead literal no code
+    populated: `indictment()` resolved ids through `store.find`, which reaches
+    only file-layout record kinds, while lens ids live in the register, so a
+    note naming `L-000x` was dropped. `indictment()` now resolves a lens id
+    through `store.registry` when no store record matched the note — records
+    come first, so a note naming both keeps its record, and only a note naming
+    no record but a registered lens is credited to the lens — and
+    `populate_telemetry` reads `store.all("steer")` and replaces each battered
+    lens's static `miss_stream` with the steers that cite it,
+    `1 steer cites this lens: T-0003` or `no steer cites this lens
+    (lens-battery-v1)`. *Right:* a lens id flows harmlessly through every
+    consumer of `Steer.indicts` — no fire latches on a lens id, so `file_note`
+    lands the steer in `system-misses/human-catches` (the right cell: a human
+    caught a lens miss the system did not), and `matrix`, `recall` and
+    `attacker` gate their lens-id reads on `decisions`/`accepted` records that
+    never include one. *Risk:* the `indicts.record` field now carries either a
+    record id or a lens id, and the reader tells them apart only by prefix; the
+    matrix's `indicted` set mixes both, harmless today because fires and
+    dispositions never key on a lens, but a future reader that assumes
+    `indicts.record` is always a decision would misread a lens-citing steer.
+    The miss stream is written only for the lenses `populate_telemetry`
+    touches (the battered ones), so a boot lens no battery reaches keeps its
+    static literal until a run writes it.
+92. **L-0009, the recovered-miss lens: a passed row that self-corrected on a
+    non-transient convention is a lesson, not a discard** (commit `9ccf21b`).
+    Across `runs/`, 375 rows passed but 87 recovered from a non-transient fault
+    on the first attempt — 37× a `route-guarded` 401 (`/secure` needs
+    `?token=`), ~15× a `route-versioned` 410 (the API serves `/v2/…`), plus
+    awk/traceback/call-budget faults — real conventions the pass learned and
+    self-corrected on, discarded today because the row scored 1.0: L-0004's
+    failed-row filter never sees them. L-0009 is a close generative lens, host
+    `close`, contact `artifact`, walked once per row that is the *complement*
+    of L-0004's — a passed row (`_index.row_passed`) carrying at least one
+    non-transient tool error (`_recovered_nontransient`) — its subject shape
+    identical to L-0004's per-row subject, so `_artifact_subject` is shared and
+    L-0004's read is byte-for-byte unchanged. `file_observations` no longer
+    hard-codes `L-0004`; it walks `OBSERVATION_LENSES`, the module constant
+    naming the observation-producing close lenses, and the same
+    `{noticed, anchor}` → `Observation` logic files for all of them. The stub's
+    `_recovered_misses` files a noticing that carries the fault's cause (so the
+    blind coder groups it on `route-guarded`/`route-versioned` through the
+    convention keywords) and files nothing when the only fault was transient.
+    The battery plants two decoys (a 502/503 that cleared on retry) and two
+    signals (the 401 token, the 410 route-version); the lens rejects the
+    decoys and catches the signals, reading `1.00` on both axes. *Right:* the
+    recovered convention now reaches the observation ledger, where before it
+    left only a green score — the pass's strongest evidence of a rule the store
+    still lacks a hook for, filed at the floor as an observation, never a rule.
+    *Risk:* the "non-transient" cut is only as good as the `transient` flag the
+    tool layer stamps on a `tool_error`; a fault mislabeled transient is a
+    signal L-0009 silently drops, and one mislabeled non-transient is a decoy
+    it files (the L-0004 counterfactual's overshoot, mirrored). The stub is a
+    lexical proxy for the pass model's convention inference; a live re-score is
+    what confirms the noticing groups on the convention, not the cause string.
+93. **L-0010, the off-map noticing lens: a failure the store had no hook for is
+    a rule that is missing, not just telemetry** (commit `40c85ea`). When work
+    fails and matches no hook, `dispose` records a bare `fired-off-map`
+    disposition (`record="none"`) — in one arm six such sessions produced only
+    telemetry, no proposition, and nothing turned the store's strongest
+    "a rule is missing" signal into a noticing. (Distinct from L-0002, which
+    asks after records that *exist* but were not reached; L-0010 is failure the
+    store had *no* hook for.) Because close lenses walk before `dispose`, L-0010
+    cannot read the disposition — it reads the raw off-map condition, the exact
+    predicate `dispose` files `fired-off-map` on: `not session.consulted and
+    any(r.get("error") for r in rows)`. It is a close generative lens (host
+    `close`, contact `record`) with a whole-pass subject carrying that off-map
+    flag and the failed rows a missing-rule noticing anchors on (a failed row's
+    call); it is added to `OBSERVATION_LENSES`, so its `{noticed, anchor}`
+    findings file as observations too. The stub's `_off_map_noticings` files a
+    missing-coverage noticing when the subject is off-map and nothing when a
+    record was consulted; the battery plants two decoys (a failed pass that
+    consulted a record — a hook fired, not off-map) and two signals (a failed
+    pass that consulted nothing), reading `1.00` on both axes. *Right:* the
+    off-map failure now reaches the observation ledger where it fed only the
+    detection matrix's bottom-right cell before — and that cell shrinks as a
+    consequence: `hgi.index.true_misses` counts a failed, unconsulted row only
+    when the session filed no observation from it, so an off-map row L-0010
+    anchors a noticing on (`observed_from` matches the call) is no longer a
+    silent true-miss but a filed lesson. *Risk:* the off-map cut is coarse — it
+    fires on *any* failed row when nothing was consulted, so a pass that failed
+    for a reason a rule could never cover (a flaky environment, a
+    mis-specified task) files a missing-rule noticing the backward pass must
+    still judge; the observation is at the floor, never a rule, and the
+    counterfactual (a pass that *did* consult is not off-map) is the only guard.
+    The anchor rides a failed row's call, so an off-map pass whose rows carry no
+    call files nothing — the same count-and-provenance floor the other
+    observation lenses answer to. index.py was read but not edited (another
+    change owns it); the `true_misses`/matrix interaction above is behavioral,
+    through the observation L-0010 now files, not a code change here.
+94. **The mint ladder: the miss stream climbs to activation — two same-class
+    off-map failures nominate new coverage** (commit `f8463c7`). The detection
+    matrix computed the bottom-right cell (`hgi.index.true_misses`, the failed
+    rows nothing caught) and displayed it, but nothing consumed it to nominate a
+    hook or a lens — the miss stream dead-ended. `hgi.index.mint_ladder` is a new
+    read-only projection that joins it to nomination: a class of off-map failure
+    (a closed attached session that consulted no record and failed a row, the
+    same gate `true_misses` reads) that recurs across the independence bar of
+    distinct sessions (`bars.decision.independent_observations`, two) and that no
+    accepted record's consultation hook covers nominates new activation coverage
+    — a consultation hook or a close lens keyed on the session's work-shape term.
+    It is the complement of `recall`: recall reads the should-have-fired stream
+    for a record the store *already holds* and nominates a hook-edit to widen its
+    key; the ladder reads the failures the store held *nothing* for and nominates
+    the coverage that is missing. A row an observation was filed from stays in
+    the `noticed` list — the pass noticed it, no hook did, so it is still a miss
+    of coverage. On the committed store it fires on two classes (`file-tool`,
+    `output-schema`) at the bar. *Right:* the recurring off-map class, which
+    decision 93's L-0010 turned into a per-row observation, now also nominates
+    the *activation* fix — a hook or lens — rather than only feeding a rule
+    candidate; a nominator, never a verdict, mirroring recall. *Risk:* the class
+    is the boot classifier's work-shape term, so a miss on work that carried no
+    term keys no hook and is not classed (a floor, noted in the projection), and
+    two misses of the same term from genuinely different faults would nominate
+    one coverage the human must still shape; the count is detection-limited — a
+    lower bound the world's votes set, never a census.

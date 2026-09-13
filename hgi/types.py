@@ -687,6 +687,7 @@ class Externality(Strict):
 class LensTelemetry(Strict):
     answer_variance: str = "design-stage"
     decoy_rejection: str = "design-stage"
+    signal_caught: str = "design-stage"
     miss_stream: str = "steers/ citing this lens"
 
 

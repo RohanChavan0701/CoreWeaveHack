@@ -19,7 +19,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -46,7 +47,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -73,7 +75,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -100,7 +103,64 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
+    },
+    "warrant": {
+      "anchors": [],
+      "evidence": "genesis"
+    }
+  },
+  {
+    "angle": "A row passed, but its first attempt was wrong — a non-transient fault the pass corrected on the way to the score. Name the convention that first attempt missed.",
+    "consumer": "the observation ledger; the backward pass",
+    "counterfactual": "The overshoot: filing the transient fault that cleared on retry — a recovered 502 is loud but non-causal; file only a non-transient miss the pass corrected.",
+    "externality": {
+      "contact": "artifact",
+      "terminates_in": "the trace: a call URI per finding"
+    },
+    "host": "close",
+    "id": "L-0009",
+    "kind": "lens",
+    "priced_for": {
+      "model_id": "stub"
+    },
+    "product": "a list of {noticed, anchor}; each becomes an observation",
+    "purpose": "generative",
+    "status": "live",
+    "telemetry": {
+      "answer_variance": "design-stage",
+      "decoy_rejection": "design-stage",
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
+    },
+    "warrant": {
+      "anchors": [],
+      "evidence": "genesis"
+    }
+  },
+  {
+    "angle": "This pass failed and matched no hook — the store held no rule for this work. Name the shape of work the store has no coverage for.",
+    "consumer": "the observation ledger; the backward pass",
+    "counterfactual": "The overshoot: crying 'a rule is missing' on a pass that did consult a record — that is not off-map; fire only when nothing was consulted and the work failed; empty is legal.",
+    "externality": {
+      "contact": "record",
+      "terminates_in": "the pass's off-map disposition and its failed rows' calls in the trace"
+    },
+    "host": "close",
+    "id": "L-0010",
+    "kind": "lens",
+    "priced_for": {
+      "model_id": "stub"
+    },
+    "product": "a list of {noticed, anchor}; each becomes an observation",
+    "purpose": "generative",
+    "status": "live",
+    "telemetry": {
+      "answer_variance": "design-stage",
+      "decoy_rejection": "design-stage",
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -130,7 +190,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -160,7 +221,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -190,7 +252,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],
@@ -220,7 +283,8 @@
     "telemetry": {
       "answer_variance": "design-stage",
       "decoy_rejection": "design-stage",
-      "miss_stream": "steers/ citing this lens"
+      "miss_stream": "steers/ citing this lens",
+      "signal_caught": "design-stage"
     },
     "warrant": {
       "anchors": [],

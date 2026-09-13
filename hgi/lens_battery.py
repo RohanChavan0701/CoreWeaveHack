@@ -89,8 +89,13 @@ def _l0003_subject(*, consulted: list[dict], rows: list[dict], failed: list[str]
 
 
 def _l0004_subject(row: dict) -> dict[str, Any]:
-    """The single-row subject L-0004 reads: one artifact, its output and tool errors."""
+    """The single-row subject L-0004 (and L-0009) reads: one artifact, its output and tool errors."""
     return {"task": row["task"], "prompt": f"the presentation for {row['task']}", "row": row, "consulted": []}
+
+
+def _l0010_subject(*, off_map: bool, consulted: list[dict], failed: list[dict]) -> dict[str, Any]:
+    """The whole-pass subject L-0010 reads: whether the pass fired off-map, and the failed rows a missing-rule noticing anchors on."""
+    return {"off_map": off_map, "consulted": consulted, "failed": failed}
 
 
 def battery_items(lens_id: str) -> list[dict[str, Any]]:
@@ -138,6 +143,41 @@ def battery_items(lens_id: str) -> list[dict[str, Any]]:
              "subject": _l0004_subject({"task": "signal/not-retried", "error": {"message": "timed out", "cause": "timeout"},
                                         "tool_errors": [{"cause": "timeout", "transient": True}],
                                         "scores": {"task_pass_rate": {"value": 0.0}}, "call": "weave:///battery/call/s2"})},
+        ]
+    if lens_id == "L-0009":
+        return [
+            {"kind": "decoy", "why": "a passed row whose only fault was a 502 that cleared on retry — transient, non-causal",
+             "subject": _l0004_subject({"task": "decoy/retried-502", "error": None,
+                                        "tool_errors": [{"cause": "502 Bad Gateway", "transient": True}],
+                                        "scores": {"task_pass_rate": {"value": 1.0}}, "call": "weave:///battery/call/r1"})},
+            {"kind": "decoy", "why": "a passed row whose only fault was a 503 that cleared on retry — transient, non-causal",
+             "subject": _l0004_subject({"task": "decoy/retried-503", "error": None,
+                                        "tool_errors": [{"cause": "503 Service Unavailable", "transient": True}],
+                                        "scores": {"task_pass_rate": {"value": 1.0}}, "call": "weave:///battery/call/r2"})},
+            {"kind": "signal", "why": "a passed row recovered from a route-guard convention: a 401 the first attempt missed, corrected with a token",
+             "subject": _l0004_subject({"task": "signal/route-guarded", "error": None,
+                                        "tool_errors": [{"cause": "HTTP 401 Unauthorized: routes under /secure require ?token=", "transient": False}],
+                                        "scores": {"task_pass_rate": {"value": 1.0}}, "call": "weave:///battery/call/g1"})},
+            {"kind": "signal", "why": "a passed row recovered from a route-version convention: a 410 the first attempt missed, corrected on the /v2 successor",
+             "subject": _l0004_subject({"task": "signal/route-versioned", "error": None,
+                                        "tool_errors": [{"cause": "HTTP 410 Gone: this API serves /v2/…", "transient": False}],
+                                        "scores": {"task_pass_rate": {"value": 1.0}}, "call": "weave:///battery/call/g2"})},
+        ]
+    if lens_id == "L-0010":
+        record = [{"id": "D-battery", "decision": "retry only transient tool faults", "premises": []}]
+        return [
+            {"kind": "decoy", "why": "a failed pass that DID consult a record — a hook fired, so this is not off-map",
+             "subject": _l0010_subject(off_map=False, consulted=record,
+                                       failed=[{"task": "t/consulted", "row": {"task": "t/consulted", "error": {"message": "failed with a record in context"}, "call": "weave:///battery/call/m1"}}])},
+            {"kind": "decoy", "why": "a failed pass that consulted a record on another shape — a hook fired, still not off-map",
+             "subject": _l0010_subject(off_map=False, consulted=record,
+                                       failed=[{"task": "t/consulted2", "row": {"task": "t/consulted2", "error": {"message": "failed with a record in context"}, "call": "weave:///battery/call/m2"}}])},
+            {"kind": "signal", "why": "a failed pass that consulted nothing — off-map, the store held no hook for this work",
+             "subject": _l0010_subject(off_map=True, consulted=[],
+                                       failed=[{"task": "t/offmap", "row": {"task": "t/offmap", "error": {"message": "unmatched failure"}, "call": "weave:///battery/call/o1"}}])},
+            {"kind": "signal", "why": "a failed pass that consulted nothing on another shape — off-map, a missing rule",
+             "subject": _l0010_subject(off_map=True, consulted=[],
+                                       failed=[{"task": "t/offmap2", "row": {"task": "t/offmap2", "error": {"message": "unmatched failure"}, "call": "weave:///battery/call/o2"}}])},
         ]
     return []
 
@@ -359,7 +399,12 @@ def _variance(xs: list[float]) -> float:
 
 
 def telemetry_from(outputs: list[dict[str, Any]]) -> dict[str, LensTelemetry]:
-    """Per-lens telemetry, computed from the battery run: the decoy-rejection fraction and the filing variance."""
+    """Per-lens telemetry, computed from the battery run: the decoy-rejection fraction, the signal-caught fraction and the filing variance.
+
+    ``decoy_rejection`` and ``signal_caught`` are the two halves of the same run — the fraction of decoys the lens filed
+    nothing for and the fraction of genuine signals it filed — so a lens that rejects every decoy but catches only half
+    its signals reads a partial signal-miss on the register the decoy axis alone would hide.
+    """
     by_lens: dict[str, list[dict]] = defaultdict(list)
     for o in outputs:
         by_lens[o["lens"]].append(o)
@@ -367,15 +412,22 @@ def telemetry_from(outputs: list[dict[str, Any]]) -> dict[str, LensTelemetry]:
     for lens_id, rows in by_lens.items():
         decoys = [r for r in rows if r["is_decoy"]]
         rejected = [r for r in decoys if not r["filed"]]
+        signals = [r for r in rows if not r["is_decoy"]]
+        caught = [r for r in signals if r["filed"]]
         variance = _variance([1.0 if r["filed"] else 0.0 for r in rows])
         if decoys:
             fraction = len(rejected) / len(decoys)
             decoy = f"{fraction:.2f} — {len(rejected)}/{len(decoys)} planted decoys rejected ({LENS_BATTERY})"
         else:
             decoy = f"unevaluable — no decoy in the battery ({LENS_BATTERY})"
+        if signals:
+            fraction = len(caught) / len(signals)
+            signal = f"{fraction:.2f} — {len(caught)}/{len(signals)} planted signals caught ({LENS_BATTERY})"
+        else:
+            signal = f"unevaluable — no signal in the battery ({LENS_BATTERY})"
         spread = ("filings vary across" if variance > 0 else "the same filing on all") + f" {len(rows)} battery items"
         telemetry[lens_id] = LensTelemetry(answer_variance=f"{variance:.2f} — {spread} ({LENS_BATTERY})",
-                                           decoy_rejection=decoy)
+                                           decoy_rejection=decoy, signal_caught=signal)
     return telemetry
 
 
@@ -468,15 +520,32 @@ def write_controls(store: Store, payload: dict[str, Any]) -> None:
     _registry.write_json(controls_path(store), payload)
 
 
+def _miss_stream(steer_ids: list[str]) -> str:
+    """The miss stream a lens reads: the steers whose indictment cites it — the misses of that lens a human caught."""
+    if not steer_ids:
+        return f"no steer cites this lens ({LENS_BATTERY})"
+    n = len(steer_ids)
+    return f"{n} steer{'' if n == 1 else 's'} cite{'s' if n == 1 else ''} this lens: {', '.join(sorted(steer_ids))}"
+
+
 def populate_telemetry(store: Store, telemetry: dict[str, LensTelemetry]) -> list[str]:
-    """Write the computed telemetry onto the lens register, moving each battered lens off ``design-stage``; returns the ids updated."""
+    """Write the computed telemetry onto the lens register, moving each battered lens off ``design-stage``; returns the ids updated.
+
+    The ``miss_stream`` cell is wired from real data here rather than in :func:`telemetry_from`, which sees only the
+    battery outputs: a human steer's indictment can name a lens (:func:`hgi.steers.indictment`), and the stream a lens
+    reads is the steers that cite it. The battery axes are the rest of the cell; the miss stream is the store's steers.
+    """
+    citing: dict[str, list[str]] = defaultdict(list)
+    for steer in store.all("steer"):
+        if steer.indicts is not None:  # type: ignore[attr-defined]
+            citing[steer.indicts.record].append(steer.id)  # type: ignore[attr-defined]
     path = store.registry.path("lenses")
     raw = _registry.read_json(path)
     updated = []
     for item in raw:
         t = telemetry.get(item.get("id"))
         if t is not None:
-            item["telemetry"] = t.model_dump()
+            item["telemetry"] = {**t.model_dump(), "miss_stream": _miss_stream(citing.get(item["id"], []))}
             updated.append(item["id"])
     _registry.write_json(path, raw)
     return updated

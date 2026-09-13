@@ -23,6 +23,24 @@ def test_a_note_naming_a_record_indicts_it_and_its_slot(store):
     assert _steers.indictment(store, "D-9999 is wrong") is None and _steers.indictment(store, "looks fine") is None
 
 
+def test_a_note_naming_a_registered_lens_indicts_the_lens_when_no_record_matches(store):
+    d = _admit(store)
+    # a lens lives in the register, not as a record kind, so store.find never resolves it; a note naming one is credited to it
+    assert _steers.indictment(store, "L-0006 lands independence on drafts that share only a task")["record"] == "L-0006"
+    # records come first: a note naming both a record and a lens keeps today's record-first behavior
+    assert _steers.indictment(store, f"{d.id} is wrong and L-0006 overreached too")["record"] == d.id
+    # a lens id the register does not hold names nothing
+    assert _steers.indictment(store, "L-9999 is wrong") is None
+
+
+def test_a_note_naming_a_lens_lands_a_human_miss(store, monkeypatch):
+    # no fire ever latches on a lens id, so a note citing a lens is a system-miss the human caught
+    s = Session(id="S-0001", pass_=1, started_at=now())
+    monkeypatch.setattr(_steers, "notes_for", lambda session: [{"call": "weave:///t/call/1", "note": "L-0004 missed the uncaused failure its angle should catch"}])
+    [t] = _steers.capture(store, s)
+    assert t.indicts.record == "L-0004" and t.matrix_cell == "system-misses/human-catches" and t.source.kind == "human"
+
+
 def test_capture_writes_the_indictment_and_the_matrix_cell(store, monkeypatch):
     d = _admit(store)
     s = Session(id="S-0001", pass_=1, started_at=now())

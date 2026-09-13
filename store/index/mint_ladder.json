@@ -1,0 +1,50 @@
+[
+  {
+    "class": "file-tool",
+    "distinct_sessions": 2,
+    "floor": "detection-limited: it counts the off-map failures of closed attached sessions, a lower bound the world's votes set",
+    "instances": [
+      "S-0001/count_lines",
+      "S-0001/fetch_user_name",
+      "S-0001/sum_numbers",
+      "S-0002/count_lines",
+      "S-0002/fetch_user_name",
+      "S-0002/sum_numbers"
+    ],
+    "nominates": "new activation coverage: a consultation hook or a close lens keyed on this work-shape",
+    "noticed": [
+      "S-0001/count_lines",
+      "S-0001/fetch_user_name",
+      "S-0001/sum_numbers",
+      "S-0002/count_lines",
+      "S-0002/fetch_user_name",
+      "S-0002/sum_numbers"
+    ],
+    "reading": "at the bar",
+    "why": "2 distinct sessions failed off-map on 'file-tool' work and no accepted record's hook covers it — the store held nothing for it"
+  },
+  {
+    "class": "output-schema",
+    "distinct_sessions": 2,
+    "floor": "detection-limited: it counts the off-map failures of closed attached sessions, a lower bound the world's votes set",
+    "instances": [
+      "S-0001/count_lines",
+      "S-0001/fetch_user_name",
+      "S-0001/sum_numbers",
+      "S-0002/count_lines",
+      "S-0002/fetch_user_name",
+      "S-0002/sum_numbers"
+    ],
+    "nominates": "new activation coverage: a consultation hook or a close lens keyed on this work-shape",
+    "noticed": [
+      "S-0001/count_lines",
+      "S-0001/fetch_user_name",
+      "S-0001/sum_numbers",
+      "S-0002/count_lines",
+      "S-0002/fetch_user_name",
+      "S-0002/sum_numbers"
+    ],
+    "reading": "at the bar",
+    "why": "2 distinct sessions failed off-map on 'output-schema' work and no accepted record's hook covers it — the store held nothing for it"
+  }
+]
