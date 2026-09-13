@@ -114,3 +114,8 @@ def test_consolidation_keeps_its_schedule(store):
     with pytest.raises(SystemExit, match="every 2 passes"):
         _consolidate.consolidate(store)
     assert _consolidate.consolidate(store, force=True).sessions_read == ["S-0001"]
+
+
+def test_an_invented_applied_id_earns_no_credit_row(store):
+    s1 = _session(store, 1, [{**CLEAN, "applied": ["obs-001"]}], {"task_pass_rate": 1.0})
+    assert _consolidate.credit_table(store, [s1]) == []

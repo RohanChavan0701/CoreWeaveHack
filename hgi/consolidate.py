@@ -94,9 +94,12 @@ def credit_table(store: Store, sessions: list[Session]) -> list[dict[str, Any]]:
     all_sessions = sorted((s for s in store.all("session") if s.attached and s.evaluation is not None), key=lambda s: s.pass_)  # type: ignore[attr-defined]
     window = {s.id for s in sessions}
     applied: dict[str, dict[str, list[bool]]] = defaultdict(lambda: {"tasks": [], "after": []})
+    known = {d.id for d in store.decisions()}
     for s in sessions:
         for row in s.evaluation.rows:
             for rid in row.get("applied", []):
+                if rid not in known:
+                    continue  # an id the pass invented is not a record; nothing is credited or indicted under it
                 applied[rid]["tasks"].append(row["task"])
                 applied[rid]["after"].append(not row.get("error"))
     out = []

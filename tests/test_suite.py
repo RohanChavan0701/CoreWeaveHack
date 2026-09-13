@@ -164,3 +164,32 @@ def test_an_endpoint_failure_on_a_turn_fails_the_row_with_its_cause_instead_of_d
     rows = s.evaluation.rows
     assert len(rows) == 6 and all(r["error"]["message"] == "model call failed" and "503" in r["error"]["cause"] for r in rows)
     assert s.evaluation.scores["task_pass_rate"].value == 0.0
+
+
+def test_the_model_policy_keeps_only_applied_ids_that_were_in_context(store, monkeypatch):
+    from hgi import model as _model
+    from suite.agent import Agent
+    from suite.tools import Tools
+
+    class Answers(_model.Backend):
+        model_id = "answers"
+
+        def chat(self, messages, *, json_mode, tools=None):
+            return {"content": '{"result": {"answer": 42, "unit": "n"}, "error": null, "applied": ["D-0001", "obs-001"]}', "tool_calls": []}
+
+    world = build(SuiteSpec())
+    token = _suite.use(world)
+    _model.use(Answers(), role="pass")
+    try:
+        agent = Agent(policy="model", records=[{"id": "D-0001", "decision": "x", "terms": [], "scopes": [], "stakes": ""}])
+        out = agent._model("genesis/schema_answer", "Return it.", {}, Tools(task="genesis/schema_answer", workdir=tmp_dir()))
+    finally:
+        _model.use(None, role="pass")
+        _suite.reset(token)
+    assert out["applied"] == ["D-0001"]
+
+
+def tmp_dir():
+    import tempfile
+
+    return Path(tempfile.mkdtemp())

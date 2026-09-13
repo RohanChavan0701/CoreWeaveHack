@@ -165,5 +165,7 @@ class Agent(weave.Model):
                 return _envelope(task, tools, error={"message": "final reply was not JSON", "cause": None})
             if not isinstance(final, dict):
                 return _envelope(task, tools, error={"message": "final reply was not a JSON object", "cause": None})
-            return _envelope(task, tools, result=final.get("result"), error=final.get("error"), applied=final.get("applied") or [])
+            in_context = {r["id"] for r in self.records}
+            applied = [a for a in (final.get("applied") or []) if isinstance(a, str) and a in in_context]  # a record not in context cannot have been applied
+            return _envelope(task, tools, result=final.get("result"), error=final.get("error"), applied=applied)
         return _envelope(task, tools, error={"message": "turn limit reached", "cause": f"{MAX_TURNS} turns without a final answer"})
