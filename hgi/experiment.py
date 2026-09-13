@@ -44,6 +44,16 @@ the same batches with no store. ``arm.json`` records every batch's hash and
 tasks, and the arm ends by writing its evolution log
 (:mod:`hgi.evolution`) beside it.
 
+A **retrofit** (:mod:`hgi.retrofit`) is an arm that never ran a forward
+pass: ``hgi experiment retrofit <old arm> --out <dir>`` splices an old
+attached arm's recorded sessions into a fresh store and runs today's
+backward pass over them, so the store after every iteration is what today's
+code would have made of the same rows. Its ``arm.json`` carries a
+``retrofit`` block naming the source, and ``report``, ``evolution`` and the
+dashboard read a directory of such arms as an experiment (:func:`from_dir`);
+``hgi experiment compare <retrofit arm>`` writes the per-iteration reading
+of the retrofitted store beside the original's.
+
 The runner gives each arm a fresh store under ``runs/<experiment>/<arm>/``,
 in its own git repository so the write law (every write ends in a commit)
 holds per arm and the code repository's history stays the code's. It seeds
@@ -247,6 +257,68 @@ def runs_root() -> Path:
 
 def arm_dir(exp: Experiment, arm: str, root: Path | None = None) -> Path:
     return (root or runs_root()) / exp.name / arm
+
+
+def spec_of(record: dict[str, Any]) -> ArmSpec:
+    """The arm spec an ``arm.json`` recorded, read back under today's fields; a field the record carries that the
+    spec no longer declares is dropped rather than refused, so an old arm still reads."""
+    return ArmSpec(**{k: v for k, v in record["spec"].items() if k in ArmSpec.model_fields})
+
+
+def recorded_batches(spec: ArmSpec, record: dict[str, Any]) -> tuple[list[Suite] | None, str | None]:
+    """The batches a stream arm met, dealt again from its spec — or, when the pool has changed since the arm ran (a budget,
+    a prompt), rebuilt from the task ids ``arm.json`` recorded, with a warning saying so, so a reading still meets the
+    arm that ran. ``(None, None)`` for a suite arm."""
+    if spec.stream is None or not record.get("stream"):
+        return None, None
+    batches = spec.batches()
+    recorded = {b["batch"]: b["hash"] for b in record["stream"]["batches"]}
+    if recorded == {n: b.hash for n, b in enumerate(batches, 1)}:
+        return batches, None
+    pool = build(spec.stream.pool_spec).by_id
+    missing = sorted({t for b in record["stream"]["batches"] for t in b["tasks"] if t not in pool})
+    if missing:
+        raise SystemExit(f"{record.get('experiment')}/{record.get('arm')}: the pool has changed since the arm ran and no longer holds {', '.join(missing[:5])}")
+    rebuilt = [Suite(spec=spec.stream.pool_spec, tasks=[pool[t] for t in b["tasks"]]) for b in record["stream"]["batches"]]
+    return rebuilt, "the pool has changed since the arm ran; batches rebuilt from the recorded task ids, hashes differ"
+
+
+def _alias_of(model_id: str) -> str:
+    return model_id.rsplit("/", 1)[-1].lower()
+
+
+def from_dir(path: Path | str) -> tuple[Experiment, Path]:
+    """An experiment synthesized from arm directories on disk — arms no experiment file declares, such as retrofits
+    (:mod:`hgi.retrofit`): one arm per ``arm.json`` under ``path`` (or ``path`` itself when it is an arm), each with
+    its recorded spec and a model per distinct id of its roster, so ``report``, ``evolution`` and the dashboard read
+    them exactly as they read a declared arm. Returns the experiment and the runs root the directories sit under."""
+    path = Path(path).resolve()
+    dirs = [path] if (path / "arm.json").exists() else sorted(p.parent for p in path.glob("*/arm.json"))
+    if not dirs:
+        raise SystemExit(f"{path} holds no arm.json, and no directory under it does")
+    models: dict[str, ModelSpec] = {}
+    arms: dict[str, dict[str, Any]] = {}
+    notes = []
+    for d in dirs:
+        record = json.loads((d / "arm.json").read_text())
+        spec = {k: v for k, v in record["spec"].items() if k in ArmSpec.model_fields}
+        roster = record["roster"]
+        pass_alias = spec.get("model", "stub")
+        models[pass_alias] = ModelSpec(id=roster["pass"], stub=roster["pass"] == "stub")
+        roles = {}
+        for role, mid in roster.items():
+            if role == "pass" or mid == roster["pass"]:
+                continue
+            alias = next((a for a, m in models.items() if m.id == mid), None) or _alias_of(mid)
+            models[alias] = ModelSpec(id=mid, stub=mid == "stub")
+            roles[role] = alias
+        spec["roles"] = roles
+        arms[d.name] = spec
+        if r := record.get("retrofit"):
+            notes.append(f"{d.name}: retrofit of {r['source_experiment']}/{r['source_arm']} at {str(r.get('source_commit') or '?')[:7]}, "
+                         f"the backward pass on {r['teacher']}")
+    description = ("not a live run — " + "; ".join(notes)) if notes else ""
+    return Experiment(name=dirs[0].parent.name, description=description, models=models, arms=arms), dirs[0].parent.parent
 
 
 # --- running an arm ------------------------------------------------------------------------
@@ -530,13 +602,18 @@ def list_models(base_url: str, api_key_env: str = "WANDB_API_KEY") -> list[str]:
 # --- the command ------------------------------------------------------------------------------
 
 def register(add, store_of, finish) -> None:
-    p = add("experiment", "run, show or report an experiment file's arms")
-    p.add_argument("action", choices=["run", "show", "report", "evolution", "models"])
-    p.add_argument("file", nargs="?", help="the experiment TOML (not needed for `models`)")
+    p = add("experiment", "run, show, report, retrofit or compare an experiment's arms")
+    p.add_argument("action", choices=["run", "show", "report", "evolution", "models", "retrofit", "compare"])
+    p.add_argument("file", nargs="?", help="the experiment TOML; for `report`/`evolution` also an arm directory or a directory of arms; "
+                                          "for `retrofit` the old arm directory; for `compare` a retrofitted arm directory")
+    p.add_argument("more", nargs="*", help="for `compare`: further retrofitted arm directories")
     p.add_argument("--arm", action="append", help="run only this arm (repeatable); default every arm in file order")
     p.add_argument("--force", action="store_true", help="rerun an arm that has run, discarding its store")
     p.add_argument("--base-url", default=_model.WANDB_INFERENCE, help="for `models`: the endpoint to list")
     p.add_argument("--api-key-env", default="WANDB_API_KEY", help="for `models`: the variable holding the key")
+    p.add_argument("--out", help="for `retrofit`: the new arm directory; for `compare`: the results directory (default experiments/results/retrofit)")
+    p.add_argument("--teacher", help="for `retrofit`: the model (an alias of the source experiment's file, or an id) the backward-pass roles run on")
+    p.add_argument("--upto", type=int, help="for `retrofit`: stop after this pass")
     p.set_defaults(fn=_cmd)
 
 
@@ -546,15 +623,32 @@ def _cmd(args) -> int:
         return 0
     if not args.file:
         raise SystemExit("an experiment file is required")
-    exp = load(args.file)
+    if args.action == "retrofit":
+        from hgi import retrofit as _retrofit
+
+        if not args.out:
+            raise SystemExit("retrofit writes a new arm: pass --out <directory>")
+        record = _retrofit.retrofit(args.file, args.out, teacher=args.teacher, upto=args.upto, commit=not args.no_commit, force=args.force)
+        print(f"retrofit/{record['arm']}: {_curve_line(record['curve'])}", file=sys.stderr)
+        return 0
+    if args.action == "compare":
+        from hgi import retrofit as _retrofit
+
+        print(_retrofit.compare([args.file, *args.more], Path(args.out) if args.out else None))
+        return 0
+    root = None
+    if Path(args.file).is_dir():
+        exp, root = from_dir(args.file)
+    else:
+        exp = load(args.file)
     if args.action == "show":
         print(show(exp))
         return 0
     if args.action == "report":
-        print(report(exp))
+        print(report(exp, root))
         return 0
     if args.action == "evolution":
-        print(evolution.write_experiment(exp))
+        print(evolution.write_experiment(exp, root))
         return 0
     for arm in args.arm or list(exp.arms):
         print(f"== {exp.name}/{arm} ==", file=sys.stderr)
