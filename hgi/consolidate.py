@@ -61,6 +61,22 @@ PRIMARY_SERIES = "task_pass_rate"
 """The suite's headline series, the one credit assignment reads."""
 
 
+def row_passed(row: dict[str, Any]) -> bool:
+    """Whether the hidden check passed on this row — the primary series' per-row verdict, not merely the absence of a tool error.
+
+    An answer can execute cleanly and still be wrong: a SQL query that runs against the database and returns the wrong
+    rows records no ``error``, so crediting ``before``/``after`` on ``not row.get("error")`` would reward a wrong answer
+    with positive learning credit (DATASET-EVAL-RESEARCH.md § "Required evaluator correction"). The oracle already
+    graded the row — ``scores["task_pass_rate"]`` is ``1.0`` exactly when the hidden check passed — so read that.
+    A row that carries no per-row score at all (a legacy or stub run recorded before per-row scores) has no better
+    signal, so it falls back to the old absence-of-error heuristic rather than reading as a silent failure.
+    """
+    score = (row.get("scores") or {}).get(PRIMARY_SERIES)
+    if isinstance(score, dict) and score.get("value") is not None:
+        return score["value"] == 1.0
+    return not row.get("error")
+
+
 # --- the brief ---------------------------------------------------------------------------
 
 def sessions_since_last(store: Store) -> tuple[list[Session], int]:
@@ -107,11 +123,11 @@ def credit_table(store: Store, sessions: list[Session]) -> list[dict[str, Any]]:
                 if rid not in known:
                     continue  # an id the pass invented is not a record; nothing is credited or indicted under it
                 applied[rid]["tasks"].append(row["task"])
-                applied[rid]["after"].append(not row.get("error"))
+                applied[rid]["after"].append(row_passed(row))
     out = []
     for rid, a in applied.items():
         tasks = sorted(set(a["tasks"]))
-        before = [not row.get("error") for s in all_sessions if s.id not in window and s.pass_ < min(x.pass_ for x in sessions)
+        before = [row_passed(row) for s in all_sessions if s.id not in window and s.pass_ < min(x.pass_ for x in sessions)
                   for row in s.evaluation.rows if row["task"] in tasks]
         out.append({"record": rid, "scorer": PRIMARY_SERIES, "tasks": tasks, "applied_count": len(a["after"]),
                     "before": (sum(before) / len(before)) if before else None, "after": sum(a["after"]) / len(a["after"]),
