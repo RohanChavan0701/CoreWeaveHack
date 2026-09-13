@@ -120,3 +120,15 @@ def test_settlement_test_refuses_a_compliable_cell(store, monkeypatch):
     monkeypatch.setitem(_index.PROJECTIONS, "leaky", lambda s: [{"record": "D-0001", "decision": "always retry"}])
     findings = _lint.check_settlement(store)
     assert findings and findings[0].check == "settlement-test"
+
+
+def test_two_registries_over_one_store_never_mint_the_same_id(store):
+    """A long-running runner and the commands it drives hold separate registry objects; the counters on disk decide."""
+    from hgi import registry as _registry
+
+    other = _registry.load(store.root)
+    first = store.mint("session")
+    second = other.mint("S")
+    third = store.mint("session")
+    assert (first, second, third) == ("S-0001", "S-0002", "S-0003")
+    assert store.mint("consolidation") == "K-0001" and other.mint("K") == "K-0002"

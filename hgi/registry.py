@@ -121,7 +121,15 @@ class Registry:
 
     # --- ids -----------------------------------------------------------
     def mint(self, prefix: str) -> str:
-        """Reserve the next id for ``prefix`` and persist the counter. Ids are reserve-once and gap-tolerant."""
+        """Reserve the next id for ``prefix`` and persist the counter. Ids are reserve-once and gap-tolerant.
+
+        The counters on disk are the authority: they are re-read before every
+        reservation, so two registry objects over one store — a long-running
+        runner and the commands it drives — never hand out the same id.
+        """
+        ids_path = self.path("ids")
+        if ids_path.exists():
+            self.ids = read_json(ids_path)
         n = self.ids.get(prefix, 0) + 1
         self.ids[prefix] = n
         self.save("ids")
