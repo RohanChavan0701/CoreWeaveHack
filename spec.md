@@ -1520,18 +1520,6 @@ Alternative, if the coding harness is not ready by M1: a data-analysis
 agent over a fixed set of marimo notebooks with hidden assertion cells,
 the same tool faults, the same scorer shapes.
 
-The suite is composed, not fixed by hand: task *families* — hand-written,
-or transcribed once from a public dataset and pinned in the repository —
-under one *fault profile* (how many leading calls of a faulted task fail,
-which tools are budgeted, whether output truncates). The composition is a
-parameter of the experiment, and the hash covers every task's
-presentation, its world (files, routes) and the profile, so a harder world
-is a different suite and the report keys on the arm. The families that
-earn their place are the ones whose lessons are conventions of the world
-rather than facts about one task: a convention recurs across tasks, so a
-promoted record has anchors and a hook, and a budget makes it cost a call,
-so the oracle can score whether it was learned.
-
 ### 14.2 The run
 
 Six passes with the store attached; six passes detached (same agent, same
