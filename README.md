@@ -377,6 +377,109 @@ quality means, `economy / turns / transfer` (economy derived from the
 row's call counts and the task's floor, so it reads on runs scored before
 the series existed). Every count is a floor from one run.
 
+### The stream on `openai/gpt-oss-120b`
+
+`experiments/stream.toml`, run on 2026-09-13 over W&B Inference from the
+tree at 67c9ff0 with the close fix of 1707b72: the 84 `curriculum` tasks
+dealt by seed 0 into ten batches of eight, a consolidation every two
+batches, batches 1 and 2 met again after the stream; `openai/gpt-oss-120b`
+attached and detached and `openai/gpt-oss-20b` attached on the plain pool,
+`gpt-oss-120b` attached and detached on `curriculum-strict`; the detached
+arms drawn alone after the attached ones. The logs are derived from the arm
+stores (`experiments/results/stream/`), traced to
+[`slavazinevich-worldvue/hgi-experiments`](https://wandb.ai/slavazinevich-worldvue/hgi-experiments/weave).
+
+First sight per batch, every arm on the same eight tasks:
+
+| batch | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | stream |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 120b attached | 0.25 | 0.50 | 0.38 | 0.38 | 0.25 | 0.62 | 0.50 | 0.62 | 0.50 | 0.62 | 0.46 |
+| 120b detached | 0.62 | 0.75 | 0.38 | 0.50 | 0.38 | 0.50 | 0.38 | 0.62 | 0.50 | 0.75 | 0.54 |
+| 20b attached | 0.62 | 0.38 | 0.62 | 0.75 | 0.50 | 0.75 | 0.50 | 0.50 | 0.50 | 0.62 | 0.57 |
+| 120b strict | 0.38 | 0.25 | 0.50 | 0.25 | 0.25 | 0.38 | 0.38 | 0.38 | 0.25 | 0.38 | 0.34 |
+| 120b strict detached | 0.25 | 0.38 | 0.25 | 0.25 | 0.25 | 0.38 | 0.25 | 0.25 | 0.50 | 0.50 | 0.33 |
+| in context, 120b attached | — | — | — | — | — | — | D-0001 | — | D-0001 | D-0001 | |
+| in context, 120b strict | — | — | D-0001 | D-0001 | D-0001 | D-0001 | D-0001 D-0002 | D-0001 D-0002 | D-0001 D-0002 | D-0001 D-0002 | |
+
+First sight per lesson, with the naive-shape failures of the strict arm
+before and after the first pass that had a record mentioning the lesson in
+context (no record of the plain attached arm mentions a lesson):
+
+| lesson | tier | 120b attached | 120b detached | 20b attached | 120b strict | strict detached | strict: naive before / after first mention |
+|---|---|---|---|---|---|---|---|
+| bom | loud | 1.00 (11/11) | 1.00 (11/11) | 1.00 (11/11) | 1.00 (11/11) | 1.00 (11/11) | 0/11 / — |
+| moved-v2 | loud | 0.25 (3/12) | 0.50 (6/12) | 1.00 (12/12) | 0.58 (7/12) | 0.00 (0/12) | 3/3 / 0/9 (pass 3) |
+| token-route | loud | 0.82 (9/11) | 1.00 (11/11) | 1.00 (11/11) | 0.00 (0/11) | 0.00 (0/11) | 2/2 / 0/9 (pass 3) |
+| csv-quoted | visible | 0.67 (8/12) | 0.58 (7/12) | 0.67 (8/12) | 0.67 (8/12) | 0.50 (6/12) | 4/12 / — |
+| footer-row | visible | 0.00 (0/11) | 0.00 (0/11) | 0.00 (0/11) | 0.00 (0/11) | 0.00 (0/11) | 10/11 / — |
+| paged-api | visible | 0.50 (6/12) | 0.67 (8/12) | 0.25 (3/12) | 0.08 (1/12) | 0.75 (9/12) | 0/12 / — |
+| trailing-newline | invisible | 0.00 (0/11) | 0.00 (0/11) | 0.09 (1/11) | 0.00 (0/11) | 0.00 (0/11) | 10/11 / — |
+
+Revisits: the plain attached arm met batch 1 again at 0.62 (0.25 at first
+sight) and batch 2 at 0.62 (0.50) with D-0001 in context — and the
+detached draw of batch 1, with no store, was 0.62. The strict arm met
+batch 1 again at 0.12 (0.38) and batch 2 at 0.25 (0.25) with D-0004,
+D-0005 and D-0006 in context. The 20b arm: 0.75 (0.62) and 0.50 (0.38).
+
+What was admitted, and when. The plain 120b arm filed 43 observations over
+twelve passes; the blind coder shaped them into 38 groups, 20 at the
+two-session bar, and the consolidator drafted 18 records: 11 were refused
+at parse (an empty `not_this`, or an edit rung naming no record to
+supersede), 5 were declined on the examiner's attacks (abstraction, watch
+direction, a premise kill, independence), 1 was escalated, and 1 was
+admitted — D-0001 after pass 6, "file-tool tasks validate the total line
+count across all shard files", drafted from the trailing-newline
+observations. It was consulted on five passes and applied on five rows;
+the trailing-newline and footer-row rows it fired on failed with the naive
+count. On pass 8 it matched lexically and failed the guard, so nothing was
+in context. The strict arm filed 52, 13 groups reached the bar, 10 drafts:
+6 admitted, 4 declined. D-0001 after pass 2 fused two lessons — "all HTTP
+calls use versioned `/v2` endpoints and include a valid authentication
+token" — with `calls to /v2 endpoints with a valid token` as its
+exclusion; D-0002 after pass 6 restated the token half; D-0003 after pass 8
+is the schema tautology; D-0004, D-0005 and D-0006 after pass 10 restate
+D-0002 and D-0001 almost verbatim, and the fusion leg did not fold them.
+Its currency review reversed D-0001's premise after pass 4 on rows where
+the record applied and the route answered 404, and the record stayed
+accepted. The 20b arm admitted three tautologies (wrap a None reply,
+record shell usage, validate outputs) after passes 4 and 8 and retired
+seven genesis lenses through the deadline door. The first run of the
+strict arm, stopped at pass 7 by the close bug, had refused both lesson
+drafts at parse after pass 2 and declined the versioning draft after pass
+4; the rerun on the same batches admitted the fused record at its first
+consolidation — admission is itself a draw.
+
+The honest reading. On the plain pool the attached curve did not separate
+from the detached one: 0.46 against 0.54 over the stream, better on two
+batches, equal on three, worse on five, and the five passes that ran with
+an empty store differ from the detached draws of the same batches by up to
+0.37 (batch 1: 0.25 against 0.62), which is the noise of one draw of eight
+tasks on this endpoint and larger than any effect in the table. No
+convention was learned on the plain pool: footer-row and trailing-newline
+failed every row on every arm, and the one record admitted fires on file
+tasks without carrying what a file with no trailing newline does to
+`wc -l`. gpt-oss-20b outscored 120b on this pool because it follows the
+410's hint on every moved route where 120b reports the 410 and stops (12/12
+against 3/12 and 6/12); its records are tautologies and its curve is the
+model's. The strict pool did what it was built to ask: after D-0001 entered
+context at pass 3, every moved-v2 row the pass called at all passed on one
+HTTP call within a budget that holds no discovery call — seven rows, 0.58
+against 0.00 detached, the naive shape gone from 3/3 to 0/9 — so the
+memory saved the discovery call on one loud lesson. The same table shows
+the cost of a record with no bound: the pass applied "all HTTP calls use
+`/v2`" to paging routes and got 404s (paged-api 0.08 against 0.75
+detached), and after D-0002 it made no HTTP call at all on token and
+paging rows, citing the record as the cause, so token-route went from the
+naive 401 to zero calls (0/11 on both arms) and the strict revisit of
+batch 1 fell to 0.12. Net over the stream the strict arms tie (0.34 against
+0.33): the seven rows the record won, the eight it lost. What the run
+shows the mechanism doing at breadth: the close naming the convention in
+its observations where the probe's did not, the coder grouping same-lesson
+observations across sessions, the consolidator nominating the right
+lessons in every arm — and the drafting contract, the examiner and the
+adjudicator deciding which of those lessons became a record (the
+carry-forward, items 25 and 32).
+
 ### The baseline on `openai/gpt-oss-120b`
 
 Run on 2026-09-12 over W&B Inference, six passes attached and six detached,
