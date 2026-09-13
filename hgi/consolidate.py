@@ -112,7 +112,9 @@ def credit_table(store: Store, sessions: list[Session]) -> list[dict[str, Any]]:
         before = [not row.get("error") for s in all_sessions if s.id not in window and s.pass_ < min(x.pass_ for x in sessions)
                   for row in s.evaluation.rows if row["task"] in tasks]
         out.append({"record": rid, "scorer": PRIMARY_SERIES, "tasks": tasks, "applied_count": len(a["after"]),
-                    "before": (sum(before) / len(before)) if before else None, "after": sum(a["after"]) / len(a["after"])})
+                    "before": (sum(before) / len(before)) if before else None, "after": sum(a["after"]) / len(a["after"]),
+                    # itemized, never net (doctrine § 13): the fractions ship the counts they are computed from
+                    "before_passed": sum(before), "before_rows": len(before), "after_passed": sum(a["after"]), "after_rows": len(a["after"])})
     return out
 
 
