@@ -92,6 +92,10 @@ def test_a_stub_arm_retrofits_end_to_end_rows_unchanged_references_stripped_a_sn
     assert reading["passes"][0]["original"]["rows"] == len(_rows(source, "S-0001"))
     md = (tmp_path / "results" / "smoke-attached.md").read_text()
     assert "## After each pass" in md and "## Where they diverge, and why" in md and "D-0001" in md
+    shapes = snap2["store"]["observations"]["by_shape"]
+    assert shapes and all(set(c) >= {"open", "promoted", "dismissed", "sessions", "names"} for c in shapes.values())
+    assert set(snap1["store"]["observations"]["by_shape"]) == {"uncoded"}, "a shape is the coder's at the next consolidation"
+    assert "## Observations by shape, pass by pass" in md and "| uncoded |" in md
     assert "| [smoke-attached](smoke-attached.md) | 2 | stub |" in text
 
 

@@ -172,9 +172,24 @@ def splice(store: Store, old: Session) -> dict[str, Any]:
 
 # --- snapshots --------------------------------------------------------------------------------
 
+def by_shape(observations: list[Any]) -> dict[str, dict[str, Any]]:
+    """The observation pile keyed by the shape the blind coder gave it (``uncoded`` until a consolidation has run): how many
+    are open, promoted, dismissed or expired under each shape, and the open ones' names — the accumulation a
+    consolidation groups over, read pass by pass."""
+    out: dict[str, dict[str, Any]] = {}
+    for o in observations:
+        key = " ".join(o.shape) or "uncoded"
+        cell = out.setdefault(key, {"open": 0, "promoted": 0, "dismissed": 0, "expired": 0, "sessions": set(), "names": []})
+        cell[o.disposition.state] = cell.get(o.disposition.state, 0) + 1
+        if o.disposition.state == "open":
+            cell["sessions"].add(o.session)
+            cell["names"].append(o.name)
+    return {k: v | {"sessions": sorted(v["sessions"])} for k, v in sorted(out.items())}
+
+
 def snapshot(store: Store) -> dict[str, Any]:
-    """What a store holds: every decision with its status, the observations by state (the open ones in full), every fire,
-    steer and open proposal, the queue, the consolidations and the ledger by species."""
+    """What a store holds: every decision with its status, the observations by state (the open ones in full) and by shape,
+    every fire, steer and open proposal, the queue, the consolidations and the ledger by species."""
     observations = store.all("observation")
     return {
         "decisions": [{"id": d.id, "status": d.status, "hook": d.consultation_terms, "decision": d.decision, "proposed_by": d.admission.proposed_by,
@@ -183,7 +198,8 @@ def snapshot(store: Store) -> dict[str, Any]:
                        "premises": {p.id: p.status for p in d.warrant.premises}} for d in store.all("decision")],  # type: ignore[attr-defined]
         "observations": {"open": [{"name": o.name, "session": o.session, "shape": list(o.shape), "noticed": o.noticed}
                                   for o in observations if o.disposition.state == "open"],  # type: ignore[attr-defined]
-                         "by_state": dict(Counter(o.disposition.state for o in observations))},  # type: ignore[attr-defined]
+                         "by_state": dict(Counter(o.disposition.state for o in observations)),  # type: ignore[attr-defined]
+                         "by_shape": by_shape(observations)},
         "fires": [{"id": f.id, "record": f.latch.record, "index": f.latch.index, "pass": f.edge_event.pass_, "scorer": f.edge_event.scorer,
                    "observed": f.edge_event.observed, "disposer": f.disposer, "act": f.disposition.act, "discharged": f.disposition.discharged,
                    "by": f.disposition.by, "outcome": f.disposition.outcome} for f in store.all("fire")],  # type: ignore[attr-defined]
@@ -523,7 +539,28 @@ def reading_markdown(r: dict[str, Any]) -> str:
         for d in (final or {}).get("decisions", []):
             lines.append(f"- {_decision_line(d)} — after pass {after.get(d['id'], '?')}")
         lines.append("")
-    lines += ["## Where they diverge, and why", ""]
+    lines += ["## Observations by shape, pass by pass", "",
+              "Open observations under each shape after each pass, original / retrofit; a shape is the blind coder's at the next "
+              "consolidation, so a pile is `uncoded` until one has run. The bar asks for observations from as many distinct sessions "
+              "as `independent_observations`; the last column is each side's final pile with what was promoted or dismissed.", ""]
+    shapes = sorted({k for p in r["passes"] for side in ("original", "retrofit") if p[side] for k in p[side]["store"]["observations"].get("by_shape", {})})
+    if shapes:
+        lines.append("| shape | " + " | ".join(f"p{p['pass']}" for p in r["passes"]) + " | end o / r (open; promoted; dismissed) |")
+        lines.append("|---|" + "---|" * (len(r["passes"]) + 1))
+        for shape in shapes:
+            cells = []
+            for p in r["passes"]:
+                o_ = ((p["original"] or {}).get("store", {}).get("observations", {}).get("by_shape", {}) or {}).get(shape)
+                r_ = p["retrofit"]["store"]["observations"].get("by_shape", {}).get(shape)
+                cells.append(f"{o_['open'] if o_ else ('—' if p['original'] is None else 0)} / {r_['open'] if r_ else 0}")
+            ends = []
+            for side in ("original", "retrofit"):
+                c = ((r["final"][side] or {}).get("observations", {}).get("by_shape", {}) or {}).get(shape)
+                ends.append(f"{c['open']}; {c['promoted']}; {c['dismissed']}" if c else "0; 0; 0")
+            lines.append(f"| {shape} | " + " | ".join(cells) + f" | {ends[0]} / {ends[1]} |")
+    else:
+        lines.append("No observation was filed on either side.")
+    lines += ["", "## Where they diverge, and why", ""]
     any_div = False
     for p in r["passes"]:
         for line in p["divergence"]:
