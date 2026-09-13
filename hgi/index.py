@@ -70,11 +70,26 @@ def hooks(store: Store) -> dict[str, list[dict[str, Any]]]:
     return {term: sorted(cells, key=lambda c: c["record"]) for term, cells in sorted(out.items())}
 
 
+UNWATCHED = "unwatched"
+"""What a record's watch cell reads when no live world-state latch can send it back for re-adjudication: the world has no
+way to contradict its warrant, and the cell says so loudly rather than defaulting — a join over nothing is displayed, never
+tiebroken (doctrine § 16.17)."""
+
+
+def watch_of(record: Decision) -> str:
+    """The record's derived falsification grammar, as a cell: its live dispositive world-state watches, or ``unwatched``."""
+    watches = [l.edge.predicate for l in record.all_latches()
+               if l.type == "revisit" and l.lifecycle.status == "live" and l.owed_act.role == "dispositive" and l.edge.predicate]
+    if not watches:
+        return UNWATCHED
+    return "; ".join(f"{p.scorer} {p.comparator} {p.value} over {p.persistence}" for p in watches)
+
+
 def summaries(store: Store) -> list[dict[str, Any]]:
-    """The full scan of one-line summaries the decision store is recalled by."""
+    """The full scan of one-line summaries the decision store is recalled by; ``watch`` is the record's derived grammar or ``unwatched``."""
     return [
         {"record": d.id, "status": d.status, "latch": d.summary.latch, "stakes": d.summary.stakes,
-         "not_this": d.summary.not_this, "scopes": d.scopes}
+         "not_this": d.summary.not_this, "scopes": d.scopes, "watch": watch_of(d)}
         for d in store.decisions()
     ]
 

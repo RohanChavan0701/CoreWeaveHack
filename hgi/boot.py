@@ -136,6 +136,9 @@ def plan(store: Store, session: Session, articles, prev: Session | None, owed: l
     fired = [c for c in session.considered if c.via != "constitution" and c.guard_passed]
     failed = [c for c in session.considered if c.via != "constitution" and not c.guard_passed]
     lines.append(f"consulting {len(fired)}: " + ", ".join(f"{c.record} ({', '.join(c.terms_matched)}) owed {c.owed_act}" for c in fired))
+    unwatched = [c.record for c in fired if _index.watch_of(store.read("decision", c.record)) == _index.UNWATCHED]  # type: ignore[arg-type]
+    if unwatched:
+        lines.append(f"unwatched {len(unwatched)}: " + ", ".join(unwatched) + " — no world-state watch can send the warrant back; only the ratio and propagation can")
     if failed:
         lines.append(f"considered, guard failed {len(failed)}: " + ", ".join(f"{c.record} via {c.via}" for c in failed))
     for a in session.lens_answers:
