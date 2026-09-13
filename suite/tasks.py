@@ -54,6 +54,11 @@ class Task:
     stub: Scripted | None = None
     lesson: str | None = None
     """The lesson of the world the task turns on (:data:`suite.lessons.LESSONS`), when it turns on one; not part of the presentation or the hash."""
+    knowing: dict[str, int] | None = None
+    """The calls per budgeted tool a policy that knows the world needs — the floor the economy scorers grade against; ``None`` leaves them unevaluable."""
+    twin: "Task | None" = None
+    """A metamorphic twin: the same names, columns and routes over different data, with its own gold — the world a solution's
+    method is replayed in by the ``method_transfer`` scorer. Never in a suite of its own."""
 
     @property
     def family(self) -> str:

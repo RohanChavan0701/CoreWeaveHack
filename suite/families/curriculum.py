@@ -27,6 +27,13 @@ the knowing policy's calls exactly, so the convention costs a call the
 budget does not hold and only a pass that already knows it — from the
 store, or from the model — stays within budget. The strict pool asks the
 knowledge-base question directly: does the memory save the discovery.
+
+Every task declares the knowing policy's calls (``knowing``), the floor the
+economy scorers grade against, and carries a metamorphic twin: the same
+names, columns, routes and structure over different data, with its own
+gold, drawn from a second seed so the twin differs only in what the data
+says. A method that reads the convention gives the twin's answer when
+replayed there; one that fit the instance does not.
 """
 
 from __future__ import annotations
@@ -35,6 +42,7 @@ import csv
 import io
 import json
 import random
+from dataclasses import replace
 from typing import TYPE_CHECKING, Any, Callable
 
 from suite.families import family
@@ -67,8 +75,13 @@ KEYS = (("title", "items"), ("name", "entries"), ("label", "values"), ("project"
 
 
 def _rng(lesson: str, i: int) -> random.Random:
-    """One generator per lesson and clothing, shared by both families so their clothes are the same."""
+    """The structure of a clothing — how many files, pages, which route — shared by both families and by the twin."""
     return random.Random(f"curriculum:{lesson}:{i}")
+
+
+def _data(lesson: str, i: int, twin: bool) -> random.Random:
+    """The data of a clothing — counts, values, rows — the one thing the twin draws differently."""
+    return random.Random(f"curriculum:{lesson}:{i}:{'twin' if twin else 'data'}")
 
 
 def _budget(n: int) -> str:
@@ -85,21 +98,21 @@ def _csv(columns: list[str], rows: list[list[Any]]) -> str:
 
 # --- the lessons, one generator each: (i) -> Task -----------------------------------------------
 
-def _trailing_newline(fam: str, i: int, slack: int) -> Task:
-    r = _rng("trailing-newline", i)
+def _trailing_newline(fam: str, i: int, slack: int, twin: bool = False) -> Task:
+    r, d = _rng("trailing-newline", i), _data("trailing-newline", i, twin)
     stem, ext, k = STEMS[i % len(STEMS)], EXTS[i % len(EXTS)], r.randint(2, 5)
     names = [f"{stem}-{j}.{ext}" for j in range(1, k + 1)]
-    counts = {n: r.randint(1, 9) for n in names}
+    counts = {n: d.randint(1, 9) for n in names}
     gold = sum(counts.values())
     return Task(f"{fam}/newline_{i:02d}",
                 f"{k} files {', '.join(names)} are in the working directory. Return the total number of lines across them as result, "
                 f"using the shell tool. {_budget(1 + slack)}",
                 ("shell-tool", "tool-budget"), RESULT_INT, lambda res, w, g=gold: res == g, shell_budget=1 + slack,
-                files=_no_newline(counts), stub=_naive_count(names), lesson="trailing-newline")
+                files=_no_newline(counts), stub=_naive_count(names), lesson="trailing-newline", knowing={"shell": 1})
 
 
-def _paged_api(fam: str, i: int, slack: int) -> Task:
-    r = _rng("paged-api", i)
+def _paged_api(fam: str, i: int, slack: int, twin: bool = False) -> Task:
+    r, d = _rng("paged-api", i), _data("paged-api", i, twin)
     coll, pages, per = COLLECTIONS[i % len(COLLECTIONS)], r.randint(2, 4), r.randint(2, 4)
     counting = i % 2 == 1
     routes: dict[str, Any] = {}
@@ -107,10 +120,10 @@ def _paged_api(fam: str, i: int, slack: int) -> Task:
     for p in range(1, pages + 1):
         path = f"/{coll}" if p == 1 else f"/{coll}?page={p}"
         if counting:
-            items = [{"id": (p - 1) * per + j, "active": r.random() < 0.5} for j in range(1, per + 1)]
+            items = [{"id": (p - 1) * per + j, "active": d.random() < 0.5} for j in range(1, per + 1)]
             gold += sum(1 for it in items if it["active"])
         else:
-            items = [r.randint(1, 40) for _ in range(per)]
+            items = [d.randint(1, 40) for _ in range(per)]
             gold += sum(items)
         routes[path] = {"items": items, "next": f"/{coll}?page={p + 1}" if p < pages else None}
     if counting:
@@ -120,26 +133,27 @@ def _paged_api(fam: str, i: int, slack: int) -> Task:
         prompt = f"GET /{coll} from the API and return the sum of every item as result."
         stub = lambda s, c=coll: sum(s.get(f"/{c}")["items"])  # noqa: E731
     return Task(f"{fam}/paged_{i:02d}", prompt, ("http-tool", "error-wrapping"), RESULT_INT, lambda res, w, g=gold: res == g,
-                http_budget=pages + slack, routes=routes, stub=stub, lesson="paged-api")
+                http_budget=pages + slack, routes=routes, stub=stub, lesson="paged-api", knowing={"http": pages})
 
 
-def _moved_v2(fam: str, i: int, slack: int) -> Task:
-    r = _rng("moved-v2", i)
+def _moved_v2(fam: str, i: int, slack: int, twin: bool = False) -> Task:
+    r, d = _rng("moved-v2", i), _data("moved-v2", i, twin)
     res, ident = RESOURCES[i % len(RESOURCES)], r.randint(3, 99)
     old, new = f"/{res}/{ident}", f"/v2/{res}/{ident}"
     gone = {"$error": {"message": f"GET {old} failed", "cause": f"HTTP 410 Gone: this API serves {new}"}}
     if i % 2 == 0:
-        name = NAMES[i % len(NAMES)]
+        name = d.choice(NAMES)
         return Task(f"{fam}/moved_{i:02d}", f"GET {old} and return the {res[:-1]}'s name as result.", ("http-tool", "error-wrapping"),
                     RESULT_STR, lambda r_, w, g=name: r_ == g, http_budget=1 + slack, routes={old: gone, new: {"id": ident, "name": name}},
-                    stub=lambda s, p=old: s.get(p)["name"], lesson="moved-v2")
+                    stub=lambda s, p=old: s.get(p)["name"], lesson="moved-v2", knowing={"http": 1})
     return Task(f"{fam}/moved_{i:02d}", f"GET {old} and return the string 'ok' as result when the response's ok field is true.",
                 ("http-tool", "error-wrapping"), RESULT_STR, lambda r_, w: r_ == "ok", http_budget=1 + slack,
-                routes={old: gone, new: {"id": ident, "ok": True}}, stub=lambda s, p=old: "ok" if s.get(p)["ok"] else "not ok", lesson="moved-v2")
+                routes={old: gone, new: {"id": ident, "ok": True}}, stub=lambda s, p=old: "ok" if s.get(p)["ok"] else "not ok", lesson="moved-v2",
+                knowing={"http": 1})
 
 
-def _csv_quoted(fam: str, i: int, slack: int) -> Task:
-    r = _rng("csv-quoted", i)
+def _csv_quoted(fam: str, i: int, slack: int, twin: bool = False) -> Task:
+    r = _data("csv-quoted", i, twin)
     stem = STEMS[i % len(STEMS)]
     name = f"{stem}.csv"
     if i % 2 == 0:  # count the people in one city; at least one of them has a quoted name, so the naive split undercounts
@@ -154,7 +168,7 @@ def _csv_quoted(fam: str, i: int, slack: int) -> Task:
                     f"{name} is in the working directory with columns name,city,age. Return the number of people whose city is {city} as result, "
                     f"using the shell tool. {_budget(1 + slack)}",
                     ("shell-tool", "file-tool", "tool-budget"), RESULT_INT, lambda res, w, g=gold: res == g, shell_budget=1 + slack,
-                    files={name: _csv(["name", "city", "age"], rows)}, stub=_naive_csv(2, city, name), lesson="csv-quoted")
+                    files={name: _csv(["name", "city", "age"], rows)}, stub=_naive_csv(2, city, name), lesson="csv-quoted", knowing={"shell": 1})
     firm = QUOTED_FIRMS[i % len(QUOTED_FIRMS)]
     rows = [[1000 + j, r.choice([firm, *PLAIN_FIRMS, *QUOTED_FIRMS]), round(r.uniform(5, 900), 2)] for j in range(1, r.randint(5, 8))]
     rows[r.randrange(len(rows))][1] = firm
@@ -165,11 +179,12 @@ def _csv_quoted(fam: str, i: int, slack: int) -> Task:
                 ("shell-tool", "file-tool", "tool-budget"), {"type": "object", "required": ["result"], "properties": {"result": {"type": "number"}}},
                 lambda res, w, g=gold: isinstance(res, (int, float)) and abs(res - g) < 0.011, shell_budget=1 + slack,
                 files={name: _csv(["order", "customer", "total"], rows)},
-                stub=lambda s, n=name, f=firm: float(s.shell(f"awk -F, 'NR>1 && $2==\"{f}\" {{t+=$3}} END {{print t+0}}' {n}").strip()), lesson="csv-quoted")
+                stub=lambda s, n=name, f=firm: float(s.shell(f"awk -F, 'NR>1 && $2==\"{f}\" {{t+=$3}} END {{print t+0}}' {n}").strip()), lesson="csv-quoted",
+                knowing={"shell": 1})
 
 
-def _footer_row(fam: str, i: int, slack: int) -> Task:
-    r = _rng("footer-row", i)
+def _footer_row(fam: str, i: int, slack: int, twin: bool = False) -> Task:
+    r = _data("footer-row", i, twin)
     stem = STEMS[(i + 3) % len(STEMS)]
     name = f"{stem}-export.csv"
     rows = [[f"R{100 + j}", r.choice(PLAIN_FIRMS), r.randint(10, 500)] for j in range(1, r.randint(4, 9))]
@@ -180,27 +195,27 @@ def _footer_row(fam: str, i: int, slack: int) -> Task:
                     f"{name} is in the working directory with columns ref,account,amount. Return the sum of the amount column as result, "
                     f"using the shell tool. {_budget(1 + slack)}",
                     ("shell-tool", "file-tool", "tool-budget"), RESULT_INT, lambda res, w, g=total: res == g, shell_budget=1 + slack, files={name: body},
-                    stub=lambda s, n=name: int(s.shell(f"awk -F, 'NR>1 {{t+=$3}} END {{print t+0}}' {n}").strip()), lesson="footer-row")
+                    stub=lambda s, n=name: int(s.shell(f"awk -F, 'NR>1 {{t+=$3}} END {{print t+0}}' {n}").strip()), lesson="footer-row", knowing={"shell": 1})
     return Task(f"{fam}/footer_{i:02d}",
                 f"{name} is in the working directory with columns ref,account,amount. Return the number of records in it as result, "
                 f"using the shell tool. {_budget(1 + slack)}",
                 ("shell-tool", "file-tool", "tool-budget"), RESULT_INT, lambda res, w, g=len(rows): res == g, shell_budget=1 + slack, files={name: body},
-                stub=lambda s, n=name: int(s.shell(f"awk 'NR>1' {n} | wc -l").strip()), lesson="footer-row")
+                stub=lambda s, n=name: int(s.shell(f"awk 'NR>1' {n} | wc -l").strip()), lesson="footer-row", knowing={"shell": 1})
 
 
-def _token_route(fam: str, i: int, slack: int) -> Task:
-    r = _rng("token-route", i)
-    what, token, value = SECURE[i % len(SECURE)], "".join(r.choices("abcdef0123456789", k=8)), r.randint(1, 9999)
+def _token_route(fam: str, i: int, slack: int, twin: bool = False) -> Task:
+    r, d = _rng("token-route", i), _data("token-route", i, twin)
+    what, token, value = SECURE[i % len(SECURE)], "".join(r.choices("abcdef0123456789", k=8)), d.randint(1, 9999)
     path = f"/secure/{what}"
     routes = {path: {"$error": {"message": f"GET {path} failed", "cause": f"HTTP 401 Unauthorized: routes under /secure require ?token=<the token in token.txt>"}},
               f"{path}?token={token}": {what: value}}
     return Task(f"{fam}/token_{i:02d}", f"GET {path} and return the {what} field as result.", ("http-tool", "file-tool", "error-wrapping"),
                 RESULT_INT, lambda res, w, g=value: res == g, http_budget=1 + slack, files={"token.txt": token + "\n"}, routes=routes,
-                stub=lambda s, p=path, k=what: s.get(p)[k], lesson="token-route")
+                stub=lambda s, p=path, k=what: s.get(p)[k], lesson="token-route", knowing={"http": 1})
 
 
-def _bom(fam: str, i: int, slack: int) -> Task:
-    r = _rng("bom", i)
+def _bom(fam: str, i: int, slack: int, twin: bool = False) -> Task:
+    r = _data("bom", i, twin)
     key, items = KEYS[i % len(KEYS)]
     name = f"{STEMS[(i + 7) % len(STEMS)]}.json"
     title = f"{r.choice(('Q1', 'Q2', 'Q3', 'Q4', 'H1', 'H2'))}-{r.randint(2020, 2029)}"
@@ -217,7 +232,7 @@ def _bom(fam: str, i: int, slack: int) -> Task:
                 files={name: BOM + json.dumps(payload)}, stub=naive, lesson="bom")
 
 
-GENERATORS: dict[str, Callable[[str, int, int], Task]] = {
+GENERATORS: dict[str, Callable[..., Task]] = {
     "trailing-newline": _trailing_newline, "paged-api": _paged_api, "moved-v2": _moved_v2, "csv-quoted": _csv_quoted,
     "footer-row": _footer_row, "token-route": _token_route, "bom": _bom,
 }
@@ -225,7 +240,7 @@ assert set(GENERATORS) == set(LESSONS), "every lesson has a generator and every 
 
 
 def generate(fam: str) -> list[Task]:
-    return [gen(fam, i, SLACK[fam]) for lesson, gen in GENERATORS.items() for i in range(CLOTHES)]
+    return [replace(gen(fam, i, SLACK[fam]), twin=gen(fam, i, SLACK[fam], twin=True)) for gen in GENERATORS.values() for i in range(CLOTHES)]
 
 
 @family("curriculum", source=f"generated; every lesson of the world in {CLOTHES} clothes each, budgeted with one call to spare, for the stream experiment")

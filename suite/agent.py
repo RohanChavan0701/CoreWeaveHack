@@ -4,8 +4,10 @@
 task's output envelope: ``result``, ``error`` (``{message, cause}`` or
 ``None``), the call counts, the working directory, the suite hash, and
 ``applied`` — the ids of the records in context the agent applied on this
-task, which the close turns into use-time dispositions. The oracle adds
-each row's ``scores`` after the run.
+task, which the close turns into use-time dispositions — and the shape of
+the work: ``commands``, every shell command issued, and ``turns``, the
+model turns the task took (a scripted policy counts one turn per tool call
+and one to answer). The oracle adds each row's ``scores`` after the run.
 
 Two policies, one output shape:
 
@@ -39,9 +41,11 @@ from suite.tools import ToolError, Tools
 MAX_TURNS = 8
 
 
-def _envelope(task: str, tools: Tools, *, result: Any = None, error: dict | None = None, applied: list[str] | None = None) -> dict[str, Any]:
+def _envelope(task: str, tools: Tools, *, result: Any = None, error: dict | None = None, applied: list[str] | None = None,
+              turns: int | None = None) -> dict[str, Any]:
     return {"task": task, "result": result, "error": error, "tool_calls": tools.total_calls, "shell_calls": tools.calls["shell"],
-            "http_calls": tools.calls["http"], "tool_errors": list(tools.errors), "workdir": str(tools.workdir),
+            "http_calls": tools.calls["http"], "tool_errors": list(tools.errors), "commands": list(tools.commands),
+            "turns": tools.total_calls + 1 if turns is None else turns, "workdir": str(tools.workdir),
             "suite_hash": _suite.current().hash, "applied": sorted(set(applied or [])), "call": tracing.current_call_uri()}
 
 
@@ -147,12 +151,12 @@ class Agent(weave.Model):
         budgets = "; ".join(f"{k} calls: {v}" for k, v in tools.budgets.items())
         user = f"Task {task}: {prompt}\nOutput schema: {json.dumps(schema)}" + (f"\nBudgets — {budgets}" if budgets else "")
         messages: list[dict[str, Any]] = [{"role": "system", "content": system}, {"role": "user", "content": user}]
-        for _ in range(MAX_TURNS):
+        for turn in range(1, MAX_TURNS + 1):
             try:
                 reply, _ = _model.chat_with_tools("pass", messages, Tools.SCHEMA, session=self.session, pass_=self.pass_,
                                                   records_in_context=[r["id"] for r in self.records])
             except Exception as e:  # the endpoint failed the turn: the row fails with the cause, and is scored, not dropped
-                return _envelope(task, tools, error={"message": "model call failed", "cause": f"endpoint {type(e).__name__}: {str(e)[:200]}"})
+                return _envelope(task, tools, error={"message": "model call failed", "cause": f"endpoint {type(e).__name__}: {str(e)[:200]}"}, turns=turn)
             if reply["tool_calls"]:
                 messages.append({"role": "assistant", "content": reply["content"] or None,
                                  "tool_calls": [{"id": tc["id"], "type": "function", "function": {"name": tc["name"], "arguments": tc["arguments"]}} for tc in reply["tool_calls"]]})
@@ -162,10 +166,10 @@ class Agent(weave.Model):
             try:
                 final = _model.Completion(reply["content"], _model.model_id(), None).json()
             except (ValueError, json.JSONDecodeError):
-                return _envelope(task, tools, error={"message": "final reply was not JSON", "cause": None})
+                return _envelope(task, tools, error={"message": "final reply was not JSON", "cause": None}, turns=turn)
             if not isinstance(final, dict):
-                return _envelope(task, tools, error={"message": "final reply was not a JSON object", "cause": None})
+                return _envelope(task, tools, error={"message": "final reply was not a JSON object", "cause": None}, turns=turn)
             in_context = {r["id"] for r in self.records}
             applied = [a for a in (final.get("applied") or []) if isinstance(a, str) and a in in_context]  # a record not in context cannot have been applied
-            return _envelope(task, tools, result=final.get("result"), error=final.get("error"), applied=applied)
-        return _envelope(task, tools, error={"message": "turn limit reached", "cause": f"{MAX_TURNS} turns without a final answer"})
+            return _envelope(task, tools, result=final.get("result"), error=final.get("error"), applied=applied, turns=turn)
+        return _envelope(task, tools, error={"message": "turn limit reached", "cause": f"{MAX_TURNS} turns without a final answer"}, turns=MAX_TURNS)

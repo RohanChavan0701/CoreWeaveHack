@@ -1,9 +1,28 @@
 """The scorers. Every scorer returns ``{"value": float}`` or ``{"value": None, "unevaluable": reason}``;
 a missing value is never written as zero. The oracle's summary of a series is its mean over the rows
-that were evaluable."""
+that were evaluable. Every series is a success rate in ``[0, 1]`` with ``1.0`` ideal — the convention
+the watch-direction check reads.
+
+Three series grade the *quality* of a solution rather than its correctness, because a pass that
+already knows a convention differs from one that discovers it even when both pass:
+
+- ``solution_economy`` — the knowing policy's calls over the calls the pass spent on budgeted tools,
+  on a passed row; a failed row scores zero (it has no solution to be economical about); a task that
+  declares no knowing floor is unevaluable;
+- ``turn_economy`` — the same over model turns, the floor being one turn per knowing call and one
+  to answer, so a pass that batches calls in one turn clips at ``1.0``;
+- ``method_transfer`` — the pass's last shell command replayed in the task's metamorphic twin (the
+  same names, columns and routes over different data): the command's last line of output names the
+  twin's gold, or it does not. A method that transfers reads the convention; one that fits the
+  instance — or a pass that read the file and computed in its head, leaving no replayable command —
+  does not. Evaluable on a passed row of a task with a twin whose pass issued a shell command.
+"""
 
 from __future__ import annotations
 
+import re
+import subprocess
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -97,5 +116,92 @@ class SuiteHash(weave.Scorer):
         return _value(1.0 if output.get("suite_hash") == _suite.current().hash else 0.0)
 
 
-SCORERS = [TaskPassRate, ErrorCausePresent, ToolBudgetRespected, OutputSchemaValid, SuiteHash]
+def _passed(output: dict, task: str) -> bool | None:
+    """The hidden check on this row, as ``TaskPassRate`` reads it; ``None`` when it cannot run."""
+    if output.get("error"):
+        return False
+    try:
+        return bool(_suite.current().by_id[task].check(output.get("result"), Path(output.get("workdir") or ".")))
+    except Exception:
+        return None
+
+
+class SolutionEconomy(weave.Scorer):
+    name: str = "solution_economy"
+
+    @weave.op
+    def score(self, *, output: dict, task: str, **kwargs) -> dict:
+        spec = _suite.current().by_id.get(task)
+        if spec is None or not spec.knowing:
+            return _value(None, "task declares no knowing floor")
+        passed = _passed(output, task)
+        if passed is None:
+            return _value(None, "hidden test could not run")
+        if not passed:
+            return _value(0.0)
+        used = sum(output.get(f"{tool}_calls", 0) for tool in spec.knowing)
+        floor = sum(spec.knowing.values())
+        return _value(min(1.0, floor / used) if used else 1.0)
+
+
+class TurnEconomy(weave.Scorer):
+    name: str = "turn_economy"
+
+    @weave.op
+    def score(self, *, output: dict, task: str, **kwargs) -> dict:
+        spec = _suite.current().by_id.get(task)
+        if spec is None or not spec.knowing or output.get("turns") is None:
+            return _value(None, "task declares no knowing floor, or the row records no turns")
+        passed = _passed(output, task)
+        if passed is None:
+            return _value(None, "hidden test could not run")
+        if not passed:
+            return _value(0.0)
+        floor = sum(spec.knowing.values()) + 1
+        return _value(min(1.0, floor / max(1, int(output["turns"]))))
+
+
+_NUMBERS = re.compile(r"-?\d+(?:\.\d+)?")
+
+
+def replay(command: str, twin) -> tuple[bool, str]:
+    """Run ``command`` in a fresh copy of the twin's world; whether a number on its last line of output is the twin's gold."""
+    workdir = Path(tempfile.mkdtemp(prefix="hgi-twin-"))
+    twin.setup(workdir)
+    try:
+        proc = subprocess.run(command, shell=True, cwd=workdir, capture_output=True, text=True, timeout=30)
+    except subprocess.TimeoutExpired:
+        return False, "timed out"
+    lines = [line for line in proc.stdout.splitlines() if line.strip()]
+    if proc.returncode != 0 or not lines:
+        return False, f"exited {proc.returncode}: {proc.stderr.strip()[:120]}"
+    last = lines[-1]
+    candidates: list[Any] = []
+    for token in _NUMBERS.findall(last):
+        candidates.append(float(token) if "." in token else int(token))
+    candidates.append(last.strip())
+    return any(twin.check(c, workdir) for c in candidates), last[:120]
+
+
+class MethodTransfer(weave.Scorer):
+    name: str = "method_transfer"
+
+    @weave.op
+    def score(self, *, output: dict, task: str, **kwargs) -> dict:
+        spec = _suite.current().by_id.get(task)
+        if spec is None or spec.twin is None:
+            return _value(None, "task has no metamorphic twin")
+        passed = _passed(output, task)
+        if passed is None:
+            return _value(None, "hidden test could not run")
+        if not passed:
+            return _value(None, "task failed; no method to transfer")
+        commands = output.get("commands") or []
+        if not commands:
+            return _value(None, "the pass issued no shell command")
+        ok, _ = replay(commands[-1], spec.twin)
+        return _value(1.0 if ok else 0.0)
+
+
+SCORERS = [TaskPassRate, ErrorCausePresent, ToolBudgetRespected, OutputSchemaValid, SuiteHash, SolutionEconomy, TurnEconomy, MethodTransfer]
 SERIES = [s.model_fields["name"].default for s in SCORERS]

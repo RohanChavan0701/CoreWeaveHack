@@ -170,6 +170,7 @@ def test_the_stream_smoke_runs_each_pass_on_its_own_batch_and_writes_the_evoluti
     assert [p["hash"] for p in log["passes"]] == hashes + [hashes[0]]
     assert [p["kind"] for p in log["passes"]] == ["stream"] * 4 + ["revisit"]
     assert all(p["symptoms"] == {"naive": 4} for p in log["passes"]), "the stub is the naive policy: every failure is naive-shape"
+    assert all(p["quality"]["economy"] == 0.0 and p["quality"]["transfer"] is None for p in log["passes"]), "quality is zero on failed rows and transfer unevaluable"
     assert set(log["lessons"]) == set(_lessons.LESSONS) and all(s["first_mention_pass"] is None for s in log["lessons"].values())
     md = (where / "evolution.md").read_text()
     assert "| 5 (revisit) | 1 |" in md and "| trailing-newline | invisible |" in md
@@ -177,7 +178,59 @@ def test_the_stream_smoke_runs_each_pass_on_its_own_batch_and_writes_the_evoluti
     detached = _experiment.run_arm(exp, "detached", tmp_path, commit=False)
     assert detached["sessions"] == [f"S-000{n}" for n in range(1, 5)] and detached["stream"]["revisit"] == []
     text = _evolution.write_experiment(exp, tmp_path)
-    assert "| batch | attached | detached |" in text and "Over the stream: attached 0.00 (0/16); detached 0.00 (0/16)." in text
+    assert "| batch | attached | detached | attached quality | detached quality |" in text
+    assert "Over the stream: attached 0.00 (0/16), quality 0.00 / 0.00 / —; detached 0.00 (0/16), quality 0.00 / 0.00 / —." in text
     assert (tmp_path / "stream-smoke" / "evolution.md").exists()
     table = _experiment.report(exp, tmp_path)
     assert "| attached | stub | attached | 2×2 stream ×4 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | nothing |" in table
+
+
+def test_every_clothing_declares_its_knowing_floor_and_carries_a_twin(tmp_path):
+    """The twin wears the same names, columns and routes over different data; its own naive policy trips on it and the
+    knowing policy passes it — so a method replayed there is graded on the convention, not the instance."""
+    world = build(SuiteSpec(families=["curriculum"], faults=FaultProfile(http_fault_fraction=0.0)))
+    token = _suite.use(world)
+    try:
+        differ = 0
+        for t in world.tasks:
+            assert (t.knowing is None) == (t.lesson == "bom"), f"{t.id}: every budgeted lesson declares the knowing policy's calls"
+            if t.knowing:
+                assert sum(t.knowing.values()) + 1 == sum(b for b in (t.shell_budget, t.http_budget) if b), f"{t.id}: the budget is the floor plus one"
+            tw = t.twin
+            assert tw is not None and tw.id == t.id and tw.lesson == t.lesson and set(tw.files) == set(t.files) and set(tw.routes) == set(t.routes)
+            differ += tw.files != t.files or tw.routes != t.routes
+            twin_dir = tmp_path / t.id.replace("/", "-")
+            tw.setup(twin_dir)
+            tools = Tools(task=tw.id, workdir=twin_dir, profile=world.faults, routes=tw.routes, shell_budget=tw.shell_budget, http_budget=tw.http_budget)
+            assert tw.check(_knowing(tw, tools), twin_dir), f"{t.id}: the knowing policy must pass the twin"
+        assert differ >= 70, "the twins differ in their data (a route with no data to vary is the same)"
+    finally:
+        _suite.reset(token)
+
+
+def test_the_quality_scorers_grade_a_passed_solution_by_its_cost_and_its_method(tmp_path):
+    from suite.scorers import MethodTransfer, SolutionEconomy, TurnEconomy
+
+    world = build(SuiteSpec(families=["curriculum"], faults=FaultProfile(http_fault_fraction=0.0)))
+    token = _suite.use(world)
+    try:
+        t = next(t for t in world.tasks if t.lesson == "trailing-newline")
+        gold = sum(len(c.splitlines()) for c in t.files.values())
+        knew = {"task": t.id, "result": gold, "error": None, "shell_calls": 1, "http_calls": 0, "turns": 2, "workdir": str(tmp_path),
+                "commands": ["awk 'END{print NR}' " + " ".join(t.files)]}
+        found = {**knew, "shell_calls": 2, "turns": 3, "commands": ["cat " + next(iter(t.files)), knew["commands"][0]]}
+        fitted = {**knew, "commands": ["echo " + str(gold)]}
+        failed = {**knew, "result": gold - 1}
+        assert SolutionEconomy().score(output=knew, task=t.id)["value"] == 1.0
+        assert SolutionEconomy().score(output=found, task=t.id)["value"] == 0.5
+        assert SolutionEconomy().score(output=failed, task=t.id)["value"] == 0.0, "a failed row has no solution to be economical about"
+        assert TurnEconomy().score(output=knew, task=t.id)["value"] == 1.0 and abs(TurnEconomy().score(output=found, task=t.id)["value"] - 2 / 3) < 1e-9
+        assert MethodTransfer().score(output=knew, task=t.id)["value"] == 1.0, "the knowing command gives the twin's answer"
+        assert MethodTransfer().score(output=fitted, task=t.id)["value"] == 0.0, "an answer echoed for this instance does not"
+        assert MethodTransfer().score(output=failed, task=t.id)["value"] is None and MethodTransfer().score(output={**knew, "commands": []}, task=t.id)["value"] is None
+        bom = next(t for t in world.tasks if t.lesson == "bom")
+        assert SolutionEconomy().score(output={**knew, "task": bom.id}, task=bom.id)["value"] is None, "no budget, no floor"
+        paged = next(t for t in world.tasks if t.lesson == "paged-api")
+        assert MethodTransfer().score(output={**knew, "task": paged.id, "result": 0}, task=paged.id)["value"] is None, "a failed walk has no method to transfer"
+    finally:
+        _suite.reset(token)

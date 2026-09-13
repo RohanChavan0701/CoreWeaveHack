@@ -42,6 +42,8 @@ class Tools:
     calls: dict[str, int] = field(default_factory=lambda: {"http": 0, "shell": 0, "file": 0})
     errors: list[dict[str, Any]] = field(default_factory=list)
     """Every ToolError raised, in order — what a reader of the trace would see."""
+    commands: list[str] = field(default_factory=list)
+    """Every shell command issued, in order — the replayable part of the pass's method."""
 
     def __post_init__(self):
         if self.http_budget is None:
@@ -80,6 +82,7 @@ class Tools:
     @weave.op(name="tool.shell")
     def shell(self, command: str) -> str:
         self.calls["shell"] += 1
+        self.commands.append(command)
         if self.shell_budget is not None and self.calls["shell"] > self.shell_budget:
             self._raise("shell call refused", cause=f"call budget of {self.shell_budget} exceeded at call {self.calls['shell']}")
         try:

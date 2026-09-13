@@ -12,6 +12,13 @@ makes that curve legible — nothing here is written during the run:
   they mention (a keyword heuristic over the record's text, logged as such),
   the observations it filed, and what the consolidation after it admitted,
   declined, retired or dismissed;
+- per pass and per lesson, the **quality** of the solutions beside their
+  correctness: ``economy`` (the knowing policy's calls over the calls
+  spent, zero on a failed row — derived here from the row's call counts and
+  the task's knowing floor, so it reads on runs the oracle scored before
+  the series existed), ``turns`` (the same over model turns) and
+  ``transfer`` (the last shell command replayed in the task's twin), the
+  latter two read off the oracle's scores where the run recorded them;
 - per lesson: the first-sight series over the stream, the naive-shape
   failures before and after the first pass that had a record mentioning
   the lesson in context — the same-shape recurrence the memory is supposed
@@ -33,6 +40,7 @@ from typing import Any
 
 import suite as _suite
 from hgi import registry as _registry
+from hgi.index import row_passed
 from suite import lessons as _lessons
 from suite.stream import key_of
 
@@ -42,6 +50,25 @@ SYMBOL = {"pass": "✓", "naive": "N", "wrong": "W"}
 
 def _symbol(symptom: str) -> str:
     return SYMBOL.get(symptom, "E")
+
+
+def economy_of(task, row: dict[str, Any]) -> float | None:
+    """The row's solution economy from its call counts and the task's knowing floor: ``None`` where the task declares none."""
+    if not task.knowing:
+        return None
+    if not row_passed(row):
+        return 0.0
+    used = sum(row.get(f"{tool}_calls", 0) for tool in task.knowing)
+    return min(1.0, sum(task.knowing.values()) / used) if used else 1.0
+
+
+def _score(row: dict[str, Any], series: str) -> float | None:
+    return ((row.get("scores") or {}).get(series) or {}).get("value")
+
+
+def _mean(values: list[float | None]) -> float | None:
+    xs = [v for v in values if v is not None]
+    return sum(xs) / len(xs) if xs else None
 
 
 def _record_text(store, record: str) -> str:
@@ -109,7 +136,9 @@ def _pass_entry(store, session, batch: int, suite, revisit: bool, consolidation,
             if task is None:
                 continue
             rows.append({"task": task.id, "lesson": key_of(task), "symptom": _lessons.symptom(task, row), "applied": row.get("applied", []),
-                         "error": row.get("error"), "result": row.get("result"), "call": row.get("call")})
+                         "error": row.get("error"), "result": row.get("result"), "call": row.get("call"),
+                         "economy": economy_of(task, row), "turns": _score(row, "turn_economy"), "transfer": _score(row, "method_transfer"),
+                         "calls": {"shell": row.get("shell_calls"), "http": row.get("http_calls"), "turns": row.get("turns")}, "commands": row.get("commands")})
     finally:
         _suite.reset(token)
     in_context = [c.record for c in session.considered if c.guard_passed and c.via != "constitution" and c.record in accepted]
@@ -117,6 +146,7 @@ def _pass_entry(store, session, batch: int, suite, revisit: bool, consolidation,
     scored = [r for r in rows if r["symptom"] != "unevaluable"]
     entry = {"pass": session.pass_, "session": session.id, "batch": batch, "kind": "revisit" if revisit else "stream", "hash": suite.hash,
              "pass_rate": (sum(r["symptom"] == "pass" for r in scored) / len(scored)) if scored else None,
+             "quality": {q: _mean([r[q] for r in rows]) for q in ("economy", "turns", "transfer")},
              "symptoms": dict(Counter(r["symptom"] for r in rows)), "rows": rows,
              "in_context": in_context, "mentions": {l: ids for l, ids in mentions.items() if ids},
              "work_shape": session.work_shape.terms, "proposals": len(session.proposals),
@@ -145,6 +175,7 @@ def _lesson_series(passes: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
             if mentioned and series["first_mention_pass"] is None and p["kind"] == "stream":
                 series["first_mention_pass"] = p["pass"]
             series["series"].append({"pass": p["pass"], "batch": p["batch"], "kind": p["kind"], "tasks": len(rows),
+                                     "quality": {q: _mean([r[q] for r in rows]) for q in ("economy", "turns", "transfer")},
                                      "passed": sum(r["symptom"] == "pass" for r in rows), "naive": sum(r["symptom"] == "naive" for r in rows),
                                      "other": sum(r["symptom"] not in ("pass", "naive") for r in rows), "mentioned": mentioned,
                                      "grid": "".join(_symbol(r["symptom"]) for r in rows)})
@@ -156,6 +187,7 @@ def _lesson_series(passes: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
         series["naive_before"] = (sum(s["naive"] for s in before), sum(s["tasks"] for s in before))
         series["naive_after"] = (sum(s["naive"] for s in after), sum(s["tasks"] for s in after))
         series["first_sight"] = (sum(s["passed"] for s in stream), sum(s["tasks"] for s in stream))
+        series["quality"] = {q: _mean([s["quality"][q] for s in stream]) for q in ("economy", "turns", "transfer")}
         series["revisit"] = [(s["batch"], s["passed"], s["tasks"]) for s in series["series"] if s["kind"] == "revisit"]
     return out
 
@@ -166,30 +198,35 @@ def _rate(num: int, den: int) -> str:
     return f"{num / den:.2f} ({num}/{den})" if den else "—"
 
 
+def _q(quality: dict[str, float | None]) -> str:
+    """``economy / turns / transfer`` means, ``—`` where nothing was evaluable."""
+    return " / ".join("—" if quality.get(q) is None else f"{quality[q]:.2f}" for q in ("economy", "turns", "transfer"))
+
+
 def arm_markdown(log: dict[str, Any]) -> str:
     st = log["stream"]
     lines = [f"# {log['experiment']}/{log['arm']} — evolution", "",
              f"{log['mode']} on `{log['model']}`; {st['batches']} batches × {st['batch']} tasks from {'+'.join(st['families'])}, seed {st['seed']}"
              + (f"; revisit {st['revisit']}" if st["revisit"] else "") + ".", ""] + ([f"> {log['warning']}", ""] if log.get("warning") else []) + [
-             "## Passes", "", "| pass | batch | first sight | symptoms | in context | mentions | filed | consolidation after |", "|---|---|---|---|---|---|---|---|"]
+             "## Passes", "", "| pass | batch | first sight | economy / turns / transfer | symptoms | in context | mentions | filed | consolidation after |", "|---|---|---|---|---|---|---|---|---|"]
     for p in log["passes"]:
         sym = " ".join(f"{k}={v}" for k, v in sorted(p["symptoms"].items()))
         k = p["consolidation"]
         kk = "" if k is None else (f"{k['id']}: {len(k['groups'])} groups, {k['groups_at_bar']} at the bar; admitted {' '.join(k['admitted']) or 'nothing'}"
                                    + (f"; {', '.join(f'{v} {o}' for o, v in sorted(k['outcomes'].items()))}" if k["outcomes"] else "; nothing nominated")
                                    + (f"; retired {' '.join(k['retired'])}" if k["retired"] else "") + (f"; dismissed {len(k['dismissed'])}" if k["dismissed"] else ""))
-        lines.append(f"| {p['pass']}{' (revisit)' if p['kind'] == 'revisit' else ''} | {p['batch']} | {'—' if p['pass_rate'] is None else f'{p['pass_rate']:.2f}'} | {sym} | "
+        lines.append(f"| {p['pass']}{' (revisit)' if p['kind'] == 'revisit' else ''} | {p['batch']} | {'—' if p['pass_rate'] is None else f'{p['pass_rate']:.2f}'} | {_q(p['quality'])} | {sym} | "
                      f"{' '.join(p['in_context']) or 'none'} | {', '.join(f'{l}: {' '.join(ids)}' for l, ids in p['mentions'].items()) or '—'} | "
                      f"{len(p['observations'])} obs, {p['proposals']} prop | {kk} |")
     lines += ["", "## Lessons", "", "Each cell is the lesson's rows in that pass: ✓ passed, N the naive first-contact outcome (a same-shape failure), "
               "W another wrong answer, E a harness or tool error. `mentioned` marks passes with a record in context whose text uses the lesson's words.", "",
               "| lesson | tier | " + " | ".join(f"p{p['pass']}" + ("r" if p["kind"] == "revisit" else "") for p in log["passes"]) +
-              " | first sight | naive before / after first mention | first mention | revisit |",
-              "|---|---|" + "---|" * len(log["passes"]) + "---|---|---|---|"]
+              " | first sight | economy / turns / transfer | naive before / after first mention | first mention | revisit |",
+              "|---|---|" + "---|" * len(log["passes"]) + "---|---|---|---|---|"]
     by_pass = {p["pass"]: p for p in log["passes"]}
     for lesson, s in sorted(log["lessons"].items(), key=lambda kv: (_lessons.TIERS.index(kv[1]["tier"]) if kv[1]["tier"] in _lessons.TIERS else 9, kv[0])):
         cells = {x["pass"]: x["grid"] + ("*" if x["mentioned"] else "") for x in s["series"]}
-        lines.append(f"| {lesson} | {s['tier'] or '—'} | " + " | ".join(cells.get(p, "") for p in by_pass) + f" | {_rate(*s['first_sight'])} | "
+        lines.append(f"| {lesson} | {s['tier'] or '—'} | " + " | ".join(cells.get(p, "") for p in by_pass) + f" | {_rate(*s['first_sight'])} | {_q(s['quality'])} | "
                      f"{_rate(*s['naive_before'])} / {_rate(*s['naive_after'])} | {s['first_mention_pass'] or '—'} | "
                      + (", ".join(f"batch {b}: {p}/{n}" for b, p, n in s["revisit"]) or "—") + " |")
     lines += ["", "## What the passes noticed", "", "Each observation as the close filed it, with the shape the blind coder gave it at the next "
@@ -223,13 +260,17 @@ def experiment_markdown(exp, logs: dict[str, dict[str, Any]]) -> str:
     st = first["stream"]
     lines += [f"{st['batches']} batches × {st['batch']} tasks from {'+'.join(st['families'])}, seed {st['seed']}; every arm meets the same batches in the same order. "
               "A pass's score is first sight — nothing in the store was learned on that batch — so the curve is performance on unseen tasks as the store grows.", "",
-              "## First sight, per batch", "", "| batch | " + " | ".join(logs) + " | in context (attached) | consolidation after |", "|---|" + "---|" * (len(logs) + 2)]
+              "## First sight, per batch", "", "Pass rate, then economy / turns / transfer per arm.", "",
+              "| batch | " + " | ".join(logs) + " | " + " | ".join(f"{a} quality" for a in logs) + " | in context (attached) | consolidation after |", "|---|" + "---|" * (2 * len(logs) + 2)]
     stream_passes = {arm: {p["batch"]: p for p in log["passes"] if p["kind"] == "stream"} for arm, log in logs.items()}
     for b in range(1, st["batches"] + 1):
         cells = []
         for arm in logs:
             p = stream_passes[arm].get(b)
             cells.append("—" if p is None or p["pass_rate"] is None else f"{p['pass_rate']:.2f}")
+        for arm in logs:
+            p = stream_passes[arm].get(b)
+            cells.append("—" if p is None else _q(p["quality"]))
         attached = next((stream_passes[a].get(b) for a, l in logs.items() if l["mode"] == "attached"), None)
         ctx = " ".join(attached["in_context"]) if attached else "—"
         k = attached["consolidation"] if attached else None
@@ -237,15 +278,17 @@ def experiment_markdown(exp, logs: dict[str, dict[str, Any]]) -> str:
     totals = []
     for arm, log in logs.items():
         ps = [p for p in log["passes"] if p["kind"] == "stream"]
-        num = sum(sum(r["symptom"] == "pass" for r in p["rows"]) for p in ps)
-        den = sum(len(p["rows"]) for p in ps)
-        totals.append(f"{arm} {_rate(num, den)}")
+        rows = [r for p in ps for r in p["rows"]]
+        num = sum(r["symptom"] == "pass" for r in rows)
+        totals.append(f"{arm} {_rate(num, len(rows))}, quality {_q({q: _mean([r[q] for r in rows]) for q in ('economy', 'turns', 'transfer')})}")
     lines += ["", "Over the stream: " + "; ".join(totals) + ".", ""]
-    lines += ["## First sight, per lesson", "", "| lesson | tier | " + " | ".join(logs) + " | naive-shape before / after first mention (attached) | first mention |",
-              "|---|---|" + "---|" * (len(logs) + 2)]
+    lines += ["## First sight, per lesson", "", "Pass rate per arm, then economy / turns / transfer per arm.", "",
+              "| lesson | tier | " + " | ".join(logs) + " | " + " | ".join(f"{a} quality" for a in logs) + " | naive-shape before / after first mention (attached) | first mention |",
+              "|---|---|" + "---|" * (2 * len(logs) + 2)]
     lessons = sorted({l for log in logs.values() for l in log["lessons"]}, key=lambda l: (_lessons.TIERS.index(_lessons.tier(l)) if _lessons.tier(l) else 9, l))
     for lesson in lessons:
         cells = [_rate(*log["lessons"][lesson]["first_sight"]) if lesson in log["lessons"] else "—" for log in logs.values()]
+        cells += [_q(log["lessons"][lesson]["quality"]) if lesson in log["lessons"] else "—" for log in logs.values()]
         att = next((log["lessons"].get(lesson) for log in logs.values() if log["mode"] == "attached"), None)
         lines.append(f"| {lesson} | {_lessons.tier(lesson) or '—'} | " + " | ".join(cells) + " | " +
                      (f"{_rate(*att['naive_before'])} / {_rate(*att['naive_after'])} | {att['first_mention_pass'] or '—'}" if att else "— | —") + " |")
@@ -270,7 +313,10 @@ def experiment_markdown(exp, logs: dict[str, dict[str, Any]]) -> str:
     lines += ["", "## Reading", "",
               "A symptom is derived, not judged: `naive` means the row's result equals what the task's scripted first-contact policy returns "
               "(or its error is of the same class), so a naive-shape failure after a record for the lesson was in context is the same shape recurring "
-              "with the memory attached. `mentions` is a keyword heuristic over a record's text and is logged as one. Every count is from one run and is a floor."]
+              "with the memory attached. Quality grades a passed solution: `economy` is the knowing policy's calls over the calls spent (zero on a failed row), "
+              "`turns` the same over model turns, `transfer` whether the last shell command replayed in the task's twin world gives the twin's answer — "
+              "a pass that knows a convention spends less and its method carries, where one that discovers it spends the discovery and may not. "
+              "`mentions` is a keyword heuristic over a record's text and is logged as one. Every count is from one run and is a floor."]
     return "\n".join(lines) + "\n"
 
 

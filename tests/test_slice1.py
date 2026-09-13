@@ -5,6 +5,8 @@ yields unevaluable; a fact of zero from a missing value is refused."""
 from __future__ import annotations
 
 import pytest
+
+from suite.scorers import SERIES
 from pydantic import ValidationError
 
 from hgi import evaluate as _evaluate
@@ -32,7 +34,7 @@ def test_evaluation_lands_as_facts(store):
     s = _booted(store, 1, [])
     s = _evaluate.run(store, s)
     facts = s.evaluation.scores
-    assert set(facts) == {"task_pass_rate", "error_cause_present", "tool_budget_respected", "output_schema_valid", "suite_hash"}
+    assert set(facts) == set(SERIES)
     assert facts["suite_hash"].value == 1.0 and facts["task_pass_rate"].value == 0.5
     assert all(f.series.startswith("suite-v1/") and f.as_of is not None for f in facts.values())
     assert s.evaluation.suite_hash and len(s.evaluation.rows) == 6
