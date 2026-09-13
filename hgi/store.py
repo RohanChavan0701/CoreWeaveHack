@@ -27,12 +27,15 @@ from pydantic import BaseModel
 from hgi import registry as _registry
 from hgi.registry import read_json, write_json
 from hgi.types import (
+    ID_PATTERN,
     PREFIXES,
     RECORD_MODELS,
     Admission,
     ConstitutionArticle,
     Decision,
+    Deferral,
     Draft,
+    Envelope,
     LedgerEntry,
     Observation,
     QueueEntry,
@@ -56,6 +59,7 @@ LAYOUTS: dict[str, tuple[str, str]] = {
 
 ETERNAL_KINDS = ("constitution", "decision")
 """Kinds whose ids only the committer mints."""
+ETERNAL_PREFIXES = {PREFIXES[k] for k in ETERNAL_KINDS}
 
 
 def now() -> datetime:
@@ -68,6 +72,23 @@ def record_id(record: BaseModel) -> str:
 
 def dump(record: BaseModel) -> dict[str, Any]:
     return record.model_dump(mode="json", by_alias=True)
+
+
+def wiring_latch(records: list[str], store: "Store", act: str = "check") -> dict[str, Any]:
+    """A neighbour-keyed latch on ``records``: the edge is any of them changing status, the consumer is propagation.
+
+    The guard remembers each neighbour's status as of the write, so the edge is
+    a departure from what was seen — the latch stays immutable and the fire
+    ledger carries every later observation.
+    """
+    seen = {}
+    for rid in records:
+        neighbour = store.find(rid)
+        if neighbour is not None:
+            seen[rid] = neighbour.status  # type: ignore[attr-defined]
+    return {"type": "wiring", "slot": "lifecycle", "key_space": "neighbor", "edge": {"kind": "edge"},
+            "guard": {"records": list(records), "statuses": seen}, "consumer": "propagation",
+            "owed_act": {"class": act, "role": "corroborating"}, "lifecycle": {"status": "live"}}
 
 
 class Store:
@@ -197,6 +218,20 @@ class Store:
     def drafts(self) -> list[Draft]:
         return [self.parse_as(Draft, read_json(p)) for p in sorted(self.proposals_dir.glob("*.json"))]
 
+    def draft(self, uid: str) -> Draft | None:
+        path = self.proposals_dir / f"{uid}.json"
+        return self.parse_as(Draft, read_json(path)) if path.exists() else None
+
+    def host(self, id: str) -> BaseModel | None:
+        """Whatever carries the latch a fire names: a decision or article by id, or a deferred draft by uid."""
+        return self.find(id) or self.draft(id)
+
+    def defer(self, draft: Draft, entry: LedgerEntry, until: Latch, after_pass: int) -> Draft:
+        """The committer's act on ``defer(<until>)``: the condition becomes a latch on the draft, which stays in the pre-admission tier."""
+        deferred = draft.model_copy(update={"deferral": Deferral(ledger_entry=entry.id, until=until, deferred_at=now(), after_pass=after_pass)})
+        self.write_draft(deferred)
+        return deferred
+
     def drop_draft(self, uid: str) -> None:
         """A declined draft is dropped without a tombstone: a vertex with no in-edges breaks no path."""
         (self.proposals_dir / f"{uid}.json").unlink(missing_ok=True)
@@ -214,12 +249,18 @@ class Store:
 
     # --- the committer ------------------------------------------------------
     def admit(self, draft: Draft, entry: LedgerEntry, adjudicator: RoleCall, amendment: dict[str, Any] | None = None) -> Decision:
-        """Admit an adjudicated draft: mint the eternal id, stamp admission, write, flip the observations it promotes.
+        """Admit an adjudicated draft: mint the eternal id, stamp admission, write, retire what it supersedes, flip the observations it promotes.
 
         The floor runs before this is called (``hgi.lint.check_draft``); the
         commit that lands the record is the caller's. Only ``admit`` and
         ``admit-amended`` reach here — the verdict is read off the ledger
         entry, never supplied by the proposer.
+
+        The lineage operators of § 10.6 are executed here and nowhere else: a
+        draft that ``supersedes``, is a leaf ``split_from`` a fused record, or
+        is ``folded_from`` several records lands with its own edges written
+        and every retiree flipped to ``superseded`` with the reciprocal
+        pointer — one commit, one DAG move.
         """
         from hgi.registry import term_head
 
@@ -227,20 +268,26 @@ class Store:
             raise PermissionError(f"the committer admits only on admit or admit-amended, not {entry.verdict!r}")
         if entry.adjudicator is None:
             raise PermissionError("an entry with no adjudicator call carries no verdict the committer may act on")
+        for rid in draft.retires:
+            if not self.exists("decision", rid):
+                raise ValueError(f"{draft.name} retires {rid}, which is not a decision in this store")
         body = draft.body.model_dump(by_alias=True)
         if amendment:
             body.update(amendment)
+        neighbours = [a for a in body["warrant"]["anchors"] if a not in draft.retires and isinstance(self.find(a), Envelope)]
+        if neighbours:  # a warrant that cites a record is wired to it: its status change is this record's edge
+            body["latches"].append(wiring_latch(neighbours, self, act="check"))
         id = self.registry.mint(PREFIXES["decision"])
         stamp = now()
         decision = self.parse_as(Decision, {
             "id": id, "kind": "decision", "status": "accepted", "created_at": draft.drafted_at.isoformat(),
-            "lineage": {"supersedes": list(draft.supersedes), "superseded_by": None, "split_from": None, "folded_from": []},
+            "lineage": {"supersedes": list(draft.supersedes), "superseded_by": [], "split_from": draft.split_from, "folded_from": list(draft.folded_from)},
             "admission": {"proposed_by": draft.proposed_by, "ledger_entry": entry.id, "verdict": entry.verdict,
                           "adjudicator": adjudicator.model_dump(), "committed_at": stamp.isoformat()},
             **body,
         })
         self.write(decision)
-        for pred in draft.supersedes:
+        for pred in draft.retires:
             self.flip_status(self.read("decision", pred), "superseded", successor=id)  # type: ignore[arg-type]
         for ev in draft.evidence:
             obs = self._observation_by_uid_or_name(ev)
@@ -252,32 +299,100 @@ class Store:
         self.drop_draft(draft.uid)
         return decision
 
-    def flip_status(self, record: Decision, status: str, successor: str | None = None, by: str | None = None) -> Decision:
-        """The only in-place change a frozen record receives.
+    def license(self, by: str) -> str:
+        """What may settle a frozen record, and the refusal when ``by`` is not it.
 
-        A retiring flip (``superseded`` | ``moot``) settles every live latch in
-        the same write — a settled latch is kept as evidence, never removed —
-        and a supersedure names its successor and wires the record to it so
-        propagation can re-derive what referenced the retiree.
+        A settlement — a status flip, a premise flip, a latch settled — cites
+        what licensed it: an admitted successor record, a ledger entry that
+        carries an adjudicator's verdict, or a fire whose latch is
+        **dispositive**. A fire on a corroborating latch bears and never
+        settles: its verdict lands on the ledger as a nomination and the
+        settlement cites the entry, not the fire. A consolidation, a session
+        or a bare name is no licence — nothing settles by count or by
+        schedule alone.
         """
+        kind = by.split("-", 1)[0] if ID_PATTERN.match(by) else None
+        if kind == "F":
+            fire = self.read("fire", by) if self.exists("fire", by) else None
+            if fire is None:
+                raise PermissionError(f"{by} is not a fire in this store")
+            host = self.host(fire.latch.record)  # type: ignore[union-attr]
+            latches = host.all_latches() if host is not None else []  # type: ignore[union-attr]
+            latch = latches[fire.latch.index] if fire.latch.index < len(latches) else None  # type: ignore[union-attr]
+            if latch is None:
+                raise PermissionError(f"{by} names a latch that no longer exists")
+            if latch.owed_act.role != "dispositive":
+                raise PermissionError(f"{by} fired a {latch.owed_act.role} latch, which nominates and never settles; cite the adjudicated ledger entry instead")
+            return f"dispositive fire {by}"
+        if kind == "H":
+            entry = next((e for e in self.all("hypothesis") if e.id == by), None)  # type: ignore[attr-defined]
+            if entry is None:
+                raise PermissionError(f"{by} is not on the ledger")
+            if entry.verdict == "pending" or entry.adjudicator is None:  # type: ignore[attr-defined]
+                raise PermissionError(f"{by} carries no adjudicated verdict; a pending entry settles nothing")
+            return f"adjudicated entry {by}"
+        if kind in ETERNAL_PREFIXES and self.find(by) is not None:
+            return f"successor {by}"
+        raise PermissionError(f"{by!r} licenses no settlement: cite an adjudicated ledger entry, a dispositive fire, or the admitted successor")
+
+    def flip_status(self, record: Decision, status: str, successor: str | None = None, by: str | None = None) -> Decision:
+        """The only in-place change a frozen record receives, licensed by :meth:`license`.
+
+        A retiring flip (``superseded`` | ``moot``) settles every live latch of
+        the record's own fan in the same write — a settled latch is kept as
+        evidence, never removed, and names its licence. A supersedure names
+        its successor: the pointer is appended (a split's parent collects one
+        per heir) and a wiring latch keyed on the successor is added, so
+        propagation can check the tombstone when the successor itself changes
+        status. Wiring latches are the one type a flip leaves live: they are
+        the edges propagation walks after the flip, not the fan the flip
+        retires.
+        """
+        licence = successor or by
+        if not licence:
+            raise PermissionError("a status flip cites what licensed it")
+        self.license(licence)
         data = dump(record)
         data["status"] = status
         stamp = now().isoformat()
-        if successor:
-            data["lineage"]["superseded_by"] = successor
         if status in ("superseded", "moot"):
             for latch in [*data["latches"], data["lifecycle"]["retirement"]]:
-                if latch["lifecycle"]["status"] == "live":
-                    latch["lifecycle"] = {"status": "settled", "settled_at": stamp, "settled_by": successor or by}
-            if successor:
-                data["latches"].append({
-                    "type": "wiring", "slot": "lifecycle", "key_space": "neighbor", "edge": {"kind": "edge"},
-                    "guard": {"records": [successor]}, "consumer": "propagation",
-                    "owed_act": {"class": "check", "role": "corroborating"}, "lifecycle": {"status": "live"},
-                })
+                if latch["lifecycle"]["status"] == "live" and latch["type"] != "wiring":
+                    latch["lifecycle"] = {"status": "settled", "settled_at": stamp, "settled_by": licence}
+        if successor:
+            if successor not in data["lineage"]["superseded_by"]:
+                data["lineage"]["superseded_by"].append(successor)
+            data["latches"].append(wiring_latch([successor], self, act="check"))
         flipped = self.parse_as(Decision, data)
         self.write(flipped)
         return flipped
+
+    def flip_premises(self, record: Decision, status: str, premise: str | None = None, *, by: str) -> Decision:
+        """The one in-place flip a warrant takes: a premise's status, licensed by :meth:`license`. One premise by id, or every premise when none is named."""
+        self.license(by)
+        data = dump(record)
+        hit = False
+        for p in data["warrant"]["premises"]:
+            if premise is None or p["id"] == premise:
+                p["status"] = status
+                hit = True
+        if not hit:
+            raise ValueError(f"{record.id} has no premise {premise!r}")
+        flipped = self.parse_as(Decision, data)
+        self.write(flipped)
+        return flipped
+
+    def anchor_article(self, article: ConstitutionArticle, anchor: str) -> ConstitutionArticle:
+        """The one in-place change a genesis warrant takes: an anchor the adjudicator ratified, appended. ``evidence`` stays ``genesis``."""
+        anchored = article.model_copy(update={"warrant": article.warrant.model_copy(update={"anchors": [*article.warrant.anchors, anchor]})})
+        self.write(anchored)
+        return anchored
+
+    def evict_article(self, article: ConstitutionArticle) -> ConstitutionArticle:
+        """Displace an article under the cap: a status flip to ``evicted`` — superseded, never deleted."""
+        evicted = article.model_copy(update={"status": "evicted"})
+        self.write(evicted)
+        return evicted
 
     def _observation_by_uid_or_name(self, key: str) -> Observation | None:
         for o in self.all("observation"):

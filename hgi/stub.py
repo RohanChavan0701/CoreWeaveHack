@@ -107,7 +107,10 @@ def _noticings(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 @handles("dispose")
 def _dispose(req):
     applied_in = {rid for row in req["rows"] for rid in row.get("applied", [])}
-    return {"dispositions": [
+    passed = sum(1 for row in req["rows"] if not row.get("error"))
+    fires = [{"fire": f["id"], "outcome": f"{f['disposition']['act']}: {f['latch']['record']} read against the pass's rows; {passed}/{len(req['rows'])} tasks passed with it in context"}
+             for f in req.get("fires_owed", [])]
+    return {"fires": fires, "dispositions": [
         {"record": c["record"], "disposition": "applied" if c["record"] in applied_in else "considered-not-applicable",
          "note": "applied on " + ", ".join(r["task"] for r in req["rows"] if c["record"] in r.get("applied", [])) if c["record"] in applied_in else "hook matched the pass's presentation; no task bore on it"}
         for c in req["consulted"]
@@ -215,11 +218,46 @@ def decision_body(key: str, terms: list[str], not_this_extra: list[str], anchors
     }
 
 
+def _leaf(parent: dict[str, Any], terms: list[str], context: str) -> dict[str, Any]:
+    """A draft body derived from an accepted record's body with its consultation hook replaced — never a second copy."""
+    body = json.loads(json.dumps(parent["body"]))
+    for latch in body["latches"]:
+        if latch["type"] == "consultation":
+            latch["guard"]["terms"] = terms
+    body["context"] = context
+    return body
+
+
 @handles("nominate")
 def _nominate(req):
     brief, bars = req["brief"], req["bars"]
     accepted = brief.get("accepted", [])
+    bodies = {d["id"]: d for d in accepted if d.get("body")}
     nominations = []
+    for row in brief.get("fusion", []):  # § 10.6 split: one leaf per sub-shape, the parent retiring by coverage migration
+        parent = bodies.get(row["record"])
+        if parent is None:
+            continue
+        for terms in (row["applied_on"], row["never_on"]):
+            nominations.append({"rung": "new-decision", "rung_why": f"dispositions on {row['record']} are bimodal across sub-shapes: applied on {row['applied_on']}, never on {row['never_on']}; a fused record splits into leaves",
+                                "subject": f"split:{row['record']}", "evidence": [], "supersedes": [], "split_from": row["record"], "folded_from": [],
+                                "body": _leaf(parent, terms, f"leaf of {row['record']} on the sub-shape {terms}")})
+    for row in brief.get("structural_zero", []):  # activation — recall: re-key the record no registered hook reaches
+        terms = terms_for(row["latch"], [t for t in row["presented"] if not t.startswith("other(")]) or [t for t in row["presented"] if not t.startswith("other(")][:1]
+        if not terms:
+            continue
+        nominations.append({"rung": "hook-edit", "rung_why": f"{row['record']} is a structural zero: its consultation hook names {row['terms']}, which no boot classifies into; its cue names {terms}, which the window presented",
+                            "subject": f"zero:{row['record']}", "evidence": [], "supersedes": [row["record"]], "split_from": None, "folded_from": [],
+                            "edit": {"terms": terms}, "body": None})
+    for row in brief.get("convergence", []):  # § 10.6 fold: identical hooks applied together contract into one successor
+        a, b = (bodies.get(r) for r in row["records"])
+        if not (row["identical_hooks"] and a and b):
+            continue
+        body = _leaf(a, a["terms"], f"fold of {row['records'][0]} and {row['records'][1]}: applied together in {row['co_applied']} passes on {row['shared_terms']}")
+        body["decision"] = f"{a['decision'].rstrip('.')}; {b['decision'][0].lower()}{b['decision'][1:]}"
+        nominations.append({"rung": "new-decision", "rung_why": f"{row['records']} were applied together in {row['co_applied']} passes on the same hook; their payloads entail one another and one record carries both",
+                            "subject": "fold:" + "+".join(row["records"]), "evidence": [], "supersedes": [], "split_from": None, "folded_from": list(row["records"]),
+                            "body": body})
     for group in brief.get("groups", []):
         obs = group["observations"]
         sessions = {o["session"] for o in obs}
@@ -238,10 +276,42 @@ def _nominate(req):
             "rung": "new-decision",
             "rung_why": ("payload indicted: the superseded record was recalled and applied and the oracle still regressed on task_pass_rate; a re-derived payload supersedes it"
                          if supersedes else "no existing record's counterfactual, hook or register absorbs this fork; the fork is undecided"),
-            "subject": key, "evidence": names, "supersedes": supersedes,
+            "subject": key, "evidence": names, "supersedes": supersedes, "split_from": None, "folded_from": [],
             "body": decision_body(key, terms, [], names, bars, req.get("model_id", "stub")),
         })
     return {"nominations": nominations}
+
+
+ARTICLE_INSTANCES: list[tuple[str, Callable[[dict[str, Any]], str | None]]] = [
+    ("backward pass admits", lambda i: next((h["id"] for h in i["hypotheses"] if (h.get("outcome") or "").startswith("admitted")), None)),
+    ("count with ids", lambda i: next((u["id"] for u in i["dispositions"]), None)),
+    ("hypothesis with an anchor", lambda i: next((o["name"] for o in i["observations"] if o["anchor"]), None)),
+    ("no context holds two roles", lambda i: next((h["id"] for h in i["hypotheses"] if len(h["roles"]) >= 3), None)),
+    ("raises abstraction", lambda i: next((h["id"] for h in i["hypotheses"] if "payload:abstraction" in h["attack_targets"]), None)),
+    ("discloses its residue", lambda i: next((d["id"] for d in i["decisions"] if d["residue"]), None) or next((f["session"] for f in i["unevaluable_facts"]), None)),
+    ("retirement leg", lambda i: next((d["id"] for d in i["decisions"] if d["status"] == "superseded"), None) or next((d["id"] for d in i["decisions"] if d["retirement_guard"]), None)),
+]
+"""What the stub consolidator reads an article's words as asking for, and where in the instances it looks."""
+
+
+@handles("anchor")
+def _anchor(req):
+    out = []
+    for article in req["articles"]:
+        for cue, pick in ARTICLE_INSTANCES:
+            if cue in article["article"]:
+                anchor = pick(req["instances"])
+                if anchor:
+                    out.append({"article": article["id"], "anchor": anchor, "why": f"the instance {anchor} is what the article's words '{cue}' name"})
+                break
+    return {"anchors": out}
+
+
+@handles("exemplifies")
+def _exemplifies(req):
+    if req.get("instance"):
+        return {"verdict": "still-holds", "why": f"{req['anchor']} exists in the store and is of the kind the article names"}
+    return {"verdict": "moot", "why": "the anchor names nothing"}
 
 
 # --- the examiner ---------------------------------------------------------------------------
@@ -280,8 +350,11 @@ def _verdict(req):
     scorer = req.get("watch_scorer")
     series = oracle.get("series", {}).get(scorer, [])
     if scorer and series and all(v is None for v in series):
-        return {"verdict": f"escalate(oracle evidence unevaluable for {scorer})", "amendment": None}
-    return {"verdict": "admit", "amendment": None}
+        return {"verdict": f"escalate(oracle evidence unevaluable for {scorer})", "amendment": None, "until": None}
+    if scorer and series and any(v is None for v in series):  # evidence partly missing and forthcoming: wait for two evaluable runs
+        return {"verdict": f"defer(until {scorer} is evaluable on two consecutive runs)", "amendment": None,
+                "until": {"scorer": scorer, "comparator": ">=", "value": 0.0, "persistence": 2, "passes": None}}
+    return {"verdict": "admit", "amendment": None, "until": None}
 
 
 @handles("credit")
@@ -296,11 +369,23 @@ def _credit(req):
     return {"steers": steers}
 
 
+@handles("vocabulary")
+def _vocabulary(req):
+    covered = [t for t in req.get("coder", []) if not t.startswith("other(")]
+    if covered:
+        return {"verdict": f"decline(the blind coder read the presentations as {covered}; an existing term covers the shape)", "means": None}
+    return {"verdict": "admit", "means": f"the presentation {len(req['escapes'])} independent passes escaped to as other({req['term']}); minted by recurrence"}
+
+
 @handles("currency")
 def _currency(req):
+    if req.get("rotted"):
+        if req.get("successor"):
+            return {"verdict": "still-holds", "why": f"the anchors {req['rotted']} retired into {req['successor']}, which stands for them", "premise": None}
+        return {"verdict": "reversed", "why": f"the anchors {req['rotted']} retired with no successor; the warrant cites nothing that stands", "premise": None}
     if req.get("successor"):
-        return {"verdict": "reversed", "why": f"the premise is superseded by {req['successor']}"}
+        return {"verdict": "reversed", "why": f"the premise is superseded by {req['successor']}", "premise": None}
     ratio = req.get("applied_over_considered")
     if ratio is not None and ratio < req.get("threshold", 0.1) and req.get("moot_evidence"):
         return {"verdict": "moot", "why": "the domain is no longer entered"}
-    return {"verdict": "still-holds", "why": "the premise stands; the fire is corroborating evidence against the payload, not the warrant"}
+    return {"verdict": "still-holds", "why": "the premise stands; the fire is corroborating evidence against the payload, not the warrant", "premise": None}

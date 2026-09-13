@@ -82,3 +82,42 @@ def test_close_before_evaluate_is_refused(store):
     s = _boot.boot(store, None, 1)
     with pytest.raises(SystemExit, match="not been evaluated"):
         _close.close(store, s.id)
+
+
+def test_a_fire_owed_to_the_working_pass_is_discharged_at_close_or_the_close_is_refused(store, monkeypatch):
+    decision = _admit(store)
+    s1 = _pass(store, 1)
+    fire = Fire(id=store.mint("fire"), fired_at=s1.closed_at, latch={"record": decision.id, "index": 0},
+                edge_event={"evaluation": "suite-v1", "pass": 1, "scorer": "task_pass_rate", "observed": 0.5},
+                guard_result=True, disposer=_boot.WORKING_PASS, disposition={"act": "check"})
+    store.write(fire)
+    _index.regenerate(store)
+    s2 = _boot.boot(store, None, 2)
+    _evaluate.evaluate_session(store, s2.id, None, detached=False)
+    _index.regenerate(store)
+    from hgi import stub
+    honest = stub.HANDLERS["dispose"]
+    monkeypatch.setitem(stub.HANDLERS, "dispose", lambda req: {**honest(req), "fires": []})
+    with pytest.raises(SystemExit, match=f"fire-completeness.*{fire.id}"):
+        _close.close(store, s2.id)
+    assert store.read("session", s2.id).closed_at is None and not store.read("fire", fire.id).disposition.discharged
+    monkeypatch.setitem(stub.HANDLERS, "dispose", honest)
+    closed = _close.close(store, s2.id)
+    discharged = store.read("fire", fire.id)
+    assert discharged.disposition.discharged and discharged.disposition.by == closed.id and discharged.disposition.outcome.startswith("check: ")
+    assert _index.undischarged_fires(store) == []
+    _index.regenerate(store)
+    assert _lint.run(store).green
+
+
+def test_the_lint_refuses_a_closed_session_that_left_its_fire_undischarged(store):
+    decision = _admit(store)
+    s1 = _pass(store, 1)
+    fire = Fire(id=store.mint("fire"), fired_at=s1.closed_at, latch={"record": decision.id, "index": 0},
+                edge_event={"evaluation": "suite-v1", "pass": 1, "scorer": "task_pass_rate", "observed": 0.5},
+                guard_result=True, disposer=_boot.WORKING_PASS, disposition={"act": "check"})
+    store.write(fire)
+    s1.fires_seen.append(fire.id)
+    store.write(s1)
+    findings = [f for f in _lint.run(store, seams=("close",)).failures if f.check == "fire-completeness"]
+    assert [f.record for f in findings] == [s1.id] and fire.id in findings[0].message

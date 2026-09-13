@@ -145,6 +145,27 @@ the stamp without claiming the text moved with it, keeping
 `priced_for.authored_for` at the model that authored it, so the
 `model-pricing` check goes on warning until the text is re-authored.
 
+## The backward pass
+
+`hgi consolidate` runs every *k* passes and on any fire owed to it. Each leg
+is a nominator; every verdict is the adjudicator's, in its own context, and
+the committer alone writes. In order:
+
+| Leg | Nominates on | Executes as |
+|---|---|---|
+| nominations | the brief: observations grouped by the blind coder's shapes under the independence bar; `fusion` (dispositions bimodal across matched sub-shapes → split); `convergence` (identical hooks applied together → fold); `structural_zero` (a record no registered hook reaches → hook-edit) | a draft per nomination through attack and verdict; a `hook-edit` or `counterfactual-edit` is a successor derived from the one record it supersedes; a leaf names `split_from`, a fold `folded_from`, and admission writes the DAG move with reciprocal pointers |
+| deferrals | a `defer(<until>)` verdict | the condition becomes a latch on the draft — a watch predicate the oracle's next runs fire, or passes to wait — and the fire, owed to the backward pass, re-adjudicates the draft in fresh contexts |
+| fires owed | revisit latches whose predicate held; deferral latches | a decision's by a currency verdict on its warrant; a draft's by re-adjudication; the disposition and any flip land in one commit. A fire owed to the working pass instead is discharged by that pass at close, or the close is refused |
+| credit | the task-level credit table | oracle-attributed steers, credit assigned by the adjudicator |
+| retirement | applied ÷ considered under the record's retirement guard over the window | mootness by the adjudicator's killer-item check |
+| genesis anchoring | a seed article with no anchor | the consolidator names an instance from the ledgers, the adjudicator says whether it exemplifies the article, the committer appends the anchor; past the deadline in the bars an article still unanchored is evicted |
+| vocabulary | the same `other(<what>)` from independent passes | the blind coder recodes the presentations with the candidate withheld, the adjudicator admits or declines, the registry grows in place |
+| propagation | a wiring latch whose neighbour left the status it last saw — a tombstone's successor, a warrant's cited record | a mechanical check in the same commit; a rotted anchor goes to the adjudicator as a currency question |
+
+The projections under `store/index/` show each leg's live state: `hooks`,
+`summaries`, `triggers`, `deferred`, `wiring`, `fires`, `competence`,
+`fusion`, `convergence`, `structural_zero`, `lineage`, `matrix`.
+
 ## Experiments
 
 An experiment file fixes every per-run decision outside the run: the models
@@ -218,4 +239,6 @@ The tests are the slice acceptance bars of spec § 13: the floor's named
 refusals and the committer (slice 0), facts, watches and fires (slice 1),
 two passes chained through the store (slice 2), admit, decline, escalate,
 the human queue, verdict authority and role separation on the ledger
-(slice 3), and the retirement leg.
+(slice 3), the retirement leg, and the backward pass's other legs: split
+and fold on the lineage DAG, the structural-zero audit and the edit rungs,
+deferral latches and propagation, genesis anchoring, and vocabulary growth.

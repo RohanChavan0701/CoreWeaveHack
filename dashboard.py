@@ -120,6 +120,10 @@ def _(hindex, mo, store):
     competence = hindex.read(store, "competence")
     fires = hindex.read(store, "fires")
     zero = hindex.read(store, "structural_zero")
+    deferred = hindex.read(store, "deferred")
+    wiring = hindex.read(store, "wiring")
+    fusion = [r for r in hindex.read(store, "fusion") if r["bimodal"]]
+    convergence = hindex.read(store, "convergence")
     mo.vstack([
         mo.md("## Projections"),
         mo.md("### Hook-major index — a cell carries what a reader cannot obey without opening the record"),
@@ -128,8 +132,16 @@ def _(hindex, mo, store):
         mo.ui.table(competence) if competence else mo.md("_no accepted decision_"),
         mo.md(f"### Undischarged fires: {len(fires)} · structural zero: {zero or 'none'}"),
         mo.ui.table(fires) if fires else mo.md("_none_"),
+        mo.md(f"### Deferred drafts: {len(deferred)} — each waits on the condition its verdict named"),
+        mo.ui.table(deferred) if deferred else mo.md("_none_"),
+        mo.md(f"### Wiring — {len(wiring)} live neighbour latches propagation walks"),
+        mo.ui.table(wiring) if wiring else mo.md("_none_"),
+        mo.md(f"### Split and fold nominators — fused records: {len(fusion)} · converging pairs: {len(convergence)}"),
+        mo.ui.table([{"record": r["record"], "applied_on": r["applied_on"], "never_on": r["never_on"]} for r in fusion] +
+                    [{"records": r["records"], "shared_terms": r["shared_terms"], "co_applied": r["co_applied"]} for r in convergence])
+        if fusion or convergence else mo.md("_none_"),
     ])
-    return competence, fires, hooks, zero
+    return competence, convergence, deferred, fires, fusion, hooks, wiring, zero
 
 
 @app.cell

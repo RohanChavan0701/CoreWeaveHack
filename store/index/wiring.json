@@ -1,0 +1,13 @@
+[
+  {
+    "disposer": "propagation",
+    "latch_index": 2,
+    "neighbours": [
+      "D-0003"
+    ],
+    "owed_act": "check",
+    "record": "D-0001",
+    "seen": {},
+    "status": "superseded"
+  }
+]

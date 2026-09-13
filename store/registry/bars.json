@@ -14,5 +14,9 @@
   "retirement": {
     "applied_over_considered_below": 0.1,
     "window_passes": 6
+  },
+  "vocabulary": {
+    "independence": "escapes from distinct sessions; two from one pass are one datum",
+    "independent_escapes": 2
   }
 }
