@@ -27,6 +27,7 @@ from pydantic import BaseModel
 from hgi import registry as _registry
 from hgi.registry import read_json, write_json
 from hgi.types import (
+    ID_PATTERN,
     PREFIXES,
     RECORD_MODELS,
     Admission,
@@ -58,6 +59,7 @@ LAYOUTS: dict[str, tuple[str, str]] = {
 
 ETERNAL_KINDS = ("constitution", "decision")
 """Kinds whose ids only the committer mints."""
+ETERNAL_PREFIXES = {PREFIXES[k] for k in ETERNAL_KINDS}
 
 
 def now() -> datetime:
@@ -297,25 +299,66 @@ class Store:
         self.drop_draft(draft.uid)
         return decision
 
+    def license(self, by: str) -> str:
+        """What may settle a frozen record, and the refusal when ``by`` is not it.
+
+        A settlement — a status flip, a premise flip, a latch settled — cites
+        what licensed it: an admitted successor record, a ledger entry that
+        carries an adjudicator's verdict, or a fire whose latch is
+        **dispositive**. A fire on a corroborating latch bears and never
+        settles: its verdict lands on the ledger as a nomination and the
+        settlement cites the entry, not the fire. A consolidation, a session
+        or a bare name is no licence — nothing settles by count or by
+        schedule alone.
+        """
+        kind = by.split("-", 1)[0] if ID_PATTERN.match(by) else None
+        if kind == "F":
+            fire = self.read("fire", by) if self.exists("fire", by) else None
+            if fire is None:
+                raise PermissionError(f"{by} is not a fire in this store")
+            host = self.host(fire.latch.record)  # type: ignore[union-attr]
+            latches = host.all_latches() if host is not None else []  # type: ignore[union-attr]
+            latch = latches[fire.latch.index] if fire.latch.index < len(latches) else None  # type: ignore[union-attr]
+            if latch is None:
+                raise PermissionError(f"{by} names a latch that no longer exists")
+            if latch.owed_act.role != "dispositive":
+                raise PermissionError(f"{by} fired a {latch.owed_act.role} latch, which nominates and never settles; cite the adjudicated ledger entry instead")
+            return f"dispositive fire {by}"
+        if kind == "H":
+            entry = next((e for e in self.all("hypothesis") if e.id == by), None)  # type: ignore[attr-defined]
+            if entry is None:
+                raise PermissionError(f"{by} is not on the ledger")
+            if entry.verdict == "pending" or entry.adjudicator is None:  # type: ignore[attr-defined]
+                raise PermissionError(f"{by} carries no adjudicated verdict; a pending entry settles nothing")
+            return f"adjudicated entry {by}"
+        if kind in ETERNAL_PREFIXES and self.find(by) is not None:
+            return f"successor {by}"
+        raise PermissionError(f"{by!r} licenses no settlement: cite an adjudicated ledger entry, a dispositive fire, or the admitted successor")
+
     def flip_status(self, record: Decision, status: str, successor: str | None = None, by: str | None = None) -> Decision:
-        """The only in-place change a frozen record receives.
+        """The only in-place change a frozen record receives, licensed by :meth:`license`.
 
         A retiring flip (``superseded`` | ``moot``) settles every live latch of
         the record's own fan in the same write — a settled latch is kept as
-        evidence, never removed. A supersedure names its successor: the
-        pointer is appended (a split's parent collects one per heir) and a
-        wiring latch keyed on the successor is added, so propagation can check
-        the tombstone when the successor itself changes status. Wiring latches
-        are the one type a flip leaves live: they are the edges propagation
-        walks after the flip, not the fan the flip retires.
+        evidence, never removed, and names its licence. A supersedure names
+        its successor: the pointer is appended (a split's parent collects one
+        per heir) and a wiring latch keyed on the successor is added, so
+        propagation can check the tombstone when the successor itself changes
+        status. Wiring latches are the one type a flip leaves live: they are
+        the edges propagation walks after the flip, not the fan the flip
+        retires.
         """
+        licence = successor or by
+        if not licence:
+            raise PermissionError("a status flip cites what licensed it")
+        self.license(licence)
         data = dump(record)
         data["status"] = status
         stamp = now().isoformat()
         if status in ("superseded", "moot"):
             for latch in [*data["latches"], data["lifecycle"]["retirement"]]:
                 if latch["lifecycle"]["status"] == "live" and latch["type"] != "wiring":
-                    latch["lifecycle"] = {"status": "settled", "settled_at": stamp, "settled_by": successor or by}
+                    latch["lifecycle"] = {"status": "settled", "settled_at": stamp, "settled_by": licence}
         if successor:
             if successor not in data["lineage"]["superseded_by"]:
                 data["lineage"]["superseded_by"].append(successor)
@@ -324,8 +367,9 @@ class Store:
         self.write(flipped)
         return flipped
 
-    def flip_premises(self, record: Decision, status: str, premise: str | None = None) -> Decision:
-        """The one in-place flip a warrant takes: a premise's status. One premise by id, or every premise when none is named."""
+    def flip_premises(self, record: Decision, status: str, premise: str | None = None, *, by: str) -> Decision:
+        """The one in-place flip a warrant takes: a premise's status, licensed by :meth:`license`. One premise by id, or every premise when none is named."""
+        self.license(by)
         data = dump(record)
         hit = False
         for p in data["warrant"]["premises"]:

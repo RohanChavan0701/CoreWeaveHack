@@ -14,6 +14,8 @@ settlement-test              write          fails a projection cell carrying a c
 verdict-authority            write          fails a proposal or attack payload carrying a verdict; fails a ledger     whether the adjudicator's verdict is right
                                             verdict with no adjudicator call
 fire-disposer                write          fails a fire naming no disposer                                           whether the disposer discharged it well
+settlement-authority         write          fails a settled latch whose settlement cites no adjudicated ledger entry,  whether the settlement was right
+                                            dispositive fire or admitted successor
 ports                        write          fails a latch off its port declaration without a warrant; fails a         whether the declaration is right
                                             required latch type that is absent
 constitution-cap             write          fails a store exceeding max_articles or max_bytes                         the ranking
@@ -212,6 +214,27 @@ def check_complement_law(store: Store) -> list[Finding]:
     for a in store.articles():
         if not a.counterfactual.strip():
             out.append(fail("complement-law", a.id, "an article carries a counterfactual"))
+    return out
+
+
+# --- settlement authority ----------------------------------------------------------
+
+@check("settlement-authority", "write", "whether the settlement was right")
+def check_settlement_authority(store: Store) -> list[Finding]:
+    """A corroborating fire nominates and never settles; every settled latch names what licensed it and the licence holds."""
+    out = []
+    hosts = [(d.id, d.all_latches()) for d in store.decisions()] + [(p.name, p.all_latches()) for p in store.drafts()]
+    for host, latches in hosts:
+        for i, latch in enumerate(latches):
+            if latch.lifecycle.status != "settled":
+                continue
+            if not latch.lifecycle.settled_by:
+                out.append(fail("settlement-authority", host, f"latch {i} is settled by nothing"))
+                continue
+            try:
+                store.license(latch.lifecycle.settled_by)
+            except PermissionError as e:
+                out.append(fail("settlement-authority", host, f"latch {i}: {e}"))
     return out
 
 

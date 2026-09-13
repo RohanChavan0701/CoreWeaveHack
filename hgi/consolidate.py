@@ -343,7 +343,7 @@ def settle_currency(store: Store, record: Consolidation, d: Decision, out: dict[
         return f"{entry.verdict}: {d.id} flipped moot"
     if act == "dispute" and d.status == "accepted":
         premise = out.get("premise") if any(p.id == out.get("premise") for p in d.warrant.premises) else None
-        store.flip_premises(d, "reversed" if premise else "disputed", premise)
+        store.flip_premises(d, "reversed" if premise else "disputed", premise, by=entry.id)
         record.flipped.append(d.id)
         return f"{entry.verdict}: " + (f"premise {premise} of {d.id} reversed" if premise else f"every premise of {d.id} disputed")
     return f"{entry.verdict}: {d.id} stands"
