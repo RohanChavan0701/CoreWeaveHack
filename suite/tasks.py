@@ -11,6 +11,7 @@ composes: which families, how many tasks of each (a seeded sample), and the
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import os
@@ -48,7 +49,10 @@ class Task:
     shell_budget: int | None = None
     http_budget: int | None = None
     files: dict[str, str] = field(default_factory=dict)
-    """The working directory at task start."""
+    """The working directory's text files at task start."""
+    blobs: dict[str, str] = field(default_factory=dict)
+    """The working directory's binary files at task start, base64-encoded — for an asset no text can carry (a SQLite
+    database). Hashed by the digest of their bytes, not the bytes, so the composition guard stays small and stable."""
     routes: dict[str, Any] = field(default_factory=dict)
     """The mock API: path → JSON body, or ``{"$error": {"message", "cause"}}`` for a route that answers with an error."""
     stub: Scripted | None = None
@@ -74,13 +78,23 @@ class Task:
                 "http_budget": self.http_budget, "http": self.http}
 
     def world(self) -> dict[str, Any]:
-        """The part of the task the agent reaches only through tools; hashed with the presentation."""
-        return {"files": self.files, "routes": self.routes}
+        """The part of the task the agent reaches only through tools; hashed with the presentation.
+
+        A binary blob is hashed by the digest of its bytes rather than the bytes themselves, so a megabyte-scale
+        asset guards the composition without bloating the hash payload. The ``blobs`` key is present only when the
+        task carries one, so a task with none hashes exactly as it did before binary assets existed.
+        """
+        world = {"files": self.files, "routes": self.routes}
+        if self.blobs:
+            world["blobs"] = {name: hashlib.sha256(base64.b64decode(b)).hexdigest() for name, b in self.blobs.items()}
+        return world
 
     def setup(self, workdir: Path) -> None:
         workdir.mkdir(parents=True, exist_ok=True)
         for name, content in self.files.items():
             (workdir / name).write_text(content)
+        for name, b in self.blobs.items():
+            (workdir / name).write_bytes(base64.b64decode(b))
 
 
 class SuiteSpec(BaseModel):

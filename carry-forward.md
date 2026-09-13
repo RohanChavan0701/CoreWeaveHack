@@ -1482,7 +1482,156 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     radius sweep was meant to catch, now guarded only by τ\*=1.0 standing;
     the escape-to-vocabulary-bar path is the doctrine's answer if a
     convention the seed lacks recurs.
-88. **The signal half of the battery lands on the per-lens register, beside
+
+88. **A procedural fast-fail family from Reasoning Core: regex-following and
+    cfg-generation, graded by the generator's own checker** (commits
+    `881e9f7`, `3c5e26b`, `897c144`). Reasoning Core (`sileod/reasoning-core`,
+    MIT, rev `1c87ac6`, v0.5.0, arXiv:2509.18083) is structurally the
+    `curriculum` pattern — procedural, many instances of one lesson, an
+    executable checker — with a single integer difficulty knob (`level`) its
+    configs fold into pattern depth, rule count, sentence depth. Two families
+    are added over its generators, `reasoning-core` and its strict twin
+    `reasoning-core-strict`, built from the `mbpp` shape (pinned file +
+    `fetch` transcriber) so the suite hash is stable and a run touches neither
+    the network nor the generation stack. Scope is the generators that make
+    the agent *churn* shell calls to verify a candidate — regex-following
+    (produce a visible-ASCII string a regex fully matches) and cfg-generation
+    (produce a string of ≥ `min_tokens` terminals a grammar derives) — so
+    decisions get generated; the answer-only RC generators (regex
+    equivalence/containment, parsing-derivation graded by edit-similarity,
+    continuation) are the deferred later slice noted below. *What grades:* the
+    generator's own verdict, never a stored-answer compare — `regex.fullmatch`
+    over an admissible sample (RC's `regex.py` `_is_sft_sample`), and grammar
+    membership under NLTK's Earley chart parser (the parser RC's grammar tasks
+    use). Note RC's own `RegexFollowing.score_answer` *is* a canonical-string
+    compare; grading membership (any match) is the deliberate reading of the
+    task's "produce a string matching" framing and of the instruction to grade
+    by the checker, not by a compare. The checker inputs are pinned (the
+    regex; the grammar with its start and token floor) and no witness is —
+    the file cannot leak an answer, and for regex there is no unique answer to
+    leak. *The strict twin:* `knowing={"shell":1}` (a knowing policy verifies
+    once); lax leaves one call to spare so a pass may iterate on a candidate,
+    strict holds exactly the floor so a wrong first candidate cannot be
+    repaired — the `curriculum`/`curriculum-strict` slack `{1,0}`, differing
+    only in slack. *Difficulty-knob values chosen:* RegexConfig `level` 3
+    (alternation, groups, exact counts, anchors, word boundaries), witness
+    length ≥ 2 to drop trivial one-char targets; GrammarConfig `level` 2 with
+    the witness length kept in 6–12 tokens, `min_tokens` set to the witness's
+    own length so a member provably exists. Twelve instances of each are
+    pinned; ids and integer seeds are disjoint from every other family's
+    (string-keyed) seeds and clothes. *Right:* the two families build (hash
+    `2eb120f` over the pair), 513 tests pass including a new
+    `test_reasoning_core.py` that shows two distinct strings both matching a
+    pattern and membership over the token floor — a verdict, not a gold
+    string; the checks catch broad exceptions and return False, so a bad
+    pattern or an out-of-vocabulary token is a failed task, never a raise from
+    the grader (the `mbpp` convention). *Determinism, and what it cost:*
+    `gramforge.generate` reseeds Python's RNG from entropy on every call
+    (`seed=None`), so the bound name is patched to draw seeds from a
+    per-instance `random.Random`, and `faker` is seeded before the task
+    modules import (their terminal word lists are import-time); the CFG
+    generator is additionally forced onto `random_productive_cfg`
+    (`random_grammar_prob=1.0`, free-form off) because the pre-built english
+    grammars reach `trim_grammar`, which seeds a `random.Random(None)` from
+    entropy and cannot be reproduced — the synthetic productive CFGs (bracket
+    nesting, word terminals) are kept, the natural-language grammars dropped.
+    Cross-process regeneration is byte-identical (sha `5a25c31`). *Risks and
+    leftovers:* (1) the ~0.5 first-sight target is a **hypothesis, not
+    measured** — no inference endpoint here, and these families carry no stub
+    (like `mbpp`), so they fail the deterministic stub harness and
+    `naive_outcome`/`symptom` return no-naive; the first live arm run is what
+    calibrates level and budget to the 0.47/0.50 band, and difficulty is
+    **non-monotonic** in `level` for "produce a match" — high levels admit
+    trivial short matches, so raising `level` is not a reliable hardener, the
+    lever is pattern/grammar structure and the token floor. (2) `fetch` is not
+    runnable in the standard hgi env — the generation stack (`reasoning_core`,
+    `gramforge`, `greenery`, `faker`, `exrex`) is deliberately not a runtime
+    dependency (only `regex` and `nltk` are, for the checks and the agent's
+    shell); the committed jsonl is the reproducibility artifact, and re-fetch
+    needs that stack installed and would rewrite the file and move the hash.
+    (3) the broad `except Exception` in the checks could mask a genuine
+    checker bug as a failed task. (4) the agent's shell membership check
+    depends on `nltk` being importable in the run's `python3` — true now that
+    it is a dependency. (5) no metamorphic `twin` is attached (the
+    `method_transfer` scorer will not read this family); a second-seed twin is
+    the addition if it should. *Next slice:* the answer-only RC generators,
+    and a live arm run to place these two on the target band before they enter
+    a stream/transfer design.
+89. **A text-to-SQL family whose convention is the database's own schema,
+    and the credit correction it exposes** (commits `9379d35`, `f22c079`,
+    `c6685d1`, `ae758f0`, addressing DATASET-EVAL-RESEARCH.md's BIRD
+    recommendation and its required evaluator correction). Three new
+    families — `text2sql`, `text2sql-strict`, `text2sql-holdout` — over
+    BIRD mini-dev's `financial` questions and one pinned SQLite database.
+    The agent inspects the schema with the shell tool and returns a
+    `SELECT`; the hidden check re-executes it against the shipped database
+    and compares its rows to the dataset's own gold query's rows (a
+    float-rounded, order-insensitive multiset), never a string comparison.
+    The gold SQL is the grading key: pinned in the record, re-executed by
+    the check, kept out of the prompt and `Task.row` so it cannot leak — the
+    way `mbpp` reruns `tests.py` rather than diffing source. The graded and
+    strict families carry the same ten questions and differ only in slack
+    (three shell calls vs the knowing floor of one), mirroring `curriculum`
+    vs `curriculum-strict`; the holdout six are a template-disjoint group
+    over the same schema, for transfer. *Right:* the transferable convention
+    is the schema's SQLite-dialect quirks the BIRD evidence never states —
+    text dates reached with `STRFTIME` (there is no `YEAR()`), a ratio
+    needing `CAST(... AS REAL)` or SQLite integer-divides, coded statuses, a
+    reserved-word `order` — so a decision learned on one question scores on
+    an unseen one over the same database, which is what the stream/transfer
+    experiments measure; the evidence stays in the prompt so a question is
+    answerable, but names the domain mapping, not the dialect. A ratio
+    without the CAST is the crisp case: it executes cleanly and returns the
+    wrong number, so `credit_table`'s old `not row.get("error")` would have
+    credited a wrong answer — `hgi.consolidate.row_passed` now reads the
+    oracle's per-row `task_pass_rate`, falling back to absence-of-error only
+    for a legacy row that carries no per-row score (which is why the
+    existing credit tests, whose rows carry none, are unchanged). The
+    database ships through a new general `Task.blobs` binary channel
+    (base64 in, bytes out), hashed by the digest of its bytes so a
+    megabyte-scale asset does not bloat the composition hash, and the
+    `blobs` key is absent when a task carries none so every existing suite
+    hashes as before. *Decisions and their risks:* (a) The full
+    `financial.sqlite` is 71 MB, all but 24k rows of it the `trans` table
+    (1M rows); the pinned `text2sql.sqlite` keeps every table whole except a
+    `trans` sample (accounts ≤ 20, for schema fidelity), 856 KB. No selected
+    question reads `trans` — `fetch` verifies each gold on the reduced
+    database before pinning, so every gold returns exactly the rows it
+    returns against the full database, and the four trans-touching financial
+    questions (#116/129/145/159) are simply not selected. *Risk:* a future
+    question added to `SELECTED` that reads `trans` would grade against the
+    sample, not the world; the fetch sanity pass catches a gold that fails
+    outright but not one whose rows the reduction merely changed, so any
+    trans-reading question needs the sample widened or the id left out. (b)
+    The pass-rate target (~0.5 first-sight) is a design goal, not measured
+    here — no model was run; the difficulty is a guess from BIRD's own
+    moderate/challenging mix under a three-call budget. *If it lands off
+    the band,* tune by question selection (the 32 financial questions, minus
+    the 4 trans ones, are the pool) or the slack budget, not by touching the
+    check. (c) The task shapes are the tool-major cues (`shell-tool`,
+    `file-tool`, `tool-budget`) the boot classify keys on, since the schema
+    convention is hidden from the prompt (that is the point). Beside them a
+    new convention-major work-shape term, `schema-coded-value`, was seeded
+    (`hgi/genesis.py`, `hgi/stub.py`, `hgi/roles/coder.md`, following
+    decision 87's precedent exactly — the seed and the stub, not the
+    diverged store snapshot, whose committed registry predates the
+    convention terms), so the blind coder groups two text-to-SQL misses over
+    the one fixed schema — a coded-status miss and a text-date miss — under
+    the same shape rather than the coarse tool cue. It is deliberately one
+    term, not one per quirk: the family runs over a single database, so its
+    quirks are one convention and a decision hooked on the term can carry the
+    whole schema, which is the transfer the family demonstrates. *Right:* the
+    grouping is sharpened; *the limit that remains:* the term sharpens the
+    consolidation grouping and rides the decision's hook, but boot retrieval
+    still keys on the tool cue (the convention cannot be read from the
+    prompt), so a schema-convention record is retrieved for any shell-tool
+    task via the tool-major terms `anchor_terms` seeds — the coarse-retrieval
+    limit decision 87 already documented, not new here. (d) `fetch` downloads BIRD's 346 MB dev bundle and verifies
+    `financial.sqlite` against a pinned SHA-256; `$HGI_BIRD_DEV_ZIP` caches
+    it. Re-fetching is rare (only to re-pin) and rewrites both the jsonl and
+    the committed 856 KB database, changing the suite hash — the same
+    contract as every transcribed family.
+90. **The signal half of the battery lands on the per-lens register, beside
     the decoy half** (commit `ce19b3d`). The battery scored two axes onto each
     lens — `decoy_rejection` and `answer_variance` — but the `SignalCaught`
     scorer's product went only to the global fact series
@@ -1503,7 +1652,7 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     model's filing, and the two axes share the one battery run — a dataset that
     plants too few signals reads a coarse fraction (2/2 is the current plant),
     and a lens with no signal items reads `unevaluable`, never a false 1.00.
-89. **A human steer can cite a lens, and the register reads the steers that
+91. **A human steer can cite a lens, and the register reads the steers that
     cite it** (commit `ecf1d81`). Every lens declared
     `"miss_stream": "steers/ citing this lens"`, a dead literal no code
     populated: `indictment()` resolved ids through `store.find`, which reaches
@@ -1528,7 +1677,7 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     The miss stream is written only for the lenses `populate_telemetry`
     touches (the battered ones), so a boot lens no battery reaches keeps its
     static literal until a run writes it.
-90. **L-0009, the recovered-miss lens: a passed row that self-corrected on a
+92. **L-0009, the recovered-miss lens: a passed row that self-corrected on a
     non-transient convention is a lesson, not a discard** (commit `9ccf21b`).
     Across `runs/`, 375 rows passed but 87 recovered from a non-transient fault
     on the first attempt — 37× a `route-guarded` 401 (`/secure` needs
@@ -1559,7 +1708,7 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     it files (the L-0004 counterfactual's overshoot, mirrored). The stub is a
     lexical proxy for the pass model's convention inference; a live re-score is
     what confirms the noticing groups on the convention, not the cause string.
-91. **L-0010, the off-map noticing lens: a failure the store had no hook for is
+93. **L-0010, the off-map noticing lens: a failure the store had no hook for is
     a rule that is missing, not just telemetry** (commit `40c85ea`). When work
     fails and matches no hook, `dispose` records a bare `fired-off-map`
     disposition (`record="none"`) — in one arm six such sessions produced only
@@ -1594,7 +1743,7 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     observation lenses answer to. index.py was read but not edited (another
     change owns it); the `true_misses`/matrix interaction above is behavioral,
     through the observation L-0010 now files, not a code change here.
-92. **The mint ladder: the miss stream climbs to activation — two same-class
+94. **The mint ladder: the miss stream climbs to activation — two same-class
     off-map failures nominate new coverage** (commit `f8463c7`). The detection
     matrix computed the bottom-right cell (`hgi.index.true_misses`, the failed
     rows nothing caught) and displayed it, but nothing consumed it to nominate a
@@ -1612,7 +1761,7 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     the `noticed` list — the pass noticed it, no hook did, so it is still a miss
     of coverage. On the committed store it fires on two classes (`file-tool`,
     `output-schema`) at the bar. *Right:* the recurring off-map class, which
-    decision 91's L-0010 turned into a per-row observation, now also nominates
+    decision 93's L-0010 turned into a per-row observation, now also nominates
     the *activation* fix — a hook or lens — rather than only feeding a rule
     candidate; a nominator, never a verdict, mirroring recall. *Risk:* the class
     is the boot classifier's work-shape term, so a miss on work that carried no

@@ -21,12 +21,14 @@ from hgi import model as _model
 from suite import lessons as _lessons
 from suite.families import FAMILIES
 from suite.faults import FaultProfile
-from suite.families.curriculum import CLOTHES
+from suite.families.curriculum import CLOTHES, GENERATORS
 from suite.stream import StreamSpec, key_of, lessons_of, partition
 from suite.tasks import SuiteSpec, build
 from suite.tools import Tools
 
 EXPERIMENTS = Path(__file__).resolve().parents[1] / "experiments"
+CURRICULUM_LESSONS = set(GENERATORS)
+"""The lessons the curriculum wears — the register also holds the lessons of the hand-written families."""
 
 
 @pytest.fixture(autouse=True)
@@ -38,8 +40,8 @@ def clean_backends():
 
 def test_the_curriculum_wears_every_lesson_in_disjoint_clothes():
     tasks = FAMILIES["curriculum"].tasks()
-    assert len(tasks) == CLOTHES * len(_lessons.LESSONS) and len({t.id for t in tasks}) == len(tasks)
-    assert {t.lesson for t in tasks} == set(_lessons.LESSONS)
+    assert len(tasks) == CLOTHES * len(CURRICULUM_LESSONS) and len({t.id for t in tasks}) == len(tasks)
+    assert {t.lesson for t in tasks} == CURRICULUM_LESSONS <= set(_lessons.LESSONS)
     hand = FAMILIES["conventions"].tasks() + FAMILIES["transfer"].tasks()
     assert {t.lesson for t in hand} <= set(_lessons.LESSONS), "the hand-written families name lessons the register knows"
     assert not ({n for t in tasks for n in t.files} & {n for t in hand for n in t.files}), "file names re-dressed"
@@ -114,7 +116,7 @@ def test_the_deal_is_balanced_over_lessons_and_deterministic():
     assert len(batches) == 10 and all(len(b.tasks) == 8 for b in batches)
     assert len({t.id for b in batches for t in b.tasks}) == 80, "no task is dealt twice"
     for b in batches:
-        assert set(lessons_of(b)) == set(_lessons.LESSONS) and max(lessons_of(b).values()) <= 2, "every batch holds every lesson, none more than twice"
+        assert set(lessons_of(b)) == CURRICULUM_LESSONS and max(lessons_of(b).values()) <= 2, "every batch holds every lesson, none more than twice"
     assert [b.hash for b in partition(spec)] == [b.hash for b in batches]
     assert [b.hash for b in partition(StreamSpec(batch=8, batches=10, seed=4))] != [b.hash for b in batches]
     with pytest.raises(SystemExit, match="holds 84"):
@@ -171,7 +173,7 @@ def test_the_stream_smoke_runs_each_pass_on_its_own_batch_and_writes_the_evoluti
     assert [p["kind"] for p in log["passes"]] == ["stream"] * 4 + ["revisit"]
     assert all(p["symptoms"] == {"naive": 4} for p in log["passes"]), "the stub is the naive policy: every failure is naive-shape"
     assert all(p["quality"]["economy"] == 0.0 and p["quality"]["transfer"] is None for p in log["passes"]), "quality is zero on failed rows and transfer unevaluable"
-    assert set(log["lessons"]) == set(_lessons.LESSONS) and all(s["first_mention_pass"] is None for s in log["lessons"].values())
+    assert set(log["lessons"]) == CURRICULUM_LESSONS and all(s["first_mention_pass"] is None for s in log["lessons"].values())
     md = (where / "evolution.md").read_text()
     assert "| 5 (revisit) | 1 |" in md and "| trailing-newline | invisible |" in md
 

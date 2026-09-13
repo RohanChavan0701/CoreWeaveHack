@@ -107,11 +107,11 @@ def credit_table(store: Store, sessions: list[Session]) -> list[dict[str, Any]]:
                 if rid not in known:
                     continue  # an id the pass invented is not a record; nothing is credited or indicted under it
                 applied[rid]["tasks"].append(row["task"])
-                applied[rid]["after"].append(not row.get("error"))
+                applied[rid]["after"].append(_index.row_passed(row))
     out = []
     for rid, a in applied.items():
         tasks = sorted(set(a["tasks"]))
-        before = [not row.get("error") for s in all_sessions if s.id not in window and s.pass_ < min(x.pass_ for x in sessions)
+        before = [_index.row_passed(row) for s in all_sessions if s.id not in window and s.pass_ < min(x.pass_ for x in sessions)
                   for row in s.evaluation.rows if row["task"] in tasks]
         out.append({"record": rid, "scorer": PRIMARY_SERIES, "tasks": tasks, "applied_count": len(a["after"]),
                     "before": (sum(before) / len(before)) if before else None, "after": sum(a["after"]) / len(a["after"]),

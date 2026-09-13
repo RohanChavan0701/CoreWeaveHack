@@ -109,3 +109,16 @@ def call_uri(call: Any) -> str | None:
 def call_id(uri: str | None) -> str | None:
     """``weave:///entity/project/call/<id>`` → ``<id>``."""
     return uri.rsplit("/", 1)[1] if uri and "/call/" in uri else None
+
+
+def weave_project_url(uri: str | None, page: str = "") -> str | None:
+    """The project's page on the trace store, read off any of its call URIs: ``""`` is traces, ``evaluations``."""
+    if not uri or "/call/" not in uri:
+        return None
+    return f"https://wandb.ai/{uri.removeprefix('weave:///').split('/call/')[0]}/weave/{page}".rstrip("/")
+
+
+def weave_url(uri: str | None) -> str | None:
+    """``weave:///entity/project/call/<id>`` → the call's page a browser can open."""
+    root = weave_project_url(uri)
+    return f"{root}/calls/{call_id(uri)}" if root else None
