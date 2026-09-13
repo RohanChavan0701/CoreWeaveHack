@@ -1662,6 +1662,7 @@ hgi/
     constitution/ decisions/ rules/ beliefs/ observations/ ledger/
     fires/ dispositions/ steers/ sessions/ registry/ index/
   suite/              # the task suite: tasks, hidden tests, the faulty tool layer, scorers
+  experiments/        # experiment files; their arms run under runs/<experiment>/<arm>/, a repository each
   dashboard.py        # the marimo notebook
   README.md
 ```
@@ -1676,6 +1677,7 @@ hgi consolidate                                 # the backward pass over the led
 hgi lint                                        # the floor
 hgi index                                       # regenerate projections
 hgi lineage     D-0007                          # the path query over the DAG
+hgi experiment  run experiments/<name>.toml      # every arm of an experiment file, each in a store of its own
 ```
 
 Every command that writes ends in a commit whose message names the record

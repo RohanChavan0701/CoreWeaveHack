@@ -44,7 +44,7 @@ coordinate (spec § 9).
 | Role | Sponsor surface | Binding |
 |---|---|---|
 | trace store, the world, the steer channel | **W&B Weave** | `@weave.op` on every model and tool call with `hgi.session`, `hgi.pass`, `hgi.role` and `hgi.records_in_context` attributes; the task suite is a `weave.Dataset`, each scorer a `weave.Scorer`, each pass a `weave.Evaluation` run; feedback on calls becomes steer records |
-| the frozen model | **CoreWeave inference endpoint** | one OpenAI-compatible client; every call records its model id; every lens records the model it was priced for |
+| the frozen model | **CoreWeave inference endpoint**, or **W&B Inference** | one OpenAI-compatible client per model, installed per role; every call records its model id; every lens records the model it was priced for |
 | the consolidation analyst | **W&B ARIA** | reads the disposition and session ledgers mirrored to Weave as datasets and drafts the consolidation brief; its report URI is recorded on the consolidation session; it nominates, never verdicts |
 | projections and the escalation surface | **marimo** | `dashboard.py` renders the index, the lineage DAG, the detection matrix and the escalation queue live from the store, and writes only through `hgi` commands |
 | the blind second coder, the guard evaluator | **TypeSafe AI System1** | classifies observations against the registry's shape terms without the consolidator's candidate labels; falls back to a second, separately prompted frozen-model context when the vendor is not configured |
@@ -58,7 +58,8 @@ hash, no boot or close), consolidation every two passes. The frozen model
 for this run is the deterministic stub (no inference endpoint was
 configured), so the curve shows the loop's mechanics closing, not a model
 learning; the stub applies a record only by keyword, exactly as documented
-in `suite/agent.py`.
+in `suite/agent.py`. The same run on a real model is
+`experiments/baseline.toml` (see [Experiments](#experiments)).
 
 ### The curve — `task_pass_rate` over the same suite hash
 
@@ -133,6 +134,41 @@ ids it admitted, flipped or retired. `./demo.sh` runs the whole
 demonstration; `uv run marimo run dashboard.py` opens the projection surface
 and the escalation queue; `uv run hgi mirror` publishes the ledgers to Weave
 for the analyst.
+
+## Experiments
+
+An experiment file fixes every per-run decision outside the run: the models
+it may use, which role runs on which, how many rounds and how many passes a
+round holds (the consolidation cadence, written into the arm's bars),
+whether the memory is attached or detached, any bar overridden, and how many
+tasks the oracle evaluates at once. `hgi experiment run` gives each arm a
+fresh store under `runs/<experiment>/<arm>/`, in a git repository of its own,
+seeds it priced for the arm's pass model, and drives the same commands
+`demo.sh` drives through the command surface; `arm.json` beside the store
+records what the arm resolved to and its curve. The format is documented in
+`hgi/experiment.py`.
+
+```
+hgi experiment show   experiments/baseline.toml     # every arm's resolved plan; nothing touched
+hgi experiment run    experiments/baseline.toml     # every arm, or --arm <name> (repeatable); --force reruns
+hgi experiment report experiments/baseline.toml     # the curves, read back from the arm stores
+hgi experiment models                                # the ids the endpoint serves (W&B Inference by default)
+```
+
+| File | Arms | Question |
+|---|---|---|
+| `experiments/smoke.toml` | stub, attached and detached, 1 round × 2 | does the runner close the loop; the tests run it |
+| `experiments/baseline.toml` | `openai/gpt-oss-120b`, attached and detached, 3 × 2 | the § 14 run on a real frozen model |
+| `experiments/model-sweep.toml` | `gpt-oss-20b`, `gpt-oss-120b`, `Qwen3.6-35B-A3B`, each attached and detached, plus the roles split: the small model acts, the large one consolidates, examines and adjudicates | behaviour under a model swap (§ 14.4); whether separation of powers lets a weak actor learn from a strong judge |
+| `experiments/cadence.toml` | `gpt-oss-120b` attached, consolidating every 1, 2 and 3 passes over six | how often to consolidate |
+
+The shipped files run on W&B Inference (`https://api.inference.wandb.ai/v1`):
+the key is `$WANDB_API_KEY` or the netrc entry `wandb login` wrote, and the
+endpoint refuses a request with no `entity/project` to attribute usage to, so
+`WANDB_ENTITY` must be set and the experiment names its Weave project. A
+CoreWeave endpoint is a model entry with its own `base_url` and
+`api_key_env`. Arms of one experiment trace into one Weave project, each call
+carrying `hgi.experiment` and `hgi.arm`, each evaluation named by its arm.
 
 ## Tests
 

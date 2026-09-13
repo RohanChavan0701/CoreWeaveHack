@@ -14,7 +14,15 @@ work left for the full implementation and the decisions taken along the way
 - The demonstration ran on the deterministic stub (`hgi/stub.py`), because
   no CoreWeave inference endpoint credentials were available. The model
   path (`hgi/model.py` OpenAICompatible; `suite/agent.py` tool loop; every
-  role prompt) is written and untested against a real endpoint.
+  role prompt) is written; as of 2026-09-12 one `classify`-shaped JSON-mode
+  completion on `openai/gpt-oss-120b` over W&B Inference has returned the
+  expected shape, and nothing more has been run against a real model.
+- The experiment surface (`hgi/experiment.py`, `experiments/*.toml`,
+  `hgi experiment show|run|report|models`) exists and its smoke experiment
+  has run through the command surface with a commit per step in each arm's
+  own repository. `experiments/baseline.toml`, `model-sweep.toml` and
+  `cadence.toml` are written and have not been run; every model id they
+  name is one `hgi experiment models` listed on 2026-09-12.
 - Weave: traces, evaluations, attributes, feedback → steer, and the mirror
   are verified live in `slavazinevich-worldvue/hgi-dev` and used in
   `slavazinevich-worldvue/hgi`.
@@ -32,12 +40,18 @@ work left for the full implementation and the decisions taken along the way
    that leads with the residue, demotion on applied ÷ considered, coverage
    migration, and the ladder rungs `adoption-row` and `rule-enrollment` as
    executed operators. `registry/ports.json` needs the rule declarations.
-3. **Run the loop on a real frozen model.** Set `HGI_INFERENCE_BASE_URL`,
-   `HGI_INFERENCE_API_KEY`, `HGI_MODEL_ID`. Expect to iterate on the JSON
+3. **Run the loop on a real frozen model.** `hgi experiment run
+   experiments/baseline.toml` with `WANDB_ENTITY` set (W&B Inference refuses
+   a call with no entity/project header). Expect to iterate on the JSON
    contracts of each role request (`classify`, `guard`, `lens`, `dispose`,
    `propose`, `coding`, `nominate`, `attack`, `verdict`, `credit`,
    `currency`) — the stub defines them by example; the role prompts state
-   them in prose only. Re-price the lenses and articles for that model.
+   them in prose only. The arm's seed prices the lenses and articles for
+   the pass model; the role prompt files still say `priced_for: stub` and
+   nothing lints that header. Then `model-sweep.toml` (§ 14.4's model swap;
+   the split-roles arm) and `cadence.toml`; the report goes into the README
+   by hand, because the arm stores live outside the code repository
+   (decision 15).
 4. **TypeSafe System1.** `hgi/coder.py` assumes an OpenAI-compatible surface
    behind `TYPESAFE_BASE_URL`; the real API shape is unverified (waitlist as
    of 2026-09-12). The role is the invariant; only the adapter changes.
@@ -135,10 +149,37 @@ work left for the full implementation and the decisions taken along the way
     tries to average the heterogeneous task outputs and raises. *Risk:* the
     Weave UI's evaluation comparison shows no model-output block.
 
+15. **Experiment arms run in a git repository each, under `runs/`, which
+    the code repository ignores.** *Right:* the write law holds per arm
+    (every write ends in a commit), arms cannot clobber each other or the
+    demonstration's `store/`, and the code history stays the code's.
+    *Risk:* an arm's result is not in the code repository's history; the
+    README table is copied from `hgi experiment report` by hand, and a
+    reader of the code repository cannot regenerate it.
+16. **A round is a consolidation cycle; the cadence is written into the
+    arm's bars at seed.** `rounds × passes_per_round` is the run's length
+    and `consolidation_every_passes` is the round size, so the file states
+    the cadence once. *Risk:* the brief reads only the sessions since the
+    last consolidation, so a round size of one may never meet the
+    two-distinct-sessions bar — `cadence.toml` measures this rather than
+    fixing it.
+17. **W&B Inference is the endpoint the shipped experiment files use**, not
+    a CoreWeave endpoint, because a key for it exists on this machine and
+    none did for CoreWeave; the role is the invariant and a CoreWeave model
+    is one more `[models.*]` entry with its own `base_url`. *Risk:* the
+    sponsor binding in the README now names both.
+18. **Backends are installed per role in the process** (`hgi.model.use(b,
+    role=…)`), so one arm can act on one model and adjudicate on another.
+    *Risk:* the session record carries one `model_id` (the pass's); the
+    per-role ids are on the ledger entries' role calls and on `arm.json`.
+
 ## Housekeeping
 
 - `smoke_test.py` is the original W&B/Weave connectivity check and is not
   part of the package.
 - The store's genesis articles and lenses are priced for `stub`; reseed with
-  `HGI_MODEL_ID=<model> uv run hgi genesis --force` before a real-model run
-  (this resets the store).
+  `HGI_MODEL_ID=<model> uv run hgi genesis --force` before a hand-run on a
+  real model (this resets the store). An experiment arm seeds its own store
+  and needs no reseed.
+- `runs/smoke/` on this machine is the smoke experiment's output from
+  2026-09-12; it is ignored by git and safe to delete.
