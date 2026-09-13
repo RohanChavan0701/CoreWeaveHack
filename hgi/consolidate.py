@@ -28,6 +28,7 @@ from collections import defaultdict
 from typing import Any
 
 from hgi import coder as _coder
+from hgi import drafting as _drafting
 from hgi import index as _index
 from hgi import latches as _latches
 from hgi import lint as _lint
@@ -41,6 +42,7 @@ from hgi.registry import route_table, term_head
 from hgi.store import Store, now
 from suite.scorers import SERIES
 from hgi.types import (
+    MECHANICAL,
     Consolidation,
     Decision,
     Draft,
@@ -122,6 +124,21 @@ ANALYSIS_FIELDS = ("competence", "precision", "groups", "credit", "fusion", "con
 """The nominator's analytical rows — what ARIA produces over the mirrored runs, and what the local pass derives when no analyst report resolves."""
 
 
+def _fold_candidates(store: Store) -> list[dict[str, Any]]:
+    """The fold nominator's convergence rows: pairs applied together at the bar (§ 10.6), and near-verbatim restatements
+    that never co-applied (stream-run item 33). Both are convergence-shaped rows drafted as folds and adjudicated behind
+    the floor; a pair reached by either route is surfaced once."""
+    seen: set[tuple[str, str]] = set()
+    out: list[dict[str, Any]] = []
+    for row in [*(r for r in _index.convergence(store) if r["co_applied"] >= 2), *_index.restatements(store)]:
+        pair = tuple(row["records"])
+        if pair in seen:
+            continue
+        seen.add(pair)
+        out.append(row)
+    return out
+
+
 def local_analysis(store: Store, record: Consolidation, sessions: list[Session]) -> dict[str, Any]:
     """The brief's analytical rows derived from the ledgers here: the fallback when no analyst report is present.
 
@@ -135,7 +152,7 @@ def local_analysis(store: Store, record: Consolidation, sessions: list[Session])
         "groups": group_observations(store, record),
         "credit": credit_table(store, sessions),
         "fusion": [row for row in _index.fusion(store) if row["bimodal"]],
-        "convergence": [row for row in _index.convergence(store) if row["co_applied"] >= 2],
+        "convergence": _fold_candidates(store),
         "structural_zero": [{"record": d.id, "terms": d.consultation_terms, "latch": d.summary.latch, "presented": presented}
                             for d in store.decisions("accepted") if d.id in _index.structural_zero(store)],
         "escapes": sorted({e for s in sessions for e in s.work_shape.escapes}),
@@ -333,8 +350,7 @@ def nominate(store: Store, record: Consolidation, brief: dict[str, Any]) -> list
 
 def evidence_pack(store: Store, draft: Draft, brief: dict[str, Any]) -> dict[str, Any]:
     """What the examiner and adjudicator see: the oracle's evidence, never the proposer's narrative."""
-    obs = [store.observation(e) for e in draft.evidence]
-    sessions = [o.session for o in obs if o] + [e for e in draft.evidence if store.exists("session", e)]  # a re-key's evidence is the probing passes themselves
+    sessions = store.draft_sessions(draft)
     faults = [e for s in store.all("session") if s.attached and s.evaluation for row in s.evaluation.rows for e in row.get("tool_errors", []) if e.get("transient")]  # type: ignore[attr-defined]
     rows = sum(len(s.evaluation.rows) for s in store.all("session") if s.attached and s.evaluation)  # type: ignore[attr-defined]
     watch = next((l.edge.predicate.scorer for l in draft.body.latches if l.type == "revisit" and l.edge.predicate), None)
@@ -343,6 +359,65 @@ def evidence_pack(store: Store, draft: Draft, brief: dict[str, Any]) -> dict[str
     return {"observation_sessions": sessions, "bar_independent": store.registry.bars["decision"]["independent_observations"],
             "fault_rate": (len(faults) / rows) if rows else None, "task_ids": [t.id for t in _suite.current().tasks],
             "series": series, "watch_scorer": watch, "scores": brief["scores"], "evaluation": evaluation}
+
+
+def drop_success_watch(store: Store, draft: Draft) -> tuple[Draft, dict[str, Any]]:
+    """The code's reading of ``warrant:watch-direction``. A sketched watch that fires when the record works
+    (:func:`hgi.drafting.fires_on_success`) is dropped from the draft — the watch is optional, the draft is not — and the
+    claim lands with the predicate and the drop as its evidence. The stripped draft is written back, so the examiner and
+    the adjudicator read the draft that will be admitted, unwatched."""
+    body = draft.body.model_dump(by_alias=True, mode="json")
+    watch = _drafting.revisit_watch(body)
+    claim = {"target": "warrant:watch-direction", "reading_taken": True, "landed": False, "lens": None, "call": None,
+             "refutation": "the revisit watch fires when the record succeeds; a revisit must fire on the failure or regression the stakes name"}
+    if watch is None:
+        return draft, {**claim, "evidence": ["no world-state watch on the draft"]}
+    predicate = f"{watch['scorer']} {watch['comparator']} {watch['value']}"
+    if not _drafting.fires_on_success(watch["comparator"], float(watch["value"])):
+        return draft, {**claim, "evidence": [f"{predicate} fires on the failure"]}
+    body["latches"] = [l for l in body["latches"] if not (l.get("type") == "revisit" and l.get("key_space") == "world-state")]
+    stripped = store.parse_as(Draft, {**draft.model_dump(by_alias=True, mode="json"), "body": body})
+    store.write_draft(stripped)
+    return stripped, {**claim, "landed": True, "evidence": [f"{predicate} fires on success", "the watch was dropped; the draft is judged and admitted unwatched"]}
+
+
+def independence_claim(store: Store, draft: Draft, evidence: dict[str, Any]) -> dict[str, Any]:
+    """The code's reading of ``warrant:independence``: the distinct sessions of the draft's evidence against the bar — the
+    same count the floor refuses on (:func:`hgi.lint.independence`), so a landing here is a refusal at admission."""
+    unmet = _lint.independence(store, draft)
+    return {"target": "warrant:independence", "reading_taken": True, "landed": unmet is not None, "lens": None, "call": None,
+            "refutation": "the anchored observations come from fewer distinct passes than the bar; one context counted twice is one datum",
+            "evidence": [unmet.message if unmet else f"sessions {sorted(set(evidence['observation_sessions']))} meet the bar {evidence['bar_independent']}"]}
+
+
+def recurrence_reading(store: Store, evidence: dict[str, Any]) -> dict[str, Any]:
+    """The graded reading of the recurrence's strength: N distinct sessions banded against the independence bar, mirroring
+    the vocabulary nominator's small-N banding (:func:`hgi.reviews.revision_route`, "ambiguous (small N)").
+
+    The floor is binary and lives in :func:`hgi.lint.independence` — the same distinct-session count, read once as a
+    pass/fail (:func:`independence_claim`). This reading is *additional* context for the adjudicator's reasoning, never a
+    replacement: above the floor the count still carries weight, N=2 and N=10 are not the same evidence. It corroborates
+    that the observed pattern is a real world-fact; it never lowers the floor and never overrides a premise kill.
+    """
+    bar = evidence["bar_independent"]
+    n = len(set(evidence["observation_sessions"]))
+    if n < bar:
+        reading = f"below the independence floor (N={n} against the bar {bar}): the floor refuses this draft whatever the verdict"
+    elif n < 2 * bar:
+        reading = (f"modest recurrence (small N={n}): at or above the floor but under twice the bar {bar}; the count is thin "
+                   "corroboration — enough to clear the floor, not enough to lean on")
+    else:
+        reading = (f"strong recurrence (N={n} sessions): at or above twice the bar {bar}; the pattern recurred across "
+                   "independent passes and corroborates that it is a real world-fact")
+    return {"sessions": n, "bar": bar, "reading": reading}
+
+
+def settle(attack_payload: dict[str, Any], mechanical: list[dict[str, Any]]) -> dict[str, Any]:
+    """The mechanical claims join the examiner's, first. An examiner claim on a mechanical class that contradicts the
+    computed reading is discarded: the count is the code's, and a register still walking such a lens is advisory."""
+    decided = {c["target"]: c["landed"] for c in mechanical}
+    kept = [c for c in attack_payload["claims"] if c.get("target") not in decided or bool(c.get("landed")) == decided[c["target"]]]
+    return {**attack_payload, "claims": [*mechanical, *kept]}
 
 
 def attack(store: Store, record: Consolidation, draft: Draft, evidence: dict[str, Any], lenses: list[Any] | None = None) -> tuple[dict[str, Any], _model.Completion]:
@@ -378,7 +453,8 @@ def verdict(store: Store, record: Consolidation, draft: Draft, attack_payload: d
     rationale weighing the attack. A token outside the vocabulary is an escalation, never a guess."""
     c = _model.complete("adjudicator", roles.request("verdict", draft=draft.model_dump(by_alias=True, mode="json"), attack=attack_payload,
                                                      oracle={"series": evidence["series"], "scores": evidence["scores"], "evaluation": evidence["evaluation"]},
-                                                     watch_scorer=evidence["watch_scorer"], bars=store.registry.bars,
+                                                     watch_scorer=evidence["watch_scorer"], task_ids=evidence["task_ids"], bars=store.registry.bars,
+                                                     recurrence=recurrence_reading(store, evidence),
                                                      deferred=draft.deferral.model_dump(mode="json") if draft.deferral else None), session=record.id)
     out = c.json() if isinstance(c.json(), dict) else {}
     v = str(out.get("verdict") or "escalate(adjudicator returned no verdict)")
@@ -389,13 +465,43 @@ def verdict(store: Store, record: Consolidation, draft: Draft, attack_payload: d
     return v, out, c
 
 
+def promote(store: Store, record: Consolidation, draft: Draft, evidence: dict[str, Any], landed: list[dict[str, Any]]) -> tuple[Draft, dict[str, Any]] | None:
+    """A landed ``payload:abstraction`` is amend-only: the consolidator is re-asked once, with the refutation, to restate the
+    payload at the transferable shape and keep the instances as anchors. The revised draft replaces the one on disk and
+    is what the attack's abstraction angle re-walks and the adjudicator judges; ``None`` when the reply carries no new
+    payload, in which case the adjudicator amends the payload itself."""
+    instances = [o.noticed for e in draft.evidence if (o := store.observation(e)) is not None]
+    c = _model.complete("consolidator", roles.request("promote", decision=draft.body.decision, refutations=[{"refutation": x.get("refutation"), "evidence": x.get("evidence", [])} for x in landed],
+                                                      task_ids=evidence["task_ids"], instances=instances,
+                                                      instruction="promote the payload to the transferable shape; keep the instances as anchors"), session=record.id)
+    out = c.json() if isinstance(c.json(), dict) else {}
+    text = out.get("decision")
+    if not isinstance(text, str) or not text.strip() or text.strip() == draft.body.decision:
+        return None
+    body = draft.body.model_dump(by_alias=True, mode="json") | {"decision": text.strip()}
+    revised = store.parse_as(Draft, {**draft.model_dump(by_alias=True, mode="json"), "body": body})
+    store.write_draft(revised)
+    return revised, {"decision": draft.body.decision, "claims": landed, "consolidator_call": c.call}
+
+
+def rewalk(store: Store, record: Consolidation, draft: Draft, evidence: dict[str, Any], attack_payload: dict[str, Any], lens_ids: set[str | None]) -> dict[str, Any]:
+    """The angles whose claims a promotion answered are walked again over the revised draft, and their claims replace
+    the stale ones; the code's claims and the other angles' stand. A single-context attack (no lens) is re-run whole."""
+    lenses = [l for l in store.registry.lenses("examiner") if l.id in lens_ids] or None
+    fresh, _ = attack(store, record, draft, evidence, lenses=lenses)
+    kept = [c for c in attack_payload["claims"] if c.get("target") in MECHANICAL or c.get("lens") not in lens_ids]
+    return {**attack_payload, "claims": [*kept, *fresh["claims"]]}
+
+
 ADJUDICATION = route_table("adjudication", "adjudicator-verdict",
                            {"admit": "admit", "admit-amended": "admit", "decline": "drop", "escalate": "escalate", "defer": "defer", "other": "defer"})
 """What the committer does with the adjudicator's token on a draft. An escape verdict re-queues the draft rather than leaving it without a condition."""
 ATTACK_VERDICTS = route_table("attack-ledger", "adjudicator-verdict",
                               {"admit": "survived-with-attack-named", "admit-amended": "survived-with-attack-named", "decline": "attack-landed",
                                "defer": "pending", "escalate": "pending", "other": "pending"})
-"""The attack entry's verdict as the adjudicator's token settles it; a draft still pending leaves the attack pending."""
+"""The attack entry's verdict as the adjudicator's token settles it; a draft still pending leaves the attack pending. The
+backward pass's own decline is always a premise kill (:func:`adjudicate` overrides any other), so ``attack-landed`` is
+reached only from the human queue."""
 HUMAN = route_table("human-queue", "adjudicator-verdict",
                     {"admit": "admit", "admit-amended": "admit", "decline": "drop", "defer": "defer", "escalate": "keep", "other": "defer"})
 """The queue is the human's seat: an escalation from it has nowhere further to go and keeps the entry where it is."""
@@ -404,35 +510,57 @@ CURRENCY = route_table("currency", "currency-verdict", {"still-holds": "stand", 
 
 
 def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draft: Draft, brief: dict[str, Any]) -> LedgerEntry:
-    """Proposal → attack → verdict → commit, each role in its own context; the entry is appended once, with the verdict."""
+    """Proposal → attack → verdict → commit, each role in its own context; the entry is appended once, with the verdict.
+
+    The two mechanical classes (:data:`hgi.types.MECHANICAL`) are read by the code before any context opens: a watch that
+    fires on success is dropped from the draft, and the independence count is the floor's. A landed abstraction claim
+    with no premise kill beside it and the bar met sends the draft back to the consolidator once (:func:`promote`). A
+    ``decline`` stands only on an upheld premise kill — a landed ``premise:`` claim the adjudicator declined on; a decline
+    with none is overridden to an admit (amended where an amendment was offered), the attack named on the entry and the
+    override on its outcome. Defer and escalate are the adjudicator's as returned."""
+    claim = draft.body.decision
+    draft, watch = drop_success_watch(store, draft)
     evidence = evidence_pack(store, draft, brief)
+    mechanical = [independence_claim(store, draft, evidence), watch]
     attack_payload, examiner = attack(store, record, draft, evidence)
+    attack_payload = settle(attack_payload, mechanical)
+    landed = [c for c in attack_payload["claims"] if isinstance(c, dict) and c.get("landed")]
+    abstraction = [c for c in landed if str(c.get("target", "")).startswith("payload:")]
+    promotion = None
+    if abstraction and all(c in abstraction or c["target"] == "warrant:watch-direction" for c in landed):
+        if (revised := promote(store, record, draft, evidence, abstraction)) is not None:
+            draft, promotion = revised
+            attack_payload = rewalk(store, record, draft, evidence, attack_payload, {c.get("lens") for c in abstraction})
     v, out, adjudicator = verdict(store, record, draft, attack_payload, evidence)
     amendment = out.get("amendment") if isinstance(out.get("amendment"), str) else None
     rationale = out.get("rationale") if isinstance(out.get("rationale"), str) else None
-    head = term_head(v)
-    landed_premise = any(c.get("landed") and str(c.get("target", "")).startswith("premise:") for c in attack_payload["claims"] if isinstance(c, dict))
+    landed_premise = any(str(c.get("target", "")).startswith("premise:") for c in landed)
+    overridden = None
+    if term_head(v) == "decline" and not landed_premise:
+        overridden, v = v, (f"admit-amended({amendment})" if amendment else "admit")
+    note = f"; the adjudicator's {overridden} was overridden: a decline stands only on an upheld premise kill" if overridden else ""
     act = store.registry.route("adjudicator-verdict", v, ADJUDICATION)
     entry = LedgerEntry(
-        id=store.mint("hypothesis"), at=now(), species="attack", subject=draft.uid, claim=draft.body.decision,
+        id=store.mint("hypothesis"), at=now(), species="attack", subject=draft.uid, claim=claim,
         proposer=RoleCall(role="consolidator", model_id=_model.model_id("consolidator"), call=record.brief.get("consolidator_call")),
-        contradiction={"source": {"role": "examiner", "model_id": examiner.model_id, "call": examiner.call}, "attack": attack_payload},
-        verdict="premise-killed" if landed_premise and head == "decline" else store.registry.route("adjudicator-verdict", v, ATTACK_VERDICTS),
+        contradiction={"source": {"role": "examiner", "model_id": examiner.model_id, "call": examiner.call}, "attack": attack_payload,
+                       "coding": {"promotion": promotion} if promotion else None},
+        verdict="premise-killed" if term_head(v) == "decline" else store.registry.route("adjudicator-verdict", v, ATTACK_VERDICTS),
         adjudicator=RoleCall(role="adjudicator", model_id=adjudicator.model_id, call=adjudicator.call),
-        amendment=amendment, rationale=rationale, rung=nomination.rung,
+        amendment=amendment or (draft.body.decision if promotion else None), rationale=rationale, rung=nomination.rung,
     )
     role = RoleCall(role="adjudicator", model_id=adjudicator.model_id, call=adjudicator.call)
     if act == "admit":
         floor = [f for f in _lint.check_draft(store, draft) if f.level == "fail"]
         if floor:
-            entry.outcome = "refused by the floor: " + "; ".join(f.message for f in floor)
+            entry.outcome = "refused by the floor: " + "; ".join(f.message for f in floor) + note
             store.drop_draft(draft.uid)
         else:
             admission_entry = entry.model_copy(update={"verdict": v})
             decision = store.admit(draft, admission_entry, role, amendment={"decision": amendment} if v.startswith("admit-amended") and amendment else None)
             record.flipped += [r for r in draft.retires if r not in record.flipped]
             record.admitted.append(decision.id)
-            entry.outcome = f"admitted {decision.id}"
+            entry.outcome = f"admitted {decision.id}" + ("; the payload was promoted on the examiner's abstraction claim" if promotion else "") + note
     elif act == "drop":
         store.drop_draft(draft.uid)
         entry.outcome = "declined; draft dropped"
@@ -468,12 +596,45 @@ def displacement(rung: str) -> str | None:
     return None if rung in OPERATED_RUNGS else rung
 
 
+def orphaned_edit(store: Store, rung: str, raw: dict[str, Any]) -> bool:
+    """Whether an edit-rung nomination names no record and the store holds none to edit.
+
+    An edit rung supersedes exactly one existing record; when it comes back with an empty ``supersedes`` and the store
+    holds no decision at all, there is nothing to refine, so the nomination is a new decision wearing an edit's rung.
+    It is displaced to ``new-decision`` (:data:`DISPLACED_TO`) rather than refused at parse — the lesson is carried
+    where it can fire. When decisions do exist and none is named, the edit is refused as before (see :func:`edited_body`)."""
+    return rung in EDIT_RUNGS and not (raw.get("supersedes") or []) and not store.decisions()
+
+
+def anchor_terms(store: Store, evidence: list[str]) -> list[str]:
+    """The task-declared work-shape terms of the tasks the evidence observations were noticed on.
+
+    A record's hook is the drafter's reading of the group's coded shape — the blind coder's coding of how the work
+    presented (``test-failure-triage``), which need not name what the task is about (``http-tool``). The boot index
+    matches a record to a task only where their work-shape terms intersect, so a record learned from an http-tool task
+    but hooked on the coder's shape never fires on the next http-tool task. The task's own terms are its declared
+    ``shapes`` (``suite.Task.shapes``); an observation's anchor call resolves to the evaluation row it was noticed on,
+    and that row names the task. Seed the hook with those shapes so a record is retrievable for the tasks it was
+    learned from (economy-run item 39). Only registered work-shape terms are returned, so the derived body still parses."""
+    calls = {o.anchor.call for e in evidence if (o := store.observation(e)) is not None and o.anchor.call}
+    if not calls:
+        return []
+    tasks = {row.get("task") for s in store.all("session") if s.attached and s.evaluation  # type: ignore[attr-defined]
+             for row in s.evaluation.rows if row.get("call") in calls and row.get("task")}  # type: ignore[attr-defined]
+    registered = set(store.registry.terms("work-shape"))
+    by_id = {t.id: t for t in _suite.current().tasks}
+    return sorted({sh for tid in tasks for sh in getattr(by_id.get(tid), "shapes", ()) if sh in registered})
+
+
 def sketch_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
     """A draft's body derived from the consolidator's sketch under the store's bars.
 
     A lineage move (split or fold) instead carries a body derived mechanically from the records it
     leaves — that derived body is used as given; it is the code's, not a role writing mechanism by hand.
     A nomination with neither a sketch nor a derived body is a failing field, never a placeholder.
+
+    The consultation hook is seeded with the tasks' own declared work-shape terms (:func:`anchor_terms`), on top of the
+    terms the drafter chose, so the record is retrievable for the tasks it was learned from.
     """
     from hgi.drafting import body as _body_from_sketch
     from hgi.drafting import sketch_of
@@ -481,6 +642,9 @@ def sketch_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
     if raw.get("sketch") is not None:
         sketch = sketch_of(raw.get("sketch"), store.registry)
         evidence = [e for e in raw.get("evidence", []) if isinstance(e, str)]
+        seeded = list(dict.fromkeys([*sketch.terms, *anchor_terms(store, evidence)]))
+        if seeded != list(sketch.terms):
+            sketch = sketch.model_copy(update={"terms": seeded})
         return _body_from_sketch(sketch, evidence, store.registry.bars, _model.model_id("pass"))
     if raw.get("split_from") or raw.get("folded_from"):  # a lineage move derives its body from the records it leaves, not from a sketch
         derived = raw.get("body")
@@ -756,9 +920,13 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
         for raw in nominate(store, record, brief):
             nomination = nomination_from(store, raw)
             adopted = adoptable(store, raw)
-            if adopted is None and (displaced := displacement(nomination.rung)) is not None:
+            displaced = displacement(nomination.rung)
+            orphan = displaced is None and orphaned_edit(store, nomination.rung, raw)
+            if adopted is None and (displaced := displaced or (nomination.rung if orphan else None)) is not None:
+                why = ("no operator for it in this roster" if not orphan
+                       else "an edit rung named no record and the store holds none to edit")
                 nomination.displaced_from, nomination.rung = displaced, DISPLACED_TO
-                nomination.rung_why = f"displaced from {displaced}: no operator for it in this roster, so the lesson is carried as a decision; " + nomination.rung_why
+                nomination.rung_why = f"displaced from {displaced}: {why}, so the lesson is carried as a decision; " + nomination.rung_why
                 raw = {**raw, "rung": DISPLACED_TO, "rung_why": nomination.rung_why, "displaced_from": displaced}
             if adopted is not None:
                 nomination.adopts = adopted.uid

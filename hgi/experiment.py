@@ -52,8 +52,10 @@ and drives the same commands ``demo.sh`` drives — ``boot``, ``evaluate``,
 ``close``, ``consolidate`` at each round's end, ``evaluate --detached`` for
 a detached arm — through the command surface, so an arm is exactly what a
 hand-run would be. ``arm.json`` beside the store records what the arm
-resolved to and, at the end, its curve; the report reads every arm's curve
-back from its store.
+resolved to, the code tree's commit at the moment it started (``null``
+outside a checkout — a running arm outlives a commit that lands on the tree
+under it, item 35), and, at the end, its curve; the report reads every
+arm's curve back from its store.
 """
 
 from __future__ import annotations
@@ -61,6 +63,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import subprocess
 import sys
 import tomllib
 from copy import deepcopy
@@ -71,6 +74,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 import suite as _suite
+from hgi import evolution
 from hgi import model as _model
 from hgi import registry as _registry
 from hgi import tracing
@@ -131,7 +135,7 @@ class ArmSpec(BaseModel):
 
     mode: Literal["attached", "detached"] = "attached"
     """Attached: boot, evaluate, close every pass, consolidate every round. Detached: the ablation — the same agent and suite
-    with no store, so its passes are independent draws of one evaluation and are drawn concurrently."""
+    with no store, so its passes are independent draws of one evaluation and (unless ``serial_detached``) are drawn concurrently."""
     rounds: int = Field(default=3, ge=1)
     """Consolidation cycles. A detached arm has no consolidation; its rounds only size the run."""
     passes_per_round: int = Field(default=2, ge=1)
@@ -147,6 +151,12 @@ class ArmSpec(BaseModel):
     """A stream arm's pool and deal (:class:`suite.stream.StreamSpec`); when set, ``suite`` is unused and ``rounds`` is derived."""
     concurrency: int = Field(default=4, ge=1)
     """Tasks the oracle evaluates at once — W&B Inference answers 429 past its concurrency limit."""
+    serial_detached: bool = True
+    """A detached arm's passes are drawn one at a time, not concurrently. The safe default: each pass already
+    runs its tasks ``concurrency`` at a time, and a thread pool of passes on top of that multiplies it —
+    running several arms together this way put 429s past the client's retries into the detached rows on
+    a real endpoint (decision 36). ``False`` restores the old concurrent draw, sound alone or with headroom
+    under the endpoint's ceiling."""
     description: str = ""
 
     model_config = ConfigDict(extra="forbid")
@@ -290,6 +300,7 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         "stream": {"batches": [_stream.batch_record(n, b) for n, b in enumerate(batches, 1)], "revisit": spec.revisits,
                    "passes": {n: n for n in range(1, spec.passes + 1)} | {spec.passes + k: r for k, r in enumerate(spec.revisits, 1)}} if batches else None,
         "weave_project": tracing.project_name(), "started_at": _now(), "finished_at": None, "sessions": [], "curve": {},
+        "commit": _tree_commit(),
     }
     _write(where / "arm.json", record)
     previous_store = os.environ.get("HGI_STORE")
@@ -334,8 +345,6 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         record["finished_at"] = _now()
         _write(where / "arm.json", record)
         if batches:
-            from hgi import evolution
-
             evolution.write(exp, arm, root)
         _commit_arm(where, store, commit, f"Arm {exp.name}/{arm} finished: {_curve_line(record['curve'])}")
         tracing.run()
@@ -350,27 +359,42 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
 
 
 DETACHED_AT_ONCE = 3
-"""Detached passes evaluated concurrently; each already runs its tasks ``concurrency`` at a time."""
+"""Detached passes drawn concurrently when ``serial_detached`` is off; each already runs its tasks ``concurrency`` at a time."""
 
 
 def _detached_passes(spec: ArmSpec, store, hgi, progress, suite_for) -> None:
-    """A detached arm's passes are draws of one evaluation — no boot, no close, nothing carried between them — so they are
-    drawn concurrently, each in a copy of the runner's context with its own suite in scope (a stream arm's pass draws its
-    batch), and written without a commit each; the arm commits once."""
-    import contextvars
-    from concurrent.futures import ThreadPoolExecutor
-
+    """A detached arm's passes are draws of one evaluation — no boot, no close, nothing carried between them.
+    ``spec.serial_detached`` (the default) draws them one at a time in this thread, the way an experiment's
+    other arms and an attached arm's own passes run — safe to run several arms of an experiment together
+    under one endpoint's concurrency ceiling (decision 36). Off, they are drawn concurrently instead, each in
+    a copy of the runner's context with its own suite in scope (a stream arm's pass draws its batch) — faster
+    alone, or with headroom under the ceiling; a worker thread starts with no Weave project bound in its own
+    context, so each re-enters the client before drawing (item 34) — moot in the serial mode above, where
+    every draw runs in the thread the arm's own ``tracing.run()`` already joined. Either way each pass is
+    written without a commit; the arm commits once."""
     from hgi import index as _index
 
     def draw(n: int) -> None:
         _suite.use(suite_for(n))
         hgi("evaluate", "--detached", "--pass", str(n), "--no-commit")  # the detached command mints its own session
 
-    with ThreadPoolExecutor(max_workers=min(DETACHED_AT_ONCE, spec.passes)) as pool:
-        futures = [pool.submit(contextvars.copy_context().run, draw, n) for n in range(1, spec.passes + 1)]
-        for f in futures:
-            f.result()
+    if spec.serial_detached:
+        for n in range(1, spec.passes + 1):
+            draw(n)
             progress()
+    else:
+        import contextvars
+        from concurrent.futures import ThreadPoolExecutor
+
+        def draw_in_thread(n: int) -> None:
+            tracing.rejoin()
+            draw(n)
+
+        with ThreadPoolExecutor(max_workers=min(DETACHED_AT_ONCE, spec.passes)) as pool:
+            futures = [pool.submit(contextvars.copy_context().run, draw_in_thread, n) for n in range(1, spec.passes + 1)]
+            for f in futures:
+                f.result()
+                progress()
     _index.regenerate(store)
 
 
@@ -412,6 +436,19 @@ def _write(path: Path, payload: dict[str, Any]) -> None:
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _tree_commit(root: Path | None = None) -> str | None:
+    """The git HEAD of the tree this process runs from — not the arm's own store repository, the code
+    repository above it (``root``, default this file's directory). Pinned into ``arm.json`` at the arm's
+    start: a long-running arm's process keeps the module it imported even after a later commit changes the
+    tree under it (item 35), so the record says which tree actually ran. ``None`` outside a git checkout."""
+    from hgi.store import git
+
+    try:
+        return git("rev-parse", "HEAD", cwd=root or Path(__file__).resolve().parent)
+    except (subprocess.CalledProcessError, FileNotFoundError, NotADirectoryError):
+        return None
 
 
 # --- reading arms back ----------------------------------------------------------------------
@@ -510,8 +547,6 @@ def _cmd(args) -> int:
         print(report(exp))
         return 0
     if args.action == "evolution":
-        from hgi import evolution
-
         print(evolution.write_experiment(exp))
         return 0
     for arm in args.arm or list(exp.arms):
@@ -520,7 +555,5 @@ def _cmd(args) -> int:
         print(f"{exp.name}/{arm}: {_curve_line(record['curve'])}", file=sys.stderr)
     print(report(exp))
     if any(exp.resolve(a).stream is not None for a in exp.arms):
-        from hgi import evolution
-
         print(evolution.write_experiment(exp))
     return 0

@@ -155,6 +155,7 @@ hgi lineage     D-0007                      # the admitting commit, and the path
 hgi suite       show | tasks | fetch <fam>  # the task suite in scope; transcribe a dataset family
 hgi experiment  evolution experiments/x.toml # a stream experiment's evolution log, per arm and paired
 hgi roles       try <request> --store <arm> # one role request against a copy of a store; how the reply parsed
+hgi consult     --problem "<the work>"      # the store read from outside the loop: latch, then project the payload
 ```
 
 Every command that writes ends in a commit whose message names the record
@@ -172,6 +173,34 @@ the stamp without claiming the text moved with it, keeping
 `priced_for.authored_for` at the model that authored it, so the
 `model-pricing` check goes on warning until the text is re-authored.
 
+### Consulting the store from outside the loop
+
+The loop's read is the boot: a model classifies the work, the hook-major
+index matches it, a guard evaluator decides each fire. An agent that is not
+the pass — a coding assistant with a problem, a sibling project — has the
+same store and none of that machinery, and `hgi consult` is its read. It is
+read-only and two-staged, the split being the settlement test: bare, it
+prints the **surface** — per accepted decision the hook prose, the
+registered terms its consultation latch keys on, the exclusions, the stakes,
+the scopes and the watch, with a superseded record as a tombstone pointing
+at its successor — and never the decision sentence, which a reader could
+obey without opening the record. Named ids, or a latch, **project** the
+payload: `--terms http-tool,tool-budget` routes registered terms through the
+hook-major index exactly as the boot does and refuses an unregistered one
+with the registry listed; `--problem "<the work>"` infers the terms the
+prose names and runs the boot's lexical nominator over hook prose, each hit
+marked as nominated since no guard ran, with an exclusion the problem
+contains flagged for the reader. Records that share a hook with no lineage
+edge print as co-applying. Nothing latched prints the surface for the
+reader's own match. `--json` returns the structure; `--all` every accepted
+payload; `--articles` adds the constitution. Nothing under the store
+changes: no session, no disposition, no commit, no regenerated projection.
+
+The procedure an agent follows — scan, latch, project, apply or dispose,
+report provenance — is the project skill `consult-decisions`
+(`.claude/skills/consult-decisions/SKILL.md`), which carries the invocation
+and the framing and restates no record.
+
 ## The backward pass
 
 `hgi consolidate` runs every *k* passes and on any fire owed to it. Each leg
@@ -182,7 +211,8 @@ the committer alone writes. In order:
 |---|---|---|
 | triage | every observation group at the independence bar, with the rows its anchors name | the adjudicator classifies the recurrence `reducible` (a duty the loop missed) or `irreducible` (nothing a record could have prevented) on a `reality` entry; an irreducible group is dismissed with a pointer to the entry and leaves the brief before any slot can update on it |
 | nominations | the brief: observations grouped by the blind coder's shapes under the independence bar; `precision` (fired-but-not-applicable dominating a record's considered count at the bar `precision.not_applicable_over_considered_above`, with the dispositions' notes from independent passes → counterfactual-edit growing `not_this` by the presentations they name); `fusion` (dispositions bimodal across matched sub-shapes → split); `convergence` (identical hooks applied together → fold); `structural_zero` (a record no registered hook reaches → hook-edit); `recall` (a record the boot lens probed for unconsulted, or a steer indicting activation → hook-edit re-keying on what was presented) | a draft per nomination through attack and verdict; a `hook-edit` or `counterfactual-edit` is a successor derived from the one record it supersedes; a leaf names `split_from`, a fold `folded_from`, and admission writes the DAG move with reciprocal pointers; a nomination at a rung this roster has no operator for (`adoption-row`, `rule-enrollment`, `floor`, `article`) is carried as a decision — the cheapest available home — with the rung it meant recorded on the nomination and stamped on the admitted record as `admission.displaced_from`, so a later tier can re-home it |
-| attack | the draft, verbatim | the examiner fan: one call per examiner-hosted lens (independence, premise kill, abstraction, watch direction), each contributing only the claims of its own class; the adjudicator, never an angle, joins them |
+| attack | the draft, verbatim, after the code's two readings: the distinct-session count of its evidence against the bar (`warrant:independence`, the lint's `independence` floor check, which the committer refuses on) and the direction of its revisit watch (`warrant:watch-direction`: a watch that fires on success is dropped from the draft, which is admitted unwatched, the drop recorded on the claim) — both join the attack first, with no lens and no call | the examiner fan: one call per live examiner-hosted lens (premise kill, abstraction; L-0005 and L-0008 are seeded retired, their questions crystallized into the code's readings), each contributing only the claims of its own class, an examiner claim on a mechanical class that contradicts the code's reading discarded; a landed `payload:abstraction` with no premise kill beside it sends the draft back to the consolidator once to promote the payload to the transferable shape with the instances kept as anchors, and the abstraction angle is walked again over the promoted draft; the adjudicator, never an angle, joins them |
+| verdict | the draft the attack was walked over, the attack, the oracle's evidence, the bars | one token from the closed vocabulary: `admit`; `admit-amended(<amendment>)`, the committer admitting the amended payload; `decline(<why>)` on an upheld premise kill only — a decline with no landed `premise:` claim is overridden to an admit, amended where an amendment was offered, the attack still named on the entry (`survived-with-attack-named`) and the override on its outcome; `defer(<until>)`; `escalate(<why>)`. The floor runs before any admission |
 | deferrals | a `defer(<until>)` verdict | the condition becomes a latch on the draft — a watch predicate the oracle's next runs fire, or passes to wait — and the fire, owed to the backward pass, re-adjudicates the draft in fresh contexts |
 | fires owed | revisit latches whose predicate held; deferral latches | a decision's by a currency verdict on its warrant; a draft's by re-adjudication; the disposition and any flip land in one commit. A fire owed to the working pass instead is discharged by that pass at close, or the close is refused |
 | pending contradictions | a `currency` entry a pass filed at close (the close lens named a premise or hook the pass made false), still pending | the adjudicator re-checks the warrant against the finding; the verdict lands on a new entry citing the pending one, and a `reversed` flips the premise |
@@ -220,7 +250,7 @@ own context, and writes what they find:
 | Instrument | Plants | Scores | Written to |
 |---|---|---|---|
 | the lens battery | two decoys and two genuine signals per close lens (L-0003, L-0004) | `decoy_rejection` (filed nothing for the plant) and `signal_caught`; `answer_variance` across the battery | `telemetry` on each close lens in `store/registry/lenses.json` |
-| the examiner control | per examiner-hosted lens (L-0005…L-0008), a draft carrying a fault of that lens's class and a plausible draft with none, attacked through the fan one angle at a time under a fixed evidence pack | the landing on the fault as `signal_caught`, the non-landing on the clean draft as `decoy_rejection` | `telemetry` on each examiner lens in the same register |
+| the examiner control | per live examiner-hosted lens (L-0006, L-0007), a draft carrying a fault of that lens's class and a plausible draft with none, attacked through the fan one angle at a time under a fixed evidence pack | the landing on the fault as `signal_caught`, the non-landing on the clean draft as `decoy_rejection` | `telemetry` on each examiner lens in the same register |
 | the coder control | an observation of a known work-shape, and one that fits no term | whether the blind coder returns the term, and whether it escapes with `other(<what>)` on the misfit | `store/index/controls.json` |
 
 The rest are projections: the detection matrix (with the true-miss floor),
@@ -377,6 +407,109 @@ quality means, `economy / turns / transfer` (economy derived from the
 row's call counts and the task's floor, so it reads on runs scored before
 the series existed). Every count is a floor from one run.
 
+### The stream on `openai/gpt-oss-120b`
+
+`experiments/stream.toml`, run on 2026-09-13 over W&B Inference from the
+tree at 67c9ff0 with the close fix of 1707b72: the 84 `curriculum` tasks
+dealt by seed 0 into ten batches of eight, a consolidation every two
+batches, batches 1 and 2 met again after the stream; `openai/gpt-oss-120b`
+attached and detached and `openai/gpt-oss-20b` attached on the plain pool,
+`gpt-oss-120b` attached and detached on `curriculum-strict`; the detached
+arms drawn alone after the attached ones. The logs are derived from the arm
+stores (`experiments/results/stream/`), traced to
+[`slavazinevich-worldvue/hgi-experiments`](https://wandb.ai/slavazinevich-worldvue/hgi-experiments/weave).
+
+First sight per batch, every arm on the same eight tasks:
+
+| batch | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | stream |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 120b attached | 0.25 | 0.50 | 0.38 | 0.38 | 0.25 | 0.62 | 0.50 | 0.62 | 0.50 | 0.62 | 0.46 |
+| 120b detached | 0.62 | 0.75 | 0.38 | 0.50 | 0.38 | 0.50 | 0.38 | 0.62 | 0.50 | 0.75 | 0.54 |
+| 20b attached | 0.62 | 0.38 | 0.62 | 0.75 | 0.50 | 0.75 | 0.50 | 0.50 | 0.50 | 0.62 | 0.57 |
+| 120b strict | 0.38 | 0.25 | 0.50 | 0.25 | 0.25 | 0.38 | 0.38 | 0.38 | 0.25 | 0.38 | 0.34 |
+| 120b strict detached | 0.25 | 0.38 | 0.25 | 0.25 | 0.25 | 0.38 | 0.25 | 0.25 | 0.50 | 0.50 | 0.33 |
+| in context, 120b attached | — | — | — | — | — | — | D-0001 | — | D-0001 | D-0001 | |
+| in context, 120b strict | — | — | D-0001 | D-0001 | D-0001 | D-0001 | D-0001 D-0002 | D-0001 D-0002 | D-0001 D-0002 | D-0001 D-0002 | |
+
+First sight per lesson, with the naive-shape failures of the strict arm
+before and after the first pass that had a record mentioning the lesson in
+context (no record of the plain attached arm mentions a lesson):
+
+| lesson | tier | 120b attached | 120b detached | 20b attached | 120b strict | strict detached | strict: naive before / after first mention |
+|---|---|---|---|---|---|---|---|
+| bom | loud | 1.00 (11/11) | 1.00 (11/11) | 1.00 (11/11) | 1.00 (11/11) | 1.00 (11/11) | 0/11 / — |
+| moved-v2 | loud | 0.25 (3/12) | 0.50 (6/12) | 1.00 (12/12) | 0.58 (7/12) | 0.00 (0/12) | 3/3 / 0/9 (pass 3) |
+| token-route | loud | 0.82 (9/11) | 1.00 (11/11) | 1.00 (11/11) | 0.00 (0/11) | 0.00 (0/11) | 2/2 / 0/9 (pass 3) |
+| csv-quoted | visible | 0.67 (8/12) | 0.58 (7/12) | 0.67 (8/12) | 0.67 (8/12) | 0.50 (6/12) | 4/12 / — |
+| footer-row | visible | 0.00 (0/11) | 0.00 (0/11) | 0.00 (0/11) | 0.00 (0/11) | 0.00 (0/11) | 10/11 / — |
+| paged-api | visible | 0.50 (6/12) | 0.67 (8/12) | 0.25 (3/12) | 0.08 (1/12) | 0.75 (9/12) | 0/12 / — |
+| trailing-newline | invisible | 0.00 (0/11) | 0.00 (0/11) | 0.09 (1/11) | 0.00 (0/11) | 0.00 (0/11) | 10/11 / — |
+
+Revisits: the plain attached arm met batch 1 again at 0.62 (0.25 at first
+sight) and batch 2 at 0.62 (0.50) with D-0001 in context — and the
+detached draw of batch 1, with no store, was 0.62. The strict arm met
+batch 1 again at 0.12 (0.38) and batch 2 at 0.25 (0.25) with D-0004,
+D-0005 and D-0006 in context. The 20b arm: 0.75 (0.62) and 0.50 (0.38).
+
+What was admitted, and when. The plain 120b arm filed 43 observations over
+twelve passes; the blind coder shaped them into 38 groups, 20 at the
+two-session bar, and the consolidator drafted 18 records: 11 were refused
+at parse (an empty `not_this`, or an edit rung naming no record to
+supersede), 5 were declined on the examiner's attacks (abstraction, watch
+direction, a premise kill, independence), 1 was escalated, and 1 was
+admitted — D-0001 after pass 6, "file-tool tasks validate the total line
+count across all shard files", drafted from the trailing-newline
+observations. It was consulted on five passes and applied on five rows;
+the trailing-newline and footer-row rows it fired on failed with the naive
+count. On pass 8 it matched lexically and failed the guard, so nothing was
+in context. The strict arm filed 52, 13 groups reached the bar, 10 drafts:
+6 admitted, 4 declined. D-0001 after pass 2 fused two lessons — "all HTTP
+calls use versioned `/v2` endpoints and include a valid authentication
+token" — with `calls to /v2 endpoints with a valid token` as its
+exclusion; D-0002 after pass 6 restated the token half; D-0003 after pass 8
+is the schema tautology; D-0004, D-0005 and D-0006 after pass 10 restate
+D-0002 and D-0001 almost verbatim, and the fusion leg did not fold them.
+Its currency review reversed D-0001's premise after pass 4 on rows where
+the record applied and the route answered 404, and the record stayed
+accepted. The 20b arm admitted three tautologies (wrap a None reply,
+record shell usage, validate outputs) after passes 4 and 8 and retired
+seven genesis lenses through the deadline door. The first run of the
+strict arm, stopped at pass 7 by the close bug, had refused both lesson
+drafts at parse after pass 2 and declined the versioning draft after pass
+4; the rerun on the same batches admitted the fused record at its first
+consolidation — admission is itself a draw.
+
+The honest reading. On the plain pool the attached curve did not separate
+from the detached one: 0.46 against 0.54 over the stream, better on two
+batches, equal on three, worse on five, and the five passes that ran with
+an empty store differ from the detached draws of the same batches by up to
+0.37 (batch 1: 0.25 against 0.62), which is the noise of one draw of eight
+tasks on this endpoint and larger than any effect in the table. No
+convention was learned on the plain pool: footer-row and trailing-newline
+failed every row on every arm, and the one record admitted fires on file
+tasks without carrying what a file with no trailing newline does to
+`wc -l`. gpt-oss-20b outscored 120b on this pool because it follows the
+410's hint on every moved route where 120b reports the 410 and stops (12/12
+against 3/12 and 6/12); its records are tautologies and its curve is the
+model's. The strict pool did what it was built to ask: after D-0001 entered
+context at pass 3, every moved-v2 row the pass called at all passed on one
+HTTP call within a budget that holds no discovery call — seven rows, 0.58
+against 0.00 detached, the naive shape gone from 3/3 to 0/9 — so the
+memory saved the discovery call on one loud lesson. The same table shows
+the cost of a record with no bound: the pass applied "all HTTP calls use
+`/v2`" to paging routes and got 404s (paged-api 0.08 against 0.75
+detached), and after D-0002 it made no HTTP call at all on token and
+paging rows, citing the record as the cause, so token-route went from the
+naive 401 to zero calls (0/11 on both arms) and the strict revisit of
+batch 1 fell to 0.12. Net over the stream the strict arms tie (0.34 against
+0.33): the seven rows the record won, the eight it lost. What the run
+shows the mechanism doing at breadth: the close naming the convention in
+its observations where the probe's did not, the coder grouping same-lesson
+observations across sessions, the consolidator nominating the right
+lessons in every arm — and the drafting contract, the examiner and the
+adjudicator deciding which of those lessons became a record (the
+carry-forward, items 25 and 32).
+
 ### The baseline on `openai/gpt-oss-120b`
 
 Run on 2026-09-12 over W&B Inference, six passes attached and six detached,
@@ -466,7 +599,8 @@ the human queue, verdict authority and role separation on the ledger
 and fold on the lineage DAG, the structural-zero audit and the edit rungs,
 deferral latches and propagation, genesis anchoring, and vocabulary growth;
 and the doctrine's disciplines over them: the noise filter, the examiner fan,
-attacker precision, the recall stream, the lens lifecycle, revision routing,
+the code's readings of independence and watch direction, the amend-only
+abstraction claim and the decline override, attacker precision, the recall stream, the lens lifecycle, revision routing,
 the port miss stream, the key-space floor, the refusal of a rung with no
 operator, the true-miss floor, the precision slot, the second retirement
 key, anchor resolution, the late steer sweep, the antichain flag, and the

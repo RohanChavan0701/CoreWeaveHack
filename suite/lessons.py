@@ -77,7 +77,9 @@ def mentions(lesson: str, text: str) -> bool:
 _HTTP = re.compile(r"HTTP (\d{3})")
 _CLASSES = (("HTTP 410", "http-410"), ("HTTP 401", "http-401"), ("HTTP 404", "http-404"), ("HTTP 502", "http-502"),
             ("call budget", "budget"), ("exited", "shell-exit"), ("timed out", "shell-timeout"), ("turn limit", "turn-limit"),
-            ("model call failed", "model-call"), ("not JSON", "not-json"), ("JSONDecodeError", "json-decode"), ("no scripted policy", "no-policy"))
+            # the more specific marker first: "model call failed after a malformed tool call" also contains "model call failed"
+            ("model call failed after a malformed tool call", "malformed-tool-call"), ("model call failed", "endpoint"),
+            ("not JSON", "not-json"), ("JSONDecodeError", "json-decode"), ("no scripted policy", "no-policy"))
 
 
 def error_class(error: dict[str, Any] | None) -> str:

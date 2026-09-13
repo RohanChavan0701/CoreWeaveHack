@@ -42,3 +42,49 @@ def test_a_nomination_with_no_sketch_is_still_refused_at_parse(store, monkeypatc
 def test_the_operated_rungs_are_the_case_leg():
     assert _consolidate.displacement("new-decision") is None and _consolidate.displacement("hook-edit") is None
     assert _consolidate.displacement("article") == "article" and _consolidate.displacement("adoption-row") == "adoption-row"
+
+
+def test_an_edit_rung_with_no_record_to_edit_lands_as_a_new_decision(store, monkeypatch):
+    s1 = _session(store, 1, [FAULTED], {"task_pass_rate": 0.5, "error_cause_present": 0.0})
+    s2 = _session(store, 2, [FAULTED], {"task_pass_rate": 0.5, "error_cause_present": 0.0})
+    _observe(store, s1, NO_CAUSE), _observe(store, s2, NO_CAUSE)
+    real = stub.HANDLERS["nominate"]
+
+    def as_orphan_edit(req):  # an edit rung that names no record, on a store that holds none to edit
+        out = real(req)
+        for n in out["nominations"]:
+            n["rung"], n["rung_why"], n["supersedes"] = "counterfactual-edit", "an edit with nothing yet to refine", []
+        return out
+
+    monkeypatch.setitem(stub.HANDLERS, "nominate", as_orphan_edit)
+    assert store.decisions() == [], "the store holds no record the edit could supersede"
+    record = _consolidate.consolidate(store)
+    assert record.admitted == ["D-0001"], "the orphan edit is carried as a decision, not refused at parse"
+    n = next(n for n in record.nominations if n.subject == "cause")
+    assert n.rung == "new-decision" and n.displaced_from == "counterfactual-edit"
+    assert "holds none to edit" in n.rung_why and n.rung_why.startswith("displaced from counterfactual-edit")
+    d = store.read("decision", "D-0001")
+    assert d.admission.rung == "new-decision" and d.admission.displaced_from == "counterfactual-edit"
+
+
+def test_an_edit_rung_that_names_no_record_when_records_exist_is_refused(store, monkeypatch):
+    from tests.conftest import adjudicated_entry, adjudicator, decision_body, draft
+    d0 = draft(store, "P", **decision_body(decision="A batched write is flushed on a size threshold, never on a timer."))
+    entry0 = adjudicated_entry(store, d0.uid)
+    entry0.verdict = "admit"
+    store.admit(d0, entry0, adjudicator())  # a record the store holds; the edit still names none
+    s1 = _session(store, 1, [FAULTED], {"task_pass_rate": 0.5, "error_cause_present": 0.0})
+    s2 = _session(store, 2, [FAULTED], {"task_pass_rate": 0.5, "error_cause_present": 0.0})
+    _observe(store, s1, NO_CAUSE), _observe(store, s2, NO_CAUSE)
+    real = stub.HANDLERS["nominate"]
+
+    def as_orphan_edit(req):
+        out = real(req)
+        for n in out["nominations"]:
+            n["rung"], n["rung_why"], n["supersedes"] = "counterfactual-edit", "an edit naming nothing", []
+        return out
+
+    monkeypatch.setitem(stub.HANDLERS, "nominate", as_orphan_edit)
+    record = _consolidate.consolidate(store)
+    n = next(n for n in record.nominations if n.subject == "cause")
+    assert n.displaced_from is None and n.outcome.startswith("draft refused at parse"), "an edit that names no record when records exist is refused"

@@ -10,7 +10,7 @@ from hgi import consolidate as _consolidate
 from hgi import model as _model
 from hgi.registry import read_json, write_json
 from hgi.store import now
-from hgi.types import Consolidation
+from hgi.types import MECHANICAL, Consolidation
 from tests.conftest import draft
 from tests.test_watch_direction import _evidence, _watch
 
@@ -33,7 +33,7 @@ def test_each_examiner_lens_is_walked_in_its_own_context_and_owns_its_claims(sto
     record = Consolidation(id=store.mint("consolidation"), started_at=now(), after_pass=2, sessions_read=[])
     payload, first = _consolidate.attack(store, record, d, _evidence())
     lenses = store.registry.lenses("examiner")
-    assert [l.id for l in lenses] == ["L-0005", "L-0006", "L-0007", "L-0008"]
+    assert [l.id for l in lenses] == ["L-0006", "L-0007"], "independence and watch direction crystallized into the code and are walked by nothing"
     walked = [(role, req["lens"]["id"]) for role, req in seen if req.get("request") == "attack"]
     assert walked == [("examiner", l.id) for l in lenses], "one call per angle, every angle in the examiner's context"
     by_lens = {}
@@ -41,8 +41,7 @@ def test_each_examiner_lens_is_walked_in_its_own_context_and_owns_its_claims(sto
         by_lens.setdefault(c["lens"], []).append(c["target"])
         lens = next(l for l in lenses if l.id == c["lens"])
         assert any(c["target"].startswith(p) for p in lens.claims), "a claim carries only its own angle's class"
-    assert by_lens["L-0005"] == ["warrant:independence"] and by_lens["L-0006"] == ["premise:p1"]
-    assert by_lens["L-0007"] == ["payload:abstraction"] and by_lens["L-0008"] == ["warrant:watch-direction"]
+    assert by_lens == {"L-0006": ["premise:p1"], "L-0007": ["payload:abstraction"]}
     assert payload["verdict"] == "pending" and first is not None
 
 
@@ -54,7 +53,7 @@ def test_a_register_with_no_examiner_lens_attacks_in_one_context(store, monkeypa
     record = Consolidation(id=store.mint("consolidation"), started_at=now(), after_pass=2, sessions_read=[])
     payload, _ = _consolidate.attack(store, record, d, _evidence())
     assert [req.get("lens") for role, req in seen if req.get("request") == "attack"] == [None]
-    assert {c["target"] for c in payload["claims"]} >= {"warrant:independence", "premise:p1", "payload:abstraction"}
+    assert {c["target"] for c in payload["claims"]} == {"premise:p1", "payload:abstraction"}
     assert all(c.get("lens") is None for c in payload["claims"])
 
 
@@ -66,4 +65,5 @@ def test_the_fan_lands_on_the_ledger_with_the_angle_named(store):
     record = _consolidate.consolidate(store)
     assert record.admitted == ["D-0001"]
     entry = next(e for e in store.all("hypothesis") if e.species == "attack")
-    assert {c.lens for c in entry.contradiction.attack.claims} == {"L-0005", "L-0006", "L-0007", "L-0008"}
+    assert {c.lens for c in entry.contradiction.attack.claims if c.lens} == {"L-0006", "L-0007"}
+    assert [c.target for c in entry.contradiction.attack.claims if c.lens is None] == list(MECHANICAL), "the code's readings join first, with no lens and no call"

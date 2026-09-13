@@ -8,9 +8,9 @@ Check                        Seam           Fails / warns                       
 ---------------------------  -------------  -------------------------------------------------------------------------  --------------------------------------------------
 schema                       write          fails a record that does not parse against its declared type              truth of any field
 closed-vocabulary            write          fails an enum value outside the registry without an other(<what>) escape  whether the escape should have been a term
-complement-law               write          fails a decision without falsifiers or a counterfactual, a consultation   whether the pair is non-vacuous; whether an anchor
-                                            latch without not_this; warns on a counterfactual with no anchor, or     that resolves exemplifies the overshoot
-                                            with an anchor naming a record or observation the store does not hold
+complement-law               write          fails a decision without falsifiers or a counterfactual; warns on a       whether the pair is non-vacuous; whether an anchor
+                                            consultation latch without not_this, on a counterfactual with no        that resolves exemplifies the overshoot
+                                            anchor, or with an anchor naming a record or observation the store lacks
 settlement-test              write          fails a projection cell carrying a compliable sentence                    compliance by omission
 verdict-authority            write          fails a proposal or attack payload carrying a verdict; fails a ledger     whether the adjudicator's verdict is right
                                             verdict with no adjudicator call
@@ -21,6 +21,8 @@ settlement-authority         write          fails a settled latch whose settleme
                                             dispositive fire or admitted successor
 ports                        write          fails a latch off its port declaration without a warrant; fails a         whether the declaration is right
                                             required latch type that is absent
+independence                 write          fails a draft whose evidence names fewer distinct sessions than the bar    whether two sessions were two contexts
+                                            decision.independent_observations
 key-space                    write          fails a neighbour latch naming a record that does not exist; fails a       whether the referent is the right quantity to watch
                                             world-state watch naming a scorer or evaluation the oracle does not run
 constitution-cap             write          fails a store exceeding max_articles or max_bytes                         the ranking
@@ -246,7 +248,7 @@ def body_findings(id: str, body: DecisionBody, store: Store | None = None) -> li
         out.append(warn("complement-law", id, f"the counterfactual cites {', '.join(missing)}, which names nothing in the store; a pair citing an instance that does not exist is priming wearing an anchor"))
     for i, latch in enumerate(body.latches):
         if latch.type == "consultation" and not (latch.guard.not_this or body.summary.not_this):
-            out.append(fail("complement-law", id, f"consultation latch {i} declares no not-this exclusions"))
+            out.append(warn("complement-law", id, f"consultation latch {i} declares no exclusions; precision review will grow them from not_applicable notes"))
     return out
 
 
@@ -528,9 +530,22 @@ def run(store: Store, seams: tuple[str, ...] | None = None, model_id: str | None
     return report
 
 
+def independence(store: Store, draft: Draft) -> Finding | None:
+    """The independence bar as a floor: a draft whose evidence names fewer distinct sessions than
+    ``decision.independent_observations`` is one context counted twice — one datum — and is refused before any verdict
+    admits it. The count is the code's; no lens reads it."""
+    bar = store.registry.bars["decision"]["independent_observations"]
+    sessions = sorted(set(store.draft_sessions(draft)))
+    if len(sessions) >= bar:
+        return None
+    return fail("independence", draft.name, f"{len(sessions)} distinct session(s) in the evidence ({', '.join(sessions) or 'none'}) against the bar {bar}")
+
+
 def check_draft(store: Store, draft: Draft) -> list[Finding]:
-    """The committer's floor over one draft: shape, complement law, ports for the status it will take."""
+    """The committer's floor over one draft: shape, complement law, the independence bar, ports for the status it will take."""
     findings = body_findings(draft.name, draft.body, store)
+    if (unmet := independence(store, draft)) is not None:
+        findings.append(unmet)
     declared = store.registry.ports.get("decision", {}).get("accepted", {})
     present = {l.type for l in draft.body.all_latches()}
     for latch_type, mark in declared.items():

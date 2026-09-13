@@ -1,0 +1,3604 @@
+{
+  "arm": "120b-attached",
+  "experiment": "stream",
+  "lessons": {
+    "bom": {
+      "first_mention_pass": null,
+      "first_sight": [
+        11,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        11
+      ],
+      "revisit": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          2,
+          1,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 3,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 2,
+          "tasks": 2
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 11,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 12,
+          "passed": 1,
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "csv-quoted": {
+      "first_mention_pass": null,
+      "first_sight": [
+        8,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        4,
+        12
+      ],
+      "revisit": [
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          2,
+          1,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 1,
+          "tasks": 2
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 2,
+          "tasks": 2
+        },
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 11,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 12,
+          "passed": 1,
+          "tasks": 1
+        }
+      ],
+      "tier": "visible"
+    },
+    "footer-row": {
+      "first_mention_pass": null,
+      "first_sight": [
+        0,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        10,
+        11
+      ],
+      "revisit": [
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 11,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 12,
+          "passed": 0,
+          "tasks": 1
+        }
+      ],
+      "tier": "visible"
+    },
+    "moved-v2": {
+      "first_mention_pass": null,
+      "first_sight": [
+        3,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        8,
+        12
+      ],
+      "revisit": [
+        [
+          1,
+          2,
+          2
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "WN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 1,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 2
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 1,
+          "grid": "\u2713\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 11,
+          "passed": 2,
+          "tasks": 2
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 12,
+          "passed": 0,
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "paged-api": {
+      "first_mention_pass": null,
+      "first_sight": [
+        6,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        4,
+        12
+      ],
+      "revisit": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          2,
+          2,
+          2
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "W\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 2,
+          "passed": 1,
+          "tasks": 2
+        },
+        {
+          "batch": 3,
+          "grid": "W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "N\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "tasks": 2
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 11,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 12,
+          "passed": 2,
+          "tasks": 2
+        }
+      ],
+      "tier": "visible"
+    },
+    "token-route": {
+      "first_mention_pass": null,
+      "first_sight": [
+        9,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        11
+      ],
+      "revisit": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          2,
+          1,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 3,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "W\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 4,
+          "passed": 1,
+          "tasks": 2
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 11,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 12,
+          "passed": 1,
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "trailing-newline": {
+      "first_mention_pass": null,
+      "first_sight": [
+        0,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        11,
+        11
+      ],
+      "revisit": [
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 8,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 11,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 12,
+          "passed": 0,
+          "tasks": 1
+        }
+      ],
+      "tier": "invisible"
+    }
+  },
+  "mode": "attached",
+  "model": "openai/gpt-oss-120b",
+  "passes": [
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "3bfb611015e2",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0001",
+          "noticed": "In task curriculum/moved_06 the first attempt called GET /zones/90 on the wrong endpoint, received HTTP 410 Gone, and would have passed by calling /v2/zones/90 to obtain the zone name.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0002",
+          "noticed": "In task curriculum/newline_02 the first attempt counted 14 lines, but the correct total should include all lines from the five shard files, so the line-count convention was missed.",
+          "shape": [
+            "file-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0003",
+          "noticed": "Task curriculum/moved_04 attempted GET /plans/49 but received 410 Gone, so it should have recorded an observation of the missing plan.",
+          "shape": [
+            "http-tool",
+            "test-failure-triage"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0004",
+          "noticed": "The first attempt returned a plain number instead of the required JSON result, violating the output schema.",
+          "shape": [
+            "output-schema"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0005",
+          "noticed": "GET /secure/ledger returned HTTP 401 Unauthorized because the required token was missing.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 1,
+      "pass_rate": 0.25,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09972-ea08-72d0-aa8e-21dc3d4082c9",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum/csv_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09972-ea0b-7ba8-ad31-92c74a66b51f",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": {
+            "result": "Ken"
+          },
+          "symptom": "wrong",
+          "task": "curriculum/moved_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09972-ea0f-736e-80a4-92d453e59e5d",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 14,
+          "symptom": "naive",
+          "task": "curriculum/newline_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09972-ea0a-7cbd-996e-b7f67cba0e9d",
+          "error": {
+            "cause": "GET /plans/49 returned 410 Gone, indicating the resource is unavailable",
+            "message": "Failed to retrieve plan name: HTTP 410 Gone"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09972-ea09-77ea-a64e-75cece4315e1",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5,
+          "symptom": "naive",
+          "task": "curriculum/footer_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09972-ea05-795f-af39-d0a10bd7018a",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "board": "Q3-2022",
+            "count": 4
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09973-0ade-7973-be7e-819c51ca7652",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 190,
+          "symptom": "pass",
+          "task": "curriculum/paged_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09973-0fbe-7213-9c0b-658ca3142ca8",
+          "error": null,
+          "lesson": "token-route",
+          "result": {
+            "result": 6017
+          },
+          "symptom": "wrong",
+          "task": "curriculum/token_02"
+        }
+      ],
+      "session": "S-0001",
+      "symptoms": {
+        "naive": 4,
+        "pass": 2,
+        "wrong": 2
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 2,
+      "consolidation": {
+        "admitted": [],
+        "anchoring": {
+          "no instance proposed": 7
+        },
+        "dismissed": [],
+        "expired": [],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0001",
+              "O-0003",
+              "O-0005",
+              "O-0007"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ],
+            "shape": [
+              "http-tool"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0004",
+              "O-0009"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ],
+            "shape": [
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0006"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "shell-tool"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0002",
+              "O-0008"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ],
+            "shape": [
+              "test-failure-triage"
+            ]
+          }
+        ],
+        "groups_at_bar": 3,
+        "id": "K-0001",
+        "nominations": [
+          {
+            "outcome": "declined; draft dropped",
+            "rung": "new-decision",
+            "subject": "endpoint-versioning"
+          }
+        ],
+        "outcomes": {
+          "declined; draft dropped": 1
+        },
+        "retired": []
+      },
+      "hash": "c18fec0fa080",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0006",
+          "noticed": "In task curriculum/footer_04 the model attempted a shell call with invalid JSON arguments, causing a BadRequestError; a correctly formatted JSON call would have succeeded.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0007",
+          "noticed": "Task curriculum/moved_00 attempted GET /projects/82 on a deprecated endpoint, but the correct call should target /v2/projects/82 to retrieve the project name.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0008",
+          "noticed": "In task curriculum/newline_00 the first attempt returned 12 lines, which was incorrect, missing the correct total and thus violating the convention of accurately summing lines across both files.",
+          "shape": [
+            "file-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0009",
+          "noticed": "Task curriculum/paged_00 attempted GET /entries but received HTTP 406, violating the expected summed result output schema.",
+          "shape": [
+            "http-tool",
+            "output-schema"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 2,
+      "pass_rate": 0.5,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09975-c455-7d8b-a92b-7a3fa6d6ca54",
+          "error": {
+            "cause": "endpoint BadRequestError: Error code: 400 - {'message': 'Validation: `messages[2].tool_calls[0].function.arguments` must be a valid JSON object string: invalid escape at line 1 column 22', 'type': 'Bad Request', 'code': 400}",
+            "message": "model call failed"
+          },
+          "lesson": "footer-row",
+          "result": null,
+          "symptom": "error:model-call",
+          "task": "curriculum/footer_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09975-c455-70b9-8077-b332b062cb72",
+          "error": {
+            "cause": "HTTP 410 Gone for /projects/82",
+            "message": "Failed to retrieve project name"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09975-c457-7856-a784-b96e0896bcde",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 12,
+          "symptom": "naive",
+          "task": "curriculum/newline_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09975-c454-784b-b55d-1341a1248395",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 7,
+            "name": "Q2-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09975-c458-76d0-827a-f1d24b48c85b",
+          "error": null,
+          "lesson": "paged-api",
+          "result": {
+            "result": 406
+          },
+          "symptom": "wrong",
+          "task": "curriculum/paged_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09975-d468-7038-8e39-93df43d8f534",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 306,
+          "symptom": "pass",
+          "task": "curriculum/paged_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09975-c455-755c-8eba-09d91297437d",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 292.3,
+          "symptom": "pass",
+          "task": "curriculum/csv_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09975-ec24-7700-a2a4-2221852605b0",
+          "error": null,
+          "lesson": "token-route",
+          "result": 766,
+          "symptom": "pass",
+          "task": "curriculum/token_03"
+        }
+      ],
+      "session": "S-0002",
+      "symptoms": {
+        "error:model-call": 1,
+        "naive": 2,
+        "pass": 4,
+        "wrong": 1
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 3,
+      "consolidation": null,
+      "hash": "5045d3fbff52",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0010",
+          "noticed": "In task curriculum/footer_11 the shell call returned 6 but no observation of the failure was filed, so the task was marked failed.",
+          "shape": [
+            "test-failure-triage"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0011",
+          "noticed": "In task curriculum/newline_03 the first attempt reported 15 lines total, which is incorrect and thus failed the task.",
+          "shape": [
+            "file-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0012",
+          "noticed": "The GET /nodes/36 returned HTTP 410 Gone, preventing verification of the ok field for task curriculum/moved_03.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0013",
+          "noticed": "In task curriculum/csv_04 the first attempt returned 0 Oslo people, which is incorrect, so an observation of the wrong result should have fired.",
+          "shape": [
+            "file-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0014",
+          "noticed": "The first attempt returned 6 parcels, failing the task's pass criteria.",
+          "shape": [
+            "test-failure-triage"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 3,
+      "pass_rate": 0.375,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997c-b4b7-762a-9d39-3c984ff69817",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum/footer_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997c-b4b5-789f-ade8-114638fab3ed",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "board": "Q4-2022",
+            "count": 7
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997c-b4b9-7391-9f86-5bb11c9309d5",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 15,
+          "symptom": "naive",
+          "task": "curriculum/newline_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997c-b4b7-7ccd-9b31-c48c080b6d4a",
+          "error": {
+            "cause": "HTTP 410 Gone for GET /nodes/36",
+            "message": "Failed to retrieve node data; cannot verify ok field."
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997c-b4b6-7a17-81d2-c0b8266db714",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum/csv_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997c-d33c-74be-a5ae-7fac4f630a0b",
+          "error": null,
+          "lesson": "token-route",
+          "result": 3004,
+          "symptom": "pass",
+          "task": "curriculum/token_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997c-cf65-70a3-bb37-9e09889a3128",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 6,
+          "symptom": "wrong",
+          "task": "curriculum/paged_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997c-b4b6-753f-b146-0f80ff83cafc",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1785.05,
+          "symptom": "pass",
+          "task": "curriculum/csv_03"
+        }
+      ],
+      "session": "S-0003",
+      "symptoms": {
+        "naive": 4,
+        "pass": 3,
+        "wrong": 1
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 4,
+      "consolidation": {
+        "admitted": [],
+        "anchoring": {
+          "anchored to H-0001": 1,
+          "anchored to H-0004": 1,
+          "moot: not anchored": 1,
+          "no instance proposed": 4
+        },
+        "dismissed": [],
+        "expired": [
+          "01a09975-4ac8-76c1-93be-bf4b55eff5db",
+          "01a09979-254a-75a9-a6db-ff6ac33bcec0"
+        ],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0002",
+              "O-0008",
+              "O-0011",
+              "O-0013"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002",
+              "S-0003"
+            ],
+            "shape": [
+              "file-tool"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0016"
+            ],
+            "sessions": [
+              "S-0004"
+            ],
+            "shape": [
+              "file-tool",
+              "shell-tool"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0001",
+              "O-0003",
+              "O-0005",
+              "O-0007",
+              "O-0012"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002",
+              "S-0003"
+            ],
+            "shape": [
+              "http-tool"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0009"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "http-tool",
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0017"
+            ],
+            "sessions": [
+              "S-0004"
+            ],
+            "shape": [
+              "http-tool",
+              "tool-budget"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0004"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0006"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "shell-tool"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0010",
+              "O-0014",
+              "O-0015"
+            ],
+            "sessions": [
+              "S-0003",
+              "S-0004"
+            ],
+            "shape": [
+              "test-failure-triage"
+            ]
+          }
+        ],
+        "groups_at_bar": 3,
+        "id": "K-0002",
+        "nominations": [
+          {
+            "outcome": "draft refused at parse: a counterfactual-edit supersedes exactly one record; got []",
+            "rung": "counterfactual-edit",
+            "subject": "precision"
+          },
+          {
+            "outcome": "draft refused at parse: not_this: List should have at least 1 item after validation, not 0",
+            "rung": "new-decision",
+            "subject": "payload"
+          },
+          {
+            "outcome": "draft refused at parse: a hook-edit supersedes exactly one record; got []",
+            "rung": "hook-edit",
+            "subject": "recall"
+          }
+        ],
+        "outcomes": {
+          "draft refused at parse: a counterfactual-edit supersedes exactly one record; got []": 1,
+          "draft refused at parse: a hook-edit supersedes exactly one record; got []": 1,
+          "draft refused at parse: not_this: List should have at least 1 item after validation, not 0": 1
+        },
+        "retired": []
+      },
+      "hash": "b34b718c4d9e",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0015",
+          "noticed": "In task curriculum/footer_08 the first attempt summed the amount column to 2312 but did not verify the expected total, missing the required validation observation.",
+          "shape": [
+            "test-failure-triage"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0016",
+          "noticed": "In task curriculum/newline_10 the single-shell-call attempt returned 13 lines, which is incorrect for the five files.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0017",
+          "noticed": "Task curriculum/token_08 attempted GET /secure/budget without the required token, resulting in HTTP 401 Unauthorized.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 4,
+      "pass_rate": 0.375,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997f-5d0c-7954-a580-34dd45c81f30",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 1,
+          "symptom": "naive",
+          "task": "curriculum/paged_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997f-5d07-7a2f-8492-27b5f5426afc",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 2312,
+          "symptom": "naive",
+          "task": "curriculum/footer_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997f-5d09-7218-83a2-a5e7e5615144",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Margaret",
+          "symptom": "pass",
+          "task": "curriculum/moved_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997f-5d06-7dd3-8867-f863ce5815cf",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "release": "Q2-2027"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997f-5d0b-705c-b71b-5cd5b97cb9c7",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 13,
+          "symptom": "naive",
+          "task": "curriculum/newline_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997f-6447-7af5-a3bd-9993dac935f1",
+          "error": null,
+          "lesson": "token-route",
+          "result": {
+            "result": 4024
+          },
+          "symptom": "wrong",
+          "task": "curriculum/token_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997f-6995-7e07-bbec-20f5a83f3d80",
+          "error": null,
+          "lesson": "token-route",
+          "result": 4568,
+          "symptom": "pass",
+          "task": "curriculum/token_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0997f-5d07-728a-826d-0ea50f398fa5",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum/csv_08"
+        }
+      ],
+      "session": "S-0004",
+      "symptoms": {
+        "naive": 4,
+        "pass": 3,
+        "wrong": 1
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 5,
+      "consolidation": null,
+      "hash": "ae0d63239f69",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0018",
+          "noticed": "In task curriculum/footer_02 the first attempt summed the amount column to 3050 but failed the task due to incorrect output formatting.",
+          "shape": [
+            "output-schema"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0019",
+          "noticed": "In task curriculum/newline_04 the first attempt returned 6 lines, but the task failed because the total line count was incorrect.",
+          "shape": [
+            "file-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0020",
+          "noticed": "The task curriculum/footer_05 attempted to count records but returned 8 as an internal result rather than outputting the plain number, which caused the failure.",
+          "shape": [
+            "output-schema"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0021",
+          "noticed": "The attempt returned 1 but task_pass_rate is 0.0, indicating the active filter was applied incorrectly.",
+          "shape": [
+            "test-failure-triage"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0022",
+          "noticed": "Task curriculum/moved_11 attempted GET /fleets/75, but the API requires the /v2/fleets/75 endpoint; using the correct endpoint would have satisfied the task.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0023",
+          "noticed": "In task curriculum/csv_10 the initial attempt returned 0 because it did not apply a filter for rows where city equals Riga; a correct shell command would have counted those rows.",
+          "shape": [
+            "file-tool"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 5,
+      "pass_rate": 0.25,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09983-39e7-7f96-8775-d00c64ceb2f6",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 3050,
+          "symptom": "naive",
+          "task": "curriculum/footer_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09983-39ea-7434-b6ec-da78a7a35a38",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum/newline_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09983-39e9-7073-b0f6-55f159af07c7",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 8,
+          "symptom": "naive",
+          "task": "curriculum/footer_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09983-5093-745b-898b-61c03b0ba154",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 1,
+          "symptom": "naive",
+          "task": "curriculum/paged_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09983-39ea-70ed-8bf0-687fd7fd0499",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/fleets/75",
+            "message": "Failed to GET /fleets/75"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09983-39e6-7de5-bcf4-9562ee39d5e0",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 2,
+            "project": "Q2-2025"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09983-39e6-721f-a2f3-afac9866ae26",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum/csv_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09983-5432-7cbc-a998-a40f87fc88c1",
+          "error": null,
+          "lesson": "token-route",
+          "result": 3729,
+          "symptom": "pass",
+          "task": "curriculum/token_01"
+        }
+      ],
+      "session": "S-0005",
+      "symptoms": {
+        "naive": 6,
+        "pass": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 6,
+      "consolidation": {
+        "admitted": [
+          "D-0001"
+        ],
+        "anchoring": {
+          "no instance proposed": 5
+        },
+        "dismissed": [],
+        "expired": [
+          "01a0997f-0890-7763-8981-6357f4043d81",
+          "01a09980-b080-72cb-94c6-f625f3a41d29"
+        ],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0002",
+              "O-0008",
+              "O-0011",
+              "O-0013",
+              "O-0019",
+              "O-0023",
+              "O-0024",
+              "O-0025"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002",
+              "S-0003",
+              "S-0005",
+              "S-0006"
+            ],
+            "shape": [
+              "file-tool"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0018"
+            ],
+            "sessions": [
+              "S-0005"
+            ],
+            "shape": [
+              "file-tool",
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0016"
+            ],
+            "sessions": [
+              "S-0004"
+            ],
+            "shape": [
+              "file-tool",
+              "shell-tool"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0015"
+            ],
+            "sessions": [
+              "S-0004"
+            ],
+            "shape": [
+              "file-tool",
+              "test-failure-triage"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0001",
+              "O-0003",
+              "O-0005",
+              "O-0007",
+              "O-0012",
+              "O-0022"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002",
+              "S-0003",
+              "S-0005"
+            ],
+            "shape": [
+              "http-tool"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0009"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "http-tool",
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0017"
+            ],
+            "sessions": [
+              "S-0004"
+            ],
+            "shape": [
+              "http-tool",
+              "tool-budget"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0004",
+              "O-0020"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0005"
+            ],
+            "shape": [
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0006"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "shell-tool"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0010",
+              "O-0014",
+              "O-0021"
+            ],
+            "sessions": [
+              "S-0003",
+              "S-0005"
+            ],
+            "shape": [
+              "test-failure-triage"
+            ]
+          }
+        ],
+        "groups_at_bar": 4,
+        "id": "K-0003",
+        "nominations": [
+          {
+            "outcome": "admitted D-0001",
+            "rung": "new-decision",
+            "subject": "file-tool"
+          },
+          {
+            "outcome": "declined; draft dropped",
+            "rung": "new-decision",
+            "subject": "http-tool"
+          },
+          {
+            "outcome": "declined; draft dropped",
+            "rung": "new-decision",
+            "subject": "output-schema"
+          },
+          {
+            "outcome": "declined; draft dropped",
+            "rung": "new-decision",
+            "subject": "test-failure-triage"
+          }
+        ],
+        "outcomes": {
+          "admitted D-0001": 1,
+          "declined; draft dropped": 3
+        },
+        "retired": []
+      },
+      "hash": "81a5fa242cd0",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0024",
+          "noticed": "In task curriculum/newline_06 the first attempt counted lines but got an incorrect total of 21.",
+          "shape": [
+            "file-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0025",
+          "noticed": "In task curriculum/footer_06 the first attempt summed the amount column but returned 3282, which was incorrect, causing the task to fail.",
+          "shape": [
+            "file-tool"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 6,
+      "pass_rate": 0.625,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09985-b494-7a92-9c43-06dc452e2451",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 21,
+          "symptom": "naive",
+          "task": "curriculum/newline_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09985-b491-7f46-aaaf-9b764f420b40",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 3282,
+          "symptom": "naive",
+          "task": "curriculum/footer_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09985-b48f-7ce8-bf57-996b6fa89e20",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 4,
+            "title": "Q4-2020"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09985-b491-7860-b2c7-60cba94cc406",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "project": "Q3-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09985-c8a1-701a-a708-c09e85553672",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 126,
+          "symptom": "pass",
+          "task": "curriculum/paged_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09985-b493-7f09-8e71-17a60b1d5ad5",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/devices/69",
+            "message": "GET request failed"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09985-cedd-7706-a09b-3ecc03d056de",
+          "error": null,
+          "lesson": "token-route",
+          "result": 4616,
+          "symptom": "pass",
+          "task": "curriculum/token_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09985-b491-7e21-9617-d44e9a30aeed",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 2,
+          "symptom": "pass",
+          "task": "curriculum/csv_00"
+        }
+      ],
+      "session": "S-0006",
+      "symptoms": {
+        "naive": 3,
+        "pass": 5
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 7,
+      "consolidation": null,
+      "hash": "73f471fb90e8",
+      "in_context": [
+        "D-0001"
+      ],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0026",
+          "noticed": "In task curriculum/newline_11 the first attempt did not apply record D-0001, so it did not validate the total line count across all shard files; applying it would have passed.",
+          "shape": [
+            "file-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0027",
+          "noticed": "In task curriculum/newline_08 the attempt counted only some of the shard files, yielding an incorrect total.",
+          "shape": [
+            "file-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0028",
+          "noticed": "In task curriculum/footer_10 the first attempt summed the amount column but did not verify the correct total, causing the task to fail.",
+          "shape": [
+            "test-failure-triage"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 7,
+      "pass_rate": 0.5,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-6ccd-7675-9c5e-ade9685904f4",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 18,
+          "symptom": "naive",
+          "task": "curriculum/newline_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-6cca-7678-b9f5-1c1ff872a85b",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Grace",
+          "symptom": "pass",
+          "task": "curriculum/moved_02"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-6ccc-7e71-bbe6-b6aa45c29422",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 17,
+          "symptom": "naive",
+          "task": "curriculum/newline_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-8581-7080-a85e-40af8168fbd1",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 2,
+          "symptom": "naive",
+          "task": "curriculum/paged_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-6cc8-7d5f-a4e3-5349a64abf91",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1757.28,
+          "symptom": "pass",
+          "task": "curriculum/csv_11"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-6cc9-7c5b-a306-dd951e7e7f1f",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 2392,
+          "symptom": "naive",
+          "task": "curriculum/footer_10"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-6cc8-70dc-a74c-07949f149ccc",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "title": "Q3-2025"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-9a8f-7746-8668-862f833c52ca",
+          "error": null,
+          "lesson": "token-route",
+          "result": 5609,
+          "symptom": "pass",
+          "task": "curriculum/token_00"
+        }
+      ],
+      "session": "S-0007",
+      "symptoms": {
+        "naive": 4,
+        "pass": 4
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "tool-budget",
+        "http-tool"
+      ]
+    },
+    {
+      "batch": 8,
+      "consolidation": {
+        "admitted": [],
+        "anchoring": {
+          "anchored to D-0001": 1,
+          "moot: not anchored; evicted past the 3-consolidation deadline": 3,
+          "no instance proposed; evicted past the 3-consolidation deadline": 1
+        },
+        "dismissed": [],
+        "expired": [],
+        "flipped": [
+          "C-0001",
+          "C-0002",
+          "C-0004",
+          "C-0006"
+        ],
+        "groups": [
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0016",
+              "O-0030"
+            ],
+            "sessions": [
+              "S-0004",
+              "S-0008"
+            ],
+            "shape": [
+              "file-tool",
+              "shell-tool"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0026",
+              "O-0027"
+            ],
+            "sessions": [
+              "S-0007"
+            ],
+            "shape": [
+              "file-tool",
+              "test-failure-triage"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0001",
+              "O-0005",
+              "O-0007",
+              "O-0012",
+              "O-0017",
+              "O-0022"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002",
+              "S-0003",
+              "S-0004",
+              "S-0005"
+            ],
+            "shape": [
+              "http-tool"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0009"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "http-tool",
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0003",
+              "O-0029"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0008"
+            ],
+            "shape": [
+              "http-tool",
+              "test-failure-triage"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0004",
+              "O-0018",
+              "O-0020"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0005"
+            ],
+            "shape": [
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0006"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "shell-tool"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0010"
+            ],
+            "sessions": [
+              "S-0003"
+            ],
+            "shape": [
+              "shell-tool",
+              "test-failure-triage"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0014",
+              "O-0015",
+              "O-0021",
+              "O-0028",
+              "O-0031"
+            ],
+            "sessions": [
+              "S-0003",
+              "S-0004",
+              "S-0005",
+              "S-0007",
+              "S-0008"
+            ],
+            "shape": [
+              "test-failure-triage"
+            ]
+          }
+        ],
+        "groups_at_bar": 5,
+        "id": "K-0004",
+        "nominations": [
+          {
+            "outcome": "escalated to the human queue",
+            "rung": "counterfactual-edit",
+            "subject": "precision"
+          },
+          {
+            "outcome": "draft refused at parse: not_this: List should have at least 1 item after validation, not 0",
+            "rung": "new-decision",
+            "subject": "http-endpoint-correction"
+          },
+          {
+            "outcome": "draft refused at parse: not_this: List should have at least 1 item after validation, not 0",
+            "rung": "new-decision",
+            "subject": "http-retry-410"
+          },
+          {
+            "outcome": "draft refused at parse: not_this: List should have at least 1 item after validation, not 0",
+            "rung": "new-decision",
+            "subject": "output-formatting"
+          },
+          {
+            "outcome": "draft refused at parse: not_this: List should have at least 1 item after validation, not 0",
+            "rung": "new-decision",
+            "subject": "test-failure-observation"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0001"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0002"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0003"
+          }
+        ],
+        "outcomes": {
+          "draft refused at parse: not_this: List should have at least 1 item after validation, not 0": 4,
+          "escalated to the human queue": 1,
+          "moot: retired through the genesis-deadline door": 3
+        },
+        "retired": [
+          "L-0001",
+          "L-0002",
+          "L-0003"
+        ]
+      },
+      "hash": "73f5915bcf78",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0029",
+          "noticed": "Task curriculum/moved_05 attempted GET /stores/24 but got HTTP 410 Gone, missing the required ok field check and thus did not pass.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0030",
+          "noticed": "Task curriculum/newline_09 attempted to count lines with a single shell call, producing 17 lines, but the correct total requires aggregating all five files, which would need an additional shell call.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0031",
+          "noticed": "In task curriculum/footer_07 the row returned 4 but the evaluation marked the task as failed because no observation was recorded.",
+          "shape": [
+            "test-failure-triage"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 8,
+      "pass_rate": 0.625,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09990-6b40-7dc6-95a9-dbcaa313ae32",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Tim",
+          "symptom": "pass",
+          "task": "curriculum/moved_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09990-6b3f-74c7-b931-f6b1b68421ed",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/stores/24",
+            "message": "Failed to retrieve store data"
+          },
+          "lesson": "moved-v2",
+          "result": null,
+          "symptom": "naive",
+          "task": "curriculum/moved_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09990-6b40-77b8-a6bb-b777b95fd675",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 17,
+          "symptom": "naive",
+          "task": "curriculum/newline_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09990-6b3e-7702-b21b-ccc1d0fa8e93",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 5,
+            "label": "Q2-2021"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09990-6b3f-7eaa-89fd-7042dd7c6877",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 4,
+          "symptom": "naive",
+          "task": "curriculum/footer_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09990-78da-7583-a29f-fb4c08d653ff",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 4,
+          "symptom": "pass",
+          "task": "curriculum/paged_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09990-7a66-7386-9ffc-08d22087b870",
+          "error": null,
+          "lesson": "token-route",
+          "result": 82,
+          "symptom": "pass",
+          "task": "curriculum/token_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09990-6b3e-7de2-8d60-b6b7ed7b4a88",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 440.99,
+          "symptom": "pass",
+          "task": "curriculum/csv_07"
+        }
+      ],
+      "session": "S-0008",
+      "symptoms": {
+        "naive": 3,
+        "pass": 5
+      },
+      "work_shape": [
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 9,
+      "consolidation": null,
+      "hash": "7fdeede9ee54",
+      "in_context": [
+        "D-0001"
+      ],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0032",
+          "noticed": "In task curriculum/paged_05 the attempt returned 1 without filtering for active invoices, which should have been filtered to count only active ones.",
+          "shape": [
+            "test-failure-triage"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0033",
+          "noticed": "In task curriculum/footer_00 the initial attempt returned a plain numeric sum instead of the required formatted output, causing the task to fail.",
+          "shape": [
+            "output-schema"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0034",
+          "noticed": "In task curriculum/newline_05 the initial attempt counted lines from only one file, yielding 13, but failed to sum all three files as required.",
+          "shape": [
+            "file-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0035",
+          "noticed": "In task curriculum/moved_07 the initial GET request used /agents/14 and got HTTP\u202f410 Gone; the task would have succeeded with a GET to /v2/agents/14 as required by the API versioning convention.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 9,
+      "pass_rate": 0.5,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09996-130c-72a1-8a33-c2f2b1b4c1b2",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 1,
+          "symptom": "naive",
+          "task": "curriculum/paged_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09996-1308-7770-9713-7a2b5ce08c7c",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5198,
+          "symptom": "naive",
+          "task": "curriculum/footer_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09996-1309-7f24-89f7-314f46e26682",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 13,
+          "symptom": "naive",
+          "task": "curriculum/newline_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09996-1309-79da-9a6c-28ec29b58f52",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/agents/14",
+            "message": "GET request failed"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09996-1308-7e85-946a-43f966134741",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 3,
+          "symptom": "pass",
+          "task": "curriculum/csv_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09996-310e-77c7-882f-7a9e472b5ad4",
+          "error": null,
+          "lesson": "token-route",
+          "result": 349,
+          "symptom": "pass",
+          "task": "curriculum/token_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09996-2caa-7012-a356-126fda0c3d6e",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 256,
+          "symptom": "pass",
+          "task": "curriculum/paged_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09996-1308-7336-a855-855f8b5aa78c",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 2,
+            "label": "H1-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_02"
+        }
+      ],
+      "session": "S-0009",
+      "symptoms": {
+        "naive": 4,
+        "pass": 4
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 10,
+      "consolidation": {
+        "admitted": [],
+        "anchoring": {},
+        "dismissed": [],
+        "expired": [
+          "01a09990-2044-73af-b6d0-be8e33d2cb89",
+          "01a09992-2141-77c8-9c55-c886c7a0a4a3"
+        ],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0026",
+              "O-0027",
+              "O-0034",
+              "O-0038"
+            ],
+            "sessions": [
+              "S-0007",
+              "S-0009",
+              "S-0010"
+            ],
+            "shape": [
+              "file-tool"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0001",
+              "O-0005",
+              "O-0007",
+              "O-0012",
+              "O-0017",
+              "O-0022",
+              "O-0029",
+              "O-0035",
+              "O-0037"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002",
+              "S-0003",
+              "S-0004",
+              "S-0005",
+              "S-0008",
+              "S-0009",
+              "S-0010"
+            ],
+            "shape": [
+              "http-tool"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0009"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "http-tool",
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0003"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "http-tool",
+              "test-failure-triage"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0004",
+              "O-0018",
+              "O-0020",
+              "O-0033"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0005",
+              "S-0009"
+            ],
+            "shape": [
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0006",
+              "O-0016",
+              "O-0030",
+              "O-0036"
+            ],
+            "sessions": [
+              "S-0002",
+              "S-0004",
+              "S-0008",
+              "S-0010"
+            ],
+            "shape": [
+              "shell-tool"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0010",
+              "O-0014",
+              "O-0015",
+              "O-0021",
+              "O-0028",
+              "O-0031",
+              "O-0032"
+            ],
+            "sessions": [
+              "S-0003",
+              "S-0004",
+              "S-0005",
+              "S-0007",
+              "S-0008",
+              "S-0009"
+            ],
+            "shape": [
+              "test-failure-triage"
+            ]
+          }
+        ],
+        "groups_at_bar": 5,
+        "id": "K-0005",
+        "nominations": [
+          {
+            "outcome": "declined; draft dropped",
+            "rung": "counterfactual-edit",
+            "subject": "precision_file_tool"
+          },
+          {
+            "outcome": "draft refused at parse: a hook-edit supersedes exactly one record; got []",
+            "rung": "hook-edit",
+            "subject": "http_boundary"
+          },
+          {
+            "outcome": "draft refused at parse: not_this: List should have at least 1 item after validation, not 0",
+            "rung": "new-decision",
+            "subject": "output_schema_format"
+          },
+          {
+            "outcome": "draft refused at parse: not_this: List should have at least 1 item after validation, not 0",
+            "rung": "new-decision",
+            "subject": "shell_tool_aggregation"
+          },
+          {
+            "outcome": "draft refused at parse: not_this: List should have at least 1 item after validation, not 0",
+            "rung": "new-decision",
+            "subject": "test_failure_reporting"
+          }
+        ],
+        "outcomes": {
+          "declined; draft dropped": 1,
+          "draft refused at parse: a hook-edit supersedes exactly one record; got []": 1,
+          "draft refused at parse: not_this: List should have at least 1 item after validation, not 0": 3
+        },
+        "retired": []
+      },
+      "hash": "b4680543a73f",
+      "in_context": [
+        "D-0001"
+      ],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0036",
+          "noticed": "Task curriculum/newline_07 attempted to count lines with a single shell call but omitted the required validation that both shard files were summed, which violated the convention of confirming the total line count across all shards.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0037",
+          "noticed": "Task curriculum/moved_09 attempted GET /pools/18 on a deprecated endpoint, causing HTTP 410 Gone.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0038",
+          "noticed": "In task curriculum/footer_03 the attempt counted records but omitted the required validation of total line count across all shard files as mandated by decision D-0001.",
+          "shape": [
+            "file-tool"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 10,
+      "pass_rate": 0.625,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09998-1c0a-7e35-b7d2-644c1855c0b5",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum/newline_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09998-1c09-76d8-8456-2bb44126d92d",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/pools/18",
+            "message": "GET request failed"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09998-1c05-75a0-ba86-4e7963103538",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 6,
+            "release": "Q4-2022"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09998-1c06-77cb-97c9-4c3d0c922a0c",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5,
+          "symptom": "naive",
+          "task": "curriculum/footer_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09998-3907-70d7-902b-a673cfdb426d",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 305,
+          "symptom": "pass",
+          "task": "curriculum/paged_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09998-3f00-7469-8b99-f691ce5802a6",
+          "error": null,
+          "lesson": "token-route",
+          "result": 1780,
+          "symptom": "pass",
+          "task": "curriculum/token_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09998-1c06-757d-92eb-a11e15065ae7",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 269.11,
+          "symptom": "pass",
+          "task": "curriculum/csv_09"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09998-1c05-7e89-b911-e9beb352cb56",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 53.91,
+          "symptom": "pass",
+          "task": "curriculum/csv_05"
+        }
+      ],
+      "session": "S-0010",
+      "symptoms": {
+        "naive": 3,
+        "pass": 5
+      },
+      "work_shape": [
+        "shell-tool",
+        "http-tool",
+        "file-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "3bfb611015e2",
+      "in_context": [
+        "D-0001"
+      ],
+      "kind": "revisit",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0039",
+          "noticed": "Task curriculum/newline_02's first attempt counted lines from only part of the shard files; it would have passed by counting all five files.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0040",
+          "noticed": "Task curriculum/footer_09 counted records with a single shell call but omitted the required validation of total line counts across all shard files.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0041",
+          "noticed": "Task curriculum/csv_02 exceeded its shell call budget by making three shell calls instead of the permitted two.",
+          "shape": [],
+          "state": "open"
+        }
+      ],
+      "pass": 11,
+      "pass_rate": 0.625,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-4cbc-79ee-84d6-f107e1903e5e",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 14,
+          "symptom": "naive",
+          "task": "curriculum/newline_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-4cb9-7691-9945-a30d8e7329ee",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Linus",
+          "symptom": "pass",
+          "task": "curriculum/moved_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-4cbb-7067-baef-60accd49e029",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Ken",
+          "symptom": "pass",
+          "task": "curriculum/moved_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-4cb7-75c4-a2cf-e11087d70412",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5,
+          "symptom": "naive",
+          "task": "curriculum/footer_09"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-4cb7-7f3b-b313-986f4f769d83",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "board": "Q3-2022",
+            "count": 4
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-7811-7094-be2b-4bd82d82b69c",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 190,
+          "symptom": "pass",
+          "task": "curriculum/paged_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-7dd6-7f72-ae96-5b04eb599cb1",
+          "error": null,
+          "lesson": "token-route",
+          "result": 6017,
+          "symptom": "pass",
+          "task": "curriculum/token_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-4cb7-7d17-97fb-21d0fd4cf643",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum/csv_02"
+        }
+      ],
+      "session": "S-0011",
+      "symptoms": {
+        "naive": 3,
+        "pass": 5
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 2,
+      "consolidation": null,
+      "hash": "c18fec0fa080",
+      "in_context": [
+        "D-0001"
+      ],
+      "kind": "revisit",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0042",
+          "noticed": "In task curriculum/newline_00 the initial attempt counted lines with a single shell call but omitted the required validation that both shard files be included, which the convention mandates.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0043",
+          "noticed": "In task curriculum/footer_04 the first attempt summed the amount column but did not validate that all shard files were included, missing the required total line\u2011count check.",
+          "shape": [],
+          "state": "open"
+        }
+      ],
+      "pass": 12,
+      "pass_rate": 0.625,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a1-2996-7ee6-ab56-dfd165641f33",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 12,
+          "symptom": "naive",
+          "task": "curriculum/newline_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a1-2994-7d71-8bad-586f0b81ff69",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 4030,
+          "symptom": "naive",
+          "task": "curriculum/footer_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a1-2993-759d-8b7b-0226da5cccf1",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 7,
+            "name": "Q2-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a1-2994-7a47-8804-ba21660ffab5",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/projects/82",
+            "message": "GET request failed"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a1-2999-73fb-9e44-4a56ad46c18b",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 406,
+          "symptom": "pass",
+          "task": "curriculum/paged_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a1-2994-776a-86fb-bd7dceafe538",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 292.3,
+          "symptom": "pass",
+          "task": "curriculum/csv_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a1-53c6-79ce-ba1f-4dc57f399df0",
+          "error": null,
+          "lesson": "token-route",
+          "result": 766,
+          "symptom": "pass",
+          "task": "curriculum/token_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a1-4b7d-7ddf-8323-96c92e0c2028",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 306,
+          "symptom": "pass",
+          "task": "curriculum/paged_06"
+        }
+      ],
+      "session": "S-0012",
+      "symptoms": {
+        "naive": 3,
+        "pass": 5
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    }
+  ],
+  "records": [
+    {
+      "admitted_after_pass": 6,
+      "decision": "Require that file\u2011tool tasks validate the total line count across all shard files before marking the task successful.",
+      "hook": [
+        "file-tool"
+      ],
+      "id": "D-0001",
+      "mentions": [],
+      "status": null
+    }
+  ],
+  "roster": {
+    "adjudicator": "openai/gpt-oss-120b",
+    "coder": "openai/gpt-oss-120b",
+    "consolidator": "openai/gpt-oss-120b",
+    "examiner": "openai/gpt-oss-120b",
+    "pass": "openai/gpt-oss-120b",
+    "reauthor": "openai/gpt-oss-120b"
+  },
+  "stream": {
+    "batch": 8,
+    "batches": 10,
+    "families": [
+      "curriculum"
+    ],
+    "faults": {
+      "http_budget": null,
+      "http_fault_calls": 1,
+      "http_fault_fraction": 0.0,
+      "shell_output_limit": null
+    },
+    "revisit": [
+      1,
+      2
+    ],
+    "seed": 0
+  },
+  "warning": null
+}

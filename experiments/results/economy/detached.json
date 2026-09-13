@@ -1,0 +1,3155 @@
+{
+  "arm": "detached",
+  "experiment": "economy",
+  "lessons": {
+    "bom": {
+      "first_mention_pass": null,
+      "first_sight": [
+        11,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        11
+      ],
+      "quality": {
+        "economy": null,
+        "transfer": null,
+        "turns": null
+      },
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "quality": {
+            "economy": null,
+            "transfer": null,
+            "turns": null
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 1,
+          "quality": {
+            "economy": null,
+            "transfer": null,
+            "turns": null
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 3,
+          "passed": 1,
+          "quality": {
+            "economy": null,
+            "transfer": null,
+            "turns": null
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 1,
+          "quality": {
+            "economy": null,
+            "transfer": null,
+            "turns": null
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 2,
+          "quality": {
+            "economy": null,
+            "transfer": null,
+            "turns": null
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 1,
+          "quality": {
+            "economy": null,
+            "transfer": null,
+            "turns": null
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "quality": {
+            "economy": null,
+            "transfer": null,
+            "turns": null
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "quality": {
+            "economy": null,
+            "transfer": null,
+            "turns": null
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "quality": {
+            "economy": null,
+            "transfer": null,
+            "turns": null
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "quality": {
+            "economy": null,
+            "transfer": null,
+            "turns": null
+          },
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "csv-quoted": {
+      "first_mention_pass": null,
+      "first_sight": [
+        5,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        5,
+        11
+      ],
+      "quality": {
+        "economy": 0.21666666666666665,
+        "transfer": 0.2,
+        "turns": 0.21333333333333332
+      },
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": 0.0,
+            "turns": 0.5
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 1,
+          "quality": {
+            "economy": 0.3333333333333333,
+            "transfer": 0.0,
+            "turns": 0.4
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": 0.0,
+            "turns": 0.5
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 1,
+          "quality": {
+            "economy": 0.3333333333333333,
+            "transfer": 1.0,
+            "turns": 0.4
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "N\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": 0.0,
+            "turns": 0.3333333333333333
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 8,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 8,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        }
+      ],
+      "tier": "visible"
+    },
+    "footer-row": {
+      "first_mention_pass": null,
+      "first_sight": [
+        0,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        11,
+        12
+      ],
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "EN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 1,
+          "pass": 10,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        }
+      ],
+      "tier": "visible"
+    },
+    "moved-v2": {
+      "first_mention_pass": null,
+      "first_sight": [
+        7,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        4,
+        11
+      ],
+      "quality": {
+        "economy": 0.3,
+        "transfer": null,
+        "turns": 0.4
+      },
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 2,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.6666666666666666
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.6666666666666666
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.6666666666666666
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.6666666666666666
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.6666666666666666
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.6666666666666666
+          },
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "paged-api": {
+      "first_mention_pass": null,
+      "first_sight": [
+        8,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        3,
+        11
+      ],
+      "quality": {
+        "economy": 0.8,
+        "transfer": null,
+        "turns": 0.8
+      },
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 3,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "quality": {
+            "economy": 1.0,
+            "transfer": null,
+            "turns": 1.0
+          },
+          "tasks": 1
+        }
+      ],
+      "tier": "visible"
+    },
+    "token-route": {
+      "first_mention_pass": null,
+      "first_sight": [
+        11,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        12
+      ],
+      "quality": {
+        "economy": 0.475,
+        "transfer": null,
+        "turns": 0.475
+      },
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 2,
+          "passed": 1,
+          "quality": {
+            "economy": 0.25,
+            "transfer": null,
+            "turns": 0.25
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 3,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 2,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "quality": {
+            "economy": 0.5,
+            "transfer": null,
+            "turns": 0.5
+          },
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "trailing-newline": {
+      "first_mention_pass": null,
+      "first_sight": [
+        0,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        12,
+        12
+      ],
+      "quality": {
+        "economy": 0.0,
+        "transfer": null,
+        "turns": 0.0
+      },
+      "revisit": [],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 2
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 0,
+          "quality": {
+            "economy": 0.0,
+            "transfer": null,
+            "turns": 0.0
+          },
+          "tasks": 1
+        }
+      ],
+      "tier": "invisible"
+    }
+  },
+  "mode": "detached",
+  "model": "openai/gpt-oss-120b",
+  "passes": [
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "00aad494d042",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 1,
+      "pass_rate": 0.5,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.2857142857142857,
+        "transfer": 0.0,
+        "turns": 0.2857142857142857
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-1037-7dd2-926c-0002af7ad92f",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "cat slice-1.rec slice-2.rec slice-3.rec | wc -l"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 19,
+          "symptom": "naive",
+          "task": "curriculum/newline_03",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-1035-72ba-a896-5b8a4809128c",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "wc -l < trace-export.csv",
+            "tail -n +2 trace-export.csv | wc -l"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum/footer_03",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-102e-74ec-838a-0908dc159721",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "project": "H1-2022"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_03",
+          "transfer": null,
+          "turns": null
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-1036-75c9-8ccc-c104ba319a40",
+          "calls": {
+            "http": 1,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/agents/14",
+            "message": "Failed to retrieve agent data with ok field true"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_07",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-4165-795f-b471-a493b1561e4e",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 3
+          },
+          "commands": [],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "paged-api",
+          "result": 163,
+          "symptom": "pass",
+          "task": "curriculum/paged_04",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-1030-747d-9f81-0815733b9a33",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 4
+          },
+          "commands": [
+            "awk -F',' '$2==\"Vandelay, LLC\"{sum+=$3} END{print sum}' run.csv",
+            "awk -F',' 'NR>1 && $2==\"\\\"Vandelay, LLC\\\"\"{gsub(/\\\"/, \"\", $3); sum+=$3} END{print sum}' run.csv"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1593.14,
+          "symptom": "pass",
+          "task": "curriculum/csv_05",
+          "transfer": 0.0,
+          "turns": 0.5
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-1039-7544-809f-f2f7ff51a5fa",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "cat extract-1.rec extract-2.rec extract-3.rec extract-4.rec extract-5.rec | wc -l"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 19,
+          "symptom": "naive",
+          "task": "curriculum/newline_09",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-4a20-70b5-9fb3-7866210c9428",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "token-route",
+          "result": 2090,
+          "symptom": "pass",
+          "task": "curriculum/token_05",
+          "transfer": null,
+          "turns": 0.5
+        }
+      ],
+      "session": "S-0001",
+      "symptoms": {
+        "naive": 4,
+        "pass": 4
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 2,
+      "consolidation": null,
+      "hash": "1be1893e17d8",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 2,
+      "pass_rate": 0.5,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.2619047619047619,
+        "transfer": 0.0,
+        "turns": 0.2714285714285714
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": null,
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 4,
+            "name": "Q4-2029"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_01",
+          "transfer": null,
+          "turns": null
+        },
+        {
+          "applied": [],
+          "call": null,
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "wc -l block-1.lst",
+            "wc -l block-2.lst"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 9,
+          "symptom": "naive",
+          "task": "curriculum/newline_04",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": null,
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "awk -F, 'NR>1 {sum+=$3} END {print sum}' extract-export.csv"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 1640,
+          "symptom": "naive",
+          "task": "curriculum/footer_06",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": null,
+          "calls": {
+            "http": 4,
+            "shell": 0,
+            "turns": 5
+          },
+          "commands": [],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "paged-api",
+          "result": 197,
+          "symptom": "pass",
+          "task": "curriculum/paged_06",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": null,
+          "calls": {
+            "http": 1,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/stores/24",
+            "message": "Failed to GET store 24"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_05",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-328f-755b-9fbd-1e8ef5e417ae",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "token-route",
+          "result": 2639,
+          "symptom": "pass",
+          "task": "curriculum/token_02",
+          "transfer": null,
+          "turns": 0.5
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-33b4-766b-ad76-095bbb5ae73d",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "token-route",
+          "result": {
+            "result": 5841
+          },
+          "symptom": "wrong",
+          "task": "curriculum/token_08",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": null,
+          "calls": {
+            "http": 0,
+            "shell": 3,
+            "turns": 5
+          },
+          "commands": [
+            "tail -n +2 shard.csv | cut -d',' -f2 | grep -c '^Helsinki$'",
+            "head -n 5 shard.csv",
+            "awk -F',' 'NR>1 && $2==\"Helsinki\" {c++} END{print c+0}' shard.csv"
+          ],
+          "economy": 0.3333333333333333,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 2,
+          "symptom": "pass",
+          "task": "curriculum/csv_02",
+          "transfer": 0.0,
+          "turns": 0.4
+        }
+      ],
+      "session": "S-0002",
+      "symptoms": {
+        "naive": 3,
+        "pass": 4,
+        "wrong": 1
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 3,
+      "consolidation": null,
+      "hash": "6e9bced160cb",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 3,
+      "pass_rate": 0.375,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.21428571428571427,
+        "transfer": null,
+        "turns": 0.21428571428571427
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": null,
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "awk -F',' 'NR>1 && $2==\"Vienna\"{c++} END{print c+0}' trace.csv"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1,
+          "symptom": "naive",
+          "task": "curriculum/csv_06",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": null,
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "tail -n +2 spool-export.csv | wc -l"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 9,
+          "symptom": "naive",
+          "task": "curriculum/footer_07",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": null,
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "awk -F, 'NR>1 {sum+=$3} END {print sum}' feed-export.csv"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 3830,
+          "symptom": "naive",
+          "task": "curriculum/footer_04",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": null,
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "cat capture-1.dat capture-2.dat capture-3.dat | wc -l"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 10,
+          "symptom": "naive",
+          "task": "curriculum/newline_11",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": null,
+          "calls": {
+            "http": 1,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/devices/69",
+            "message": "GET request failed"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_01",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-3810-7b22-9bb1-ca443e083ea7",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "token-route",
+          "result": 2050,
+          "symptom": "pass",
+          "task": "curriculum/token_04",
+          "transfer": null,
+          "turns": 0.5
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-2b44-7fb2-9c25-e244afeefdf6",
+          "calls": {
+            "http": 4,
+            "shell": 0,
+            "turns": 5
+          },
+          "commands": [],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "paged-api",
+          "result": 344,
+          "symptom": "pass",
+          "task": "curriculum/paged_08",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": null,
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 5,
+            "project": "Q1-2024"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_09",
+          "transfer": null,
+          "turns": null
+        }
+      ],
+      "session": "S-0003",
+      "symptoms": {
+        "naive": 5,
+        "pass": 3
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 4,
+      "consolidation": null,
+      "hash": "3f5c137c6d7a",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 4,
+      "pass_rate": 0.625,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.35714285714285715,
+        "transfer": null,
+        "turns": 0.4047619047619047
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-9bad-7b7e-95c7-b9bc256c791e",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "wc -l batch-1.txt batch-2.txt"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum/newline_00",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-9ba8-7b23-b376-a3bd3103f3b5",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "tail -n +2 shard-export.csv | wc -l"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5,
+          "symptom": "naive",
+          "task": "curriculum/footer_11",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-9ba9-7825-b803-cd248bd5150e",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 3
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Linus",
+          "symptom": "pass",
+          "task": "curriculum/moved_08",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-9ba8-7615-973a-431588a7130d",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "awk -F, '$2==\"Dublin\"{c++} END{print c}' dump.csv"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1,
+          "symptom": "naive",
+          "task": "curriculum/csv_08",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-9ba8-74ed-b6fe-b2aa5cdfc3ee",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 3
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "ok",
+          "symptom": "pass",
+          "task": "curriculum/moved_03",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-9ba7-75e4-9323-4dd912014533",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "name": "Q2-2029"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_07",
+          "transfer": null,
+          "turns": null
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-b8d7-78fa-b49f-b5938569f738",
+          "calls": {
+            "http": 3,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "paged-api",
+          "result": 299,
+          "symptom": "pass",
+          "task": "curriculum/paged_10",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-c0d4-7e49-b96e-df79c44f25e3",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "token-route",
+          "result": 2922,
+          "symptom": "pass",
+          "task": "curriculum/token_11",
+          "transfer": null,
+          "turns": 0.5
+        }
+      ],
+      "session": "S-0004",
+      "symptoms": {
+        "naive": 3,
+        "pass": 5
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 5,
+      "consolidation": null,
+      "hash": "1ae3bbce872b",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 5,
+      "pass_rate": 0.75,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.4166666666666667,
+        "transfer": 0.0,
+        "turns": 0.4444444444444444
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-a918-78a0-b481-589499d043ee",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 3
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Tim",
+          "symptom": "pass",
+          "task": "curriculum/moved_06",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-a91b-7f3c-a646-8b54371499df",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "wc -l feed-1.log feed-2.log"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 9,
+          "symptom": "naive",
+          "task": "curriculum/newline_07",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-a918-75f9-94a5-29ae367e9741",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "awk -F',' 'NR>1 {sum+=$3} END {print sum}' run-export.csv"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 2662,
+          "symptom": "naive",
+          "task": "curriculum/footer_02",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-a917-7486-80db-ee474bcb5008",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 6,
+            "title": "Q2-2027"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_00",
+          "transfer": null,
+          "turns": null
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-a917-7dba-b0e8-ec42d03cdf84",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 6,
+            "label": "H1-2025"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_08",
+          "transfer": null,
+          "turns": null
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-ca47-7fd8-a6c0-e7ced7f3c862",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "token-route",
+          "result": 7339,
+          "symptom": "pass",
+          "task": "curriculum/token_07",
+          "transfer": null,
+          "turns": 0.5
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-a917-7a9b-89c0-9fec81f8a918",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 4
+          },
+          "commands": [
+            "awk -F',' 'NR>1 && $2==\"\\\"Wonka, Ltd.\\\"\" {sum+=$3} END{print sum}' extract.csv",
+            "awk -F',' 'NR>1 {gsub(/\"/,\"\",$2); if($2==\"Wonka, Ltd.\") sum+=$3} END{print sum}' extract.csv"
+          ],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1744.3,
+          "symptom": "pass",
+          "task": "curriculum/csv_09",
+          "transfer": 0.0,
+          "turns": 0.5
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-c960-7857-895b-a9524aec97d9",
+          "calls": {
+            "http": 4,
+            "shell": 0,
+            "turns": 5
+          },
+          "commands": [],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "paged-api",
+          "result": 5,
+          "symptom": "pass",
+          "task": "curriculum/paged_03",
+          "transfer": null,
+          "turns": 1.0
+        }
+      ],
+      "session": "S-0005",
+      "symptoms": {
+        "naive": 2,
+        "pass": 6
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 6,
+      "consolidation": null,
+      "hash": "b86fc8e8439e",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 6,
+      "pass_rate": 0.5,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.19047619047619047,
+        "transfer": 1.0,
+        "turns": 0.22380952380952382
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-c75e-753e-92f5-1f3ea7dc0dd0",
+          "calls": {
+            "http": 1,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "paged-api",
+          "result": 2,
+          "symptom": "naive",
+          "task": "curriculum/paged_01",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-c759-7a95-bfef-7b04f788d959",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 3
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Linus",
+          "symptom": "pass",
+          "task": "curriculum/moved_02",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-df7a-7e5f-92f2-69fca2798ffa",
+          "calls": {
+            "http": 1,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "paged-api",
+          "result": 2,
+          "symptom": "naive",
+          "task": "curriculum/paged_11",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-c75c-7276-8ff3-04ea520193db",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "wc -l segment-*.log"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 13,
+          "symptom": "naive",
+          "task": "curriculum/newline_01",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-c758-71ee-9284-4ac509361454",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "awk -F, 'NR>1 {sum+=$3} END {print sum}' segment-export.csv"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 784,
+          "symptom": "naive",
+          "task": "curriculum/footer_10",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-c758-7873-9097-625b9df4433a",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "board": "H2-2022",
+            "count": 2
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_11",
+          "transfer": null,
+          "turns": null
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-ef7c-782b-bf13-32493b4552f4",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "token-route",
+          "result": 4824,
+          "symptom": "pass",
+          "task": "curriculum/token_03",
+          "transfer": null,
+          "turns": 0.5
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-c758-7c3e-ad1f-bf8f4d7446de",
+          "calls": {
+            "http": 0,
+            "shell": 3,
+            "turns": 5
+          },
+          "commands": [
+            "awk -F',' '$2==\"Initech, LLC\"{sum+=$3} END{print sum}' segment.csv",
+            "awk -F',' '{gsub(/\\\"/,\"\",$2); if($2==\"Initech, LLC\") sum+=$3} END{print sum}' segment.csv",
+            "python3 - <<'PY'\nimport csv,sys\nsum_total=0\nwith open('segment.csv', newline='') as f:\n    reader=csv.DictReader(f)\n    for row in reader:\n        if row['customer']=='Initech, LLC':\n            sum_total+=float(row['total'])\nprint(sum_total)\nPY"
+          ],
+          "economy": 0.3333333333333333,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1125.32,
+          "symptom": "pass",
+          "task": "curriculum/csv_01",
+          "transfer": 1.0,
+          "turns": 0.4
+        }
+      ],
+      "session": "S-0006",
+      "symptoms": {
+        "naive": 4,
+        "pass": 4
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 7,
+      "consolidation": null,
+      "hash": "bab39b0491e5",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 7,
+      "pass_rate": 0.625,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.42857142857142855,
+        "transfer": 0.0,
+        "turns": 0.4047619047619047
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-eef3-7109-93b0-89d93ba3e1dc",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "awk -F, '$2==\"Riga\"{c++} END{print c}' spool.csv"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1,
+          "symptom": "naive",
+          "task": "curriculum/csv_10",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-eef5-76e4-9ce4-8337273d43d5",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 3
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Ada",
+          "symptom": "pass",
+          "task": "curriculum/moved_00",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-eef5-75ef-b302-1176650cfdc5",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "tail -n +2 batch-export.csv | wc -l"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 4,
+          "symptom": "naive",
+          "task": "curriculum/footer_09",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-eef6-7199-b7f5-217c2aab3985",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "cat run-1.dat run-2.dat run-3.dat | wc -l"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 8,
+          "symptom": "naive",
+          "task": "curriculum/newline_05",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-eef4-7058-ad4b-1d2b263ca8fb",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 3
+          },
+          "commands": [
+            "awk -F',' 'NR>1 && $2==\"Vandelay, LLC\"{sum+=$3} END{print sum}' capture.csv"
+          ],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 611.93,
+          "symptom": "pass",
+          "task": "curriculum/csv_11",
+          "transfer": 0.0,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-0fd5-76c9-9d86-77743c3ad1c5",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 3
+          },
+          "commands": [],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "paged-api",
+          "result": 4,
+          "symptom": "pass",
+          "task": "curriculum/paged_07",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-1221-794a-81c1-3c0ca575e2f8",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "token-route",
+          "result": 2650,
+          "symptom": "pass",
+          "task": "curriculum/token_10",
+          "transfer": null,
+          "turns": 0.5
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998a-eef4-7499-bb0b-3004ca077be5",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 4,
+            "release": "Q4-2025"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_10",
+          "transfer": null,
+          "turns": null
+        }
+      ],
+      "session": "S-0007",
+      "symptoms": {
+        "naive": 3,
+        "pass": 5
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 8,
+      "consolidation": null,
+      "hash": "fc65f42ee86d",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 8,
+      "pass_rate": 0.25,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.07142857142857142,
+        "transfer": null,
+        "turns": 0.07142857142857142
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-1bbc-7d97-9840-44eb44c99e05",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "cat dump-1.out dump-2.out dump-3.out | wc -l"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 19,
+          "symptom": "naive",
+          "task": "curriculum/newline_08",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-1bbf-7b22-960d-8339fea450b7",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "cat spool-*.lst | wc -l"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 24,
+          "symptom": "naive",
+          "task": "curriculum/newline_10",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-1bba-7ade-b7e8-a6a07b53f00d",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 6,
+            "label": "Q2-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_02",
+          "transfer": null,
+          "turns": null
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-41bd-769b-9c0d-42bb64853e7b",
+          "calls": {
+            "http": 1,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "paged-api",
+          "result": 2,
+          "symptom": "naive",
+          "task": "curriculum/paged_09",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-1bbb-7509-9de8-c135cb461161",
+          "calls": {
+            "http": 1,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/plans/49",
+            "message": "Failed to retrieve plan name"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum/moved_04",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-1bba-7248-8b3e-174307c75642",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "awk 'NR>1' dump-export.csv | wc -l",
+            "awk 'NR>1' dump-export.csv | wc -l | xargs"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum/footer_05",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-4b96-7691-ab6c-6c3dd4f00511",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "token-route",
+          "result": 6256,
+          "symptom": "pass",
+          "task": "curriculum/token_01",
+          "transfer": null,
+          "turns": 0.5
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-1bba-775d-a823-c7d2d842a955",
+          "calls": {
+            "http": 0,
+            "shell": 4,
+            "turns": 5
+          },
+          "commands": [
+            "tail -n +2 slice.csv | awk -F',' '$2==\"\\\"Wonka, Ltd.\\\"\" {sum+=$3} END{print sum}'",
+            "python -c \"import csv,sys; total=0; with open('slice.csv', newline='') as f: reader=csv.DictReader(f); total=sum(float(row['total']) for row in reader if row['customer']=='Wonka, Ltd.'); print(total)\"",
+            "python -c 'import csv; total=0; f=open(\"slice.csv\"); r=csv.DictReader(f); total=sum(float(row[\"total\"]) for row in r if row[\"customer\"]==\"Wonka, Ltd.\"); print(total)'",
+            "awk -F',' 'NR>1 && $2==\"\\\"Wonka, Ltd.\\\"\" {sum+=$3} END{print sum}' slice.csv"
+          ],
+          "economy": 0.0,
+          "error": {
+            "cause": "Attempted more than 2 shell calls",
+            "message": "Shell call budget exceeded"
+          },
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "error:budget",
+          "task": "curriculum/csv_03",
+          "transfer": null,
+          "turns": 0.0
+        }
+      ],
+      "session": "S-0008",
+      "symptoms": {
+        "error:budget": 1,
+        "naive": 5,
+        "pass": 2
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 9,
+      "consolidation": null,
+      "hash": "17e6a0c0ec0b",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 9,
+      "pass_rate": 0.625,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.35714285714285715,
+        "transfer": null,
+        "turns": 0.38095238095238093
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-6480-78fb-9a4e-eddc202eb03d",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 3
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Lin",
+          "symptom": "pass",
+          "task": "curriculum/moved_10",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-647f-7952-9306-b3d21b0f0346",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "awk -F, 'NR>1 {sum+=$3} END {print sum}' slice-export.csv"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 1906,
+          "symptom": "naive",
+          "task": "curriculum/footer_00",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-6480-72dc-b528-e5532f2842eb",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "cat trace-1.txt trace-2.txt trace-3.txt | wc -l"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 14,
+          "symptom": "naive",
+          "task": "curriculum/newline_06",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-6482-7138-8cb1-b528b307c4e3",
+          "calls": {
+            "http": 4,
+            "shell": 0,
+            "turns": 5
+          },
+          "commands": [],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "paged-api",
+          "result": 388,
+          "symptom": "pass",
+          "task": "curriculum/paged_00",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-647f-7880-b991-28a07ffa9fdf",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 5,
+            "title": "Q3-2021"
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_06",
+          "transfer": null,
+          "turns": null
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-7d89-75e3-b018-ffc8e119a346",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "token-route",
+          "result": 4045,
+          "symptom": "pass",
+          "task": "curriculum/token_00",
+          "transfer": null,
+          "turns": 0.5
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-6480-78fc-a0e8-6277e695ca44",
+          "calls": {
+            "http": 0,
+            "shell": 3,
+            "turns": 4
+          },
+          "commands": [
+            "awk -F, 'NR>1 && $2==\"Berlin\" {c++} END{print c}' batch.csv",
+            "head -n 5 batch.csv",
+            "cat batch.csv"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum/csv_00",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-8d3a-7bd8-afe4-7ea324f38399",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "token-route",
+          "result": 9696,
+          "symptom": "pass",
+          "task": "curriculum/token_09",
+          "transfer": null,
+          "turns": 0.5
+        }
+      ],
+      "session": "S-0009",
+      "symptoms": {
+        "naive": 3,
+        "pass": 5
+      },
+      "work_shape": []
+    },
+    {
+      "batch": 10,
+      "consolidation": null,
+      "hash": "e8a072a82cda",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [],
+      "pass": 10,
+      "pass_rate": 0.5,
+      "proposals": 0,
+      "quality": {
+        "economy": 0.2857142857142857,
+        "transfer": null,
+        "turns": 0.3095238095238095
+      },
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-66a0-70c6-8c64-7e67478b7e05",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": 0.0,
+          "error": {
+            "cause": "endpoint BadRequestError: Error code: 400 - {'message': 'Validation: `messages[2].tool_calls[0].function.arguments` must be a valid JSON object string: invalid escape at line 1 column 22', 'type': 'Bad Request', 'code': 400}",
+            "message": "model call failed"
+          },
+          "lesson": "footer-row",
+          "result": null,
+          "symptom": "error:model-call",
+          "task": "curriculum/footer_08",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-669e-784e-a437-9c629e84ac35",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "awk -F, 'NR>1 && $2==\"Oslo\" {c++} END{print c}' block.csv"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1,
+          "symptom": "naive",
+          "task": "curriculum/csv_04",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-669e-71a1-8913-180bb813fe11",
+          "calls": {
+            "http": 0,
+            "shell": 0,
+            "turns": 2
+          },
+          "commands": [],
+          "economy": null,
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "board": "H2-2023",
+            "count": 7
+          },
+          "symptom": "pass",
+          "task": "curriculum/bom_05",
+          "transfer": null,
+          "turns": null
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-66a2-7f36-91c0-ff4cedd8fe7e",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 3
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "ok",
+          "symptom": "pass",
+          "task": "curriculum/moved_09",
+          "transfer": null,
+          "turns": 0.6666666666666666
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-66a5-7804-a342-13b94797369d",
+          "calls": {
+            "http": 0,
+            "shell": 1,
+            "turns": 2
+          },
+          "commands": [
+            "wc -l shard-*.out | tail -n1 | awk '{print $1}'"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 13,
+          "symptom": "naive",
+          "task": "curriculum/newline_02",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-669f-78c8-904a-5fcb4f53e50b",
+          "calls": {
+            "http": 0,
+            "shell": 2,
+            "turns": 3
+          },
+          "commands": [
+            "awk 'NR>1' block-export.csv | wc -l",
+            "awk 'NR>1' block-export.csv | wc -l | tr -d ' '"
+          ],
+          "economy": 0.0,
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5,
+          "symptom": "naive",
+          "task": "curriculum/footer_01",
+          "transfer": null,
+          "turns": 0.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-822a-74d2-a77c-9365c1045c31",
+          "calls": {
+            "http": 3,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 1.0,
+          "error": null,
+          "lesson": "paged-api",
+          "result": 189,
+          "symptom": "pass",
+          "task": "curriculum/paged_02",
+          "transfer": null,
+          "turns": 1.0
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998b-8837-7f41-94bc-dafca498130e",
+          "calls": {
+            "http": 2,
+            "shell": 0,
+            "turns": 4
+          },
+          "commands": [],
+          "economy": 0.5,
+          "error": null,
+          "lesson": "token-route",
+          "result": 3879,
+          "symptom": "pass",
+          "task": "curriculum/token_06",
+          "transfer": null,
+          "turns": 0.5
+        }
+      ],
+      "session": "S-0010",
+      "symptoms": {
+        "error:model-call": 1,
+        "naive": 3,
+        "pass": 4
+      },
+      "work_shape": []
+    }
+  ],
+  "records": [],
+  "roster": {
+    "adjudicator": "openai/gpt-oss-120b",
+    "coder": "openai/gpt-oss-120b",
+    "consolidator": "openai/gpt-oss-120b",
+    "examiner": "openai/gpt-oss-120b",
+    "pass": "openai/gpt-oss-120b",
+    "reauthor": "openai/gpt-oss-120b"
+  },
+  "stream": {
+    "batch": 8,
+    "batches": 10,
+    "families": [
+      "curriculum"
+    ],
+    "faults": {
+      "http_budget": null,
+      "http_fault_calls": 1,
+      "http_fault_fraction": 0.0,
+      "shell_output_limit": null
+    },
+    "revisit": [
+      1,
+      2
+    ],
+    "seed": 2
+  },
+  "warning": null
+}

@@ -1,0 +1,3886 @@
+{
+  "arm": "120b-strict",
+  "experiment": "stream",
+  "lessons": {
+    "bom": {
+      "first_mention_pass": null,
+      "first_sight": [
+        11,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        11
+      ],
+      "revisit": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          2,
+          1,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 3,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 2,
+          "tasks": 2
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 11,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 12,
+          "passed": 1,
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "csv-quoted": {
+      "first_mention_pass": null,
+      "first_sight": [
+        8,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        4,
+        12
+      ],
+      "revisit": [
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          2,
+          1,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 2,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 3,
+          "passed": 2,
+          "tasks": 2
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 9,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "tasks": 2
+        },
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 11,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "\u2713",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 12,
+          "passed": 1,
+          "tasks": 1
+        }
+      ],
+      "tier": "visible"
+    },
+    "footer-row": {
+      "first_mention_pass": null,
+      "first_sight": [
+        0,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        10,
+        11
+      ],
+      "revisit": [
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 11,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 12,
+          "passed": 0,
+          "tasks": 1
+        }
+      ],
+      "tier": "visible"
+    },
+    "moved-v2": {
+      "first_mention_pass": 3,
+      "first_sight": [
+        7,
+        12
+      ],
+      "naive_after": [
+        0,
+        9
+      ],
+      "naive_before": [
+        3,
+        3
+      ],
+      "revisit": [
+        [
+          1,
+          0,
+          2
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 0,
+          "pass": 3,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 0,
+          "pass": 4,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 0,
+          "pass": 5,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 0,
+          "pass": 6,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 0,
+          "pass": 7,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "E\u2713",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 1,
+          "pass": 8,
+          "passed": 1,
+          "tasks": 2
+        },
+        {
+          "batch": 9,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 1,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 0,
+          "pass": 10,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 1,
+          "grid": "EE",
+          "kind": "revisit",
+          "mentioned": true,
+          "naive": 0,
+          "other": 2,
+          "pass": 11,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 2,
+          "grid": "E",
+          "kind": "revisit",
+          "mentioned": true,
+          "naive": 0,
+          "other": 1,
+          "pass": 12,
+          "passed": 0,
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "paged-api": {
+      "first_mention_pass": null,
+      "first_sight": [
+        1,
+        12
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        0,
+        12
+      ],
+      "revisit": [
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          2
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "\u2713",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 0,
+          "pass": 1,
+          "passed": 1,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "WW",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 3,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 8,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "EE",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 10,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 10,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 1,
+          "grid": "E",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 11,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "EE",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 0,
+          "other": 2,
+          "pass": 12,
+          "passed": 0,
+          "tasks": 2
+        }
+      ],
+      "tier": "visible"
+    },
+    "token-route": {
+      "first_mention_pass": 3,
+      "first_sight": [
+        0,
+        11
+      ],
+      "naive_after": [
+        0,
+        9
+      ],
+      "naive_before": [
+        2,
+        2
+      ],
+      "revisit": [
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 1,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "EE",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 2,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 5,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 1,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 1,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 1,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 8,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 1,
+          "pass": 8,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 1,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "E",
+          "kind": "stream",
+          "mentioned": true,
+          "naive": 0,
+          "other": 1,
+          "pass": 10,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 1,
+          "grid": "E",
+          "kind": "revisit",
+          "mentioned": true,
+          "naive": 0,
+          "other": 1,
+          "pass": 11,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "E",
+          "kind": "revisit",
+          "mentioned": true,
+          "naive": 0,
+          "other": 1,
+          "pass": 12,
+          "passed": 0,
+          "tasks": 1
+        }
+      ],
+      "tier": "loud"
+    },
+    "trailing-newline": {
+      "first_mention_pass": null,
+      "first_sight": [
+        0,
+        11
+      ],
+      "naive_after": [
+        0,
+        0
+      ],
+      "naive_before": [
+        10,
+        11
+      ],
+      "revisit": [
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          1
+        ]
+      ],
+      "series": [
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 1,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 2,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 3,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 3,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 4,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 4,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 5,
+          "grid": "W",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 0,
+          "other": 1,
+          "pass": 5,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 6,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 6,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 7,
+          "grid": "NN",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 2,
+          "other": 0,
+          "pass": 7,
+          "passed": 0,
+          "tasks": 2
+        },
+        {
+          "batch": 8,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 8,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 9,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 9,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 10,
+          "grid": "N",
+          "kind": "stream",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 10,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 1,
+          "grid": "N",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 11,
+          "passed": 0,
+          "tasks": 1
+        },
+        {
+          "batch": 2,
+          "grid": "N",
+          "kind": "revisit",
+          "mentioned": false,
+          "naive": 1,
+          "other": 0,
+          "pass": 12,
+          "passed": 0,
+          "tasks": 1
+        }
+      ],
+      "tier": "invisible"
+    }
+  },
+  "mode": "attached",
+  "model": "openai/gpt-oss-120b",
+  "passes": [
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "0707b1fbe41b",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0001",
+          "noticed": "In task curriculum\u2011strict/newline_02 the first attempt returned 14 lines, which is incorrect and caused the task to fail.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0002",
+          "noticed": "The task curriculum-strict/moved_06 attempted to GET /zones/90 using a deprecated endpoint, causing a 410 Gone error; using the current /v2/zones/90 endpoint would have succeeded.",
+          "shape": [
+            "http-tool",
+            "test-failure-triage"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0003",
+          "noticed": "Task curriculum\u2011strict/token_02 made a second HTTP call without the required token, so the call budget was exceeded and the token\u2011supply convention was missed.",
+          "shape": [
+            "http-tool",
+            "tool-budget"
+          ],
+          "state": "open"
+        }
+      ],
+      "pass": 1,
+      "pass_rate": 0.375,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998c-e50b-7b4b-b6fd-2f0587ee43a0",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998c-e50e-75cd-ba8a-53d34c7e75ee",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 14,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998c-e507-7528-aafb-190ec755e397",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "board": "Q3-2022",
+            "count": 4
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998c-e50b-7765-a12e-fff8ae6e755b",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/plans/49",
+            "message": "Failed to retrieve plan name"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998d-0068-7eb8-b62f-5ed7d417265e",
+          "error": null,
+          "lesson": "paged-api",
+          "result": 190,
+          "symptom": "pass",
+          "task": "curriculum-strict/paged_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998c-e50d-7cda-ba6f-05fe49fcb254",
+          "error": {
+            "cause": "API endpoint deprecated",
+            "message": "Failed to retrieve zone name: HTTP 410 Gone for /zones/90"
+          },
+          "lesson": "moved-v2",
+          "result": null,
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998d-064c-7da2-80e3-6cdfe355028d",
+          "error": {
+            "cause": "Only one HTTP call allowed; second call needed to include token for /secure/ledger",
+            "message": "HTTP call budget exceeded"
+          },
+          "lesson": "token-route",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/token_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998c-e509-7d33-a17e-e13e0dcf6955",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 3,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_02"
+        }
+      ],
+      "session": "S-0001",
+      "symptoms": {
+        "naive": 5,
+        "pass": 3
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 2,
+      "consolidation": {
+        "admitted": [
+          "D-0001"
+        ],
+        "anchoring": {
+          "anchored to D-0001": 2,
+          "anchored to H-0001": 1,
+          "anchored to O-0002": 1,
+          "moot: not anchored": 3
+        },
+        "dismissed": [],
+        "expired": [],
+        "flipped": [],
+        "groups": [
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0002",
+              "O-0006",
+              "O-0009"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ],
+            "shape": [
+              "http-tool",
+              "test-failure-triage"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0003"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "http-tool",
+              "test-failure-triage",
+              "tool-budget"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0007",
+              "O-0008"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "output-schema",
+              "test-failure-triage"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0001",
+              "O-0004",
+              "O-0005"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002"
+            ],
+            "shape": [
+              "test-failure-triage"
+            ]
+          }
+        ],
+        "groups_at_bar": 2,
+        "id": "K-0001",
+        "nominations": [
+          {
+            "outcome": "admitted D-0001",
+            "rung": "new-decision",
+            "subject": "api-usage"
+          },
+          {
+            "outcome": "declined; draft dropped",
+            "rung": "new-decision",
+            "subject": "validation"
+          }
+        ],
+        "outcomes": {
+          "admitted D-0001": 1,
+          "declined; draft dropped": 1
+        },
+        "retired": []
+      },
+      "hash": "1ef042320eba",
+      "in_context": [],
+      "kind": "stream",
+      "mentions": {},
+      "observations": [
+        {
+          "name": "O-0004",
+          "noticed": "The task curriculum-strict/footer_04 attempted to sum the amount column, produced 4030, but the pass criteria were not met.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0005",
+          "noticed": "In task curriculum-strict/newline_00 the attempt returned 12 lines without confirming the correct total, missing the verification step.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0006",
+          "noticed": "The GET /projects/82 call failed with HTTP 410 because the API requires the /v2/projects/82 path.",
+          "shape": [
+            "http-tool",
+            "test-failure-triage"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0007",
+          "noticed": "Task curriculum-strict/paged_00 returned result 406 and scored output_schema_valid 0.0, indicating the output did not match the expected schema.",
+          "shape": [
+            "output-schema"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0008",
+          "noticed": "The task curriculum\u2011strict/paged_06 returned a numeric sum 306 but failed the output schema validation, which should have triggered an observation record noting the schema mismatch.",
+          "shape": [
+            "output-schema"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0009",
+          "noticed": "GET /secure/credits was attempted without the required token, resulting in HTTP\u202f401 Unauthorized.",
+          "shape": [
+            "http-tool",
+            "test-failure-triage"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 2,
+      "pass_rate": 0.25,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-d65d-7437-92f5-a7fe2dc18c17",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 4030,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-d661-724f-8780-0c3c912de6fb",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 12,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-d65d-7135-9568-6e6f6dbf3c0a",
+          "error": {
+            "cause": "HTTP 410 Gone: this API serves /v2/projects/82",
+            "message": "Failed to GET project 82"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "naive",
+          "task": "curriculum-strict/moved_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-d65c-72db-a5ba-eefbe80ef273",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 7,
+            "name": "Q2-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-d65d-7c22-9b43-a87bd9770793",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 292.3,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-d662-7efa-b6c1-4d1f7e09bc55",
+          "error": null,
+          "lesson": "paged-api",
+          "result": {
+            "result": 406
+          },
+          "symptom": "wrong",
+          "task": "curriculum-strict/paged_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-e692-76cc-a8e0-7c032a90810e",
+          "error": null,
+          "lesson": "paged-api",
+          "result": {
+            "result": 306
+          },
+          "symptom": "wrong",
+          "task": "curriculum-strict/paged_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0998e-e9dd-7c97-b45b-60b9dbf00bdf",
+          "error": {
+            "cause": "http call budget of 1 exceeded at second GET attempt",
+            "message": "Failed to retrieve credits due to call budget exceeded"
+          },
+          "lesson": "token-route",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/token_03"
+        }
+      ],
+      "session": "S-0002",
+      "symptoms": {
+        "naive": 4,
+        "pass": 2,
+        "wrong": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 3,
+      "consolidation": null,
+      "hash": "b009fabb5607",
+      "in_context": [
+        "D-0001"
+      ],
+      "kind": "stream",
+      "mentions": {
+        "moved-v2": [
+          "D-0001"
+        ],
+        "token-route": [
+          "D-0001"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0010",
+          "noticed": "Task curriculum\u2011strict/newline_03 used one shell call, returned 15 lines, but was marked failed because the result did not match the expected total.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0011",
+          "noticed": "In task curriculum-strict/paged_09, the GET /v2/parcels call returned 404 due to a missing authentication token; providing a valid token would have passed.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0012",
+          "noticed": "Task curriculum\u2011strict/token_06 attempted GET /secure/audit without a token and without the /v2 prefix; it would have passed if it used a valid authentication token and the /v2/secure/audit endpoint.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 3,
+      "pass_rate": 0.5,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09994-a6e8-7ab2-b9ab-fcbb38f06fc6",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09994-a6e8-79e8-9765-3379778508a0",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 3,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_04"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09994-a6e9-734e-8403-669348462b26",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "ok",
+          "symptom": "pass",
+          "task": "curriculum-strict/moved_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09994-a6ea-7102-bcc5-d819206115e8",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 15,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09994-a6e7-7af8-b0df-fde9073a9fff",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "board": "Q4-2022",
+            "count": 7
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_11"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09994-b4eb-7c88-b09d-f428a5d1e0cd",
+          "error": {
+            "cause": "HTTP 404 Not Found for /v2/parcels",
+            "message": "GET /v2/parcels failed"
+          },
+          "lesson": "paged-api",
+          "result": 0,
+          "symptom": "error:http-404",
+          "task": "curriculum-strict/paged_09"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09994-b7ee-71dc-a4bd-333ab148b375",
+          "error": {
+            "cause": "Missing or invalid authentication token",
+            "message": "HTTP 404 Not Found for /v2/secure/audit"
+          },
+          "lesson": "token-route",
+          "result": null,
+          "symptom": "error:http-404",
+          "task": "curriculum-strict/token_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09994-a6e7-79a2-bd18-3dc6d7bcdc9c",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1785.05,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_03"
+        }
+      ],
+      "session": "S-0003",
+      "symptoms": {
+        "error:http-404": 2,
+        "naive": 2,
+        "pass": 4
+      },
+      "work_shape": [
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 4,
+      "consolidation": {
+        "admitted": [],
+        "anchoring": {
+          "anchored to D-0001": 1,
+          "moot: not anchored": 2
+        },
+        "dismissed": [],
+        "expired": [
+          "01a0998e-90ac-74ec-881f-45be5bb23b67",
+          "01a09990-8a90-70fb-a187-f01cd24be1c3"
+        ],
+        "flipped": [
+          "D-0001",
+          "D-0001",
+          "D-0001",
+          "D-0001",
+          "D-0001",
+          "D-0001"
+        ],
+        "groups": [
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0011",
+              "O-0012",
+              "O-0016",
+              "O-0017",
+              "O-0018"
+            ],
+            "sessions": [
+              "S-0003",
+              "S-0004"
+            ],
+            "shape": [
+              "http-tool"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0003"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "http-tool",
+              "tool-budget"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0004"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "other(incorrect aggregation)"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0007",
+              "O-0008"
+            ],
+            "sessions": [
+              "S-0002"
+            ],
+            "shape": [
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0001",
+              "O-0005",
+              "O-0010",
+              "O-0013",
+              "O-0014",
+              "O-0015"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002",
+              "S-0003",
+              "S-0004"
+            ],
+            "shape": [
+              "shell-tool"
+            ]
+          }
+        ],
+        "groups_at_bar": 2,
+        "id": "K-0002",
+        "nominations": [
+          {
+            "outcome": "declined; draft dropped",
+            "rung": "new-decision",
+            "subject": "verification"
+          },
+          {
+            "outcome": "The finding shows that all observed HTTP calls succeeded without 410 or 401, falsifying premise p1.; reversed: premise p1 of D-0001 reversed",
+            "rung": "counterfactual-edit",
+            "subject": "D-0001"
+          },
+          {
+            "outcome": "The finding falsified premise p1, and the cited evidence shows the premise is false.; reversed: premise p1 of D-0001 reversed",
+            "rung": "counterfactual-edit",
+            "subject": "D-0001"
+          },
+          {
+            "outcome": "The successful call without 410 or 401 falsifies the premise that deprecated endpoints return 410 and missing tokens return 401.; reversed: premise p1 of D-0001 reversed",
+            "rung": "counterfactual-edit",
+            "subject": "D-0001"
+          },
+          {
+            "outcome": "The finding shows a 404 error where the premise required a 410, proving the premise false.; reversed: premise p1 of D-0001 reversed",
+            "rung": "counterfactual-edit",
+            "subject": "D-0001"
+          },
+          {
+            "outcome": "The finding shows a missing token returned a non\u2011401 error, contradicting the premise that missing tokens return 401, so the premise is reversed.; reversed: premise p1 of D-0001 reversed",
+            "rung": "counterfactual-edit",
+            "subject": "D-0001"
+          },
+          {
+            "outcome": "The observed 404 response for a missing token contradicts the premise that missing tokens return 401, thus refuting it.; reversed: premise p1 of D-0001 reversed",
+            "rung": "counterfactual-edit",
+            "subject": "D-0001"
+          }
+        ],
+        "outcomes": {
+          "The finding falsified premise p1, and the cited evidence shows the premise is false.; reversed: premise p1 of D-0001 reversed": 1,
+          "The finding shows a 404 error where the premise required a 410, proving the premise false.; reversed: premise p1 of D-0001 reversed": 1,
+          "The finding shows a missing token returned a non\u2011401 error, contradicting the premise that missing tokens return 401, so the premise is reversed.; reversed: premise p1 of D-0001 reversed": 1,
+          "The finding shows that all observed HTTP calls succeeded without 410 or 401, falsifying premise p1.; reversed: premise p1 of D-0001 reversed": 1,
+          "The observed 404 response for a missing token contradicts the premise that missing tokens return 401, thus refuting it.; reversed: premise p1 of D-0001 reversed": 1,
+          "The successful call without 410 or 401 falsifies the premise that deprecated endpoints return 410 and missing tokens return 401.; reversed: premise p1 of D-0001 reversed": 1,
+          "declined; draft dropped": 1
+        },
+        "retired": []
+      },
+      "hash": "4139dd189603",
+      "in_context": [
+        "D-0001"
+      ],
+      "kind": "stream",
+      "mentions": {
+        "moved-v2": [
+          "D-0001"
+        ],
+        "token-route": [
+          "D-0001"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0013",
+          "noticed": "In task curriculum\u2011strict/newline_10 the first attempt applied decision D-0001, which governs HTTP calls, so the shell\u2011tool convention for counting lines was missed.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0014",
+          "noticed": "In task curriculum-strict/csv_08 the shell call returned 0 Dublin residents, but the correct count was non\u2011zero, violating the expected output convention.",
+          "shape": [
+            "output-schema",
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0015",
+          "noticed": "In task curriculum-strict/footer_08 the first attempt used a shell command that did not correctly sum the amount column, resulting in a failing pass.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0016",
+          "noticed": "In task curriculum-strict/paged_11 the initial GET /v2/bids returned HTTP 404 because no authentication token was supplied, violating the convention that all versioned endpoints must include a valid token.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0017",
+          "noticed": "Task curriculum\u2011strict/token_08 attempted a GET /secure/budget without an authentication token, violating the convention that secure endpoints require a valid token; it would have passed with a token.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0018",
+          "noticed": "Task curriculum-strict/token_10 attempted GET /secure/tally without an authentication token and using a non\u2011versioned endpoint; it would have passed by using GET /v2/secure/tally with a valid token.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 4,
+      "pass_rate": 0.25,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09997-5b0c-7b24-8967-c3d9b2ea3021",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Margaret",
+          "symptom": "pass",
+          "task": "curriculum-strict/moved_08"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09997-5b0d-75c0-8280-e314bf8096dc",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 13,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09997-5b0b-7fc4-a9bc-b6291260333a",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/csv_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09997-5b0b-7b1c-b7be-d6a22d2a5eb1",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 2312,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09997-5b0a-7a85-a68b-0e4de82e2dbf",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "release": "Q2-2027"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_04"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09997-5b0f-79c7-8feb-08eeb5a793ea",
+          "error": {
+            "cause": "HTTP 404 Not Found for /v2/bids",
+            "message": "Failed to retrieve bids"
+          },
+          "lesson": "paged-api",
+          "result": 0,
+          "symptom": "error:http-404",
+          "task": "curriculum-strict/paged_11"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09997-7092-76de-bd22-ab66e0e30321",
+          "error": {
+            "cause": "D-0001",
+            "message": "Missing authentication token for HTTP request"
+          },
+          "lesson": "token-route",
+          "result": 0,
+          "symptom": "error:other",
+          "task": "curriculum-strict/token_08"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a09997-7470-7d44-9163-14ae2ea34460",
+          "error": {
+            "cause": "Missing authentication token or endpoint not found",
+            "message": "HTTP 404 Not Found for /v2/secure/tally"
+          },
+          "lesson": "token-route",
+          "result": 0,
+          "symptom": "error:http-404",
+          "task": "curriculum-strict/token_10"
+        }
+      ],
+      "session": "S-0004",
+      "symptoms": {
+        "error:http-404": 2,
+        "error:other": 1,
+        "naive": 3,
+        "pass": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 5,
+      "consolidation": null,
+      "hash": "1a01b1c76b2b",
+      "in_context": [
+        "D-0001"
+      ],
+      "kind": "stream",
+      "mentions": {
+        "moved-v2": [
+          "D-0001"
+        ],
+        "token-route": [
+          "D-0001"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0019",
+          "noticed": "The task curriculum\u2011strict/footer_02 attempted to sum the amount column but returned 3050, which is incorrect.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0020",
+          "noticed": "In task curriculum\u2011strict/footer_05 the attempt returned the count 8 as a raw number, but the expected output format was a JSON object, so it failed.",
+          "shape": [
+            "output-schema"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0021",
+          "noticed": "In task curriculum\u2011strict/csv_10 the attempt made a single shell call but did not follow the required convention for counting entries in Riga, yielding an incorrect result of 0.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0022",
+          "noticed": "In task curriculum\u2011strict/newline_04 the initial shell call returned 0 lines, missing the required total line count across block-1.lst and block-2.lst; a correct command would have summed both files' line counts.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0023",
+          "noticed": "In task curriculum\u2011strict/paged_01 the first attempt called GET /v2/orders without a valid token, resulting in a 404; it would have passed by using the correct authenticated /v2/orders endpoint.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0024",
+          "noticed": "The task curriculum\u2011strict/token_01 failed as the GET /v2/secure/quota request returned 404 due to a missing authentication token.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 5,
+      "pass_rate": 0.25,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-50e7-77c0-914a-ee0f045580fb",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 3050,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-50e8-7bd2-b89c-6c4f603253cc",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 8,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-50e2-7ce8-8c69-87dc47a89288",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 2,
+            "project": "Q2-2025"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_03"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-50e4-72e5-9348-06b3afa43226",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/csv_10"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-50e7-7dd7-8f2b-f7a83e8daa9f",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "ok",
+          "symptom": "pass",
+          "task": "curriculum-strict/moved_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-50e8-7c25-b6c4-d49580ac9014",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 0,
+          "symptom": "wrong",
+          "task": "curriculum-strict/newline_04"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-6840-7743-a341-4c4425cad33c",
+          "error": {
+            "cause": "D-0001",
+            "message": "HTTP 404 Not Found for /v2/orders"
+          },
+          "lesson": "paged-api",
+          "result": 0,
+          "symptom": "error:http-404",
+          "task": "curriculum-strict/paged_01"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a0999e-6d39-7233-a697-36159005ecb9",
+          "error": {
+            "cause": "Authentication token file not found; HTTP request returned 404.",
+            "message": "Failed to retrieve quota due to missing authentication token."
+          },
+          "lesson": "token-route",
+          "result": null,
+          "symptom": "error:other",
+          "task": "curriculum-strict/token_01"
+        }
+      ],
+      "session": "S-0005",
+      "symptoms": {
+        "error:http-404": 1,
+        "error:other": 1,
+        "naive": 3,
+        "pass": 2,
+        "wrong": 1
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 6,
+      "consolidation": {
+        "admitted": [
+          "D-0002"
+        ],
+        "anchoring": {
+          "no instance proposed": 2
+        },
+        "dismissed": [],
+        "expired": [
+          "01a09996-8f1d-742a-9140-9ac35b3a4420",
+          "01a09999-99b6-70e2-a026-2ce42cee6287"
+        ],
+        "flipped": [
+          "D-0001"
+        ],
+        "groups": [
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0011",
+              "O-0012",
+              "O-0016",
+              "O-0017",
+              "O-0018",
+              "O-0023",
+              "O-0024",
+              "O-0027",
+              "O-0028"
+            ],
+            "sessions": [
+              "S-0003",
+              "S-0004",
+              "S-0005",
+              "S-0006"
+            ],
+            "shape": [
+              "http-tool"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0003"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "http-tool",
+              "tool-budget"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0007",
+              "O-0008",
+              "O-0020"
+            ],
+            "sessions": [
+              "S-0002",
+              "S-0005"
+            ],
+            "shape": [
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0001",
+              "O-0004",
+              "O-0005",
+              "O-0010",
+              "O-0013",
+              "O-0014",
+              "O-0015",
+              "O-0019",
+              "O-0021",
+              "O-0022",
+              "O-0025",
+              "O-0026"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002",
+              "S-0003",
+              "S-0004",
+              "S-0005",
+              "S-0006"
+            ],
+            "shape": [
+              "shell-tool"
+            ]
+          }
+        ],
+        "groups_at_bar": 3,
+        "id": "K-0003",
+        "nominations": [
+          {
+            "outcome": "admitted D-0002",
+            "rung": "new-decision",
+            "subject": "auth-token"
+          },
+          {
+            "outcome": "Observed HTTP calls all succeeded without 410 or 401, falsifying the premise that deprecated endpoints return 410 and missing tokens return 401.; reversed: premise p1 of D-0001 reversed",
+            "rung": "counterfactual-edit",
+            "subject": "D-0001"
+          },
+          {
+            "outcome": "The 404 response does not contradict the premise that deprecated endpoints return 410 and missing tokens return 401, so the evidence does not support reversing the premise.; still-holds: D-0001 stands",
+            "rung": "counterfactual-edit",
+            "subject": "D-0001"
+          }
+        ],
+        "outcomes": {
+          "Observed HTTP calls all succeeded without 410 or 401, falsifying the premise that deprecated endpoints return 410 and missing tokens return 401.; reversed: premise p1 of D-0001 reversed": 1,
+          "The 404 response does not contradict the premise that deprecated endpoints return 410 and missing tokens return 401, so the evidence does not support reversing the premise.; still-holds: D-0001 stands": 1,
+          "admitted D-0002": 1
+        },
+        "retired": []
+      },
+      "hash": "c1788d2522a7",
+      "in_context": [
+        "D-0001"
+      ],
+      "kind": "stream",
+      "mentions": {
+        "moved-v2": [
+          "D-0001"
+        ],
+        "token-route": [
+          "D-0001"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0025",
+          "noticed": "In task curriculum-strict/footer_06 the initial attempt summed the amounts but returned an incorrect total, violating the expected exact sum.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0026",
+          "noticed": "In task curriculum-strict/csv_00 the attempt made a shell call but returned 0, missing the correct count of people in Berlin.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0027",
+          "noticed": "Task curriculum\u2011strict/token_05 attempted GET /secure/limits, which returned 404; using the versioned /v2/secure/limits with proper authentication would have succeeded.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0028",
+          "noticed": "Task curriculum\u2011strict/paged_04 failed due to a missing authentication token; providing a valid token would have allowed the GET /tickets call to succeed.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 6,
+      "pass_rate": 0.375,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a2-3a96-7619-90e2-3b5a31310836",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "project": "Q3-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a2-3a99-7d56-acdc-5d020a480856",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 3282,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a2-3a96-7597-a6e8-20b3b886b3bf",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 4,
+            "title": "Q4-2020"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_00"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a2-3a9b-7680-aaca-22e0091b197c",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "ok",
+          "symptom": "pass",
+          "task": "curriculum-strict/moved_01"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a2-3a9c-7793-8a69-7e14b8da41a9",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 21,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a2-3a96-73ce-9e46-f34206be5ed6",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/csv_00"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a2-553b-7b56-adf8-41d308477c02",
+          "error": {
+            "cause": "Endpoint /v2/secure/limits not found or inaccessible",
+            "message": "Failed to retrieve limits: HTTP 404 Not Found"
+          },
+          "lesson": "token-route",
+          "result": 0,
+          "symptom": "error:http-404",
+          "task": "curriculum-strict/token_05"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a2-51ae-742a-b961-943b569cbe23",
+          "error": {
+            "cause": "auth_token.txt not found",
+            "message": "Failed to retrieve tickets due to missing authentication token."
+          },
+          "lesson": "paged-api",
+          "result": 0,
+          "symptom": "error:other",
+          "task": "curriculum-strict/paged_04"
+        }
+      ],
+      "session": "S-0006",
+      "symptoms": {
+        "error:http-404": 1,
+        "error:other": 1,
+        "naive": 3,
+        "pass": 3
+      },
+      "work_shape": [
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 7,
+      "consolidation": null,
+      "hash": "737f84167761",
+      "in_context": [
+        "D-0001",
+        "D-0002"
+      ],
+      "kind": "stream",
+      "mentions": {
+        "moved-v2": [
+          "D-0001"
+        ],
+        "token-route": [
+          "D-0001",
+          "D-0002"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0029",
+          "noticed": "In task curriculum\u2011strict/footer_10 the model attempted a tool call with invalid JSON arguments, causing a BadRequestError.",
+          "shape": [
+            "error-wrapping"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0030",
+          "noticed": "In task curriculum-strict/token_00, the first applied decision D-0001 required versioned endpoints but did not ensure a token, causing the request to fail; applying D-0002 to require a token before any HTTP call would have satisfied the convention.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0031",
+          "noticed": "For task curriculum-strict/paged_07, the first attempt applied D-0001 demanding versioned endpoints and a token, but the request failed due to a missing authentication token; applying D-0002, which requires a token before any HTTP request, would have satisfied the convention.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 7,
+      "pass_rate": 0.375,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a7-d52a-7c95-b88f-37940f388d96",
+          "error": {
+            "cause": "endpoint BadRequestError: Error code: 400 - {'message': 'Validation: `messages[2].tool_calls[0].function.arguments` must be a valid JSON object string: invalid escape at line 1 column 22', 'type': 'Bad Request', 'code': 400}",
+            "message": "model call failed"
+          },
+          "lesson": "footer-row",
+          "result": null,
+          "symptom": "error:model-call",
+          "task": "curriculum-strict/footer_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a7-d52f-7eda-a226-e4eaeae8db56",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 18,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_11"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a7-d529-765d-91c8-0682c60e217c",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 3,
+            "title": "Q3-2025"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_06"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a7-d52d-79c6-b46e-51aba8876388",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "Grace",
+          "symptom": "pass",
+          "task": "curriculum-strict/moved_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a7-d52e-7ffa-b4d6-5d1f02ad3737",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 17,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_08"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a7-d52a-7dfa-bee3-7321612fe543",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 1757.28,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_11"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a7-ea0c-774e-b103-f9fc37175ffd",
+          "error": {
+            "cause": "D-0002",
+            "message": "Missing authentication token; cannot perform request"
+          },
+          "lesson": "token-route",
+          "result": null,
+          "symptom": "error:other",
+          "task": "curriculum-strict/token_00"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099a7-e348-72d7-8d39-ee312dd834e4",
+          "error": {
+            "cause": "D-0002",
+            "message": "Missing authentication token"
+          },
+          "lesson": "paged-api",
+          "result": 0,
+          "symptom": "error:other",
+          "task": "curriculum-strict/paged_07"
+        }
+      ],
+      "session": "S-0007",
+      "symptoms": {
+        "error:model-call": 1,
+        "error:other": 2,
+        "naive": 2,
+        "pass": 3
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "http-tool",
+        "tool-budget",
+        "output-schema"
+      ]
+    },
+    {
+      "batch": 8,
+      "consolidation": {
+        "admitted": [
+          "D-0003"
+        ],
+        "anchoring": {
+          "no instance proposed; evicted past the 3-consolidation deadline": 2
+        },
+        "dismissed": [],
+        "expired": [
+          "01a099a1-93a8-75da-86d3-8b3973b85252",
+          "01a099a4-c43b-7296-9ebc-693a540f699c"
+        ],
+        "flipped": [
+          "D-0001",
+          "C-0001",
+          "C-0002"
+        ],
+        "groups": [
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0030",
+              "O-0031",
+              "O-0032",
+              "O-0033",
+              "O-0034"
+            ],
+            "sessions": [
+              "S-0007",
+              "S-0008"
+            ],
+            "shape": [
+              "http-tool"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0003"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "http-tool",
+              "tool-budget"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0007",
+              "O-0008",
+              "O-0020"
+            ],
+            "sessions": [
+              "S-0002",
+              "S-0005"
+            ],
+            "shape": [
+              "output-schema"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0013"
+            ],
+            "sessions": [
+              "S-0004"
+            ],
+            "shape": [
+              "shell-tool"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0010",
+              "O-0014",
+              "O-0015",
+              "O-0021",
+              "O-0022",
+              "O-0026"
+            ],
+            "sessions": [
+              "S-0003",
+              "S-0004",
+              "S-0005",
+              "S-0006"
+            ],
+            "shape": [
+              "shell-tool",
+              "test-failure-triage"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0001",
+              "O-0004",
+              "O-0005",
+              "O-0019",
+              "O-0025"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002",
+              "S-0005",
+              "S-0006"
+            ],
+            "shape": [
+              "test-failure-triage"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0029"
+            ],
+            "sessions": [
+              "S-0007"
+            ],
+            "shape": [
+              "tool-call-retry"
+            ]
+          }
+        ],
+        "groups_at_bar": 4,
+        "id": "K-0004",
+        "nominations": [
+          {
+            "outcome": "admitted D-0003",
+            "rung": "new-decision",
+            "subject": "schema"
+          },
+          {
+            "outcome": "The observed HTTP call succeeded without 401 or 410, directly contradicting the premise that deprecated endpoints return 410 and missing tokens return 401, so the premise is reversed.; reversed: premise p1 of D-0001 reversed",
+            "rung": "counterfactual-edit",
+            "subject": "D-0001"
+          },
+          {
+            "outcome": "The cited failure shows a missing token prevented the request but does not demonstrate that missing tokens return 401, so the premise is not falsified.; still-holds: D-0001 stands",
+            "rung": "counterfactual-edit",
+            "subject": "D-0001"
+          },
+          {
+            "outcome": "The finding reports a missing authentication token causing the request to fail, which aligns with the premise that missing tokens return 401, so the evidence does not falsify the premise.; still-holds: D-0001 stands",
+            "rung": "counterfactual-edit",
+            "subject": "D-0001"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0001"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0002"
+          },
+          {
+            "outcome": "moot: retired through the genesis-deadline door",
+            "rung": "counterfactual-edit",
+            "subject": "L-0005"
+          }
+        ],
+        "outcomes": {
+          "The cited failure shows a missing token prevented the request but does not demonstrate that missing tokens return 401, so the premise is not falsified.; still-holds: D-0001 stands": 1,
+          "The finding reports a missing authentication token causing the request to fail, which aligns with the premise that missing tokens return 401, so the evidence does not falsify the premise.; still-holds: D-0001 stands": 1,
+          "The observed HTTP call succeeded without 401 or 410, directly contradicting the premise that deprecated endpoints return 410 and missing tokens return 401, so the premise is reversed.; reversed: premise p1 of D-0001 reversed": 1,
+          "admitted D-0003": 1,
+          "moot: retired through the genesis-deadline door": 3
+        },
+        "retired": [
+          "L-0001",
+          "L-0002",
+          "L-0005"
+        ]
+      },
+      "hash": "ac0c04ce7294",
+      "in_context": [
+        "D-0001",
+        "D-0002"
+      ],
+      "kind": "stream",
+      "mentions": {
+        "moved-v2": [
+          "D-0001"
+        ],
+        "token-route": [
+          "D-0001",
+          "D-0002"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0032",
+          "noticed": "For task curriculum-strict/moved_10, the initial GET request was made without an authentication token, causing the request to fail; providing a valid token would have satisfied the requirement.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0033",
+          "noticed": "In task curriculum\u2011strict/token_09 the first decision D-0001 was applied without a token, causing a missing\u2011authentication error; D-0002 should have fired earlier to require the token.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0034",
+          "noticed": "In task curriculum-strict/paged_03, the first attempt applied D-0001 which required a token but did not ensure it before the HTTP call, resulting in a missing authentication token; applying D-0002 (require token before any request) would have succeeded.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 8,
+      "pass_rate": 0.375,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099ab-20ea-74bf-9e91-fcf1d566dca7",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 4,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099ab-20ec-79d6-ba08-14611765ebff",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 17,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099ab-20e9-70d5-a99d-1e9681a1336a",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 5,
+            "label": "Q2-2021"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_08"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099ab-20ea-7fa1-939f-5446116d87e0",
+          "error": {
+            "cause": "D-0002",
+            "message": "Missing authentication token prevents performing the required HTTP GET request."
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "error:other",
+          "task": "curriculum-strict/moved_10"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099ab-20e9-794c-a966-999eb38e268d",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 440.99,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_07"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099ab-5120-7b88-bac8-ac08a5d35e45",
+          "error": {
+            "cause": "D-0002",
+            "message": "Missing authentication token"
+          },
+          "lesson": "token-route",
+          "result": 0,
+          "symptom": "error:other",
+          "task": "curriculum-strict/token_09"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099ab-4916-7e62-a9b4-844d4a3b0d5b",
+          "error": {
+            "cause": "D-0002",
+            "message": "Missing authentication token"
+          },
+          "lesson": "paged-api",
+          "result": 0,
+          "symptom": "error:other",
+          "task": "curriculum-strict/paged_03"
+        },
+        {
+          "applied": [
+            "D-0001"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099ab-20e9-7c89-afc4-d5fe367bde84",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "ok",
+          "symptom": "pass",
+          "task": "curriculum-strict/moved_05"
+        }
+      ],
+      "session": "S-0008",
+      "symptoms": {
+        "error:other": 3,
+        "naive": 2,
+        "pass": 3
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 9,
+      "consolidation": null,
+      "hash": "e571b801a0f8",
+      "in_context": [
+        "D-0001",
+        "D-0002"
+      ],
+      "kind": "stream",
+      "mentions": {
+        "moved-v2": [
+          "D-0001"
+        ],
+        "token-route": [
+          "D-0001",
+          "D-0002"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0035",
+          "noticed": "Task curriculum\u2011strict/newline_05 tried to sum lines across three files but returned 13, which is incorrect according to the expected total.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0036",
+          "noticed": "Task curriculum-strict/moved_07 attempted the HTTP request without an authentication token, violating the rule that a token must be present before any request; providing a valid token would have satisfied the convention.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0037",
+          "noticed": "The task curriculum\u2011strict/paged_05 called /v2/invoices without an authentication token, causing a missing\u2011token error that should have triggered record D-0002.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0038",
+          "noticed": "Task curriculum-strict/token_07 first applied D-0001, causing a missing authentication token error; applying D-0002 first would have required the token and passed.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0039",
+          "noticed": "Task curriculum-strict/paged_10 made an HTTP GET without an authentication token, violating the token\u2011required convention; the correct first step would have been to enforce D-0002's token requirement.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 9,
+      "pass_rate": 0.25,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b1-7e86-767c-8a95-940abcef8543",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 13,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b1-7e82-7774-951b-43b8fdb7b86e",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5198,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_00"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b1-7e84-7be0-a69c-15bb3aff83b5",
+          "error": {
+            "cause": "D-0002",
+            "message": "Missing authentication token"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "error:other",
+          "task": "curriculum-strict/moved_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b1-7e81-7134-b6b9-7992f58ff348",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 2,
+            "label": "H1-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_02"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b1-7e81-776a-a6e4-94d295966383",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 3,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_06"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b1-7e86-776d-aeea-ca8d56038de5",
+          "error": {
+            "cause": "auth_token.txt not found",
+            "message": "Missing authentication token"
+          },
+          "lesson": "paged-api",
+          "result": null,
+          "symptom": "error:other",
+          "task": "curriculum-strict/paged_05"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b1-9e80-7677-b61c-1c65fa188e8e",
+          "error": {
+            "cause": "D-0002",
+            "message": "Missing authentication token required for HTTP request."
+          },
+          "lesson": "token-route",
+          "result": 0,
+          "symptom": "error:other",
+          "task": "curriculum-strict/token_07"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b1-9808-7180-9627-f6435998ca9f",
+          "error": {
+            "cause": "auth_token.txt not found",
+            "message": "Missing authentication token"
+          },
+          "lesson": "paged-api",
+          "result": 0,
+          "symptom": "error:other",
+          "task": "curriculum-strict/paged_10"
+        }
+      ],
+      "session": "S-0009",
+      "symptoms": {
+        "error:other": 4,
+        "naive": 2,
+        "pass": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 10,
+      "consolidation": {
+        "admitted": [
+          "D-0004",
+          "D-0005",
+          "D-0006"
+        ],
+        "anchoring": {},
+        "dismissed": [],
+        "expired": [
+          "01a099aa-1c8c-716c-8a57-b3de07325760"
+        ],
+        "flipped": [
+          "D-0002",
+          "D-0001",
+          "D-0003"
+        ],
+        "groups": [
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0029"
+            ],
+            "sessions": [
+              "S-0007"
+            ],
+            "shape": [
+              "error-wrapping"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0030",
+              "O-0031",
+              "O-0032",
+              "O-0033",
+              "O-0034",
+              "O-0036",
+              "O-0037",
+              "O-0038",
+              "O-0039",
+              "O-0043",
+              "O-0044"
+            ],
+            "sessions": [
+              "S-0007",
+              "S-0008",
+              "S-0009",
+              "S-0010"
+            ],
+            "shape": [
+              "http-tool"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0003"
+            ],
+            "sessions": [
+              "S-0001"
+            ],
+            "shape": [
+              "http-tool",
+              "tool-budget"
+            ]
+          },
+          {
+            "at_bar": false,
+            "observations": [
+              "O-0014"
+            ],
+            "sessions": [
+              "S-0004"
+            ],
+            "shape": [
+              "output-schema",
+              "shell-tool"
+            ]
+          },
+          {
+            "at_bar": true,
+            "observations": [
+              "O-0001",
+              "O-0004",
+              "O-0005",
+              "O-0010",
+              "O-0013",
+              "O-0015",
+              "O-0019",
+              "O-0021",
+              "O-0022",
+              "O-0025",
+              "O-0026",
+              "O-0035",
+              "O-0040",
+              "O-0041",
+              "O-0042"
+            ],
+            "sessions": [
+              "S-0001",
+              "S-0002",
+              "S-0003",
+              "S-0004",
+              "S-0005",
+              "S-0006",
+              "S-0009",
+              "S-0010"
+            ],
+            "shape": [
+              "shell-tool"
+            ]
+          }
+        ],
+        "groups_at_bar": 2,
+        "id": "K-0005",
+        "nominations": [
+          {
+            "outcome": "declined; draft dropped",
+            "rung": "new-decision",
+            "subject": "version"
+          },
+          {
+            "outcome": "admitted D-0004",
+            "rung": "new-decision",
+            "subject": "auth"
+          },
+          {
+            "outcome": "admitted D-0005",
+            "rung": "new-decision",
+            "subject": "combined"
+          },
+          {
+            "outcome": "declined; draft dropped",
+            "rung": "new-decision",
+            "subject": "validation"
+          },
+          {
+            "outcome": "admitted D-0006",
+            "rung": "new-decision",
+            "subject": "token"
+          },
+          {
+            "outcome": "moot",
+            "rung": "counterfactual-edit",
+            "subject": "D-0003"
+          }
+        ],
+        "outcomes": {
+          "admitted D-0004": 1,
+          "admitted D-0005": 1,
+          "admitted D-0006": 1,
+          "declined; draft dropped": 2,
+          "moot": 1
+        },
+        "retired": []
+      },
+      "hash": "cb232a13c3ee",
+      "in_context": [
+        "D-0001",
+        "D-0002"
+      ],
+      "kind": "stream",
+      "mentions": {
+        "moved-v2": [
+          "D-0001"
+        ],
+        "token-route": [
+          "D-0001",
+          "D-0002"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0040",
+          "noticed": "The task curriculum\u2011strict/footer_03 counted rows but did not validate the count, causing the pass to fail.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0041",
+          "noticed": "The attempt for task curriculum\u2011strict/newline_07 returned 6 lines, which is incorrect.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0042",
+          "noticed": "In task curriculum\u2011strict/csv_05 the first attempt applied HTTP records D-0001 and D-0002, but the task required a shell call to sum the CSV column.",
+          "shape": [
+            "shell-tool"
+          ],
+          "state": "open"
+        },
+        {
+          "name": "O-0043",
+          "noticed": "In task curriculum\u2011strict/paged_08 the initial GET /alerts call was made without an authentication token, violating the rule that a token must be present before any HTTP request, which caused the call to fail.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        },
+        {
+          "name": "O-0044",
+          "noticed": "Task curriculum-strict/token_11 attempted an HTTP GET without an authentication token, violating the requirement to include a token before any request; with a valid token the call would have succeeded.",
+          "shape": [
+            "http-tool"
+          ],
+          "state": "promoted"
+        }
+      ],
+      "pass": 10,
+      "pass_rate": 0.375,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b5-73a2-7d65-a892-d723ea551a44",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_03"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b5-73a4-79f1-8de1-ffd8d7ab1462",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 6,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_07"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b5-739f-722a-9b72-68f049828f11",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 6,
+            "release": "Q4-2022"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_10"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b5-73a2-7c25-9c68-285e32e9138b",
+          "error": null,
+          "lesson": "moved-v2",
+          "result": "ok",
+          "symptom": "pass",
+          "task": "curriculum-strict/moved_09"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b5-73a0-78b0-9b36-28d90754154b",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/csv_05"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b5-73a0-71ec-a8f6-77026cd9a89e",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 269.11,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_09"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b5-a31e-747f-94d1-0084267912ed",
+          "error": {
+            "cause": "auth_token.txt not found",
+            "message": "Missing authentication token"
+          },
+          "lesson": "paged-api",
+          "result": 0,
+          "symptom": "error:other",
+          "task": "curriculum-strict/paged_08"
+        },
+        {
+          "applied": [
+            "D-0001",
+            "D-0002"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099b5-a88c-7c07-8224-0555a482093f",
+          "error": {
+            "cause": "D-0002",
+            "message": "Missing authentication token"
+          },
+          "lesson": "token-route",
+          "result": null,
+          "symptom": "error:other",
+          "task": "curriculum-strict/token_11"
+        }
+      ],
+      "session": "S-0010",
+      "symptoms": {
+        "error:other": 2,
+        "naive": 3,
+        "pass": 3
+      },
+      "work_shape": [
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 1,
+      "consolidation": null,
+      "hash": "0707b1fbe41b",
+      "in_context": [
+        "D-0004",
+        "D-0005",
+        "D-0006"
+      ],
+      "kind": "revisit",
+      "mentions": {
+        "moved-v2": [
+          "D-0005"
+        ],
+        "token-route": [
+          "D-0004",
+          "D-0005",
+          "D-0006"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0045",
+          "noticed": "The task GET /plans/49 failed because the initial HTTP GET was issued without an authentication token.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0046",
+          "noticed": "Task curriculum\u2011strict/moved_06 attempted GET /zones/90 without an authentication token, violating the requirement that a token be present before any HTTP request; providing a valid token would have satisfied the rule.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0047",
+          "noticed": "The attempt made a shell call but the row's applied list is empty, so the shell tool was not applied as required, causing the task to fail.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0048",
+          "noticed": "Task curriculum-strict/paged_02 attempted an HTTP GET without an authentication token, which broke the rule that a token must be present before any HTTP call.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0049",
+          "noticed": "Task token_02 attempted a GET to /secure/ledger without providing an authentication token, which should have been blocked by the token\u2011required rule.",
+          "shape": [],
+          "state": "open"
+        }
+      ],
+      "pass": 11,
+      "pass_rate": 0.125,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099bf-db64-776f-997e-7617715af394",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 14,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_02"
+        },
+        {
+          "applied": [
+            "D-0004",
+            "D-0005",
+            "D-0006"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099bf-db5e-7ca4-8e66-ee1cb6abe79d",
+          "error": {
+            "cause": "D-0004",
+            "message": "Missing authentication token; cannot perform HTTP GET request."
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "error:other",
+          "task": "curriculum-strict/moved_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099bf-db5e-750e-994c-9411cafe6c8c",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 5,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_09"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099bf-db5c-750a-86a6-bdf410e0ae6e",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "board": "Q3-2022",
+            "count": 4
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_05"
+        },
+        {
+          "applied": [
+            "D-0004",
+            "D-0005",
+            "D-0006"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099bf-db62-7d0a-aabd-5c810f108fd1",
+          "error": {
+            "cause": "Authentication token required by records D-0004, D-0005, D-0006.",
+            "message": "Missing authentication token prevents HTTP request."
+          },
+          "lesson": "moved-v2",
+          "result": null,
+          "symptom": "error:other",
+          "task": "curriculum-strict/moved_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099bf-db5d-78e9-b99e-fc5430ae8cdd",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 0,
+          "symptom": "naive",
+          "task": "curriculum-strict/csv_02"
+        },
+        {
+          "applied": [
+            "D-0004",
+            "D-0005",
+            "D-0006"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099bf-f94b-7889-beb2-fbaae47b2eed",
+          "error": {
+            "cause": "Authentication required per D-0004",
+            "message": "Missing authentication token"
+          },
+          "lesson": "paged-api",
+          "result": 0,
+          "symptom": "error:other",
+          "task": "curriculum-strict/paged_02"
+        },
+        {
+          "applied": [
+            "D-0004",
+            "D-0005",
+            "D-0006"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099bf-fcf8-7980-9a38-68ac7b0495d0",
+          "error": {
+            "cause": "Authentication token not provided",
+            "message": "Missing authentication token required for HTTP request."
+          },
+          "lesson": "token-route",
+          "result": null,
+          "symptom": "error:other",
+          "task": "curriculum-strict/token_02"
+        }
+      ],
+      "session": "S-0011",
+      "symptoms": {
+        "error:other": 4,
+        "naive": 3,
+        "pass": 1
+      },
+      "work_shape": [
+        "file-tool",
+        "shell-tool",
+        "http-tool",
+        "tool-budget"
+      ]
+    },
+    {
+      "batch": 2,
+      "consolidation": null,
+      "hash": "1ef042320eba",
+      "in_context": [
+        "D-0004",
+        "D-0005",
+        "D-0006"
+      ],
+      "kind": "revisit",
+      "mentions": {
+        "moved-v2": [
+          "D-0005"
+        ],
+        "token-route": [
+          "D-0004",
+          "D-0005",
+          "D-0006"
+        ]
+      },
+      "observations": [
+        {
+          "name": "O-0050",
+          "noticed": "In task curriculum\u2011strict/paged_00 the first attempt made an HTTP GET without an authentication token, violating the convention that a token must be present before any HTTP request.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0051",
+          "noticed": "In task curriculum-strict/newline_00 the attempt counted only one file's lines, yielding 12, but the required total across batch-1.txt and batch-2.txt was missed.",
+          "shape": [],
+          "state": "open"
+        },
+        {
+          "name": "O-0052",
+          "noticed": "The task curriculum\u2011strict/token_03 tried an HTTP GET without a token, missing the convention that a valid token must be present before GET calls; D-0006 would have satisfied it.",
+          "shape": [],
+          "state": "open"
+        }
+      ],
+      "pass": 12,
+      "pass_rate": 0.25,
+      "proposals": 1,
+      "rows": [
+        {
+          "applied": [
+            "D-0004",
+            "D-0005",
+            "D-0006"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c4-7044-72a8-943f-eb777ff15ae4",
+          "error": {
+            "cause": "No token provided for HTTP request",
+            "message": "Missing authentication token"
+          },
+          "lesson": "paged-api",
+          "result": null,
+          "symptom": "error:other",
+          "task": "curriculum-strict/paged_00"
+        },
+        {
+          "applied": [
+            "D-0004",
+            "D-0005",
+            "D-0006"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c4-7040-7734-b92c-b27bf3dcbbc1",
+          "error": {
+            "cause": "D-0004",
+            "message": "Missing authentication token"
+          },
+          "lesson": "moved-v2",
+          "result": "",
+          "symptom": "error:other",
+          "task": "curriculum-strict/moved_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c4-703f-787d-bf04-24e975046ac6",
+          "error": null,
+          "lesson": "footer-row",
+          "result": 4030,
+          "symptom": "naive",
+          "task": "curriculum-strict/footer_04"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c4-7043-7377-bc38-26cc35f7fef2",
+          "error": null,
+          "lesson": "trailing-newline",
+          "result": 12,
+          "symptom": "naive",
+          "task": "curriculum-strict/newline_00"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c4-703e-759f-babb-ac3e899778bb",
+          "error": null,
+          "lesson": "bom",
+          "result": {
+            "count": 7,
+            "name": "Q2-2028"
+          },
+          "symptom": "pass",
+          "task": "curriculum-strict/bom_01"
+        },
+        {
+          "applied": [
+            "D-0004",
+            "D-0005",
+            "D-0006"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c4-8885-7ae4-9976-2c9447162259",
+          "error": {
+            "cause": "No token provided for HTTP request",
+            "message": "Missing authentication token"
+          },
+          "lesson": "paged-api",
+          "result": 0,
+          "symptom": "error:other",
+          "task": "curriculum-strict/paged_06"
+        },
+        {
+          "applied": [],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c4-703f-7255-872e-56d73a5aa843",
+          "error": null,
+          "lesson": "csv-quoted",
+          "result": 292.3,
+          "symptom": "pass",
+          "task": "curriculum-strict/csv_01"
+        },
+        {
+          "applied": [
+            "D-0004",
+            "D-0005",
+            "D-0006"
+          ],
+          "call": "weave:///slavazinevich-worldvue/hgi-experiments/call/01a099c4-8fb8-7a97-9163-60d0d6c52064",
+          "error": {
+            "cause": "D-0004",
+            "message": "Missing authentication token; cannot perform HTTP GET request."
+          },
+          "lesson": "token-route",
+          "result": 0,
+          "symptom": "error:other",
+          "task": "curriculum-strict/token_03"
+        }
+      ],
+      "session": "S-0012",
+      "symptoms": {
+        "error:other": 4,
+        "naive": 2,
+        "pass": 2
+      },
+      "work_shape": [
+        "shell-tool",
+        "http-tool"
+      ]
+    }
+  ],
+  "records": [
+    {
+      "admitted_after_pass": 2,
+      "decision": "Require all HTTP calls to use versioned /v2 endpoints and include a valid authentication token.",
+      "hook": [
+        "http-tool"
+      ],
+      "id": "D-0001",
+      "mentions": [
+        "moved-v2",
+        "token-route"
+      ],
+      "status": null
+    },
+    {
+      "admitted_after_pass": 6,
+      "decision": "Require that an authentication token be present before any HTTP request is issued.",
+      "hook": [
+        "http-tool"
+      ],
+      "id": "D-0002",
+      "mentions": [
+        "token-route"
+      ],
+      "status": null
+    },
+    {
+      "admitted_after_pass": 8,
+      "decision": "Enforce that every task output is validated against its declared JSON schema before the result is accepted.",
+      "hook": [
+        "output-schema"
+      ],
+      "id": "D-0003",
+      "mentions": [],
+      "status": null
+    },
+    {
+      "admitted_after_pass": 10,
+      "decision": "Require that an authentication token be present before any HTTP request is issued.",
+      "hook": [
+        "http-tool"
+      ],
+      "id": "D-0004",
+      "mentions": [
+        "token-route"
+      ],
+      "status": null
+    },
+    {
+      "admitted_after_pass": 10,
+      "decision": "HTTP calls must use versioned /v2 endpoints and include a valid authentication token.",
+      "hook": [
+        "http-tool"
+      ],
+      "id": "D-0005",
+      "mentions": [
+        "moved-v2",
+        "token-route"
+      ],
+      "status": null
+    },
+    {
+      "admitted_after_pass": 10,
+      "decision": "Require a valid authentication token before any HTTP GET tool call is issued.",
+      "hook": [
+        "http-tool"
+      ],
+      "id": "D-0006",
+      "mentions": [
+        "token-route"
+      ],
+      "status": null
+    }
+  ],
+  "roster": {
+    "adjudicator": "openai/gpt-oss-120b",
+    "coder": "openai/gpt-oss-120b",
+    "consolidator": "openai/gpt-oss-120b",
+    "examiner": "openai/gpt-oss-120b",
+    "pass": "openai/gpt-oss-120b",
+    "reauthor": "openai/gpt-oss-120b"
+  },
+  "stream": {
+    "batch": 8,
+    "batches": 10,
+    "families": [
+      "curriculum-strict"
+    ],
+    "faults": {
+      "http_budget": null,
+      "http_fault_calls": 1,
+      "http_fault_fraction": 0.0,
+      "shell_output_limit": null
+    },
+    "revisit": [
+      1,
+      2
+    ],
+    "seed": 0
+  },
+  "warning": null
+}

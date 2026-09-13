@@ -44,7 +44,7 @@ def test_an_examiner_lens_is_anchored_to_the_attack_entry_whose_landing_the_adju
     attack = next(e for e in store.all("hypothesis") if e.species == "attack")
     assert attack.verdict == "premise-killed"
     assert _lens_of(store, "L-0006").warrant.anchors == [attack.id] and "L-0006" in record.anchored
-    assert _lens_of(store, "L-0005").warrant.anchors == [], "an angle that did not land earned nothing here"
+    assert _lens_of(store, "L-0007").warrant.anchors == [], "an angle that did not land earned nothing here"
 
 
 def test_a_seed_lens_walked_to_the_deadline_with_nothing_consumed_is_retired_and_no_longer_walked(store):

@@ -98,17 +98,18 @@ def dispose(store: Store, session: Session) -> list[Disposition]:
 
 
 def file_observations(store: Store, session: Session) -> list[Observation]:
-    """Step 3a. Each L-0004 finding with an anchor becomes an observation; a finding with no anchor is not filed."""
+    """Step 3a. Each L-0004 finding with an anchor and a ``noticed`` becomes an observation; a finding with no anchor, or
+    with nothing noticed (a reply that dropped the field), is not filed — an observation states what happened."""
     out = []
     for answer in session.lens_answers:
         if answer.lens != "L-0004":
             continue
         for f in answer.findings:
             anchor = dict(f.get("anchor") or {})
-            if not any(anchor.values()):
+            if not any(anchor.values()) or not str(f.get("noticed") or "").strip():
                 continue
             o = Observation(uid=store.new_uid(), name=store.next_name("O"), noticed_at=now(), session=session.id,
-                            noticed=f["noticed"], anchor=anchor, recheck_when=f.get("recheck_when"))
+                            noticed=str(f["noticed"]), anchor=anchor, recheck_when=f.get("recheck_when"))
             store.write(o)
             session.observations_filed.append(o.name)
             out.append(o)
@@ -175,14 +176,24 @@ def propose(store: Store, session: Session) -> list[Draft]:
     return out
 
 
+def _world_facts(row: dict[str, Any]) -> dict[str, Any]:
+    """A failed row stripped of its scores: the observation lens reads the world — the output, the tool errors — never the
+    series it failed. No series name reaches the eliciting brief (the scores dict, and any field named for a series, are
+    dropped), so a finding names the convention the attempt turned on, not the check it scored against."""
+    drop = {"scores", *SERIES}
+    return {k: v for k, v in row.items() if k not in drop}
+
+
 def lens_subjects(store: Store, session: Session, lens) -> dict[str, Any] | list[dict[str, Any]]:
     """What a close lens reads. A lens whose contact is the artifact touches the item: it is walked once per failed row, with
-    that row's presentation, output, tool errors and scores. The other close lenses read the whole pass at once."""
+    that row's presentation, output and tool errors — never its scores, so the finding names the world, not the check.
+    The other close lenses read the whole pass at once."""
     rows = session.evaluation.rows if session.evaluation else []
     consulted = [_decision_view(store, c.record) for c in session.consulted]
     if lens.externality.contact == "artifact":
         world = _suite.current()
-        return [{"task": row["task"], "prompt": world.by_id[row["task"]].prompt if row["task"] in world.by_id else None, "row": row, "consulted": consulted}
+        return [{"task": row["task"], "prompt": world.by_id[row["task"]].prompt if row["task"] in world.by_id else None,
+                 "row": _world_facts(row), "consulted": consulted}
                 for row in rows if not _index.row_passed(row)]
     return {"consulted": consulted, "rows": rows, "failed": [r["task"] for r in rows if not _index.row_passed(r)], "fires": session.fires_seen,
             "scores": {k: f.value for k, f in session.evaluation.scores.items()} if session.evaluation else {}}

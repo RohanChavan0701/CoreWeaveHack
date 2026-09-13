@@ -1,6 +1,6 @@
 # Carry-forward
 
-State of the build as of 2026-09-13, after the world run, the review
+State of the build as of 2026-09-13, after the world run, the stream run, the review
 pass, the instruments pass (the true-miss floor, the precision slot, the
 second retirement key, anchor resolution, the late steer sweep, the antichain
 flag and the seeded controls) and the stream pass (lessons, the curriculum,
@@ -69,9 +69,11 @@ be right and why it may not.
   and `hgi/evolution.py` derives the log. `tests/test_stream.py` proves
   every clothing fails naively and passes when known within budget, the
   deal, the symptom rules and the stub smoke (351 tests green).
-  `experiments/stream.toml` is the run and had not completed when this was
-  written; `stream-probe.toml` (two batches of five on gpt-oss-120b) is
-  the endpoint check that preceded it — see item 25 for what it showed.
+  `experiments/stream.toml` has run (item 25; README, *The stream on
+  gpt-oss-120b*; `experiments/results/stream/`): the plain pool did not
+  separate the arms, the strict pool did on one lesson and lost it on the
+  rows the record overshot onto; `stream-probe.toml` was the endpoint check
+  that preceded it.
 - Weave: traces, evaluations, attributes, feedback → steer, and the mirror
   are verified live in `slavazinevich-worldvue/hgi-dev` and used in
   `slavazinevich-worldvue/hgi` and `hgi-experiments`.
@@ -296,26 +298,39 @@ be right and why it may not.
     closed session's calls at every close: one trace-store query per earlier
     session per close, which on a long run is a cost the channel's
     best-effort clause hides rather than prices.
-25. **The stream run.** `experiments/stream.toml` — 120b attached and
-    detached, 20b attached, ten batches of eight, revisit batches 1 and 2 —
-    is the experiment the stream pass was built for; its evolution report
-    lands at `runs/stream/evolution.md` and the README's *The stream*
-    section carries no numbers until it has. The probe (`stream-probe.toml`)
-    is the only real-model evidence of the stream mechanics so far. What it
-    showed on gpt-oss-120b (2026-09-12, `runs/stream-probe/`, traced to
-    `hgi-dev`): first sight 0.80 then 0.60 attached against 0.60 and 0.80
-    detached — noise at five tasks a batch; every loud lesson and most
-    visible ones passed on first contact, `trailing-newline` failed every
-    time with the naive count, and the revisit of batch 1 scored 0.60 with
-    nothing in context. The close filed one observation per failed row, each
-    naming the task and the wrong number but never the convention ("returned
-    15 lines, which was incorrect"), and the blind coder shaped the two
-    newline observations differently (`test-failure-triage` against
-    `output-schema, test-failure-triage`), so no group reached the
-    independence bar and the consolidation nominated nothing. The stream
-    run's question is therefore whether ten batches give a lesson enough
-    same-shaped observations to group, and the strict pool whether the
-    visible lessons still pass when the discovery call is not in the budget.
+25. **The stream run.** `experiments/stream.toml` ran on 2026-09-13 (README,
+    *The stream on gpt-oss-120b*; `experiments/results/stream/`): every arm,
+    from the tree at 67c9ff0 with the close fix 1707b72, the detached arms
+    redrawn alone afterwards, the strict attached arm rerun from scratch
+    after the close bug stopped its first run at pass 7. What it answered:
+    ten batches do give a lesson enough same-shaped observations to group —
+    the coder shaped the moved-v2 and token-route observations alike in
+    every 120b arm and the groups reached the bar from the first
+    consolidation — and the drafts then died at the contract's floors and
+    the examiner's attacks in the plain arm (11 refused at parse, 5
+    declined, 1 admitted, a record that names no lesson) while the strict
+    arm admitted the fused `/v2`-plus-token record at its first
+    consolidation and five more after. The strict pool separated the arms
+    on one lesson (moved-v2: 0.58 attached, 0.00 detached, the naive shape
+    3/3 before the record and 0/9 after) and lost the gain on the rows the
+    record overshot onto (paged-api 0.08 against 0.75; token-route blocked
+    to zero calls by D-0002), for a tie over the stream. The plain pool did
+    not separate (0.46 against 0.54) and its no-store passes differ from the
+    detached draws of the same batches by up to 0.37, the noise floor of
+    eight tasks on this endpoint. The probe's concern — observations naming
+    the task and the number but not the convention — did not recur: the
+    stream's closes named the route and the `/v2` fix. What did not happen:
+    footer-row and trailing-newline earned no record on any arm, and the
+    one record drafted from the newline observations fired on file rows
+    and left them failing the naive way. The first strict run and its
+    rerun met the same batches with the same model at temperature 0 and
+    consolidated differently (the first refused both lesson drafts at
+    parse after pass 2 and declined the versioning draft after pass 4; the
+    rerun admitted the fused record after pass 2): admission is a draw, and
+    the first run's store is gone (`--force` discards it) — its two
+    consolidations survive only in this note. The evidence for the
+    reject-vs-amend and admission-slack changes is item 32 and the task
+    spun from it.
 26. **Retention and forgetting beyond one revisit.** `revisit` re-meets
     whole batches after the stream; the modes a continual-agent benchmark
     scores (AgentMemoryBench: improvement, retention, forgetting,
@@ -343,6 +358,18 @@ be right and why it may not.
     zero and unevaluable on its failed rows). The two runs are additive:
     the stream run's evolution log already shows `economy`, derived from
     the counts, and only `turns` and `transfer` need the new envelope.
+    It has since run on `openai/gpt-oss-120b` (2026-09-13, brought over
+    from `claude/nervous-rubin-e8e759`; `experiments/results/economy/`):
+    pass rate did not separate (38/80 attached against 42/80 detached) and
+    quality could not have, because no record was in context on any
+    first-sight pass — D-0001 sat behind a guard the boot failed and went
+    moot, D-0002's consultation latch was scoped to a work-shape term
+    (`test-failure-triage`) so the boot index matched it to nothing,
+    D-0003 landed after pass 10 and failed both moved-v2 rows it was
+    applied to. The run's own findings — the retrieval miss, the close
+    naming scores not world-facts, the parse refusals and the malformed
+    tool call — are items 39–42 below and are the evidence for gap fixes
+    beyond the admittance bar.
 31. **Quality beyond the shell lessons.** `method_transfer` replays a
     shell command, so it grades the three shell lessons only; the API
     lessons' method is the walk and transfers trivially, and `bom` has no
@@ -350,6 +377,19 @@ be right and why it may not.
     assert shown, two held out) with a lint or complexity column would be
     the lesson-free family with a graded quality metric, for a mixed
     stream; not built.
+38. **The review's reject-vs-amend change is proven on the stub only.**
+    Decisions 73–75 — independence and watch direction read by the code,
+    a landed abstraction claim amended through one promote re-ask, a
+    decline standing only on an upheld premise kill — are proven by the
+    stub's paths and the tests (`tests/test_mechanical_review.py`,
+    `tests/test_abstraction_amend.py`, `tests/test_decline_override.py`)
+    and by no real-model run. The evidence they answer is the stream run's
+    ledgers (`runs/stream/*/store/ledger/ledger.jsonl`, 2026-09-13): three
+    lesson drafts on gpt-oss-120b — endpoint versioning, the moved-v2
+    route, after passes 2 and 6 of the attached arm and in the strict arm —
+    were declined on abstraction and watch direction alone and dropped.
+    The test of whether the run now admits the moved-v2 record is a rerun
+    of `experiments/stream.toml` arm `120b-attached`; not run.
 29. **Public continual-learning suites.** SWE-Bench-CL, AgentMemoryBench,
     AgentCL and the procedural-memory-retrieval benchmark were surveyed
     (2026-09-13) as the scale-up path for the stream shape — repository
@@ -358,6 +398,195 @@ be right and why it may not.
     curriculum measures the mechanism in minutes. The curriculum's lessons
     are the conventions of a small world; the claim that the shape carries
     to a codebase's conventions is untested.
+
+32. **Admission slack — notes for easing the floors that refused every
+    lesson draft of the stream run.** The stream run (item 25) filed an
+    observation on every failed row, the blind coder shaped same-lesson
+    observations alike and groups reached the two-session bar, and the
+    consolidator nominated the right lessons (endpoint versioning, auth,
+    budget, csv-header); then every gpt-oss-120b draft died before or at
+    adjudication and nothing was admitted. Four gates did it, in order of
+    cost, each with the slack proposed and what it risks:
+    - **`not_this` must be non-empty** (`hgi/drafting.py`, `Sketch.not_this:
+      Field(min_length=1)`, refused at parse; and again at the write-time
+      floor, `hgi/lint.py` complement-law, "consultation latch declares no
+      not-this exclusions", which refuses a draft the adjudicator admitted).
+      Seven of the run's nine 120b new-decision drafts were refused here.
+      The exclusion exists to recover precision for a hook biased broad —
+      but a false fire costs one disposition and is telemetry (the
+      consolidator's own register says so), and the precision leg
+      (`counterfactual-edit`, grow `not_this` from `not_applicable`
+      notes) exists to add exclusions after the record has fired wrongly.
+      Gating admission on an exclusion the drafter has not yet seen the
+      need for gates helpfulness behind compliance. *Slack:* default
+      `not_this` to `[]` in the sketch (`Field(default_factory=list)`),
+      drop the lint `fail` to a `warn` ("declares no exclusions; precision
+      review will grow them"), and leave the precision leg as the place
+      exclusions come from. *Risk:* a record with no exclusion fires on
+      every presentation its terms match; the retirement leg
+      (`applied_over_considered_below` 0.1 over 6 passes) retires one that
+      never applies, so the cost is bounded by the window. Tests:
+      `tests/test_roles.py::sketch_of` (empty `not_this` currently refused),
+      the complement-law cases in `tests/test_lint*.py`; `test_precision.py`
+      is unaffected (it grows a non-empty list).
+    - **An edit rung must supersede exactly one record**
+      (`hgi/consolidate.py`, `edited_body`). The 120b consolidator chose
+      `counterfactual-edit` and `hook-edit` on an empty store (K-0002 of
+      `120b-attached`, K-0003 of `20b-attached` with two records it did not
+      name), so the draft was refused for naming no record. *Slack:* when
+      `supersedes` is empty and the store holds no record the rung could
+      edit, displace the nomination to `new-decision` the way a rung with
+      no operator is displaced (`displacement`), keeping `rung_why`;
+      when records exist and none is named, refuse as now. *Risk:* a
+      displaced edit is drafted as a new decision from the same evidence,
+      which is the right outcome on an empty store and a duplicate on a
+      full one — hence the guard. Test: a stub nomination on an edit rung
+      with an empty store lands as a new decision.
+    - **The abstraction attack lands on a payload that names instances**
+      (lens L-0007; the adjudicator declined H-0004 of `120b-attached` and
+      H-0008 of `120b-strict` on it). The draft said "use /v2/zones/90,
+      /v2/projects/82" instead of "a 410 that names a versioned route is the
+      route moved; call the named route". The lens is right that the
+      instance does not transfer — but the decline drops the draft, and
+      the adjudicator has `admit-amended` with an `amendment` that
+      replaces the decision text (`store.admit(..., amendment=...)`) and
+      never used it on this run. *Slack:* tell the adjudicator (in
+      `hgi/roles/adjudicator.md`) that a landed `payload:abstraction` on
+      evidence that is otherwise sound is the case for `admit-amended`
+      with the promoted payload, not `decline`; or, mechanically, re-ask
+      the consolidator once with the landed claim ("promote the payload;
+      keep the instances as anchors") before the verdict. *Risk:* the
+      adjudicator promotes past the evidence — a floating entry — which the
+      genesis article on promotion names as the overshoot; the anchors
+      stay, so the lint's anchor checks still bound it.
+    - **The watch-direction attack** (L-0008) landed on H-0008 because the
+      sketched watch (`error_cause_present == 1.0`, `task_pass_rate >= 0.9`)
+      fires on success; `hgi/drafting.py` already checks a watch's
+      direction against the stakes (commit 585c1be) for the stub. *Slack:*
+      when the watch is wrong, drop the watch (it is optional, `watch:
+      null`) rather than the draft — a decision with no revisit latch is
+      admissible and the retirement leg still bounds it. *Risk:* none to
+      admission; a record without a watch is re-adjudicated only by
+      currency and retirement.
+    What not to loosen: the independence bar (two sessions) held every
+    lesson group on this run and is what makes a recurrence a recurrence;
+    and the premise kill (L-0006), which landed once (H-0008, on a missing
+    `/v2` route that was in fact the task's own fault injection) — that one
+    is an examiner reading error, not a floor to move. The order to take
+    them in is the order above: the first two are contract floors that
+    refused seven drafts at parse and cost nothing to relax; the third is
+    where the lesson records will come from; the fourth is a one-line
+    prompt note. A rerun of `120b-attached` alone after the first two is
+    the cheapest test of whether the run admits.
+33. **The fusion leg did not fold restatements.** The strict arm admitted
+    D-0004, D-0005 and D-0006 after pass 10, each restating D-0002 or
+    D-0001 almost verbatim (a token before any request; `/v2` plus a
+    token; a token before any GET), so the same lesson sits in one store
+    five times and every boot carries all of them. Split and fold run on
+    the lineage DAG; nothing nominates two records with no lineage between
+    them and the same latch for a fold. A textual or hook-overlap nominator
+    (two accepted records whose `terms` match the same presentations and
+    whose payloads the coder shapes alike) is the missing consumer.
+34. **Detached draws lose Weave traces.** A detached arm's passes run in
+    thread copies of the runner's context (`_detached_passes`), and Weave's
+    trace-batch flush in those threads failed on every pass with
+    `Invalid project_id format: . Expected 'entity/project'` ("Task
+    failed", 96 times per arm); the evaluations, row calls and scores were
+    written with project-qualified call URIs and the log is complete, so
+    the cost is some traces of the detached draws, not data. The attached
+    arms, which run in the main thread, logged cleanly. Untraced; the fix
+    is probably to re-enter the Weave client in each worker or to run the
+    draws sequentially under a flag.
+35. **Code moved under a running arm.** The arm processes loaded the tree
+    at 67c9ff0 when they started; the quality commits (2b0bc96, 4880cb4)
+    landed on `main` while they ran and changed the curriculum's data draw
+    (decision 68) and `hgi/evolution.py`. The runner imports `evolution`
+    lazily at the arm's end, so the 20b arm wrote its log with the new
+    module over the old rows (economy columns as dashes) and the plain
+    120b arm's end write crashed on `Task.knowing` after its last pass —
+    the arm's curve and store were complete and its final commit was made
+    by hand. Every log under `experiments/results/stream/` was derived
+    from a worktree at 67c9ff0 plus the close fix, with `HGI_RUNS` pointing
+    at the main `runs/`; `hgi experiment evolution` on `main` rebuilds
+    these arms from their recorded task ids with the pool-changed warning
+    and would score the rows against a pool whose data differs. Import the
+    log writer eagerly with the runner, and record the tree's commit in
+    `arm.json`.
+36. **W&B Inference's per-user concurrency.** Five arms at once — two
+    attached at six tasks each and two detached at three passes of six —
+    put 429s past the client's five retries into the detached rows (6 and
+    7 of 80); the attached arms at six took none. The detached arms were
+    redrawn alone afterwards (decision 70). The ceiling is somewhere
+    between 12 and 30 concurrent requests on `openai/gpt-oss-120b`; a
+    runner that serializes detached draws behind attached arms, or reads
+    the limit, would let an experiment's arms run together safely.
+37. **A lens reply that drops `noticed`.** The strict arm's first run died
+    at pass 7's close on an L-0004 finding with an anchor and no `noticed`;
+    `file_observations` now skips such a finding (1707b72,
+    `tests/test_close_findings.py`). Whether to refuse the reply instead
+    (the finding is malformed) is the contract's question; skipping loses
+    an observation the pass tried to file.
+39. **A consultation latch's scope is drawn from the observation's coding,
+    not the task's terms** (economy run, `claude/nervous-rubin-e8e759`).
+    D-0002 was admitted for `paged-api` rows and latched on
+    `test-failure-triage`, the shape the blind coder gave the observations,
+    so the boot index matched it to nothing and its competence window
+    closed at zero considered: a record admitted but never retrieved. The
+    task's own terms (`http-tool` for every API lesson) are on the
+    observation's anchor and could seed the latch's `terms`; today the
+    drafter chooses them. This is the retrieval floor the admittance-bar
+    raise does not touch — a higher bar admits fewer records, none of which
+    fire if the latch scope does not match the task.
+40. **The close files observations about its scores, not the world's
+    facts** (economy run). The close reads the row's scores by series name
+    and the observations say so ("the `method_transfer` check was missed",
+    "did not fire a check record to verify the total"); none of the forty
+    named the convention (a footer row, a missing newline, a quoted comma)
+    in words the blind coder could group on, and the two silent shell
+    lessons stayed at 24/24 naive in both arms. The series names should not
+    reach the close's brief, and the observation request should ask for the
+    world's fact the row met, not the check the row failed.
+41. **Drafts refused at parse at the `hook-edit` rung** (economy run). Six
+    drafts were refused across three consolidations — three because the
+    hook-edit named no record to supersede (`a hook-edit supersedes exactly
+    one record; got []` on an empty store), three because `not_this` came
+    back empty. These are gates 2 and 1 of item 32 seen again on a second
+    run. A repair turn (re-ask with the refusal) or a rung-specific example
+    in the request would recover most of them, keeping the contract rather
+    than relaxing the floor; item 32 relaxes the floor instead. Every
+    refusal is on the ledger, so the count is exact.
+42. **A tool call with malformed arguments loses the row** (economy run).
+    In the detached arm's pass 10 the model emitted a shell call whose
+    arguments string was not valid JSON; `suite/tools.py` answered with a
+    *bad tool call* result, but the assistant message carrying the raw
+    string went back into the history and the endpoint refused the next
+    request outright (`messages[2].tool_calls[0].function.arguments must be
+    a valid JSON object string`), so the model never got the turn to read
+    the error and retry. The row failed `error:model-call` — a symptom that
+    covers a genuine endpoint fault and the model's own malformed output
+    alike. The fix is in `suite/agent.py`: replay the assistant turn with
+    arguments the endpoint accepts (the raw string wrapped as a JSON
+    object) so the conversation continues and the wasted turn still costs
+    turn economy; and split the symptom so the two causes read apart.
+
+**Addressed (2026-09-13).** The gaps items 32–42 name are now built and on
+`main`, each as a decision below with its risk: parse floors (item 32
+gates 1–2, item 41) → decision 78; the hook seeded from the task's terms
+(item 39) → 79; folding restatements (item 33) → 80; the close eliciting
+the world's fact (item 40) → 81; the malformed tool call (item 42, decision
+76) → 82; the runner pinned and its draws serialized (items 34–36) → 83. The
+recurrence graded for the adjudicator → 84 and refused observations kept in
+the open pile → 85 are the further levers built on top. The shape-radius
+sweep (decision 77) found τ\*=1.0 — the coder's shapes already conflate
+lessons, so widening the grouping radius is not the lever and item 40's
+coding fix is; no `group_observations` change was made. The coder shaping on
+the convention rather than the tool — the deeper reading decision 77 exposed
+— is now built and measured on the stub (decision 87): the τ=1.0 grouping
+moves from impure to pure at the source. What remains untested is a rerun on
+the live endpoint — whether drafts now survive to adjudication, the seeded
+hook fires, the fold collapses the restatements, and the live coder
+normalizes each convention onto its registered term so the pure exact-match
+grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
 
 ## Decisions taken, and their risk
 
@@ -934,4 +1163,322 @@ be right and why it may not.
     ran (the evolution log rebuilds an old arm's batches from recorded task
     ids and says so); and six twins — the moved routes that answer `ok` —
     carry no data to vary and are identical to their tasks.
-
+69. **The stream run's record is derived from the tree that ran it, not
+    from `main`.** The logs and the curve report under
+    `experiments/results/stream/` were regenerated from a worktree at
+    67c9ff0 plus the close fix, and the README's numbers are theirs.
+    *Right:* the rows were scored against that pool, and the symptom
+    derivation reruns the naive policy against the task's world — a
+    different data draw would mislabel rows. *Wrong if* the reader expects
+    `hgi experiment evolution` on `main` to reproduce the files: it
+    rebuilds the arms from recorded task ids with a warning and the
+    symptoms may differ; the results directory is the record.
+70. **The detached arms were redrawn alone rather than kept with their
+    429 rows.** *Right:* a 429 after five retries is the endpoint's
+    concurrency ceiling, not the model's first contact, and six and seven
+    such rows in eighty would have moved the detached curves by the size
+    of the effects being read. *Wrong if* a redraw is read as the same
+    draw: the detached curve is now a second draw of the same batches,
+    taken an hour later, and the attached arms' rows show no 429, so the
+    comparison is paired per batch but not per hour.
+71. **The strict attached arm was rerun from scratch, not resumed.** The
+    runner has no resume; `--force` discards the store. *Right:* a resumed
+    store would mix a first run that consolidated differently with a
+    second; one run is one record. *Wrong if* the first run's
+    consolidations mattered: they did (item 25) and survive only in a
+    note. A resume that replays the recorded sessions and re-consolidates
+    is the mechanism a long run needs.
+72. **The arms ran concurrently.** *Right:* the five arms finished in
+    ninety minutes instead of four hours on the night before the
+    submission. *Risk:* item 36 — the detached draws paid in 429s and were
+    redrawn; the attached arms' rows show no rate-limit error, so their
+    curves stand.
+73. **Independence and the watch's direction are the code's readings, not a
+    lens's.** The distinct-session count of a draft's evidence against the
+    bar is a lint floor check (`independence`) the committer refuses on,
+    and a sketched watch that fires on success is dropped from the draft
+    before any context opens — the watch is optional, the draft is not —
+    with the drop recorded on the ledger claim; both join the attack first
+    with no lens and no call, an examiner claim on either class that
+    contradicts the computed reading is discarded, and L-0005 and L-0008
+    are seeded retired through the crystallization door. *Right:* over the
+    stream run's fifteen attacks `warrant:watch-direction` landed nine
+    times and was wrong at least twice (on `task_pass_rate < 1.0` and
+    `== 0.0`, both of which fire on failure) and `warrant:independence`
+    landed on a draft whose group came from two sessions; a count and a
+    comparator are gates, and a gate asked as a question is a lens whose
+    answer has crystallized. *Risk:* a register seeded before this change
+    still walks the two lenses and pays two calls per draft for claims
+    that are then advisory; and a watch dropped is a record unwatched —
+    its warrant returns only through the retirement ratio or a pass's
+    close-time contradiction, never through the oracle's series.
+74. **A landed abstraction claim amends; it never declines.** With no
+    premise kill beside it and the bar met, the consolidator is re-asked
+    once (the `promote` request: the payload, the refutation, the task ids
+    and the instances) to restate the payload at the transferable shape
+    with the instances kept as anchors; the abstraction angle is walked
+    again over the promoted draft, the entry keeps the nominated text as
+    its claim, the promoted text as its amendment and the promotion under
+    `coding`; when no promotion comes back the adjudicator's
+    `admit-amended` restates the payload and the committer admits the
+    amended text. *Right:* on gpt-oss-120b the claim landed four times and
+    was right each time, and the adjudicator never once returned
+    `admit-amended`: an instance-shaped lesson is a lesson mis-stated, not
+    a lesson refuted, and dropping it drops the recurrence with it. *Risk:*
+    one more consolidator call per landed claim, whose product only the
+    re-walked abstraction angle judges; a consolidator that promotes past
+    the evidence yields a floating payload the anchors no longer
+    instantiate, which only the adjudicator's exemplification check reads;
+    and the re-ask returns the whole payload, so a promotion can change
+    more than the instance's name.
+75. **A decline stands only on an upheld premise kill.** The adjudicator's
+    `decline` with no landed `premise:` claim is overridden to an admit —
+    amended where it offered an amendment — the entry keeps the attack
+    named (`survived-with-attack-named`) and its outcome says which token
+    was overridden and why; the floor still refuses an overridden draft
+    below the bar; defer and escalate are the adjudicator's as returned.
+    A decline that stands is always `premise-killed`, so `attack-landed`
+    is reached only from the human queue. *Right:* the run's two premise
+    kills that stood were right, and every other decline was on a class
+    that is now mechanical or amend-only. *Wrong if* a refutation exists
+    that is neither a premise kill nor a mis-statement — an anchor that
+    does not exemplify the payload is the case the prompt still names, and
+    its decline is now an admission the floor cannot catch (exemplification
+    is residue); the override is written on the outcome so the ledger shows
+    where that happens.
+76. **A model call the endpoint refuses fails the row, scored, not
+    dropped** — and a refusal the model caused, by emitting tool-call
+    arguments that are not JSON, is counted the same way (economy run,
+    `claude/nervous-rubin-e8e759`). *Right:* a row the harness could not
+    finish must not vanish from the denominator, and a model that writes
+    malformed output did fail the task. *Wrong if* the endpoint's
+    validation is stricter than the loop's: the loop tolerates a bad tool
+    call and lets the model recover, the endpoint does not, so the row
+    measures the endpoint's contract as much as the model; item 42 carries
+    the fix.
+77. **The shape-radius sweep: exact match already conflates lessons, so
+    widening the Jaccard radius cannot buy precision on this data — τ\*=1.0,
+    and the fix is the coding (item 40), not the radius.** A self-contained
+    analysis (`hgi/grouping_sweep.py`, `hgi grouping-radius`, scorer test
+    `tests/test_grouping_sweep.py`) sweeps τ over
+    `{1.0, 0.67, 0.5, 0.33, 0.25, ~0}`, clustering observations by
+    single-linkage connected components on `jaccard(shape_i, shape_j) >= τ`
+    and scoring each clustering against the curriculum lesson the
+    observation's anchor resolves to (the true label). *Dataset:* the
+    recorded attached stream arms on disk (`runs/stream/{120b-attached,
+    120b-strict, 20b-attached}`, not freshly generated), combined and
+    session-namespaced per arm — N=104 labeled observations over 27
+    sessions and 6 lessons (only `bom` drew none); the curve and table are
+    written to `experiments/results/grouping-radius/radius.{json,md}`.
+    *The curve* (τ → homogeneity / cross_lesson_clusters / lessons_at_bar):
+    1.0 → 0.45 / 9 / 0; 0.67 → 0.45 / 9 / 0; 0.5 → 0.09 / 3 / 0;
+    0.33 → 0.09 / 3 / 0; 0.25 → 0.09 / 3 / 0; ~0 → 0.00 / 1 / 0. *Reading:*
+    the win the widening was meant to buy (`lessons_at_bar` — a lesson
+    reaching the 2-distinct-session bar inside one pure cluster) is zero at
+    every τ, because the precision cost is already paid at τ=1.0: the blind
+    coder shapes on the tool or the triage, not the world's convention, so
+    one shape covers many lessons before any merge — `[http-tool]` →
+    {moved-v2, paged-api, token-route}, `[shell-tool]` → {csv-quoted,
+    footer-row, trailing-newline}, `[test-failure-triage]` → four lessons.
+    The recommendation rule (lowest τ with `cross_lesson_clusters == 0`,
+    max `lessons_at_bar`) has no admissible τ — even exact match is impure
+    — so it falls back to the baseline τ=1.0 with the caveat that widening
+    the radius cannot recover a precision the join never had. *Right:* this
+    is the same diagnosis as items 39 and 40 reached from the run logs, now
+    measured — the shapes are generic, so grouping is not the lever;
+    fixing the observation coding to name the convention (item 40) is.
+    *Caveat:* thin data (N=104, ~15 obs/lesson) combined across two models
+    and two families (curriculum, curriculum-strict), so the shape
+    vocabulary is heterogeneous; the conflation holds within each single
+    arm too, so it is not an artifact of combining. The scorer is trusted
+    independently: `test_grouping_sweep.py` builds a synthetic labeled
+    fixture whose Jaccard geometry is exact and whose τ\* (0.25) is known,
+    and asserts the whole curve and the rule. *Next:* widening the labeled
+    set with the real coder over the full 7×12 pool (needs a W&B inference
+    endpoint; not run here) would sharpen the curve, but the recommendation
+    would only change if fixing the coding first made the shapes
+    lesson-specific. The number seeds a tunable registry bar default that a
+    separate change wires into `group_observations`.
+78. **The two parse floors that refused every draft before adjudication are
+    relaxed** (commit `ceb51b6`, addressing item 32 gates 1–2 and item 41).
+    `Sketch.not_this` defaults to `[]` and the complement law warns rather
+    than fails on a consultation latch with no exclusions; an edit rung
+    (`hook-edit`, `counterfactual-edit`) that names no record on an empty
+    store is displaced to `new-decision` (keeping `rung_why`) instead of
+    refused, while one that names none when records exist is still refused.
+    *Right:* seven of nine 120b drafts and six more in the economy run died
+    here before any verdict; a floor refusal only kept the lesson out of the
+    store where it could be corrected, and the precision leg grows `not_this`
+    from `not_applicable` notes after a record fires wrongly. *Risk:* a
+    record with no exclusion fires on every presentation its terms match; the
+    retirement ratio bounds one that never applies, so the cost is a window,
+    not the store. The repair-turn alternative (re-ask the model with the
+    refusal, item 41) was left unbuilt — the floor relaxation is item 32's
+    prescribed cheaper first move.
+79. **A record's consultation hook is seeded from the anchor tasks' own
+    declared work-shape terms** (commit `f05eb7b`, addressing item 39). When
+    a draft is assembled from a group of observations, the union of the
+    tasks' `shapes` (resolved through each observation's anchor call to the
+    row that names its task) joins the terms the drafter chose. *Right:* the
+    economy run's one admitted record never fired because its hook carried
+    only the blind coder's coding of how the failure presented, which the
+    next task's classification did not share; the task's own term (`http-tool`)
+    is on the anchor and matches the boot index. *Risk:* the seed broadens
+    the hook toward whatever the task declares, so a record can be consulted
+    on a task that shares the tool but not the fault — the same generic-shape
+    problem decision 77 measures, here on the hook rather than the group; the
+    not-this exclusions and retirement are what bound it.
+80. **Near-verbatim restatements that never co-applied are folded** (commit
+    `54635f6`, addressing item 33). `index.restatements` filters the
+    shared-hook pairs to those with no lineage relation (connected components
+    over the DAG's supersedure/split/fold edges) whose decision payloads
+    overlap at or above a token-Jaccard threshold (0.6), and the
+    consolidation brief surfaces them as convergence-shaped rows so each is
+    drafted as a fold and adjudicated behind the floor. *Right:* the strict
+    arm admitted D-0004/5/6 restating D-0001/D-0002, and every boot carried
+    all of them; nothing nominated two lineage-unrelated records with the
+    same latch and alike payload. *Risk:* the alikeness is a token-overlap
+    heuristic that only *proposes* the merge — a threshold too low folds
+    distinct records, too high misses restatements; 0.6 separated the run's
+    cases but is a tunable parameter, and the floor and adjudicator are the
+    real gate.
+81. **The close elicits the world's fact, not the score it failed** (commit
+    `3131406`, addressing item 40). The observation lens's brief drops the
+    row's scores and every series-named field, and the pass is asked to name
+    the convention the attempt turned on (a footer row, a missing newline, a
+    quoted comma), never the check it scored against. *Right:* in the economy
+    run none of forty observations named the convention in words the blind
+    coder could group on, so two silent lessons stayed 24/24 naive; grouping
+    starved before any bar. *Wrong if* the coder shapes on the tool anyway —
+    decision 77 shows the shapes are generic even with better `noticed` text,
+    so this fixes the observation's words but not yet the coder's vocabulary;
+    making the coder shape on the convention is the unbuilt next lever.
+82. **A malformed tool call no longer poisons the conversation, and its
+    symptom reads apart from a genuine endpoint fault** (commit `c22f147`,
+    addressing item 42 and decision 76). A tool call whose arguments are not
+    valid JSON is replayed into history wrapped as a valid object
+    (`{"_raw": …}`) so the endpoint accepts the next request and the model
+    reads the bad-call result and retries; the wasted turn still costs turn
+    economy. `error:model-call` splits into `error:endpoint` and
+    `error:malformed-tool-call`. *Right:* one row of 96 was lost outright
+    because the raw string made the endpoint refuse the next request, and the
+    symptom conflated the model's fault with the endpoint's. *Risk:* the
+    malformed flag is sticky for the row, so a later endpoint fault after a
+    malformed call reads as `malformed-tool-call` — a retrospective grouping
+    choice, defensible since the poisoning mode should no longer recur.
+83. **The experiment runner is pinned and its detached draws serialized**
+    (commits `0c3e659`, `941a6ef`, `f815546`, addressing items 35, 36, 34).
+    The evolution writer imports eagerly with the runner and `arm.json`
+    records the tree's commit; detached passes run serially by default
+    (`ArmSpec.serial_detached = True`), with the concurrent thread-pool path
+    behind the flag and the Weave client re-entered per worker thread when it
+    is used. *Right:* quality commits moved the code under a running arm and
+    changed a log; five concurrent arms drove the endpoint past its
+    concurrency ceiling into 429s on the detached rows; the detached threads
+    lost their Weave traces. *Risk:* serial detached draws are slower — a run
+    that had headroom under the ceiling now pays wall-clock it need not; the
+    flag restores concurrency, and Fix 3's `rejoin` is moot under the serial
+    default (no worker threads spawn).
+84. **The recurrence count is graded for the adjudicator** (commit `bd5df03`).
+    `recurrence_reading` bands the distinct-session count N against the bar
+    (below the floor / modest small-N / strong at ≥ 2×bar, mirroring the
+    vocabulary nominator's small-N reading) and enters the adjudicator's
+    request as context beside the draft, attack and oracle. *Right:* above
+    the floor the count was discarded, so N=2 and N=10 read alike; a stronger
+    recurrence is corroboration that a pattern is a real world-fact and bears
+    on whether a premise refutation holds and on defer-versus-escalate.
+    *Risk:* it is adjudicator-facing context only — the floor and the
+    premise-kill logic are byte-for-byte unchanged, so N cannot mechanically
+    admit a draft; a model that over-weights it could lean toward admitting a
+    thinly-founded draft, which the premise checks and the floor still catch.
+    Post-elegant-faraday a soft decline is already overridden to admit, so
+    the count's remaining room is the adjudicator's reasoning, not a verdict
+    override; whether N should ever soften a premise kill was left as the
+    owner's call (it does not today).
+85. **A refused draft's observations stay in the open pile** (commit
+    `5db9358`, a regression lock, addressing the owner's requirement on
+    item 39). Only `store.admit` promotes an observation; decline/drop, a
+    floor refusal and escalate call only `drop_draft`, which touches no
+    observation, and a deferral's claim on a live draft's evidence is the
+    intended exception. *Right:* a lesson refused at N=2 must be able to
+    regroup with a third instance at N=3 rather than be discarded; the test
+    proves a premise-killed decline leaves its two observations open and they
+    regroup at N=3. *Risk:* the open observations re-nominate the same lesson
+    every pass until it is admitted, deferred or its observations retire —
+    churn that decision 84's grading and the retirement ratio, not a
+    suppression, are meant to resolve.
+86. **The store is readable from outside the loop, through its projections**
+    (`hgi consult`, `hgi/consult.py`; the skill `consult-decisions`). The
+    read is additive: a new module registered beside the pass commands, no
+    change to boot, close or consolidate, and no write to the store — the
+    test hashes the tree before and after. Stage one is built from the
+    `summaries`, `hooks` and `lineage` projections and so passes the
+    settlement test by construction; stage two opens the record for the
+    payload. The two latches are the boot's own: exact terms through the
+    hook-major index, and the lexical nominator at the same two-token floor.
+    The shape follows the sibling projects' consultation reads (WorldVue's
+    `rules:adoption-status --shapes`, the Gauntlet's `gauntlet decisions`
+    with its `adr-read` skill): an activation-only scan that withholds the
+    payload, a targeted read, an unknown token refused with the vocabulary
+    listed, and the reader as the matcher. *Right:* an end user's agent
+    gets the lessons the loop admitted without running a pass, and the
+    loop's ledgers stay the loop's — a consultation from outside files no
+    disposition, so the applied-over-considered ratios the retirement leg
+    reads are not diluted by reads it cannot score. *Risk:* no guard runs,
+    so the reader decides the exclusions alone, and the `excluded_by` flag
+    is the stub guard's literal reading, which a paraphrased exclusion
+    escapes; the lexical route nominates on two shared stems, a floor that
+    over-reaches on common words (`tool`, `call`) and under-reaches on a
+    hook written in vocabulary the problem does not share — the surface
+    fallback and the reader's eye are the recovery, not a better matcher.
+    What an outside reader learns has no channel back into the store; if
+    the reads should count, a consultation session kind with its own
+    dispositions is the addition, and it would need the retirement ratio to
+    distinguish it from a pass.
+87. **The blind coder shapes on the convention, not the tool — the deeper
+    lever decision 77 exposed** (commits `fe7a303`, `29e6d95`, addressing
+    item 40's unbuilt next lever and decision 81). Decision 81 made the
+    `noticed` name the world-fact; this makes the coder *group* on it. The
+    work-shape vocabulary gains a convention-major granularity beside the
+    tool-major cues (`route-versioned`, `listing-paged`, `route-guarded`,
+    `field-quoted`, `summary-row`, `line-unterminated`, `byte-order-mark`);
+    `coder.md` and the coding reply shape now tell the coder to shape an
+    observation on the finer of the two its noticing names, a tool-major
+    term only for a way of working with no world-fact behind it (a budget, a
+    retry, a wrap) and `other(<convention>)` for a convention the vocabulary
+    lacks. The tool cues stay: the boot classify still keys a consultation
+    hook on the coarse cue, where the convention is hidden from the task
+    prompt, so the stub gives the coder a convention keyword map distinct
+    from the classify's tool map and `_classify` is untouched. *Measured*
+    (`hgi grouping-shaping`, tests `test_convention_shaping.py`,
+    `test_coder_convention.py`): on a synthetic labeled set in the blind
+    close's voice the τ=1.0 grouping the sweep left in place moves from
+    impure to pure — homogeneity 0.37→1.0, cross-lesson clusters 2→0,
+    `lessons_at_bar` 1→7 (all seven), four shapes for seven lessons becoming
+    one convention shape per lesson; re-coding the recorded arms (118 obs)
+    both ways corroborates on real noticings, 0.48→0.96 homogeneity and 1→5
+    lessons at the bar. The grouping radius did not move; the coding did.
+    *Right:* two misses of one convention now share a shape and two of
+    different conventions differ even when both called the same tool, which
+    is exactly what decision 77 measured the tool cue could not do; the
+    coder stays blind by construction — the coding request carries each
+    observation's name and noticing and the flat term list, never the task
+    id, the lesson or a score, a leakage guard pins it. *Risk:* the
+    convention terms align one-for-one with the curriculum's scoring lessons
+    because both enumerate the same world-conventions — the mechanism's
+    target, not a leak, since the coder infers the term from the noticing
+    prose, but a vocabulary that *is* the answer key's partition is a soft
+    leak of the label space, and the guarantee rests on the noticing being
+    blind (decision 81) and the per-observation label never in context. The
+    numbers are the stub, a lexical proxy for the model's convention
+    inference; the pending confirmation is a live re-score of freshly coded
+    observations on `openai/gpt-oss-120b` (needs `WANDB_ENTITY` and a weave
+    project), not run here — no live curve was fabricated. The recorded
+    re-score's residue (homogeneity short of 1.0, two clusters still
+    crossing) is the pre-81 noticings' noise, the gap the live re-score over
+    post-81 noticings would close. If the model does not normalize a
+    convention onto the same registered term across clothes, exact-match
+    grouping splits a lesson on near-shapes — the completeness failure the
+    radius sweep was meant to catch, now guarded only by τ\*=1.0 standing;
+    the escape-to-vocabulary-bar path is the doctrine's answer if a
+    convention the seed lacks recurs.

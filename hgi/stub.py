@@ -14,7 +14,6 @@ import json
 import re
 from typing import Any, Callable
 
-from hgi import drafting as _drafting
 
 HANDLERS: dict[str, Callable[[dict[str, Any]], Any]] = {}
 
@@ -59,6 +58,27 @@ KEYWORDS: dict[str, tuple[str, ...]] = {
 def terms_for(text: str, allowed: list[str]) -> list[str]:
     text = text.lower()
     return [t for t in allowed if any(k in text for k in KEYWORDS.get(t, ()))]
+
+
+# The convention-major shapes the blind coder groups observations by, keyed off the world-fact the noticing names —
+# distinct from KEYWORDS, which the boot classify reads over the *task prompt* (where the convention is hidden, so a
+# prompt keys only the tool cue). These words appear in the noticing the blind close writes, never in the lesson label
+# the coder is denied. The stub is a lexical proxy for the model's convention inference; a live re-score is what confirms it.
+CONVENTION_KEYWORDS: dict[str, tuple[str, ...]] = {
+    "route-versioned": ("/v2", "410", "versioned", "moved", "gone", "successor route", "retired route"),
+    "listing-paged": ("page", "paging", "paginat", "next page", "one page", "first page"),
+    "route-guarded": ("token", "401", "unauthor", "secure route", "authorize", "authoriz"),
+    "field-quoted": ("quoted", "quoted field", "quoted comma", "comma inside", "embedded comma"),
+    "summary-row": ("footer", "total row", "summary row", "footer row", "trailer", "total line", "totals row"),
+    "line-unterminated": ("newline", "no trailing", "unterminated", "not terminated"),
+    "byte-order-mark": ("byte order mark", "byte-order mark", "bom", "utf-8-sig", "u+feff"),
+}
+
+
+def conventions_for(text: str, allowed: list[str]) -> list[str]:
+    """The registered convention-major terms whose world-fact the noticing names — the blind coder's finer shape."""
+    text = text.lower()
+    return [t for t in allowed if t in CONVENTION_KEYWORDS and any(k in text for k in CONVENTION_KEYWORDS[t])]
 
 
 @handles("classify")
@@ -130,7 +150,13 @@ def _propose(req):
 
 @handles("coding")
 def _coding(req):
-    return {o["name"]: terms_for(o["noticed"], req["terms"]) or ["other(unclassified)"] for o in req["observations"]}
+    # Shape on the convention the noticing names when a registered convention term fits; fall back to the tool-major cue
+    # (or an escape) only when no world-convention is behind the miss — the same order the coder prompt states.
+    out = {}
+    for o in req["observations"]:
+        conv = conventions_for(o["noticed"], req["terms"])
+        out[o["name"]] = sorted(conv) if conv else (terms_for(o["noticed"], req["terms"]) or ["other(unclassified)"])
+    return out
 
 
 # --- the consolidator ---------------------------------------------------------------------
@@ -313,6 +339,24 @@ ARTICLE_INSTANCES: list[tuple[str, Callable[[dict[str, Any]], str | None]]] = [
 """What the stub consolidator reads an article's words as asking for, and where in the instances it looks."""
 
 
+def task_names(task_ids: list[str]) -> list[str]:
+    """A task's bare name — the suite qualifies ids by family (``genesis/sum_numbers``), and a payload that copies an instance names the task, not the family."""
+    return [t.rsplit("/", 1)[-1].lower() for t in task_ids]
+
+
+def promoted(decision: str, task_ids: list[str]) -> str:
+    """The stub's promotion: each task the payload names becomes the shape it stands for, so the lesson no longer names the instance it was seen in."""
+    out = decision
+    for t in task_names(task_ids):
+        out = re.sub(rf"\b{re.escape(t)}\b", "task", out, flags=re.I)
+    return re.sub(r"\btask task\b", "task", out, flags=re.I)
+
+
+@handles("promote")
+def _promote(req):
+    return {"decision": promoted(req["decision"], req.get("task_ids", []))}
+
+
 @handles("anchor")
 def _anchor(req):
     out = []
@@ -352,26 +396,15 @@ def _triage(req):
 @handles("attack")
 def _attack(req):
     draft, ev = req["draft"], req["evidence"]
-    claims = []
-    sessions = ev.get("observation_sessions", [])
-    independent = len(set(sessions)) >= ev.get("bar_independent", 2)
-    claims.append({"target": "warrant:independence", "refutation": "the anchored observations come from one pass, which is one datum",
-                   "reading_taken": True, "landed": not independent, "evidence": [f"sessions {sorted(set(sessions))}"]})
+    claims = []  # independence and the watch's direction are the code's readings (hgi.types.MECHANICAL), not the stub examiner's
     for p in draft["body"]["warrant"]["premises"]:
         landed = ("transient" in p["statement"] or "fault" in p["statement"]) and ev.get("fault_rate") == 0
         claims.append({"target": f"premise:{p['id']}", "refutation": p["falsifier"], "reading_taken": True, "landed": landed,
                        "evidence": [f"fault_rate={ev.get('fault_rate')}"]})
     decision = draft["body"]["decision"].lower()
-    copied = any(t in decision for t in ev.get("task_ids", []))
+    named = [t for t in task_names(ev.get("task_ids", [])) if t in decision]
     claims.append({"target": "payload:abstraction", "refutation": "the payload names a task instead of the transferable shape",
-                   "reading_taken": True, "landed": copied, "evidence": ["the payload text"]})
-    watch = _drafting.revisit_watch(draft["body"])
-    if watch is not None:
-        wrong_way = _drafting.fires_on_success(watch["comparator"], float(watch["value"]))
-        claims.append({"target": "warrant:watch-direction",
-                       "refutation": "the revisit watch fires when the record succeeds; a revisit must fire on the failure or regression the stakes name, not on a passing score",
-                       "reading_taken": True, "landed": wrong_way,
-                       "evidence": [f"{watch['scorer']} {watch['comparator']} {watch['value']}"]})
+                   "reading_taken": True, "landed": bool(named), "evidence": [f"the payload names {', '.join(named)}" if named else "the payload text"]})
     lens = req.get("lens")
     if lens:  # one angle per context: the stub answers the lens's claim classes and nothing else
         claims = [c for c in claims if any(c["target"].startswith(prefix) for prefix in lens.get("claims", []))]
@@ -386,12 +419,9 @@ def _verdict(req):
     for c in attack["claims"]:
         if c["landed"] and c["target"].startswith("premise:"):
             return {"verdict": f"decline(premise killed: {c['target']})", "amendment": None}
-        if c["landed"] and c["target"] == "warrant:independence":
-            return {"verdict": "decline(bar unmet: observations are not independent)", "amendment": None}
-        if c["landed"] and c["target"] == "payload:abstraction":
-            return {"verdict": "decline(payload is a copied instance; promotion raises abstraction)", "amendment": None}
-        if c["landed"] and c["target"] == "warrant:watch-direction":
-            return {"verdict": "decline(the revisit watch fires on success; it must fire on the failure or regression the stakes name)", "amendment": None}
+        if c["landed"] and c["target"] == "payload:abstraction":  # amend-only: the payload is restated, the draft is not refused
+            return {"verdict": "admit-amended(the payload is restated at the transferable shape; the instances stay as anchors)",
+                    "amendment": promoted(req["draft"]["body"]["decision"], req.get("task_ids", []))}
     scorer = req.get("watch_scorer")
     series = oracle.get("series", {}).get(scorer, [])
     if scorer and series and all(v is None for v in series):

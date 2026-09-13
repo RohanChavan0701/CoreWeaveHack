@@ -17,7 +17,7 @@ def test_precision_reads_landings_upheld_and_names_the_ceiling(store):
     _consolidate.consolidate(store)  # the premise kill lands and is upheld: decline
     a = _index.attacker(store)
     assert a["dispatched"] == 1 and a["landed"] >= 1 and a["entries_with_landing"] == 1 and a["upheld"] == 1 and a["overruled"] == 0
-    assert a["precision"] == 1.0 and a["per_angle"]["L-0006"]["landed"] >= 1 and set(a["per_angle"]) >= {"L-0005", "L-0006", "L-0007"}
+    assert a["precision"] == 1.0 and a["per_angle"]["L-0006"]["landed"] >= 1 and set(a["per_angle"]) == {"L-0006", "L-0007", "mechanical"}
     assert any("ceiling artifact" in n for n in a["notes"])
 
 

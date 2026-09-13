@@ -86,6 +86,58 @@ def test_an_arm_runs_in_its_own_store_and_the_report_reads_its_curve_back(tmp_pa
     assert "| attached | stub | attached | 1×2 |" in table and "| detached | stub | detached | 1×2 | 0.50 | 0.50 | nothing |" in table
 
 
+def test_arm_json_records_the_tree_commit(tmp_path, monkeypatch):
+    """The runner's own tree, not the arm's store repository — pinned at the arm's start so a log written
+    under a later commit can be told apart from the tree that actually ran (item 35)."""
+    monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
+    exp = _experiment.load(EXPERIMENTS / "smoke.toml")
+    record = _experiment.run_arm(exp, "attached", tmp_path, commit=False)
+    assert record["commit"] == git("rev-parse", "HEAD")
+
+
+def test_tree_commit_is_null_outside_a_checkout(tmp_path):
+    assert _experiment._tree_commit(tmp_path) is None
+
+
+def test_serial_detached_is_the_default_and_never_touches_a_thread_pool(tmp_path, monkeypatch):
+    """The safe default (decision 36): a detached arm's passes are drawn one at a time, so several arms of
+    an experiment can run together without multiplying anyone's concurrency past the endpoint's ceiling."""
+    monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
+    monkeypatch.setattr("concurrent.futures.ThreadPoolExecutor",
+                         lambda *a, **k: (_ for _ in ()).throw(AssertionError("thread pool used under serial_detached")))
+    exp = _experiment.load(EXPERIMENTS / "smoke.toml")
+    assert exp.resolve("detached").serial_detached is True
+    record = _experiment.run_arm(exp, "detached", tmp_path, commit=False)
+    assert record["sessions"] == ["S-0001", "S-0002"]
+
+
+def test_serial_detached_can_be_turned_off_for_the_old_concurrent_draw(tmp_path, monkeypatch):
+    monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
+    exp = _experiment.Experiment(name="concurrent-detached", defaults={"rounds": 1, "passes_per_round": 2},
+                                  arms={"a": {"mode": "detached", "serial_detached": False}})
+    assert exp.resolve("a").serial_detached is False
+    record = _experiment.run_arm(exp, "a", tmp_path, commit=False)
+    assert record["sessions"] == ["S-0001", "S-0002"]
+
+
+def test_weave_is_rejoined_in_each_worker_thread_of_a_concurrent_detached_draw(tmp_path, monkeypatch):
+    """Moot under the serial default (no worker threads); needed the moment ``serial_detached`` is turned
+    off, since a worker thread starts with no project bound in its own context (item 34)."""
+    monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
+    calls = []
+    monkeypatch.setattr(_experiment.tracing, "rejoin", lambda: calls.append(True))
+
+    concurrent_exp = _experiment.Experiment(name="concurrent-detached", defaults={"rounds": 1, "passes_per_round": 2},
+                                             arms={"a": {"mode": "detached", "serial_detached": False}})
+    _experiment.run_arm(concurrent_exp, "a", tmp_path, commit=False)
+    assert len(calls) == 2, "once per worker-thread draw"
+
+    calls.clear()
+    serial_exp = _experiment.load(EXPERIMENTS / "smoke.toml")
+    _experiment.run_arm(serial_exp, "detached", tmp_path, commit=False)
+    assert calls == [], "the serial draw runs in this thread, already joined by tracing.run"
+
+
 def test_rerunning_an_arm_needs_force(tmp_path, monkeypatch):
     monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
     exp = _experiment.load(EXPERIMENTS / "smoke.toml")

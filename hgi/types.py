@@ -554,6 +554,12 @@ class AttackClaim(Strict):
     """That context's Weave call URI, so each angle's product is joinable to its own trace."""
 
 
+MECHANICAL: tuple[str, ...] = ("warrant:independence", "warrant:watch-direction")
+"""The attack classes the code reads instead of a lens: the distinct-session count against the bar, and the watch's
+direction against the stakes. Their claims carry no lens and no call, join the attack first, and an examiner claim on
+either that contradicts the computed reading is discarded (:func:`hgi.consolidate.settle`)."""
+
+
 class Attack(Strict):
     """The examiner's payload. It carries no verdict; ``pending`` is the only value the schema admits here."""
 

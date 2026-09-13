@@ -177,17 +177,14 @@ CONTROL_EVIDENCE: dict[str, Any] = {"observation_sessions": ["S-0001", "S-0002"]
 """The fixed evidence pack the control attacks under: two independent sessions, no transient fault in the window, two task ids."""
 
 EXAMINER_FAULTS: dict[str, dict[str, Any]] = {
-    "L-0005": {"why": "the anchored observations come from one pass counted twice",
-               "evidence": {"observation_sessions": ["S-0001", "S-0001"]}},
     "L-0006": {"why": "a premise the evidence refutes: it rests on transient faults and the window's fault rate is zero",
                "sketch": {"premises": [{"id": "p1", "statement": "a transient fault clears on the next call",
                                         "falsifier": "no transient fault in the trace store over the window"}]}},
     "L-0007": {"why": "the payload names the task it was seen in instead of the transferable shape",
                "sketch": {"decision": "The sum_numbers task's wrapper carries the HTTP cause on rethrow."}},
-    "L-0008": {"why": "the revisit watch fires on success: a passing score satisfies it and a failing one does not",
-               "sketch": {"watch": {"scorer": "error_cause_present", "comparator": "==", "value": 1.0, "persistence": 2}}},
 }
-"""Per examiner lens, the fault of its class planted on the signal draft — as a sketch or evidence override of the decoy's."""
+"""Per examiner lens, the fault of its class planted on the signal draft — as a sketch or evidence override of the decoy's.
+The mechanical classes (independence, watch direction) are the code's and are proven by tests, not planted."""
 
 
 def control_draft(store: Store, name: str, sketch: dict[str, Any]) -> Draft:
@@ -224,12 +221,12 @@ CODER = "coder"
 """The key the coder control's telemetry is grouped under — the role, since the coder walks no lens."""
 
 CODER_ITEMS: list[dict[str, Any]] = [
-    {"kind": "signal", "name": "control/http-fault", "term": "http-tool",
-     "noticed": "task fetch_user_name failed: GET /users/7 returned HTTP 502 and the reported error named no cause"},
+    {"kind": "signal", "name": "control/paged-listing", "term": "listing-paged",
+     "noticed": "task list_users returned only the first page of the listing and stopped; the route named the next page in a field the attempt ignored, so the count came up short"},
     {"kind": "decoy", "name": "control/misfit", "term": None,
      "noticed": "the answer given was 41 where the table summed to 42: the arithmetic slipped in the model's own reasoning, with nothing in the world behind it"},
 ]
-"""An observation of a known work-shape the coder must return the term for, and one that fits no term it must escape from."""
+"""An observation whose convention the coder must name the term for, and one with no world-convention behind it that it must escape from."""
 
 
 def coder_rows() -> list[dict[str, Any]]:

@@ -12,6 +12,7 @@
     hgi experiment  run experiments/x.toml       # every arm of an experiment file, each in its own store
     hgi suite       show                         # the task suite in scope: families, counts, hash, faults
     hgi roles       try nominate --store <arm>   # one role request against a copy of a store; how the reply parsed
+    hgi consult     --problem "<the work>"       # the store read from outside the loop: latch, then project the payload
 
 Every command that writes ends in a commit whose message names the record
 ids it admitted, flipped or retired. ``--store`` (or ``$HGI_STORE``) names
@@ -205,10 +206,10 @@ def build_parser() -> argparse.ArgumentParser:
 def _register_pass_commands(add) -> None:
     """The forward- and backward-pass commands register themselves as their modules land."""
     try:
-        from hgi import boot, close, consolidate, contract, evaluate, experiment, mirror, price, world  # noqa: F401
+        from hgi import boot, close, consolidate, consult, contract, evaluate, experiment, grouping_sweep, mirror, price, world  # noqa: F401
     except ImportError:
         return
-    for module in (boot, evaluate, close, consolidate, mirror, experiment, price, world, contract):
+    for module in (boot, evaluate, close, consolidate, mirror, experiment, grouping_sweep, price, world, contract, consult):
         module.register(add, _store, _finish)
 
 
