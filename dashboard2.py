@@ -11,15 +11,19 @@ every arm of its experiment is overlaid on one chart with the experiment's repor
 notebook reads the store; it writes only through ``hgi`` commands (the queue's two buttons shell out
 to ``hgi queue``).
 
-The body is seven tabs — Loop, Lessons, Passes, Compute, Store, Queue, Floor — under a row of header
-stats. Lessons and Passes read the evolution log (:mod:`hgi.evolution`) of a stream arm and say so
-when the chosen store is not one. Compute reads the trace store: every model call an arm made
+The body is eight tabs — Loop, Lessons, Passes, Retrofit, Compute, Store, Queue, Floor — under a row
+of header stats. Lessons and Passes read the evolution log (:mod:`hgi.evolution`) of a stream arm
+and say so when the chosen store is not one. Retrofit reads a retrofitted arm (:mod:`hgi.retrofit`):
+the snapshots it writes after every pass — the observation pile by shape, the store's counts — as
+they land, and on request the original store beside it pass by pass from the source arm's history.
+An arm no experiment file declares (a directory of retrofits) is read as an experiment through
+:func:`hgi.experiment.from_dir`. Compute reads the trace store: every model call an arm made
 carries its tokens and latency in Weave, with the arm, pass and role as attributes, so the tab
 pulls them on request and charts where the tokens and the seconds went. Every chart is an altair
 chart rendered by marimo: hover a mark for the row behind it.
 
-    uv run marimo run dashboard.py        # the app
-    uv run marimo edit dashboard.py       # the notebook
+    uv run marimo run dashboard2.py       # the app
+    uv run marimo edit dashboard2.py      # the notebook
 """
 
 import marimo
@@ -42,6 +46,7 @@ def _():
     from hgi import evolution as hevolution
     from hgi import experiment as hexperiment
     from hgi import index as hindex
+    from hgi import retrofit as hretrofit
     from hgi.cli import load_env
     from hgi.store import Store
     from hgi.tracing import weave_project_url, weave_url
@@ -69,6 +74,7 @@ def _():
         hevolution,
         hexperiment,
         hindex,
+        hretrofit,
         json,
         mo,
         os,
@@ -177,7 +183,7 @@ def _(alt, mo, pl):
         """Small multiples, one panel a measure on its own axis — never two scales on one plot — one line an arm."""
         base = alt.Chart(df).encode(
             x=_PASS_X,
-            y=alt.Y("value:Q", axis=alt.Axis(title=None, tickCount=4)),
+            y=alt.Y("value:Q", axis=alt.Axis(title=None, tickCount=4, format=",.2~f")),
             color=alt.Color("arm:N", scale=slots(present(df, arms), arms), legend=alt.Legend(title=None, orient="top", direction="horizontal")),
             tooltip=[alt.Tooltip("arm:N"), alt.Tooltip("measure:N"), alt.Tooltip("pass:Q", format="d"), alt.Tooltip("value:Q", format=".2f")],
         )
@@ -235,7 +241,7 @@ def _(alt, mo, pl):
             tooltip=[alt.Tooltip("record:N"), alt.Tooltip("disposition:N"), alt.Tooltip("count:Q"), alt.Tooltip("competence:N", title="applied ÷ considered")],
         ).properties(width="container", height=22 * max(2, df["record"].n_unique()) + 30, title=title))
 
-    return ROLES, competence_bars, facet_lines, lesson_bars, lesson_heatmap, score_curve, slots, stacked_bars
+    return ROLES, SURFACE, competence_bars, facet_lines, lesson_bars, lesson_heatmap, score_curve, slots, stacked_bars
 
 
 @app.cell
@@ -247,11 +253,12 @@ def _(Path, Store, hevolution, hexperiment, root):
     logs = {}
     arm_sessions = {}  # every arm's sessions, for the series the evolution log does not carry (wall-clock, activity)
     arm_after = {}  # every arm's consolidation id → the pass it followed: the backward pass's calls carry the consolidation as their session
-    if _dir.parent.parent == hexperiment.runs_root() and _file.exists():
+    if _dir.parent.parent == hexperiment.runs_root() and (_file.exists() or (_dir / "arm.json").exists()):
         _errors = []
         # `hgi` refuses with SystemExit, which is a BaseException: `except Exception` lets it through and marimo blanks every cell under it
         try:
-            exp = hexperiment.load(_file)
+            # an experiment file declares the arms; a directory no file declares (runs/retrofit) is read as one from its arm.json files
+            exp = hexperiment.load(_file) if _file.exists() else hexperiment.from_dir(_dir.parent)[0]
         except (Exception, SystemExit) as _e:  # a half-written or stale arm names itself instead of killing the tab
             _errors.append(f"the experiment did not load: `{type(_e).__name__}: {_e}`")
         for _arm in dict.fromkeys([*exp.arms, _dir.name]) if exp is not None else ():
@@ -458,6 +465,90 @@ def _(log, mo, pass_pick, sessions, store, wcell, wlink):
 
 
 @app.cell
+def _(Path, json, mo, refresh, root):
+    # a retrofitted arm's snapshots, live: `hgi experiment retrofit` writes snapshots/after-pass-<k>.json after every pass it splices
+    refresh
+    _dir = Path(root).parent
+    _record = json.loads((_dir / "arm.json").read_text()) if (_dir / "arm.json").exists() else {}
+    retro = _record.get("retrofit")
+    snaps = ([json.loads(p.read_text()) for p in sorted(_dir.glob("snapshots/after-pass-*.json"), key=lambda p: int(p.stem.rsplit("-", 1)[1]))]
+             if retro else [])
+    compare = mo.ui.run_button(label="read the original store beside it", disabled=retro is None or not snaps)
+    return compare, retro, snaps
+
+
+@app.cell
+def _(Path, SURFACE, alt, compare, facet_lines, hretrofit, mo, pl, retro, root, slots, snaps):
+    # The retrofit tab: the store's pile pass by pass — what today's backward pass made of the source arm's rows — and, on
+    # request, the original store as its own history left it after the same pass, so the two readings sit on one panel.
+    _COUNTS = ["decisions accepted", "open observations", "fires", "steers", "proposals open", "queued"]
+
+    def _counts(side: str, snap: dict) -> list[dict]:
+        st = snap["store"]
+        vals = {"decisions accepted": sum(d["status"] == "accepted" for d in st["decisions"]), "open observations": st["observations"]["by_state"].get("open", 0),
+                "fires": len(st["fires"]), "steers": len(st["steers"]), "proposals open": len(st["proposals"]), "queued": len(st["queue"])}
+        return [{"arm": side, "measure": m, "pass": snap["pass"], "value": float(v)} for m, v in vals.items()]
+
+    retrofit_view = mo.md("not a retrofitted arm; `hgi experiment retrofit <old arm> --out runs/retrofit/<name>` makes one")
+    if retro is not None:
+        _src = f"{retro['source_experiment']}/{retro['source_arm']}"
+        _head = mo.md(f"## Retrofit of `{_src}` — the source arm's rows, unchanged, under today's backward pass on `{retro['teacher']}`\n\n"
+                      f"store read at `{str(retro.get('source_commit') or '?')[:7]}`, run from code `{str(retro.get('code_commit') or '?')[:7]}` on {retro['date'][:10]}; "
+                      f"{len(snaps)} of {len(retro.get('source_passes', []))} passes snapshotted" + (" — still running" if len(snaps) < len(retro.get("source_passes", [])) else "")
+                      + ". Nothing was in context at any pass: a retrofit reads the backward pass, never the forward one.")
+        if not snaps:
+            retrofit_view = mo.vstack([_head, mo.md("_no snapshot yet_")])
+        else:
+            _shapes = list(dict.fromkeys(k for sn in snaps for k in sn["store"]["observations"]["by_shape"]))
+            _pile = pl.DataFrame([{"pass": sn["pass"], "shape": k, "state": st, "value": float(c["state_count"]), "order": _shapes.index(k),
+                                   "detail": (", ".join(c["names"][:8]) + (" …" if len(c["names"]) > 8 else "")) if st == "open" else f"{c['state_count']} {st}"}
+                                  for sn in snaps for k, c0 in sn["store"]["observations"]["by_shape"].items()
+                                  for st in ("open", "promoted", "dismissed", "expired") if (c := c0 | {"state_count": c0.get(st, 0)})["state_count"]],
+                                 schema={"pass": pl.Int64, "shape": pl.Utf8, "state": pl.Utf8, "value": pl.Float64, "order": pl.Int64, "detail": pl.Utf8})
+            _pile_chart = None
+            if _pile.height:
+                _pile_chart = alt.Chart(_pile).mark_bar(stroke=SURFACE, strokeWidth=2, cornerRadiusEnd=2).encode(
+                    x=alt.X("pass:O", axis=alt.Axis(title="pass", labelAngle=0, grid=False)),
+                    y=alt.Y("value:Q", axis=alt.Axis(title="observations", tickMinStep=1, format="d")),
+                    color=alt.Color("shape:N", scale=slots(_shapes), sort=_shapes, legend=alt.Legend(title="shape (uncoded until a consolidation)", orient="top", direction="horizontal")),
+                    order=alt.Order("order:Q"),
+                    tooltip=[alt.Tooltip("pass:O"), alt.Tooltip("shape:N"), alt.Tooltip("state:N"), alt.Tooltip("value:Q", format="d", title="count"), alt.Tooltip("detail:N")],
+                ).properties(width=260, height=180).facet(column=alt.Column("state:N", sort=["open", "promoted", "dismissed", "expired"], header=alt.Header(title=None)),
+                                                          title="the observation pile by shape after every pass — the accumulation a consolidation groups over, one panel a state")
+            _rows = [{"pass": sn["pass"], "score": "—" if sn["score"] is None else f"{sn['score']:.2f}", "failed rows": len(sn["failed"]),
+                      "filed (retrofit)": len(sn["close"]["observations_filed"]),
+                      "filed (original)": len(((sn.get("splice") or {}).get("original_close") or {}).get("observations_filed", [])),
+                      "stripped": " ".join(f"{k} {len(v)}" for k, v in (sn.get("splice") or {}).items() if isinstance(v, list) and v) or "—",
+                      "consolidation": "—" if sn["consolidation"] is None else
+                      f"{sn['consolidation']['id']}: admitted {' '.join(sn['consolidation']['admitted']) or 'nothing'}; dismissed {len(sn['consolidation']['dismissed'])}; "
+                      f"{len(sn['consolidation']['groups'])} groups",
+                      "decisions": " ".join(f"{d['id']}[{d['status']}]" for d in sn["store"]["decisions"]) or "—"} for sn in snaps]
+            _counts_df = pl.DataFrame([r for sn in snaps for r in _counts("retrofit", sn)], schema={"arm": pl.Utf8, "measure": pl.Utf8, "pass": pl.Int64, "value": pl.Float64})
+            _reading = []
+            if compare.value:
+                try:  # the original store after each pass is extracted from the source arm's git history: a read per pass, on request
+                    _r = hretrofit.reading(Path(root).parent)
+                    _counts_df = pl.concat([_counts_df, pl.DataFrame([x for p in _r["passes"] if p["original"] for x in _counts("original", p["original"])],
+                                                                     schema=_counts_df.schema)])
+                    _reading = [mo.md("## The original beside it — where the two stores part after each pass"),
+                                mo.ui.table([{"pass": p["pass"], "divergence": "; ".join(p["divergence"]) or "none"} for p in _r["passes"]]),
+                                mo.accordion({"the full reading": mo.md(hretrofit.reading_markdown(_r))})]
+                except (Exception, SystemExit) as _e:
+                    _reading = [mo.md(f"⚠️ the original did not read: `{type(_e).__name__}: {_e}`")]
+            retrofit_view = mo.vstack([
+                _head,
+                _pile_chart if _pile_chart is not None else mo.md("_no observation in the pile yet_"),
+                mo.md("## What the store holds after each pass" + (" — retrofit against the original" if compare.value else "")),
+                facet_lines(_counts_df, ["retrofit", "original"], _COUNTS, columns=3),
+                compare,
+                *_reading,
+                mo.md("## Pass by pass — the close's filing beside the original's, what the splice stripped, the consolidation after"),
+                mo.ui.table(_rows),
+            ])
+    return (retrofit_view,)
+
+
+@app.cell
 def _(mo, trace_root):
     pull = mo.ui.run_button(label="pull usage from Weave", disabled=trace_root is None)
     return (pull,)
@@ -649,12 +740,13 @@ def _(mo, root, subprocess):
 
 
 @app.cell
-def _(compute_view, curve, escalations, evolution_view, floor, ledger, lessons_view, lineage, log, matrix, mo, overlay, passes_view, projections, verdicts):
+def _(compute_view, curve, escalations, evolution_view, floor, ledger, lessons_view, lineage, log, matrix, mo, overlay, passes_view, projections, retrofit_view, verdicts):
     _not_stream = mo.md("not a stream arm; the Loop tab has the curve")
     mo.ui.tabs({
         "Loop": mo.vstack([curve, overlay, evolution_view]),
         "Lessons": lessons_view if log is not None else _not_stream,
         "Passes": passes_view if log is not None else _not_stream,
+        "Retrofit": retrofit_view,
         "Compute": compute_view,
         "Store": mo.vstack([projections, ledger, lineage, matrix]),
         "Queue": mo.vstack([escalations, verdicts]),

@@ -402,7 +402,13 @@ Compute tab reads the trace store on request: every model call carries its
 tokens and latency in Weave with `hgi.arm`, `hgi.pass` and `hgi.role` as
 attributes, so one filtered query charts tokens and seconds per pass by
 role and by the model that served the call, the backward pass charged to
-the pass it followed.
+the pass it followed. A retrofitted arm (`runs/retrofit/<name>`, made by
+`hgi experiment retrofit`) is listed like any arm — a directory no
+experiment file declares is read as an experiment from its `arm.json`
+files — and its Retrofit tab charts the snapshots the retrofit writes after
+every pass as they land: the observation pile by shape, one panel a state,
+and the store's counts pass by pass; a button reads the original store
+beside it from the source arm's history and names where the two part.
 
 ### The stream
 

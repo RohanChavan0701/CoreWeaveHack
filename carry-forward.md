@@ -618,6 +618,18 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     dashboard's pages linked; the other direction is `mo.iframe` of a report
     or panel share link in the Loop tab. Neither is built.
 
+46. **The Retrofit tab reads snapshots, not the store's history** (dashboard
+    pass). It charts `snapshots/after-pass-<k>.json` as the retrofit writes
+    them and, on request, the original beside it through
+    `hgi.retrofit.reading` (a git archive per pass of the source arm, about
+    a tenth of a second for twelve). The two retrofits under
+    `runs/retrofit/` were at pass 2 of 12 when this was written, so the tab
+    has been seen with one snapshot only; the shape legend, the four state
+    panels and the original-versus-retrofit count panels are exercised in
+    code, not on a finished run. The pile chart colours shapes by first
+    appearance across the snapshots, so a shape's hue is stable within an
+    arm but not across arms.
+
 ## Decisions taken, and their risk
 
 1. **Decision-only roster.** Beliefs and rules were dropped by instruction;
