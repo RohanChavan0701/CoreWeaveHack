@@ -8,7 +8,9 @@
 4. stage-one selection — the hook-major index matched against the work-shape
    terms; the lexical nominator over summaries logs its hits as considered
    with the guard failed unless a registered term also matched; the guard
-   evaluator decides each fire;
+   evaluator decides each fire; records whose hooks share every term with no
+   lineage edge between them co-apply with no specificity order, and the plan
+   says so on one line rather than ranking or dropping one;
 5. composition — the boot lenses walk, one context per angle, and the
    consultation plan prints: the count and the ids entering context, each
    with its owed act.
@@ -127,6 +129,33 @@ def _summary(store: Store, record: str) -> dict[str, Any]:
     return {"latch": d.summary.latch, "stakes": d.summary.stakes, "not_this": d.summary.not_this}
 
 
+CO_APPLYING = "no specificity order; dispose each on its own rows"
+"""What the plan and the dispose request say of an antichain: records that co-apply are never ranked or dropped (§ 16.17) —
+the conflict is shown, and the pass disposes each on the rows it bore on."""
+
+
+def lineage_edge(a: Decision, b: Decision) -> bool:
+    """Whether a lineage edge runs between two records — one supersedes, leaves or folds the other — which is a specificity order."""
+    return any(b.id in edges for edges in (a.lineage.supersedes, a.lineage.superseded_by, a.lineage.folded_from, [a.lineage.split_from])) or \
+        any(a.id in edges for edges in (b.lineage.supersedes, b.lineage.superseded_by, b.lineage.folded_from, [b.lineage.split_from]))
+
+
+def co_applying(store: Store, records: list[str]) -> list[list[str]]:
+    """The antichains among consulted records: groups of two or more whose consultation hooks share every term and between which
+    no lineage edge runs. They enter context side by side with no specificity order; nothing here ranks or drops one."""
+    decisions: dict[str, Decision] = {r: store.read("decision", r) for r in records}  # type: ignore[misc]
+    by_hook: dict[frozenset[str], list[str]] = {}
+    for r, d in decisions.items():
+        by_hook.setdefault(frozenset(d.consultation_terms), []).append(r)
+    groups = []
+    for ids in by_hook.values():
+        ordered = {r for r in ids for other in ids if r != other and lineage_edge(decisions[r], decisions[other])}
+        rest = sorted(r for r in ids if r not in ordered)
+        if len(rest) >= 2:
+            groups.append(rest)
+    return sorted(groups)
+
+
 def plan(store: Store, session: Session, articles, prev: Session | None, owed: list[dict]) -> str:
     lines = [f"== {session.id} pass {session.pass_} — consultation plan ==",
              f"constitution: {len(articles)} articles " + " ".join(a.id for a in articles),
@@ -136,6 +165,8 @@ def plan(store: Store, session: Session, articles, prev: Session | None, owed: l
     fired = [c for c in session.considered if c.via != "constitution" and c.guard_passed]
     failed = [c for c in session.considered if c.via != "constitution" and not c.guard_passed]
     lines.append(f"consulting {len(fired)}: " + ", ".join(f"{c.record} ({', '.join(c.terms_matched)}) owed {c.owed_act}" for c in fired))
+    for group in co_applying(store, [c.record for c in fired]):
+        lines.append(f"co-applying: {', '.join(group)} — {CO_APPLYING}")
     unwatched = [c.record for c in fired if _index.watch_of(store.read("decision", c.record)) == _index.UNWATCHED]  # type: ignore[arg-type]
     if unwatched:
         lines.append(f"unwatched {len(unwatched)}: " + ", ".join(unwatched) + " — no world-state watch can send the warrant back; only the ratio and propagation can")

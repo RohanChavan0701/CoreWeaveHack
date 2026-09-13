@@ -64,6 +64,7 @@ def dispose(store: Store, session: Session) -> list[Disposition]:
     discharges: dict[str, str] = {}
     if consulted or owed:
         c = _model.complete("pass", roles.request("dispose", consulted=consulted, rows=rows, vocabulary=store.registry.terms("use-time-disposition"),
+                                                  co_applying=[{"records": g, "reading": _boot.CO_APPLYING} for g in _boot.co_applying(store, [c.record for c in session.consulted])],
                                                   fires_owed=[f.model_dump(by_alias=True, mode="json") for f in owed]),
                             session=session.id, pass_=session.pass_, records_in_context=[x["record"] for x in consulted])
         reply = c.json()
