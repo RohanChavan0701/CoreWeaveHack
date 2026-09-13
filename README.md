@@ -366,6 +366,7 @@ hgi experiment models                                # the ids the endpoint serv
 | `experiments/incidents.toml` | `gpt-oss-120b` attached and detached, `gpt-oss-20b` attached, the split roles; the 18 incident tasks as a stream, six batches of three, batches 1 and 2 revisited | first-sight diagnosis of unseen bundles balanced over the three decoy shapes, the transfer half dealt into the same pool so a re-dressed scenario may arrive before or after its source; `solution_economy` here is the step count — the cause readings over the calls the walk spent |
 | `experiments/stream-probe.toml` | `gpt-oss-120b` attached and detached, two batches of five | a stream arm end to end on the endpoint |
 | `experiments/stream-smoke.toml` | stub, attached and detached, four batches of four | the stream runner end to end offline; the tests run it |
+| `experiments/incidents-smoke.toml` | stub, attached and detached, six batches of three | the incidents stream end to end offline over the three decoy shapes; the tests run it |
 
 The shipped files run on W&B Inference (`https://api.inference.wandb.ai/v1`):
 the key is `$WANDB_API_KEY` or the netrc entry `wandb login` wrote, and the

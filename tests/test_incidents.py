@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import pytest
 
 import suite as _suite
+from hgi import experiment as _experiment
 from suite.faults import FaultProfile
 from suite.families import FAMILIES
 from suite.lessons import LESSONS, naive_outcome
@@ -12,6 +16,7 @@ from suite.stream import StreamSpec, lessons_of, partition
 from suite.tasks import SuiteSpec, build
 
 INCIDENT_TASKS = 9
+EXPERIMENTS = Path(__file__).resolve().parents[1] / "experiments"
 
 
 @pytest.fixture
@@ -76,3 +81,16 @@ def test_the_stream_deals_the_whole_pool_over_the_decoy_shapes():
     assert len({t.id for b in batches for t in b.tasks}) == 6 * 3, "no task is dealt twice"
     dealt = {k for b in batches for k in lessons_of(b)}
     assert dealt == {f"decoy-{r['decoy']}" for r in FAMILIES["incidents"].records()}, "every decoy shape is in the pool"
+
+
+def test_the_incidents_smoke_runs_both_arms_naively_over_the_three_decoy_lessons(tmp_path, monkeypatch):
+    monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
+    exp = _experiment.load(EXPERIMENTS / "incidents-smoke.toml")
+    record = _experiment.run_arm(exp, "attached", tmp_path, commit=False)
+    assert record["sessions"] == [f"S-000{n}" for n in range(1, 8)], "six stream passes and one revisit"
+    log = json.loads((tmp_path / "incidents-smoke" / "attached" / "evolution.json").read_text())
+    assert [p["kind"] for p in log["passes"]] == ["stream"] * 6 + ["revisit"]
+    assert all(p["symptoms"] == {"naive": 3} for p in log["passes"]), "the stub walks the whole bundle and dies on the budget"
+    assert set(log["lessons"]) == {"decoy-dependency", "decoy-saturation", "decoy-state"}
+    detached = _experiment.run_arm(exp, "detached", tmp_path, commit=False)
+    assert detached["sessions"] == [f"S-000{n}" for n in range(1, 7)] and detached["stream"]["revisit"] == []

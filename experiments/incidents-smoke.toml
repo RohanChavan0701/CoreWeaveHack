@@ -1,0 +1,24 @@
+# The incidents stream's own check on the deterministic stub: six batches of three diagnoses, consolidation every two,
+# batch 1 met again at the end. The stub's policy for every incidents task is the naive walk through all the readings,
+# which dies on the budget, so every failure is a naive-shape (budget) failure and the curve is flat and honest; what
+# the run proves is the deal over the three decoy lessons, the per-pass suite swap, the revisit pass and the evolution
+# log on this family. The tests run it.
+name = "incidents-smoke"
+description = "the incidents stream end to end on the deterministic stub"
+
+[defaults]
+model = "stub"
+passes_per_round = 2
+
+[defaults.stream]
+families = ["incidents", "incidents-transfer"]
+batch = 3
+batches = 6
+seed = 0
+revisit = [1]
+
+[arms.attached]
+mode = "attached"
+
+[arms.detached]
+mode = "detached"
