@@ -390,6 +390,28 @@ def independence_claim(store: Store, draft: Draft, evidence: dict[str, Any]) -> 
             "evidence": [unmet.message if unmet else f"sessions {sorted(set(evidence['observation_sessions']))} meet the bar {evidence['bar_independent']}"]}
 
 
+def recurrence_reading(store: Store, evidence: dict[str, Any]) -> dict[str, Any]:
+    """The graded reading of the recurrence's strength: N distinct sessions banded against the independence bar, mirroring
+    the vocabulary nominator's small-N banding (:func:`hgi.reviews.revision_route`, "ambiguous (small N)").
+
+    The floor is binary and lives in :func:`hgi.lint.independence` — the same distinct-session count, read once as a
+    pass/fail (:func:`independence_claim`). This reading is *additional* context for the adjudicator's reasoning, never a
+    replacement: above the floor the count still carries weight, N=2 and N=10 are not the same evidence. It corroborates
+    that the observed pattern is a real world-fact; it never lowers the floor and never overrides a premise kill.
+    """
+    bar = evidence["bar_independent"]
+    n = len(set(evidence["observation_sessions"]))
+    if n < bar:
+        reading = f"below the independence floor (N={n} against the bar {bar}): the floor refuses this draft whatever the verdict"
+    elif n < 2 * bar:
+        reading = (f"modest recurrence (small N={n}): at or above the floor but under twice the bar {bar}; the count is thin "
+                   "corroboration — enough to clear the floor, not enough to lean on")
+    else:
+        reading = (f"strong recurrence (N={n} sessions): at or above twice the bar {bar}; the pattern recurred across "
+                   "independent passes and corroborates that it is a real world-fact")
+    return {"sessions": n, "bar": bar, "reading": reading}
+
+
 def settle(attack_payload: dict[str, Any], mechanical: list[dict[str, Any]]) -> dict[str, Any]:
     """The mechanical claims join the examiner's, first. An examiner claim on a mechanical class that contradicts the
     computed reading is discarded: the count is the code's, and a register still walking such a lens is advisory."""
@@ -432,6 +454,7 @@ def verdict(store: Store, record: Consolidation, draft: Draft, attack_payload: d
     c = _model.complete("adjudicator", roles.request("verdict", draft=draft.model_dump(by_alias=True, mode="json"), attack=attack_payload,
                                                      oracle={"series": evidence["series"], "scores": evidence["scores"], "evaluation": evidence["evaluation"]},
                                                      watch_scorer=evidence["watch_scorer"], task_ids=evidence["task_ids"], bars=store.registry.bars,
+                                                     recurrence=recurrence_reading(store, evidence),
                                                      deferred=draft.deferral.model_dump(mode="json") if draft.deferral else None), session=record.id)
     out = c.json() if isinstance(c.json(), dict) else {}
     v = str(out.get("verdict") or "escalate(adjudicator returned no verdict)")
