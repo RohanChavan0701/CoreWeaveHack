@@ -127,6 +127,8 @@ hgi consolidate                             # the backward pass over the ledgers
 hgi lint                                    # the floor
 hgi index                                   # regenerate projections
 hgi lineage     D-0007                      # the path query over the lineage DAG
+hgi suite       show | tasks | fetch <fam>  # the task suite in scope; transcribe a dataset family
+hgi roles       try <request> --store <arm> # one role request against a copy of a store; how the reply parsed
 ```
 
 Every command that writes ends in a commit whose message names the record
@@ -135,13 +137,38 @@ demonstration; `uv run marimo run dashboard.py` opens the projection surface
 and the escalation queue; `uv run hgi mirror` publishes the ledgers to Weave
 for the analyst.
 
+## The world
+
+The suite the loop is judged on is composed from task families under one
+fault profile, and pinned by a hash over every task's presentation, its
+world (the files and routes it runs in) and the profile (spec § 14.1). A
+family is hand-written or transcribed once from a public dataset into
+`suite/data/`, so a run needs no network:
+
+| Family | Tasks | Source | What it grades |
+|---|---|---|---|
+| `genesis` | 6 | hand-written | the § 14 demonstration: HTTP faults, a shell budget, a file report, a schema |
+| `conventions` | 10 | hand-written | facts of this world a model meets on first contact: files with no trailing newline (`wc -l` undercounts), a paging API, an API moved under `/v2`, quoted CSV commas, a byte order mark — each proven to fail naively and pass when known |
+| `mbpp` | 257 | [google-research-datasets/mbpp](https://huggingface.co/datasets/google-research-datasets/mbpp), sanitized test split, CC-BY-4.0 | write `solution.py`, run `tests.py` under three shell calls; the dataset's own asserts are the hidden check |
+| `tables` | 100 | [TableBench](https://huggingface.co/datasets/Multilingual-Multimodal-NLP/TableBench), Apache-2.0, the scalar-answer rows | one question over `table.csv`, graded by a normalizer with tolerance |
+| `api` | 100 | the same TableBench rows, odd positions | the same questions through a paged JSON API under a budget of pages plus two |
+
+The fault profile says how many leading HTTP calls of a faulted task fail,
+whether HTTP calls are budgeted, and whether shell output truncates. An
+experiment file carries the suite as `[suite]` (families, a seeded sample
+size, the profile), deep-merged per arm; a hand-run names a TOML with the
+same table in `$HGI_SUITE`. `hgi suite show` prints the resolved suite and
+its hash. The deterministic stub runs only the families that carry scripted
+policies (`genesis`, and `conventions` naively); every other family fails on
+it honestly.
+
 ## Experiments
 
 An experiment file fixes every per-run decision outside the run: the models
 it may use, which role runs on which, how many rounds and how many passes a
 round holds (the consolidation cadence, written into the arm's bars),
-whether the memory is attached or detached, any bar overridden, and how many
-tasks the oracle evaluates at once. `hgi experiment run` gives each arm a
+whether the memory is attached or detached, any bar overridden, which suite
+it runs on, and how many tasks the oracle evaluates at once. `hgi experiment run` gives each arm a
 fresh store under `runs/<experiment>/<arm>/`, in a git repository of its own,
 seeds it priced for the arm's pass model, and drives the same commands
 `demo.sh` drives through the command surface; `arm.json` beside the store
@@ -161,6 +188,8 @@ hgi experiment models                                # the ids the endpoint serv
 | `experiments/baseline.toml` | `openai/gpt-oss-120b`, attached and detached, 3 × 2 | the § 14 run on a real frozen model |
 | `experiments/model-sweep.toml` | `gpt-oss-20b`, `gpt-oss-120b`, `Qwen3.6-35B-A3B`, each attached and detached, plus the roles split: the small model acts, the large one consolidates, examines and adjudicates | behaviour under a model swap (§ 14.4); whether separation of powers lets a weak actor learn from a strong judge |
 | `experiments/cadence.toml` | `gpt-oss-120b` attached, consolidating every 1, 2 and 3 passes over six | how often to consolidate |
+| `experiments/probe.toml` | `gpt-oss-120b` attached, 2 × 2, the hand-written families | every role request on a real model end to end; the reply log is the evidence |
+| `experiments/world.toml` | `gpt-oss-120b` and `gpt-oss-20b` attached, `gpt-oss-120b` detached, the split roles; 52 tasks from five families, first two HTTP calls faulted | a world with conventions the model cannot already know: does the attached curve separate |
 
 The shipped files run on W&B Inference (`https://api.inference.wandb.ai/v1`):
 the key is `$WANDB_API_KEY` or the netrc entry `wandb login` wrote, and the
