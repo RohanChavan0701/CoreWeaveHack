@@ -17,7 +17,8 @@ each with why it may be right and why it may not.
   the repository store and is recorded in the README's acceptance table.
 - The suite is composed from families under a fault profile (README, *The
   world*): `genesis` (6), `conventions` (10), `mbpp` (257), `tables` (100),
-  `api` (100). `experiments/world.toml` samples twelve of each and faults
+  `api` (100), `transfer` (6, the `conventions` conventions re-dressed in
+  different clothes; `experiments/transfer.toml`). `experiments/world.toml` samples twelve of each and faults
   the first two HTTP calls. Its `120b-attached` arm ran to completion
   (README, *The world on gpt-oss-120b*): 0.81 0.73 0.75 0.90 0.83 0.83,
   six decisions admitted over three consolidations — one by adopting the
@@ -57,16 +58,31 @@ each with why it may be right and why it may not.
    that leads with the residue, demotion on applied ÷ considered, coverage
    migration, and the ladder rungs `adoption-row` and `rule-enrollment` as
    executed operators. `registry/ports.json` needs the rule declarations.
-3. **The world, next.** The families that are here grade breadth; the ones
-   that would grade *transfer* are not: a second family with the same
-   conventions in different clothes (the paging and the `/v2` move on a
-   different API, the no-trailing-newline files under different names), so
-   a record admitted on one family is scored on another. `nestful`
-   (multi-step tool composition with a scalar gold) and a shell family from
-   `InterCode-Corrections` were surveyed and not transcribed. The
-   `tables`/`api` tolerance (1% relative) is lenient on large totals. MBPP
-   and TableBench are in every model's pretraining; absolute scores are
-   inflated, the arm-against-arm comparison is not.
+3. **The world, next.** The transfer half now ships: `suite/families/transfer.py`
+   re-dresses three of the `conventions` conventions in different clothes —
+   the no-trailing-newline files under new names (`part-*.tsv`, `chunk_*.dat`),
+   the paging API on a different surface (`/records`, `/accounts`), the `/v2`
+   move on different endpoints (`/account/42`, `/health`) — reusing
+   `conventions`' `_no_newline` and `_naive_count` so the convention is shared
+   and only the clothes differ. `experiments/transfer.toml` composes it beside
+   `genesis`, `conventions` and `api` under the world's two-call fault profile,
+   so a record admitted while scoring a convention on its source family is
+   scored again on the same convention re-dressed. `tests/test_transfer.py`
+   proves each convention fails naively and passes when known, that the
+   transfer tasks' work-shape terms are a subset of `conventions`' while their
+   file names and API paths are disjoint from it, and that the paged and moved
+   routes behave. What the transfer half still leaves undone: the CSV-quoted-comma
+   and byte-order-mark conventions are **not** yet re-dressed (only the three
+   named ones are), and the transfer is proven structurally offline — no
+   real-model arm has run to show the attached curve holding on `transfer`
+   where a path-memorising record would break. What grades breadth-not-transfer
+   remains: `nestful` (multi-step tool composition with a scalar gold) and a
+   shell family from `InterCode-Corrections` were surveyed and, per the item,
+   deliberately not transcribed. The `tables`/`api` tolerance (1% relative) is
+   lenient on large totals, and `transfer`'s paged answers are exact integers
+   so that caveat does not touch it. MBPP and TableBench are in every model's
+   pretraining; absolute scores are inflated, the arm-against-arm comparison is
+   not.
 4. **The lenses on the real model.** L-0002 (the boot lens for unreached
    records) answers "no hook reached" for every task on an empty store;
    L-0003 (what the pass made false) names tasks and call URIs where it
