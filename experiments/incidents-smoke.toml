@@ -11,9 +11,9 @@ model = "stub"
 passes_per_round = 2
 
 [defaults.stream]
-families = ["incidents", "incidents-transfer"]
+families = ["incidents"]
 batch = 3
-batches = 6
+batches = 12
 seed = 0
 revisit = [1]
 
