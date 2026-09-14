@@ -41,6 +41,39 @@ def test_every_shipped_experiment_resolves():
             assert exp.roster(arm)["pass"]
 
 
+def test_the_text2sql_stream_deals_four_to_a_batch_over_the_whole_pool():
+    """Item 51: a batch is four tasks, not two. The lax pool of ten graded and six held-out questions deals into four
+    batches of four, every task exactly once; ten graded and six held-out do not split evenly, so three batches carry
+    two of each group and the fourth carries the four graded questions the round-robin has left. The strict pool of ten
+    graded questions deals into two batches of five — five, not four, so the ten divide evenly and the whole pool is dealt."""
+    exp = _experiment.load(EXPERIMENTS / "text2sql.toml")
+
+    def group(task_id: str) -> str:
+        return "holdout" if "holdout" in task_id else ("strict" if "strict" in task_id else "graded")
+
+    lax = {"120b-attached", "120b-detached", "20b-attached", "120b-seeded"}
+    strict = {"120b-strict", "120b-strict-detached", "120b-strict-seeded"}
+    for arm in lax:
+        spec = exp.resolve(arm)
+        assert (spec.stream.batch, spec.stream.batches) == (4, 4)
+        batches = spec.batches()
+        assert all(len(b.tasks) == 4 for b in batches)
+        ids = [t.id for b in batches for t in b.tasks]
+        assert len(ids) == len(set(ids)) == 16, "every one of the sixteen lax tasks is dealt exactly once"
+        counts = [{g: sum(group(t.id) == g for t in b.tasks) for g in ("graded", "holdout")} for b in batches]
+        assert sum(c["graded"] for c in counts) == 10 and sum(c["holdout"] for c in counts) == 6
+        mixed = [c for c in counts if c["graded"] and c["holdout"]]
+        assert len(mixed) == 3 and all(c == {"graded": 2, "holdout": 2} for c in mixed), "three batches carry two of each group"
+        assert sorted(counts, key=lambda c: c["holdout"])[0] == {"graded": 4, "holdout": 0}, "the fourth batch is the leftover graded"
+    for arm in strict:
+        spec = exp.resolve(arm)
+        assert (spec.stream.batch, spec.stream.batches) == (5, 2)
+        batches = spec.batches()
+        ids = [t.id for b in batches for t in b.tasks]
+        assert all(len(b.tasks) == 5 for b in batches) and len(ids) == len(set(ids)) == 10
+        assert all(group(t.id) == "strict" for b in batches for t in b.tasks)
+
+
 def test_roles_resolve_to_their_own_backends_and_the_seed_is_priced_for_the_pass(tmp_path):
     exp = _experiment.Experiment(name="roles", models={"judge": _experiment.ModelSpec(id="stub-judge", stub=True)},
                                  arms={"a": {"roles": {"adjudicator": "judge", "examiner": "judge"}}})
