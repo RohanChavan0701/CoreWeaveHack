@@ -97,7 +97,10 @@ def _dispose(store, args):
     consulted = [_close._decision_view(store, c.record) for c in s.consulted]
     if not consulted:
         raise SystemExit(f"{s.id} consulted nothing; name a session that did with --session")
-    return "pass", roles.request("dispose", consulted=consulted, rows=_rows(s), vocabulary=store.registry.terms("use-time-disposition"))
+    owed = _close.fires_owed(store, s)
+    return "pass", roles.request("dispose", consulted=consulted, rows=_rows(s), vocabulary=store.registry.terms("use-time-disposition"),
+                                 co_applying=[{"records": g, "reading": _boot.CO_APPLYING} for g in _boot.co_applying(store, [c.record for c in s.consulted])],
+                                 fires_owed=[f.model_dump(by_alias=True, mode="json") for f in owed])
 
 
 @builder("propose")
