@@ -803,6 +803,20 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     task in the pool carries should be refused or should count as a
     retirement candidate, and the report should show `applied` against the
     row's outcome so this is visible without reading the store.
+    **Built:** the refusal half. `hgi/consolidate.py` `pool_universal_terms()`
+    reads the pool's declared presentations (`suite.Task.shapes`) and returns the
+    work-shape terms (essentially) every task carries (>= 95%, empty for a pool
+    under two tasks). `edited_body` refuses a `hook-edit` whose consultation-term
+    edit *adds* any pool-universal term (`new - old` intersected with the
+    universal set) — the record would fire on every task and select nothing. Only
+    a genuine widening is refused: a narrowing, a broadening onto a term the whole
+    pool does not carry, or keeping a universal term already present, all stand.
+    The refusal surfaces as a draft-refused-at-parse nomination outcome. **Why it
+    will not over-refuse:** the bar is near 1.0, so a common-but-not-universal
+    term is fine, and only the newly-added terms are checked, so refining an
+    already-broad hook is untouched. The report half was already shipped as item
+    28 (evolution.py reports `applied → outcome` per record). New tests:
+    `tests/test_latch_widening.py`.
 51. **Two tasks a batch is too few** (text2sql run). With eight batches of
     two, the strict arm's rise from 0.00 to 0.50 on batch 5 was matched by
     the detached ablation on the same batch, and the lax arms differed by

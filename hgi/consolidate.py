@@ -677,10 +677,35 @@ def sketch_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
     raise ValueError("sketch: a drafting reply carries a `sketch` object")
 
 
+POOL_UNIVERSAL_FRACTION = 0.95
+"""A work-shape term carried by at least this fraction of the pool's presentations is pool-universal: a hook keyed on it
+fires on essentially every task and selects nothing. The bar is deliberately near 1.0 so only a term (essentially) every
+presentation carries counts, and a legitimate broadening onto a common-but-not-universal term is not refused."""
+
+
+def pool_universal_terms(*, fraction: float = POOL_UNIVERSAL_FRACTION) -> set[str]:
+    """The work-shape terms (essentially) every presentation in the pool declares — the boot-classifiable shapes each task
+    carries (``suite.Task.shapes``). A hook widened onto one of these fires on every task and means nothing (carry-forward
+    item 50). Empty for a pool too small for "universal" to be meaningful (< 2 tasks)."""
+    tasks = list(_suite.current().tasks)
+    if len(tasks) < 2:
+        return set()
+    counts: dict[str, int] = defaultdict(int)
+    for t in tasks:
+        for sh in getattr(t, "shapes", ()):
+            counts[sh] += 1
+    return {term for term, n in counts.items() if n / len(tasks) >= fraction}
+
+
 def edited_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
     """A successor's body for an edit rung: the one superseded record's body with the rung's fields replaced — a refinement is a successor record, never a rewrite.
 
     A non-edit rung's body is derived from the sketch instead; the record's mechanism is the code's to derive, never the role's to write.
+
+    A ``hook-edit`` that *widens* the consultation latch onto a pool-universal term — one (essentially) every presentation
+    carries (:func:`pool_universal_terms`) — is refused: the record would then fire on every task and select nothing, the
+    supersession-by-widening artifact of the stream run (carry-forward item 50). Only a genuine widening onto a universal
+    term is refused; a narrowing, or a broadening onto a term the whole pool does not carry, stands.
     """
     rung, edit = raw.get("rung"), raw.get("edit") or {}
     if rung not in EDIT_RUNGS:
@@ -691,6 +716,13 @@ def edited_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
     allowed = {k: v for k, v in edit.items() if k in EDIT_RUNGS[rung] and v}
     if not allowed:
         raise ValueError(f"a {rung} names at least one of {EDIT_RUNGS[rung]} in its edit")
+    if "terms" in allowed:
+        old_terms = {t for latch in body["latches"] if latch["type"] == "consultation" for t in latch["guard"].get("terms", [])}
+        widened = (set(allowed["terms"]) - old_terms) & pool_universal_terms()
+        if widened:
+            raise ValueError(f"hook-edit widens the latch onto pool-universal term(s) {sorted(widened)}: a term "
+                             "(essentially) every presentation carries keys no hook — the record would fire on every task and "
+                             "select nothing; narrow the hook, or retire the record, instead of widening onto it")
     if "counterfactual" in allowed:
         body["counterfactual"] = allowed["counterfactual"]
     for latch in body["latches"]:
