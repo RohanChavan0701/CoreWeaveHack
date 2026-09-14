@@ -128,3 +128,116 @@ def test_the_budget_gate_is_reversible(tmp_path, monkeypatch):
     assert not spec.check(REGEX_MATCHES[1], tmp_path), "gate on by default: an over-budget row fails despite a matching answer"
     monkeypatch.setenv(rcf.BUDGET_GATE_ENV, "0")
     assert spec.check(REGEX_MATCHES[1], tmp_path), "gate lifted: answer-only grading is restored"
+
+
+# --- the harder tier: new family variants at a lower first-sight ceiling, same instances/gate (follow-up to item 47) ---
+
+HARD_INSTANCES = 24
+"""The harder tier pins the same count as the moderate one: twelve regex-following and twelve cfg-generation."""
+
+HARD_REGEX_ID = "reasoning-core-hard/regex_04"
+"""One pinned harder regex task with hand-checkable matches: the pattern ``((?:(T?))financial*)$``."""
+HARD_REGEX_MATCHES = ("financia", "financial", "Tfinancia")  # optional T?, the literal 'financia', then l*
+HARD_REGEX_NON_MATCHES = ("financi", "financiaX", "")
+
+HARD_CFG_ID = "reasoning-core-hard/cfg_00"
+"""One pinned harder grammar task: a balanced ``'<' B '>'`` chain around a terminal, floor eleven tokens."""
+HARD_CFG_MEMBER = "< < < < < raise > > > > >"  # eleven tokens; the grammar's `B -> '<' B '>'` recursion
+HARD_CFG_NON_MEMBERS = ("mother", "raise", "< < < < < raise > > > > raise")  # under the floor, or unbalanced over it
+
+
+def test_the_hard_tier_config_matches_the_pinned_records():
+    assert rc.HARD.regex_level == 5 and rc.HARD.cfg_level == 3 and rc.HARD.cfg_tokens == (10, 18)
+    assert rc.MODERATE.regex_level == 3 and rc.MODERATE.cfg_level == 2 and rc.MODERATE.cfg_tokens == (6, 12)
+    # disjoint seed bases: no instance is shared between the tiers
+    assert rc.HARD.regex_seed_base != rc.MODERATE.regex_seed_base
+    assert rc.HARD.cfg_seed_base != rc.MODERATE.cfg_seed_base
+
+
+def test_the_two_tiers_are_disjoint_and_the_hard_tier_is_harder():
+    mod = {r["seed"] for r in FAMILIES["reasoning-core"].records()}
+    hard_recs = FAMILIES["reasoning-core-hard"].records()
+    hard = {r["seed"] for r in hard_recs}
+    assert mod and hard and not (mod & hard), "the tiers share no seed, so no instance overlaps"
+    assert all(r["level"] == 5 for r in hard_recs if r["kind"] == "regex-following"), "harder regex is level 5"
+    assert all(r["level"] == 3 for r in hard_recs if r["kind"] == "cfg-generation"), "harder grammar is level 3"
+    # the harder grammar tier forces a longer valid derivation than the moderate one's window allows
+    assert min(r["min_tokens"] for r in hard_recs if r["kind"] == "cfg-generation") >= 10
+
+
+def test_hard_families_load_the_same_pinned_instances_one_call_apart():
+    counts = {name: len(FAMILIES[name].tasks()) for name in ("reasoning-core-hard", "reasoning-core-hard-strict")}
+    assert counts == {"reasoning-core-hard": HARD_INSTANCES, "reasoning-core-hard-strict": HARD_INSTANCES}
+    for name, n in counts.items():
+        assert len(_by_id(name)) == n, f"{name}: task ids are not unique"
+
+    lax, strict = _by_id("reasoning-core-hard"), _by_id("reasoning-core-hard-strict")
+    names = {i.split("/", 1)[1] for i in lax}
+    assert names == {i.split("/", 1)[1] for i in strict}, "the hard strict twin carries the same instances"
+    for short in names:
+        lt, st = lax[f"reasoning-core-hard/{short}"], strict[f"reasoning-core-hard-strict/{short}"]
+        assert lt.shapes == st.shapes == ("shell-tool", "tool-budget")
+        assert lt.knowing == st.knowing == {"shell": 1}
+        assert lt.shell_budget == 2 and st.shell_budget == 1, "the hard pair carries the same slack as the moderate pair"
+
+    world = build(SuiteSpec(families=["reasoning-core-hard", "reasoning-core-hard-strict"]))
+    assert len(world.by_id) == 2 * HARD_INSTANCES and world.families() == counts
+
+
+def test_the_hard_pinned_file_carries_the_checker_inputs_and_no_witness():
+    recs = FAMILIES["reasoning-core-hard"].records()
+    assert len(recs) == HARD_INSTANCES
+    for r in recs:
+        assert r["kind"] in ("regex-following", "cfg-generation")
+        assert "witness" not in r and "answer" not in r and "string" not in r and "tokens" not in r
+        if r["kind"] == "regex-following":
+            assert set(r) == {"id", "kind", "level", "seed", "rc_task", "pattern", "witness_len"}
+        else:
+            assert set(r) == {"id", "kind", "level", "seed", "rc_task", "grammar", "start", "min_tokens"}
+
+
+def test_a_hard_regex_task_is_satisfiable_and_grades_by_full_match(tmp_path):
+    spec = _by_id("reasoning-core-hard")[HARD_REGEX_ID]
+    assert "fully matches" in spec.prompt and "budget of 2 shell calls" in spec.prompt
+    for good in HARD_REGEX_MATCHES:  # two distinct matches — a membership verdict, not one gold string; the witness proves it satisfiable
+        assert spec.check(good, tmp_path), f"{good!r} matches the harder pattern and must pass"
+    for bad in HARD_REGEX_NON_MATCHES:
+        assert not spec.check(bad, tmp_path), f"{bad!r} does not match and must fail"
+    assert not spec.check(42, tmp_path), "a non-string result never passes"
+
+
+def test_a_hard_cfg_task_is_satisfiable_and_grades_by_membership_over_the_floor(tmp_path):
+    spec = _by_id("reasoning-core-hard")[HARD_CFG_ID]
+    record = next(r for r in FAMILIES["reasoning-core-hard"].records() if f"reasoning-core-hard/{r['id']}" == HARD_CFG_ID)
+    assert record["start"] in spec.prompt and str(record["min_tokens"]) in spec.prompt
+    assert record["min_tokens"] == 11, "the pinned harder floor for this instance"
+    assert spec.check(HARD_CFG_MEMBER, tmp_path), "a string the grammar derives at the harder floor must pass"
+    for bad in HARD_CFG_NON_MEMBERS:
+        assert not spec.check(bad, tmp_path), f"{bad!r} is under the floor or not derivable and must fail"
+    assert not spec.check(7, tmp_path), "a non-string result never passes"
+
+
+def test_the_hard_tier_carries_the_budget_gate_at_each_pool(tmp_path):
+    for fam, limit in (("reasoning-core-hard", 2), ("reasoning-core-hard-strict", 1)):
+        spec = _by_id(fam)[f"{fam}/regex_04"]
+        assert spec.shell_budget == limit  # derived from KNOWING + SLACK, not hardcoded here
+        wd = tmp_path / fam
+        wd.mkdir()
+        tools = Tools(task=spec.id, workdir=wd, profile=FaultProfile(), shell_budget=spec.shell_budget)
+        for _ in range(limit):
+            tools.shell("echo ok")  # spend the whole budget
+        assert spec.check(HARD_REGEX_MATCHES[0], wd), f"{fam}: within budget, the matching answer passes"
+        tools.dispatch("shell", '{"command": "echo over"}')  # one call past budget, refused and marked
+        assert not spec.check(HARD_REGEX_MATCHES[0], wd), f"{fam}: past budget, the matching answer no longer passes"
+
+
+def test_both_tiers_regenerate_identically_from_their_seeds():
+    """With the generation stack installed, each tier's pinned file is reproduced bit-for-bit from its seeds and level."""
+    import json
+
+    pytest.importorskip("reasoning_core")
+    for fam, tier in (("reasoning-core", rc.MODERATE), ("reasoning-core-hard", rc.HARD)):
+        regen = rc.records(rcf.REGEX_N, rcf.CFG_N, tier=tier)
+        gen = [json.dumps(r, sort_keys=True, ensure_ascii=False) for r in regen]
+        pinned = [l for l in FAMILIES[fam].data_path.read_text().splitlines() if l.strip()]
+        assert gen == pinned, f"{fam}: the pinned file no longer matches its seeds/tier"
