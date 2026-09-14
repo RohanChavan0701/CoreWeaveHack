@@ -1,12 +1,14 @@
-# The text-to-SQL stream: BIRD mini-dev's `financial` questions over one pinned SQLite database. The pool is the ten
-# graded questions and the six held-out ones — 16 tasks over the same schema — dealt into four batches of four,
-# balanced over the two groups by round-robin: with ten graded to six held-out the deal is not even, so three batches
-# carry two of each and the fourth holds the four graded questions the round-robin has left over. Pass k meets batch k
-# at first sight, closes on it, and consolidates every two batches. In a stream every batch is unseen, so the holdout's
-# template-disjoint questions arrive as more first sights over the same conventions rather than as a separate leg. The
+# The text-to-SQL stream: BIRD mini-dev's `financial` questions over one pinned SQLite database. All 32 `financial`
+# questions are pinned — 18 in the graded (adaptation) group and 14 in the template-disjoint holdout (verification)
+# group — and the pinned database is the full financial.sqlite with every table kept whole, `trans` included, so the
+# four trans-reading questions execute and grade like the rest. The lax pool is the graded and holdout families
+# together, 32 tasks over the same schema; the stream deals four batches of six sampled by seed from that pool and
+# leaves the remaining eight unsampled. The deal balances the two groups round-robin, so each batch is three graded
+# and three held-out first sights. Pass k meets batch k at first sight, closes on it, and consolidates every two
+# batches. In a stream every batch is unseen, so the holdout's template-disjoint questions arrive as more first sights
+# over the same conventions — a real verification set measuring transfer to shapes the graded pool never holds. The
 # detached arm meets the same batches with no store; batches 1 and 2 are met again after the stream, which measures
-# retention against transfer. A batch is four tasks, not two, so a batch's first-sight rate is a fraction over four
-# rather than one row of noise; the whole trans-free financial pool is 28 questions, so 16 is not its ceiling.
+# retention against transfer.
 #
 # The lesson of this world is the database's own schema: dates are TEXT reached with STRFTIME (no YEAR()), a ratio
 # needs CAST(... AS REAL) or SQLite integer-divides to a number that executes and is wrong, statuses and frequencies
@@ -18,10 +20,9 @@
 # The roles are split: only the forward pass runs on the actor, gpt-oss-120b, the model the role contracts were priced on;
 # every other role — consolidator, examiner, adjudicator, blind coder, re-author — runs on a strong teacher. gpt-oss-20b meets
 # the same stream under the same teacher as the weaker actor. The strict
-# pool holds the ten graded questions alone (the holdout has no strict twin), two batches of five consolidated every
-# pass — five, not four, so the ten divide evenly and the whole graded pool is dealt — budgeted at the knowing floor of
-# one shell call: only a pass that already knows the schema convention stays in budget. The ~0.5 first-sight rate is the
-# hypothesis this run measures (carry-forward item 89).
+# pool holds the 18 graded questions alone (the holdout has no strict twin), two batches of six sampled by seed and
+# consolidated every pass, budgeted at the knowing floor of one shell call: only a pass that already knows the schema
+# convention stays in budget. The ~0.5 first-sight rate is the hypothesis this run measures (carry-forward item 89).
 #
 # Ids are W&B Inference ids as listed on 2026-09-13; `hgi experiment models` lists today's.
 name = "text2sql"
@@ -51,7 +52,7 @@ reauthor = "deepseek-pro"
 
 [defaults.stream]
 families = ["text2sql", "text2sql-holdout"]
-batch = 4
+batch = 6
 batches = 4
 seed = 0
 revisit = [1, 2]
@@ -71,17 +72,17 @@ description = "the ablation on the same batches: the actor alone, one run is the
 model = "gpt-oss-20b"
 description = "a weaker actor on the same stream under the same teacher"
 
-# The strict pool: the ten graded questions at exactly one shell call, so discovering the schema costs a call the
-# budget does not hold. Two batches of five, consolidated after every pass; five, not the lax pool's four, so the ten
-# graded questions divide evenly and the whole pool is dealt. The batch is set here because the arm's stream table only
-# overrides families and count, so without it the batch would fall back to the lax default of four and ask for twenty.
+# The strict pool: the 18 graded questions at exactly one shell call, so discovering the schema costs a call the budget
+# does not hold. Two batches of six sampled by seed from the 18, consolidated after every pass, leaving six unsampled.
+# The batch is set here because the arm's stream table only overrides families and count, so without it the batch would
+# fall back to the lax default of six anyway, but it is stated for the record next to the batch count.
 [arms.120b-strict]
 mode = "attached"
 passes_per_round = 1
 description = "the strict pool: does the store save the schema-discovery call"
 [arms.120b-strict.stream]
 families = ["text2sql-strict"]
-batch = 5
+batch = 6
 batches = 2
 
 [arms.120b-strict-detached]
@@ -90,7 +91,7 @@ passes_per_round = 1
 description = "the strict pool's ablation"
 [arms.120b-strict-detached.stream]
 families = ["text2sql-strict"]
-batch = 5
+batch = 6
 batches = 2
 
 # The seeded twins: the same arms started from experiments/seeds/text2sql — the store a mature loop would hold, injected
@@ -107,5 +108,5 @@ seed = "text2sql"
 description = "the strict pool from the seed store: does the injected schema save the discovery call"
 [arms.120b-strict-seeded.stream]
 families = ["text2sql-strict"]
-batch = 5
+batch = 6
 batches = 2
