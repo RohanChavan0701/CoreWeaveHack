@@ -9,6 +9,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from hgi import evolution as _evolution
 from hgi import experiment as _experiment
 from hgi import model as _model
 from hgi import registry as _registry
@@ -118,6 +119,80 @@ def test_an_arm_runs_in_its_own_store_and_the_report_reads_its_curve_back(tmp_pa
 
     table = _experiment.report(exp, tmp_path)
     assert "| attached | stub | attached | 1×2 |" in table and "| detached | stub | detached | 1×2 | 0.50 | 0.50 | nothing |" in table
+
+
+def test_progress_writes_a_per_pass_health_block(tmp_path, monkeypatch):
+    """Each pass writes a health block into arm.json from the store already on disk — no model call — so a failing
+    arm is diagnosable while it runs: what retrieval reached, the tool/harness errors its rows carried, the failed
+    rows against the observations filed from them, and the round's draft disposition."""
+    monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
+    exp = _experiment.load(EXPERIMENTS / "smoke.toml")
+    record = _experiment.run_arm(exp, "attached", tmp_path, commit=False)
+
+    health = record["health"]
+    assert sorted(health) == [1, 2], "one block per evaluated pass, keyed by pass"
+    on_disk = __import__("json").loads((tmp_path / "smoke" / "attached" / "arm.json").read_text())
+    assert set(on_disk["health"]) == {"1", "2"}, "the block is durable on disk, tail-able as the arm runs"
+
+    for n, h in health.items():
+        assert set(h) == {"pass", "reach", "errors", "coverage", "consolidation"} and h["pass"] == n
+        assert h["reach"]["in_context"] == len(h["reach"]["records"]) <= h["reach"]["considered"]
+        assert h["errors"]["rows"] == 6 and h["errors"]["tool_error_rows"] <= h["errors"]["rows"]
+        assert sum(h["errors"]["by_class"].values()) >= h["errors"]["tool_error_rows"]
+        assert h["coverage"]["shaped"] <= h["coverage"]["observed"] <= h["coverage"]["failed"]
+
+    assert health[1]["consolidation"] is None, "no round closes on the first pass of a two-pass round"
+    k = health[2]["consolidation"]
+    assert k["nominated"] == 2 and k["admitted"] == 2 and k["outcomes"] == {"admitted": 2}
+
+    detached = _experiment.run_arm(exp, "detached", tmp_path, commit=False)
+    assert all(h["consolidation"] is None for h in detached["health"].values()), "a detached arm consolidates nothing"
+    assert all(h["reach"]["considered"] == 0 and h["coverage"]["observed"] == 0 for h in detached["health"].values()), \
+        "no store, so no reach and no noticing — only the ablation's own error rate carries signal"
+    assert all(h["errors"]["rows"] == 6 for h in detached["health"].values())
+
+
+def test_in_context_records_counts_only_guard_passed_non_constitution_accepted():
+    """Retrieval's reach mirrors the log's own computation: a record counts when its guard passed, it did not come
+    via the constitution, and it is still an accepted decision the store holds. Empty is the silent failure."""
+    considered = [
+        SimpleNamespace(record="D-0001", guard_passed=True, via="index"),      # reached
+        SimpleNamespace(record="D-0002", guard_passed=False, via="index"),     # guard failed
+        SimpleNamespace(record="C-0001", guard_passed=True, via="constitution"),  # the constitution, always there
+        SimpleNamespace(record="D-0003", guard_passed=True, via="lexical"),    # not an accepted decision
+    ]
+    session = SimpleNamespace(considered=considered)
+    assert _evolution.in_context_records(session, {"D-0001", "D-0002"}) == ["D-0001"]
+    assert _evolution.in_context_records(SimpleNamespace(considered=[]), {"D-0001"}) == []
+
+
+def test_row_error_classes_reads_the_final_error_and_the_whole_trace():
+    """The bad-call signal is the row's final error and every tool error in its trace: a row that recovered from a
+    broken call and answered wrong still shows the call through ``tool_errors``, which its final symptom hides."""
+    recovered = {"error": None, "tool_errors": [{"message": "model call failed after a malformed tool call"}]}
+    assert _evolution._row_error_classes(recovered) == ["malformed-tool-call"]
+    both = {"error": {"message": "HTTP 410 Gone"}, "tool_errors": [{"message": "call budget exhausted"}]}
+    assert _evolution._row_error_classes(both) == ["budget", "http-410"]
+    assert _evolution._row_error_classes({"error": None, "tool_errors": []}) == []
+
+
+def test_consolidation_disposition_tells_nothing_drafted_from_nothing_admitted():
+    """The round's draft disposition distinguishes the two flat curves: nothing nominated (nothing to learn) from
+    everything nominated and nothing admitted (refused at the floor or declined — text2sql, economy)."""
+    def nom(subject, outcome):
+        return SimpleNamespace(subject=subject, outcome=outcome)
+
+    everything_refused = SimpleNamespace(
+        id="K-0002", admitted=[],
+        nominations=[nom("u1", "refused by the floor: below the independence floor (N=1)"),
+                     nom("u2", "declined; draft dropped"), nom("C-0003", "anchored")])
+    d = _evolution._consolidation_disposition(everything_refused)
+    assert d == {"id": "K-0002", "nominated": 2, "admitted": 0,
+                 "outcomes": {"refused_floor": 1, "declined": 1}}, "the anchoring of a constitution article is not a draft"
+
+    admitted = SimpleNamespace(id="K-0001", admitted=["D-0001"],
+                               nominations=[nom("u1", "admitted D-0001; the payload was promoted")])
+    assert _evolution._consolidation_disposition(admitted)["outcomes"] == {"admitted": 1}
 
 
 def test_arm_json_records_the_tree_commit(tmp_path, monkeypatch):

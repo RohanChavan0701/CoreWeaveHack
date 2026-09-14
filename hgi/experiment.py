@@ -66,6 +66,15 @@ resolved to, the code tree's commit at the moment it started (``null``
 outside a checkout — a running arm outlives a commit that lands on the tree
 under it, item 35), and, at the end, its curve; the report reads every
 arm's curve back from its store.
+
+Every pass also writes a **health** block into ``arm.json`` — a pure read of
+the store the arm already has (:func:`hgi.evolution.health`), so a failing
+arm is diagnosable while it runs and not only once the curve is in: per pass,
+what retrieval reached (the records considered and the accepted
+non-constitution ones a pass had in context), the tool and harness error
+classes its rows carried, the failed rows against the observations filed from
+them, and the disposition of the round's drafts. The field is additive; a
+reading of an older ``arm.json`` that predates it is unaffected.
 """
 
 from __future__ import annotations
@@ -381,7 +390,7 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         "seed": _registry.read_json(store_root / "seed.json") if (store_root / "seed.json").exists() else None,
         "stream": {"batches": [_stream.batch_record(n, b) for n, b in enumerate(batches, 1)], "revisit": spec.revisits,
                    "passes": {n: n for n in range(1, spec.passes + 1)} | {spec.passes + k: r for k, r in enumerate(spec.revisits, 1)}} if batches else None,
-        "weave_project": tracing.project_name(), "started_at": _now(), "finished_at": None, "sessions": [], "curve": {},
+        "weave_project": tracing.project_name(), "started_at": _now(), "finished_at": None, "sessions": [], "curve": {}, "health": {},
         "commit": _tree_commit(),
     }
     _write(where / "arm.json", record)
@@ -405,6 +414,7 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         # session ids are minted in lock-acquisition order — the set is stable, the order is not.
         record["sessions"] = sorted(s.id for s in _sessions(store, spec.mode))
         record["curve"] = curve(store, spec.mode)
+        record["health"] = evolution.health(store, spec.mode)
         _write(where / "arm.json", record)
 
     try:
