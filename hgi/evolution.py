@@ -51,6 +51,18 @@ from hgi.index import row_passed
 from suite import lessons as _lessons
 from suite.stream import key_of
 
+
+def evaluated_sessions(store, mode: str) -> list:
+    """The arm's evaluated sessions of ``mode``, in pass order — attached sessions for an attached arm, detached for a detached one."""
+    attached = mode == "attached"
+    return sorted((s for s in store.all("session") if s.attached == attached and s.evaluation is not None), key=lambda s: s.pass_)
+
+
+def in_context_records(session, accepted) -> list[str]:
+    """The records a pass actually had in context: guard-passed, not the constitution, and still an accepted decision the
+    store holds. Empty where retrieval reached nothing — the silent failure a flat pass rate hides (reasoning-core, economy)."""
+    return [c.record for c in session.considered if c.guard_passed and c.via != "constitution" and c.record in accepted]
+
 SYMBOL = {"pass": "✓", "naive": "N", "wrong": "W"}
 """One character per symptom in the lesson grid; an ``error:<class>`` symptom prints as ``E``."""
 
@@ -104,7 +116,7 @@ def arm_log(exp, arm: str, root: Path | None = None) -> dict[str, Any] | None:
     token = _registry.use(reg)
     try:
         store = Store(where / "store", registry=reg)
-        sessions = sorted((s for s in store.all("session") if s.attached == (spec.mode == "attached") and s.evaluation is not None), key=lambda s: s.pass_)
+        sessions = evaluated_sessions(store, spec.mode)
         consolidations = {k.after_pass: k for k in store.all("consolidation")}
         accepted = {d.id: d for d in store.all("decision")}
         bar = int(store.registry.bars.get("decision", {}).get("independent_observations", 2))
@@ -170,7 +182,7 @@ def _pass_entry(store, session, batch: int, suite, revisit: bool, consolidation,
                          "calls": {"shell": row.get("shell_calls"), "http": row.get("http_calls"), "turns": row.get("turns")}, "commands": row.get("commands")})
     finally:
         _suite.reset(token)
-    in_context = [c.record for c in session.considered if c.guard_passed and c.via != "constitution" and c.record in accepted]
+    in_context = in_context_records(session, accepted)
     mentions = {l: [r for r in in_context if _lessons.mentions(l, _record_text(store, r))] for l in _lessons.LESSONS}
     applied = _applied_join(rows)
     scored = [r for r in rows if r["symptom"] != "unevaluable"]
