@@ -683,6 +683,29 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     saturation for a 35B model regardless (item 88 said the 0.5 target was a
     hypothesis; it is now measured at ~0.85). The `reasoning-core` seed
     (decision 95) inherits the same ceiling.
+    **Built (commits `a025dcf`, `ea23456`):** fix (b), the lower-risk one. A
+    refused over-budget call now drops a sentinel (`.hgi_budget_exceeded`) in
+    the working directory (`suite/tools.py`, general and inert for every family
+    whose check grades data), and the reasoning-core check fails a marked row
+    regardless of the answer — so `task_pass_rate` now depends on the shell
+    call, not the answer alone. The gate reads no magic number: each pool gates
+    at its own `shell_budget` (KNOWING + SLACK), so the strict pool fails the
+    moment the repair call is refused and the lax pool only its successor;
+    within-budget verified passes are unchanged. It is on by default and
+    reversible via `HGI_REASONING_CORE_BUDGET_GATE=0`, which restores
+    answer-only grading; no TOML change was needed because every arm wants the
+    default. Not done: fix (a), the `commands`-verified candidate check, which
+    stays the stronger but more invasive option. **Caveat unchanged — go/no-go
+    on the rerun is a judgment call:** the gate makes the budget genuinely
+    decide pass/fail, but it does not touch saturation. The level-3/level-2
+    instances still sit near ~0.85 for a 35B actor, so an unaided actor that
+    happens to produce a member first time passes the strict pool within its
+    one call and the arms may still not separate even though the budget now
+    bites. The gate is necessary for the strict pool to mean anything; it is
+    not sufficient to guarantee separation. A rerun is worth it only if the
+    ~0.5 first-sight band the run wants can be reached another way (a harder
+    level, a longer floor) — this fix removes the confound, it does not lower
+    the ceiling.
 48. **Lens answers about the store's own machinery become observations of
     the world** (text2sql run). Seven of the attached arm's twenty-one
     observations read "no rule matched", "no store records consulted", "the
@@ -735,12 +758,31 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
 51. **Two tasks a batch is too few** (text2sql run). With eight batches of
     two, the strict arm's rise from 0.00 to 0.50 on batch 5 was matched by
     the detached ablation on the same batch, and the lax arms differed by
-    one row over sixteen. The financial pool is 32 questions less the 4 that
-    read `trans`, so 28 is the ceiling; the next design should use all of
-    them at batch 4, or take a second BIRD database over the same dialect
-    conventions, and read the decision content beside the curve as the
-    primary evidence — here the content decided the question the curve
-    could not.
+    one row over sixteen. *Partly addressed:* `experiments/text2sql.toml`
+    now deals the same sixteen pinned questions into **four batches of four**
+    (lax) and the ten strict questions into **two batches of five** — a
+    batch's first-sight rate is a fraction over four or five, not one row of
+    noise — reusing the existing pool, no new data, so the change is
+    reversible; the deal was verified (three lax batches carry two graded and
+    two held-out, the fourth the four leftover graded; both strict batches
+    five graded) and a test in `tests/test_experiment.py` pins the shape.
+    *Not yet done — a data + curation decision for the user:* the fuller fix
+    of **28 tasks** at batch 4. The trans-free pool is confirmed 28 (a
+    network probe of the pinned BIRD questions JSON on 2026-09-14 found 32
+    `financial` questions, 4 reading `trans` — ids 116, 129, 145, 159 — so
+    28 remain), but only the 16 in `suite/data/text2sql.jsonl` are pinned;
+    the other 12 need a re-run of `text2sql.fetch` (downloads BIRD's 70 MB
+    `dev.zip` to rebuild and re-verify the reduced DB, re-pins the questions
+    file) **and** a hand assignment of each new id to the graded or held-out
+    group keeping the two template-disjoint — the transcriber's judgment, not
+    a mechanical fill, so it was not done unilaterally. `fetch` re-executes
+    every gold on the reduced DB before pinning, so gold cannot be
+    fabricated; the open question is only the group split. The alternative,
+    a second BIRD database over the same SQLite dialect, doubles the pool
+    without that curation but needs a fresh transcription and is worth
+    raising with the user. Either way, read the decision content beside the
+    curve as the primary evidence — here the content decided the question the
+    curve could not.
 52. **Follow-ups on the runs themselves.** (a) The wave-2 and wave-3 arms
     exit 1 after writing their store, `arm.json` and evolution log: commit
     a04d9e8 appended `seed`-keyed arms to both TOMLs while the arms ran from
