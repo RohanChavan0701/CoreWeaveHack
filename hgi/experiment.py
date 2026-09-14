@@ -545,16 +545,26 @@ def _tree_commit(root: Path | None = None) -> str | None:
 
 # --- reading arms back ----------------------------------------------------------------------
 
-def report(exp: Experiment, root: Path | None = None) -> str:
-    """Every arm's curve, read back from its store; an arm that has not run reads as such."""
+def report(exp: Experiment, root: Path | None = None, arms: list[str] | None = None) -> str:
+    """Every arm's curve, read back from its store; an arm that has not run reads as such.
+
+    ``arms`` restricts the report to a subset. The finish path (:func:`_cmd`) names only the arm(s) this
+    invocation actually ran, so a commit that later appends an arm the running tree cannot construct — the pinned
+    worktree that never had the appended arm's field (item 52a) — cannot crash the report of the arms that did run
+    and whose stores are already on disk. An arm that no longer resolves at all is reported as a note row rather
+    than crashing the whole table, so even a full-file report survives one unconstructable arm."""
     from hgi.store import Store
 
     rows = []
     width = 0
-    for arm in exp.arms:
-        spec = exp.resolve(arm)
+    for arm in (arms if arms is not None else list(exp.arms)):
+        try:
+            spec = exp.resolve(arm)
+            roster = exp.roster(arm)
+        except (SystemExit, Exception) as e:  # an arm this tree cannot construct: a later-appended field, an undeclared model
+            rows.append((arm, arm, None, {}, [], f"cannot resolve: {str(e).splitlines()[0]}"))
+            continue
         where = arm_dir(exp, arm, root)
-        roster = exp.roster(arm)
         label = roster["pass"] + ("" if all(m == roster["pass"] for m in roster.values()) else " +" + "/".join(
             sorted({m for r, m in roster.items() if m != roster["pass"]})))
         if not (where / "store" / "registry").exists():
@@ -573,6 +583,9 @@ def report(exp: Experiment, root: Path | None = None) -> str:
     head = ["arm", "model", "mode", "rounds×size"] + [f"p{n}" for n in range(1, width + 1)] + ["admitted"]
     lines = [f"# {exp.name}" + (f" — {exp.description}" if exp.description else ""), "", "| " + " | ".join(head) + " |", "|" + "---|" * len(head)]
     for arm, label, spec, c, admitted, note in rows:
+        if spec is None:  # an arm that would not resolve: a note row, so the arms that did run still report
+            lines.append("| " + " | ".join([arm, label, "—", "—"] + [""] * width + [note or "unresolvable"]) + " |")
+            continue
         cells = [arm, label, spec.mode, f"{spec.rounds}×{spec.passes_per_round}" + (f" stream ×{spec.stream.batch}" if spec.stream else "")]
         cells += [("—" if c.get(n) is None else f"{c[n]:.2f}") if n <= spec.passes + len(spec.revisits) else "" for n in range(1, width + 1)]
         cells.append(note or (" ".join(admitted) or "nothing"))
@@ -663,11 +676,16 @@ def _cmd(args) -> int:
     if args.action == "evolution":
         print(evolution.write_experiment(exp, root))
         return 0
-    for arm in args.arm or list(exp.arms):
+    ran = args.arm or list(exp.arms)
+    for arm in ran:
         print(f"== {exp.name}/{arm} ==", file=sys.stderr)
         record = run_arm(exp, arm, commit=not args.no_commit, force=args.force)
         print(f"{exp.name}/{arm}: {_curve_line(record['curve'])}", file=sys.stderr)
-    print(report(exp))
-    if any(exp.resolve(a).stream is not None for a in exp.arms):
-        print(evolution.write_experiment(exp))
+    # The finish report and evolution log resolve only the arm(s) this invocation ran (item 52a): a commit that
+    # appended an arm the pinned worktree cannot construct must not crash the report of the arms whose stores are
+    # on disk. `--arm` dispatch already narrows `ran`; a full run narrows nothing but is immune all the same.
+    print(report(exp, arms=ran))
+    if any(exp.resolve(a).stream is not None for a in ran):
+        finished = exp.model_copy(update={"arms": {a: exp.arms[a] for a in ran}})
+        print(evolution.write_experiment(finished))
     return 0

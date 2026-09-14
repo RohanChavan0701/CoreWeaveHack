@@ -121,6 +121,35 @@ def test_an_arm_runs_in_its_own_store_and_the_report_reads_its_curve_back(tmp_pa
     assert "| attached | stub | attached | 1×2 |" in table and "| detached | stub | detached | 1×2 | 0.50 | 0.50 | nothing |" in table
 
 
+def test_the_finish_report_reads_only_the_arms_that_ran_over_an_unconstructable_sibling(tmp_path, monkeypatch):
+    """Item 52a: a commit appended an arm the running (pinned) tree cannot construct while the arms ran. The
+    end-of-run report must resolve only the arm(s) this invocation ran — the ones whose stores are on disk — not
+    every arm the file now holds, so the report of a finished arm does not crash on a sibling it never touched. An
+    undeclared model stands in here for the appended-field arm the pinned tree could not build."""
+    monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
+    exp = _experiment.Experiment(name="subset", defaults={"rounds": 1, "passes_per_round": 1},
+                                 arms={"good": {}, "appended": {"model": "nowhere"}})
+    with pytest.raises(SystemExit, match="no model 'nowhere'"):
+        exp.resolve("appended")  # the sibling genuinely cannot be constructed by this tree
+    _experiment.run_arm(exp, "good", tmp_path, commit=False)
+
+    table = _experiment.report(exp, tmp_path, arms=["good"])
+    assert "| good |" in table and "| appended |" not in table and "cannot resolve" not in table
+
+
+def test_a_full_report_notes_an_unresolvable_arm_instead_of_crashing(tmp_path, monkeypatch):
+    """Even a full-file report (no ``arms`` subset) survives one arm the tree cannot construct: it reads as a note
+    row while every other arm reports its curve, rather than a resolve raise taking the whole table down."""
+    monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
+    exp = _experiment.Experiment(name="subset", defaults={"rounds": 1, "passes_per_round": 1},
+                                 arms={"good": {}, "appended": {"model": "nowhere"}})
+    _experiment.run_arm(exp, "good", tmp_path, commit=False)
+
+    full = _experiment.report(exp, tmp_path)
+    assert "| good |" in full, "the arm that ran still reports its curve"
+    assert "| appended |" in full and "cannot resolve" in full and "no model 'nowhere'" in full
+
+
 def test_progress_writes_a_per_pass_health_block(tmp_path, monkeypatch):
     """Each pass writes a health block into arm.json from the store already on disk — no model call — so a failing
     arm is diagnosable while it runs: what retrieval reached, the tool/harness errors its rows carried, the failed
