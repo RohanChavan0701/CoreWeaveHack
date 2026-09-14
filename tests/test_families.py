@@ -18,8 +18,8 @@ from suite.tasks import SuiteSpec, build
 MBPP_ROWS = 257
 TABLE_ROWS = 200
 """The pinned TableBench records; `tables` takes the even half and `api` the odd half."""
-T2S_GRADED = 10
-T2S_HOLDOUT = 6
+T2S_GRADED = 18
+T2S_HOLDOUT = 14
 """The pinned text2sql records: the graded group `text2sql` and its strict twin carry, the holdout group `text2sql-holdout` carries."""
 
 SQUARE_PERIMETER = "mbpp/17"
@@ -151,9 +151,9 @@ def test_a_text2sql_task_ships_the_database_and_grades_by_re_executing_the_gold_
     gold_of = {r["id"]: r["gold"] for r in FAMILIES["text2sql"].records()}
     spec = {t.id: t for t in FAMILIES["text2sql"].tasks()}["text2sql/q117"]
     assert spec.shapes == ("shell-tool", "file-tool", "tool-budget") and spec.shell_budget == 3 and spec.knowing == {"shell": 1}
-    assert _t2s.DB_FILENAME in spec.blobs and not spec.files, "the database ships as a binary blob, not a text file"
+    assert _t2s.FINANCIAL.filename in spec.blobs and not spec.files, "the database ships as a binary blob, not a text file"
     spec.setup(tmp_path)
-    assert (tmp_path / _t2s.DB_FILENAME).exists()
+    assert (tmp_path / _t2s.FINANCIAL.filename).exists()
 
     gold = gold_of[117]
     assert spec.check(gold, tmp_path), "the gold query must grade as a pass"
@@ -163,7 +163,7 @@ def test_a_text2sql_task_ships_the_database_and_grades_by_re_executing_the_gold_
     # a ratio without CAST integer-divides in SQLite: it executes cleanly and returns the wrong number, and must fail —
     # the "valid but semantically wrong" case the credit correction grades as a failure, never a string comparison
     no_cast = "SELECT (SUM(CASE WHEN status = 'A' THEN amount ELSE 0 END) * 100) / SUM(amount) FROM loan"
-    assert _t2s.run_sql(tmp_path / _t2s.DB_FILENAME, no_cast), "the no-CAST query executes"
+    assert _t2s.run_sql(tmp_path / _t2s.FINANCIAL.filename, no_cast), "the no-CAST query executes"
     assert not spec.check(no_cast, tmp_path), "but returns the wrong rows, so it fails the hidden check"
 
 

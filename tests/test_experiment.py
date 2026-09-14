@@ -42,11 +42,11 @@ def test_every_shipped_experiment_resolves():
             assert exp.roster(arm)["pass"]
 
 
-def test_the_text2sql_stream_deals_four_to_a_batch_over_the_whole_pool():
-    """Item 51: a batch is four tasks, not two. The lax pool of ten graded and six held-out questions deals into four
-    batches of four, every task exactly once; ten graded and six held-out do not split evenly, so three batches carry
-    two of each group and the fourth carries the four graded questions the round-robin has left. The strict pool of ten
-    graded questions deals into two batches of five — five, not four, so the ten divide evenly and the whole pool is dealt."""
+def test_the_text2sql_stream_samples_six_to_a_batch_from_the_enlarged_pool():
+    """The enlarged financial pool is thirty-two questions (eighteen graded, fourteen held-out). The lax stream samples
+    twenty-four of them by seed — four batches of six, each carrying three graded and three held-out first-sights — and
+    leaves eight unsampled, the deal drawing from a pool larger than it needs. The strict pool of eighteen graded
+    questions samples twelve — two batches of six — leaving six unsampled."""
     exp = _experiment.load(EXPERIMENTS / "text2sql.toml")
 
     def group(task_id: str) -> str:
@@ -56,22 +56,19 @@ def test_the_text2sql_stream_deals_four_to_a_batch_over_the_whole_pool():
     strict = {"120b-strict", "120b-strict-detached", "120b-strict-seeded"}
     for arm in lax:
         spec = exp.resolve(arm)
-        assert (spec.stream.batch, spec.stream.batches) == (4, 4)
+        assert (spec.stream.batch, spec.stream.batches) == (6, 4)
         batches = spec.batches()
-        assert all(len(b.tasks) == 4 for b in batches)
+        assert all(len(b.tasks) == 6 for b in batches)
         ids = [t.id for b in batches for t in b.tasks]
-        assert len(ids) == len(set(ids)) == 16, "every one of the sixteen lax tasks is dealt exactly once"
+        assert len(ids) == len(set(ids)) == 24, "twenty-four of the thirty-two-task pool are sampled, each once"
         counts = [{g: sum(group(t.id) == g for t in b.tasks) for g in ("graded", "holdout")} for b in batches]
-        assert sum(c["graded"] for c in counts) == 10 and sum(c["holdout"] for c in counts) == 6
-        mixed = [c for c in counts if c["graded"] and c["holdout"]]
-        assert len(mixed) == 3 and all(c == {"graded": 2, "holdout": 2} for c in mixed), "three batches carry two of each group"
-        assert sorted(counts, key=lambda c: c["holdout"])[0] == {"graded": 4, "holdout": 0}, "the fourth batch is the leftover graded"
+        assert all(c == {"graded": 3, "holdout": 3} for c in counts), "every batch carries three graded and three held-out"
     for arm in strict:
         spec = exp.resolve(arm)
-        assert (spec.stream.batch, spec.stream.batches) == (5, 2)
+        assert (spec.stream.batch, spec.stream.batches) == (6, 2)
         batches = spec.batches()
         ids = [t.id for b in batches for t in b.tasks]
-        assert all(len(b.tasks) == 5 for b in batches) and len(ids) == len(set(ids)) == 10
+        assert all(len(b.tasks) == 6 for b in batches) and len(ids) == len(set(ids)) == 12
         assert all(group(t.id) == "strict" for b in batches for t in b.tasks)
 
 
