@@ -18,12 +18,20 @@ module holds two things and nothing that imports the suite:
 
 Reasoning Core's difficulty is a single integer ``level`` its configs fold
 into their own fields (``RegexConfig``: pattern depth and example count;
-``GrammarConfig``: rule count, sentence depth, alphabet). Generation is made
-reproducible against that revision: ``gramforge.generate`` reseeds Python's
-RNG from entropy on every call (``seed=None``), so :func:`records` patches the
-name Reasoning Core bound and feeds it seeds from a per-instance
-``random.Random``; ``faker`` is seeded before the task modules are imported,
-since their terminal word lists are built at import.
+``GrammarConfig``: rule count, sentence depth, alphabet). A difficulty *tier*
+groups the two generators' levels, the witness-length window a grammar
+instance is kept within, and the seed bases each generator's instances draw
+from, into one :class:`Tier` value, so a harder tier is a config value passed
+to :func:`records`, not a fork of the generation code. Two are defined:
+:data:`MODERATE` (regex level 3, grammar level 2, six-to-twelve-token
+witnesses) and :data:`HARD` (regex level 5, grammar level 3, ten-to-eighteen-
+token witnesses), on disjoint seed bases so their instances never overlap.
+Generation is made reproducible against that revision:
+``gramforge.generate`` reseeds Python's RNG from entropy on every call
+(``seed=None``), so :func:`records` patches the name Reasoning Core bound and
+feeds it seeds from a per-instance ``random.Random``; ``faker`` is seeded
+before the task modules are imported, since their terminal word lists are built
+at import.
 
 Source: ``sileod/reasoning-core`` (MIT), revision ``1c87ac6`` (2026-09-11),
 package version ``0.5.0``; paper arXiv:2509.18083.
@@ -32,6 +40,7 @@ package version ``0.5.0``; paper arXiv:2509.18083.
 from __future__ import annotations
 
 import random
+from dataclasses import dataclass
 from typing import Any, Callable
 
 REPO = "https://github.com/sileod/reasoning-core"
@@ -89,20 +98,39 @@ def cfg_ok(grammar: str, start: str, min_tokens: int, result: Any) -> bool:
         return False
 
 
-# --- the generation: Reasoning Core's own generators, seeded, at a pinned level -------------------
+# --- the generation: Reasoning Core's own generators, seeded, at a per-tier difficulty ------------
 
-REGEX_LEVEL = 3
-"""The difficulty knob for the regex-following instances — moderate patterns (alternation, groups, counts, anchors)."""
 
-CFG_LEVEL = 2
-"""The difficulty knob for the grammar instances — sentences of six to twelve terminals over small grammars."""
+@dataclass(frozen=True)
+class Tier:
+    """A difficulty setting for the two generators, so a harder tier is a config value, not a code fork.
 
-CFG_TOKENS = (6, 12)
-"""The witness length a grammar instance is kept within; the instance's ``min_tokens`` is the witness's own length."""
+    ``regex_level`` and ``cfg_level`` are Reasoning Core's own integer ``level`` knob for the
+    ``RegexFollowing`` and grammar generators. ``cfg_tokens`` is the ``(lo, hi)`` witness-length window a
+    grammar instance is kept within — the witness's own length becomes the instance's ``min_tokens``, so a
+    higher floor forces a longer valid derivation. ``regex_seed_base`` / ``cfg_seed_base`` are where each
+    generator's instance seeds start; a tier's bases are far enough apart that skipped seeds never overlap
+    and disjoint from every other tier's, so no instance is shared between tiers.
+    """
 
-REGEX_SEED_BASE = 20_250_918
-CFG_SEED_BASE = 30_250_918
-"""Where each generator's instance seeds start, far enough apart that skipped seeds never overlap; disjoint from every other family's seeds, which are string-keyed."""
+    name: str
+    regex_level: int
+    cfg_level: int
+    cfg_tokens: tuple[int, int]
+    regex_seed_base: int
+    cfg_seed_base: int
+
+
+MODERATE = Tier(name="moderate", regex_level=3, cfg_level=2, cfg_tokens=(6, 12),
+                regex_seed_base=20_250_918, cfg_seed_base=30_250_918)
+"""The moderate tier pinned in ``reasoning-core.jsonl``: patterns with alternation, groups, counts and
+anchors; grammar sentences of six to twelve terminals over small grammars."""
+
+HARD = Tier(name="hard", regex_level=5, cfg_level=3, cfg_tokens=(10, 18),
+            regex_seed_base=40_250_918, cfg_seed_base=50_250_918)
+"""The harder tier pinned in ``reasoning-core-hard.jsonl``: deeper-nested patterns (more nesting,
+backreferences, escaped literals, ``\\B`` anchors) and larger grammars whose members run ten to eighteen
+terminals, on seed bases disjoint from :data:`MODERATE` so the two tiers share no instance."""
 
 FAKER_SEED = 0
 """Seeds Reasoning Core's import-time terminal word lists, so the vocabulary is fixed across regenerations."""
@@ -135,40 +163,40 @@ def _seeded_gramforge(orig: Callable, master: random.Random) -> Callable:
     return patched
 
 
-def _regex_records(n: int) -> list[dict[str, Any]]:
+def _regex_records(n: int, tier: Tier = MODERATE) -> list[dict[str, Any]]:
     regex_, _ = _rc_modules()
     orig = regex_.generate
     out: list[dict[str, Any]] = []
     i = 0
     try:
         while len(out) < n:
-            seed = REGEX_SEED_BASE + i
+            seed = tier.regex_seed_base + i
             i += 1
             regex_.generate = _seeded_gramforge(orig, random.Random(seed))
             random.seed(seed)
             try:
-                problem = regex_.RegexFollowing().generate_example(level=REGEX_LEVEL, timeout=30)
+                problem = regex_.RegexFollowing().generate_example(level=tier.regex_level, timeout=30)
             except Exception:
                 continue
             pattern, witness = problem.metadata.regex, problem.answer
             if len(witness) < 2 or not regex_ok(pattern, witness):  # drop trivial one-char targets; the witness proves the pattern satisfiable
                 continue
-            out.append({"id": f"regex_{len(out):02d}", "kind": "regex-following", "level": REGEX_LEVEL,
+            out.append({"id": f"regex_{len(out):02d}", "kind": "regex-following", "level": tier.regex_level,
                         "seed": seed, "rc_task": problem.task, "pattern": pattern, "witness_len": len(witness)})
     finally:
         regex_.generate = orig
     return out
 
 
-def _cfg_records(n: int) -> list[dict[str, Any]]:
+def _cfg_records(n: int, tier: Tier = MODERATE) -> list[dict[str, Any]]:
     _, grammar = _rc_modules()
     orig = grammar.gramforge_generate
-    lo, hi = CFG_TOKENS
+    lo, hi = tier.cfg_tokens
     out: list[dict[str, Any]] = []
     i = 0
     try:
         while len(out) < n:
-            seed = CFG_SEED_BASE + i
+            seed = tier.cfg_seed_base + i
             i += 1
             grammar.gramforge_generate = _seeded_gramforge(orig, random.Random(seed))
             random.seed(seed)
@@ -178,7 +206,7 @@ def _cfg_records(n: int) -> list[dict[str, Any]]:
                 # `trim_grammar`, which seeds a `random.Random(None)` from entropy and so cannot be reproduced.
                 config = grammar.GrammarConfig(perturbation_rate=0.0, bnf_operator_prob=0.0,
                                                random_grammar_prob=1.0, free_form_grammar_prob=0.0)
-                config.set_level(CFG_LEVEL)
+                config.set_level(tier.cfg_level)
                 meta = grammar.generate_parse(config)
             except Exception:
                 continue
@@ -187,13 +215,13 @@ def _cfg_records(n: int) -> list[dict[str, Any]]:
             text, start, min_tokens = meta.g.replace(" ::= ", " -> "), str(meta.start), len(meta.tokens)
             if not cfg_ok(text, start, min_tokens, " ".join(meta.tokens)):  # the witness proves the requirement satisfiable
                 continue
-            out.append({"id": f"cfg_{len(out):02d}", "kind": "cfg-generation", "level": CFG_LEVEL,
+            out.append({"id": f"cfg_{len(out):02d}", "kind": "cfg-generation", "level": tier.cfg_level,
                         "seed": seed, "rc_task": "grammar", "grammar": text, "start": start, "min_tokens": min_tokens})
     finally:
         grammar.gramforge_generate = orig
     return out
 
 
-def records(n_regex: int, n_cfg: int) -> list[dict[str, Any]]:
-    """The pinned instances: ``n_regex`` regex-following and ``n_cfg`` grammar-generation, seeded and reproducible against the pinned revision."""
-    return _regex_records(n_regex) + _cfg_records(n_cfg)
+def records(n_regex: int, n_cfg: int, tier: Tier = MODERATE) -> list[dict[str, Any]]:
+    """The pinned instances at ``tier``: ``n_regex`` regex-following and ``n_cfg`` grammar-generation, seeded and reproducible against the pinned revision."""
+    return _regex_records(n_regex, tier) + _cfg_records(n_cfg, tier)

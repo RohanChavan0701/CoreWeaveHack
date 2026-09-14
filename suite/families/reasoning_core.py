@@ -12,22 +12,31 @@ verify a candidate before it answers:
   that a given context-free grammar derives; the hidden check is grammar
   membership under the Earley chart parser Reasoning Core's grammar tasks use.
 
-The instances are pinned into ``suite/data/reasoning-core.jsonl`` at a fixed
-difficulty level per generator (Reasoning Core's integer ``level`` knob) and a
-stored seed each, so a run needs neither the network nor the generation stack
-and the suite hash is stable. The pinned record carries the presentation and
-the checker's inputs — the regex, or the grammar and its start symbol and
-length floor — never a witness, so the file cannot leak an answer.
-:mod:`suite.families._reasoning_core` holds the checkers and the seeded
-generator, and the ``source`` string pins the revision and license.
+Each difficulty tier is pinned into its own file — the moderate tier into
+``suite/data/reasoning-core.jsonl``, the harder tier into
+``suite/data/reasoning-core-hard.jsonl`` — at that tier's per-generator level
+(Reasoning Core's integer ``level`` knob) and a stored seed each, so a run
+needs neither the network nor the generation stack and the suite hash is
+stable. The tier is a config value (:class:`suite.families._reasoning_core.Tier`),
+so a harder tier is a data change, not a fork of the generation code. The
+pinned record carries the presentation and the checker's inputs — the regex, or
+the grammar and its start symbol and length floor — never a witness, so the
+file cannot leak an answer. :mod:`suite.families._reasoning_core` holds the
+checkers, the tiers and the seeded generator, and the ``source`` string pins
+the revision and license.
 
-Two families are built from the same instances and differ only in slack, as
-``curriculum`` and ``curriculum-strict`` do: ``reasoning-core`` budgets each
-task at the knowing policy's one verification call plus one, so a pass may
-spend a call iterating on a candidate; ``reasoning-core-strict`` budgets at
-exactly that one call, so a wrong first candidate cannot be repaired within
-budget. The instances are disjoint from every other family's — a regex or a
-grammar, under ids no other family uses.
+Four families are built, a lax/strict pair per tier, differing only in slack,
+as ``curriculum`` and ``curriculum-strict`` do. Within a tier the lax family
+(``reasoning-core``, ``reasoning-core-hard``) budgets each task at the knowing
+policy's one verification call plus one, so a pass may spend a call iterating on
+a candidate; the strict family (``reasoning-core-strict``,
+``reasoning-core-hard-strict``) budgets at exactly that one call, so a wrong
+first candidate cannot be repaired within budget. The ``-hard`` pair draws from
+the harder tier: deeper-nested patterns and larger grammars with longer members,
+generated on seed bases disjoint from the moderate tier so the two tiers share
+no instance. The strict twin of a tier shares that tier's instances. All
+instances are disjoint from every other family's — a regex or a grammar, under
+ids no other family uses.
 
 Because a witness — a matching string, a grammar member — is something the
 actor can often produce unaided, the hidden check grades the answer and the
@@ -59,8 +68,9 @@ REGEX_N = 12
 CFG_N = 12
 """Instances pinned per generator."""
 
-SLACK = {"reasoning-core": 1, "reasoning-core-strict": 0}
-"""Calls a family's budgets leave beyond the one verification call a knowing policy needs."""
+SLACK = {"reasoning-core": 1, "reasoning-core-strict": 0,
+         "reasoning-core-hard": 1, "reasoning-core-hard-strict": 0}
+"""Calls a family's budgets leave beyond the one verification call a knowing policy needs; a tier's lax/strict pair carry the same slack as the moderate pair."""
 
 KNOWING = {"shell": 1}
 """The floor the economy scorers grade against: a policy that knows the answer verifies it once."""
@@ -127,9 +137,19 @@ def _task(record: dict[str, Any], fam: str) -> Task:
                 shell_budget=budget, knowing=dict(KNOWING))
 
 
+HARD_SOURCE = (f"sileod/reasoning-core ({rc.LICENSE}, rev {rc.REVISION[:7]}, v{rc.VERSION}, {rc.PAPER}); "
+               "the harder tier — regex level 5, grammar level 3, ten-to-eighteen-token grammar members — "
+               "graded by the generator's own checker (regex.fullmatch; NLTK Earley membership)")
+
+
 def fetch(n: int) -> list[dict[str, Any]]:
-    """Transcribe the pinned instances: at most ``n`` of each generator, seeded and reproducible against the pinned revision."""
-    return rc.records(min(n, REGEX_N), min(n, CFG_N))
+    """Transcribe the pinned moderate instances: at most ``n`` of each generator, seeded and reproducible against the pinned revision."""
+    return rc.records(min(n, REGEX_N), min(n, CFG_N), tier=rc.MODERATE)
+
+
+def fetch_hard(n: int) -> list[dict[str, Any]]:
+    """Transcribe the pinned harder instances (:data:`suite.families._reasoning_core.HARD`): at most ``n`` of each generator, seeded and reproducible against the pinned revision."""
+    return rc.records(min(n, REGEX_N), min(n, CFG_N), tier=rc.HARD)
 
 
 @family("reasoning-core", source=SOURCE + "; budgeted with one call to spare", fetch=fetch)
@@ -144,3 +164,17 @@ def strict_tasks() -> list[Task]:
     from suite.families import FAMILIES
 
     return [_task(r, "reasoning-core-strict") for r in FAMILIES["reasoning-core"].records()]
+
+
+@family("reasoning-core-hard", source=HARD_SOURCE + "; budgeted with one call to spare", fetch=fetch_hard)
+def hard_tasks() -> list[Task]:
+    from suite.families import FAMILIES
+
+    return [_task(r, "reasoning-core-hard") for r in FAMILIES["reasoning-core-hard"].records()]
+
+
+@family("reasoning-core-hard-strict", source=HARD_SOURCE + "; the same instances, budgeted at exactly the knowing policy's one call")
+def hard_strict_tasks() -> list[Task]:
+    from suite.families import FAMILIES
+
+    return [_task(r, "reasoning-core-hard-strict") for r in FAMILIES["reasoning-core-hard"].records()]
