@@ -356,13 +356,36 @@ be right and why it may not.
     under its family), but no shipped experiment mixes lesson tasks with
     distractors, so the loop's grouping has not been tried where most
     failures carry no lesson.
-28. **The mention heuristic.** `evolution` marks a record as mentioning a
-    lesson by keywords over its decision, latch and context; a record that
-    teaches a lesson in other words is missed and a record that names the
-    words without teaching it is counted. The join that would replace it —
-    the applied dispositions of the record on rows of that lesson — is in
-    the store (`rows[].applied`, keyed to the task) and not yet read by the
-    log.
+28. **The mention heuristic — replaced by the firing signal.** `evolution`
+    used to drive the lesson series off a keyword match over a record's
+    decision, latch and context, so the headline reported "a record whose
+    text uses the lesson's words," not "a record that fired and helped." The
+    join that replaces it is now read: `_applied_join` in `hgi/evolution.py`
+    reads `rows[].applied` (the record ids the loop actually applied on that
+    row) against the row's `symptom`, so per pass and per lesson the log
+    carries which records fired and how the rows they fired on turned out.
+    The series pivots on `first_applied_pass` (first stream pass a record
+    fired on the lesson's rows) instead of `first_mention_pass`; the
+    naive-before/after split turns on it; the arm and experiment tables gain
+    an `applied → outcome` column (`passed/tasks (✓ N W)` over the fired-on
+    rows) and the records tables show `fired` (passed/rows on which lessons)
+    instead of pivoting on `mentions`. The keyword `mentions` field is kept
+    and still logged, but is no longer the driving signal (docstring and the
+    report Reading legend say so). Applied ids are filtered to the arm's own
+    accepted records at row construction, so a retrofit's rows — which carry
+    the *source* arm's applied ids — read as unfired, matching "nothing was
+    in context." This surfaces what the text2sql run hid: on `120b-attached`
+    D-0002 fires from pass 7 on `text2sql` and passes only 1 of 3 fired-on
+    rows (item 50's latch-widening supersession), while D-0001/D-0003/D-0004
+    were admitted but `fired never` (item 49's vacuous decisions) — none of
+    which was readable when the column pivoted on keyword mention (which
+    never matched, since the text2sql lesson keys are not in
+    `suite.lessons.LESSONS`). Tests in `tests/test_stream.py`
+    (`test_the_lesson_series_pivots_on_firing_not_on_keyword_mention`,
+    `test_an_applied_id_absent_from_every_row_leaves_the_series_unfired`).
+    *Interaction:* the inline `in_context` computation another agent extracts
+    for `experiment.progress()` is unchanged — its logic and signature were
+    not touched.
 30. **The economy run.** `experiments/economy.toml` — 120b attached and
     detached on the plain pool under a different deal (seed 2) — is the
     stream graded on quality (`solution_economy`, `turn_economy`,
