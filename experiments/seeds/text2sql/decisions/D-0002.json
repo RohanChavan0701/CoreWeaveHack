@@ -13,7 +13,7 @@
     "verdict": "admit"
   },
   "context": "Every date column in financial.sqlite (account.date, loan.date, client.birth_date, card.issued, trans.date) is TEXT 'YYYY-MM-DD'. The evidence names the domain mapping but never the dialect (suite/families/text2sql.py:22), so a general model reaches for YEAR() or DATE_FORMAT and fails on first contact.",
-  "counterfactual": "The overshoot is a dialect the database does not speak: YEAR(T1.date) = 1997 raises 'no such function: YEAR', which the check at suite/families/text2sql.py:158 reads as a failed task, and a pass that then repairs it has spent a second call it does not have under text2sql-strict. The opposite overshoot is over-formatting - wrapping an already-ISO literal in DATE() adds nothing.",
+  "counterfactual": "The overshoot is a dialect the database does not speak: YEAR(T1.date) = 1997 raises 'no such function: YEAR', which the check at suite/families/text2sql.py:214 reads as a failed task, and a pass that then repairs it has spent a second call it does not have under text2sql-strict. The opposite overshoot is over-formatting - wrapping an already-ISO literal in DATE() adds nothing.",
   "created_at": "2026-09-13T12:00:00-07:00",
   "decision": "Dates in financial.sqlite are TEXT 'YYYY-MM-DD'. A year is STRFTIME('%Y', col) = '1997' (a quoted string, never the integer 1997); a month is STRFTIME('%m', col) = '03'; a range is col BETWEEN '1995-01-01' AND '1997-12-31' (inclusive, ISO literals); an exact day is col = '1976-01-29' - rewrite '1976/1/29' or '1/29/1976' to zero-padded ISO before comparing. 'Account opening date' is account.date, 'loan approved date' is loan.date, 'born' is client.birth_date, 'oldest' is ORDER BY birth_date ASC. Never YEAR(), MONTH(), EXTRACT, DATE_FORMAT or DATEPART: SQLite has none of them and the error fails the task.",
   "enforcement": {
@@ -177,7 +177,7 @@
     },
     "anchors": [
       "suite/families/text2sql.py:22",
-      "suite/families/text2sql.py:158"
+      "suite/families/text2sql.py:214"
     ],
     "premises": [
       {

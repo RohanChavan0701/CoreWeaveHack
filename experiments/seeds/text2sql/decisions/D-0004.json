@@ -13,7 +13,7 @@
     "verdict": "admit"
   },
   "context": "The coded columns hold literal codes: loan.status A/B/C/D, account.frequency three Czech phrases, gender F/M, disp.type OWNER/DISPONENT, card.type classic/gold/junior, district.A3 eight region spellings with a lowercase compass word. BIRD's evidence names the mapping for the one code the question needs (suite/families/text2sql.py:19); the card carries every value so no SELECT DISTINCT is spent.",
-  "counterfactual": "The overshoot is a literal the database does not hold: status = 'running' or A3 = 'North Bohemia' executes and returns zero rows, the valid-but-wrong case at suite/families/text2sql.py:25 the row comparison fails. The opposite overshoot is spending a shell call on SELECT DISTINCT status to confirm a closed set this map already enumerates (suite/families/text2sql.py:114).",
+  "counterfactual": "The overshoot is a literal the database does not hold: status = 'running' or A3 = 'North Bohemia' executes and returns zero rows, the valid-but-wrong case at suite/families/text2sql.py:27 the row comparison fails. The opposite overshoot is spending a shell call on SELECT DISTINCT status to confirm a closed set this map already enumerates (suite/families/text2sql.py:170).",
   "created_at": "2026-09-13T12:00:00-07:00",
   "decision": "Filter coded columns of financial.sqlite on their exact literal, case-sensitive, never on an English translation or a number: loan.status 'A' = finished, no problems; 'B' = finished, loan not paid; 'C' = running, OK so far; 'D' = running, client in debt - so 'running contract' is status IN ('C', 'D'), 'finished' is IN ('A', 'B'), 'in debt' is 'D', 'fully paid with no issue' is 'A'. account.frequency 'POPLATEK MESICNE' = monthly issuance; 'POPLATEK TYDNE' = weekly issuance; 'POPLATEK PO OBRATU' = issuance after transaction. client.gender 'F' female, 'M' male. disp.type 'OWNER' | 'DISPONENT'. card.type 'classic' | 'gold' | 'junior'. `order`.k_symbol '' | 'LEASING' | 'POJISTNE' | 'SIPO' | 'UVER'. district.A3 exactly 'Prague', 'central Bohemia', 'east Bohemia', 'north Bohemia', 'south Bohemia', 'west Bohemia', 'north Moravia', 'south Moravia' (the compass word is lowercase; 'North Bohemia' matches nothing). Use = or IN with the literal; LIKE and LOWER() are unnecessary.",
   "enforcement": {
@@ -176,15 +176,15 @@
       "verdict": "pending"
     },
     "anchors": [
-      "suite/families/text2sql.py:25",
+      "suite/families/text2sql.py:27",
       "suite/families/text2sql.py:19",
-      "suite/families/text2sql.py:114"
+      "suite/families/text2sql.py:170"
     ],
     "premises": [
       {
         "falsifier": "a row in the shipped database whose status, frequency, gender, type or A3 is outside the listed set or differs in case",
         "id": "p1",
-        "statement": "the coded columns hold exactly the values listed and SQLite string equality is case-sensitive (suite/families/text2sql.py:25)",
+        "statement": "the coded columns hold exactly the values listed and SQLite string equality is case-sensitive (suite/families/text2sql.py:26)",
         "status": "supported"
       },
       {

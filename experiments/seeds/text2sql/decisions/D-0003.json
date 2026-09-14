@@ -13,7 +13,7 @@
     "verdict": "admit"
   },
   "context": "loan.amount, district.A11 and every COUNT are INTEGER; SQLite divides two integers as integers (29 where the gold has 29.77). The evidence gives the formula in prose (suite/data/text2sql.jsonl) but never says CAST, so a pass writes the formula literally and gets a running query with wrong rows (suite/families/text2sql.py:24).",
-  "counterfactual": "The overshoot is the uncast formula: SUM(status = 'A') * 100 / COUNT(account_id) integer-divides and returns 29 where the gold returns 29.77 - the query at suite/families/text2sql.py:27 that executes cleanly and returns the wrong rows. The opposite overshoot is casting or rounding the result into a shape the two-decimal comparison at suite/families/text2sql.py:141 no longer matches, such as ROUND(..., 0) or a string percentage with '%'.",
+  "counterfactual": "The overshoot is the uncast formula: SUM(status = 'A') * 100 / COUNT(account_id) integer-divides and returns 29 where the gold returns 29.77 - the query at suite/families/text2sql.py:27 that executes cleanly and returns the wrong rows. The opposite overshoot is casting or rounding the result into a shape the two-decimal comparison at suite/families/text2sql.py:197 no longer matches, such as ROUND(..., 0) or a string percentage with '%'.",
   "created_at": "2026-09-13T12:00:00-07:00",
   "decision": "A percentage or ratio over financial.sqlite casts before dividing: CAST(SUM(...) AS REAL) * 100 / COUNT(...), or multiply by 100.0. A conditional count is the boolean-sum idiom SUM(status = 'C') or SUM(CASE WHEN status = 'A' THEN amount ELSE 0 END); the denominator is COUNT(id) or SUM(amount) over the same filtered rows. A rate increment is CAST((A13 - A12) AS REAL) * 100 / A12. Rows are compared to two decimals, so do not ROUND. AVG() already returns REAL and needs no cast.",
   "enforcement": {
@@ -178,7 +178,7 @@
     "anchors": [
       "suite/families/text2sql.py:24",
       "suite/families/text2sql.py:27",
-      "suite/families/text2sql.py:141"
+      "suite/families/text2sql.py:197"
     ],
     "premises": [
       {
@@ -190,7 +190,7 @@
       {
         "falsifier": "a comparison that matches floats exactly",
         "id": "p2",
-        "statement": "the row comparison rounds floats to two decimals (suite/families/text2sql.py:141), so CAST and 100.0 forms both grade",
+        "statement": "the row comparison rounds floats to two decimals (suite/families/text2sql.py:197), so CAST and 100.0 forms both grade",
         "status": "supported"
       }
     ]

@@ -13,7 +13,7 @@
     "verdict": "admit"
   },
   "context": "The financial database names its standing-order table `order`, a SQL reserved word (suite/families/text2sql.py:26). Every other identifier in the schema - account, loan, client, disp, card, district, trans, date, type, amount - is unreserved in SQLite and needs no quoting.",
-  "counterfactual": "The overshoot is the bare name: SELECT COUNT(*) FROM order raises near \"order\": syntax error, the failure named at suite/families/text2sql.py:26, and the task is failed at suite/families/text2sql.py:158 before any row is compared. The opposite overshoot is quoting everything - \"loan\".\"amount\" runs but wastes the attention that should go to the join.",
+  "counterfactual": "The overshoot is the bare name: SELECT COUNT(*) FROM order raises near \"order\": syntax error, the failure named at suite/families/text2sql.py:26, and the task is failed at suite/families/text2sql.py:214 before any row is compared. The opposite overshoot is quoting everything - \"loan\".\"amount\" runs but wastes the attention that should go to the join.",
   "created_at": "2026-09-13T12:00:00-07:00",
   "decision": "The table `order` in financial.sqlite is a reserved word: write it as `order` (backticks) or \"order\" (double quotes) in every FROM and JOIN, alias it once (FROM `order` AS T1) and refer to the alias. Never use order, group, from, to, by, select or table as an alias. The other seven tables and every column name, including date and type, are unreserved and are written bare.",
   "enforcement": {
@@ -177,7 +177,7 @@
     },
     "anchors": [
       "suite/families/text2sql.py:26",
-      "suite/families/text2sql.py:158"
+      "suite/families/text2sql.py:214"
     ],
     "premises": [
       {

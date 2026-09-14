@@ -12,8 +12,8 @@
     "rung": "new-decision",
     "verdict": "admit"
   },
-  "context": "The check re-executes the returned statement against financial.sqlite and compares its rows to the gold's as a multiset (suite/families/text2sql.py:146), order-insensitive, floats to two decimals. The prompt says to return the query text, not a computed value (suite/families/text2sql.py:116). The knowing floor is one shell call (suite/families/text2sql.py:96): write the query from the card, run it once, return it.",
-  "counterfactual": "The overshoot is discovery before composition: a first call on .schema and a second on SELECT DISTINCT, as the prompt at suite/families/text2sql.py:113 invites, leaves the strict pass (suite/families/text2sql.py:96) with no call to run its query and the slack pass with one. The opposite overshoot is returning the rows or a formatted answer instead of the statement, which the check at suite/families/text2sql.py:153 fails before any row is compared; and a second run on a query that already executed is a spent call that buys nothing.",
+  "context": "The check re-executes the returned statement against financial.sqlite and compares its rows to the gold's as a multiset (suite/families/text2sql.py:202), order-insensitive, floats to two decimals. The prompt says to return the query text, not a computed value (suite/families/text2sql.py:172). The knowing floor is one shell call (suite/families/text2sql.py:98): write the query from the card, run it once, return it.",
+  "counterfactual": "The overshoot is discovery before composition: a first call on .schema and a second on SELECT DISTINCT, as the prompt at suite/families/text2sql.py:170 invites, leaves the strict pass (suite/families/text2sql.py:98) with no call to run its query and the slack pass with one. The opposite overshoot is returning the rows or a formatted answer instead of the statement, which the check at suite/families/text2sql.py:209 fails before any row is compared; and a second run on a query that already executed is a spent call that buys nothing.",
   "created_at": "2026-09-13T12:00:00-07:00",
   "decision": "Answer a financial.sqlite question in one shell call: compose the complete SELECT from the schema card and the evidence, run it exactly once with sqlite3 financial.sqlite \"<SELECT>\" to see that it executes and the rows look plausible, then return the SELECT text as result - never the rows, never a number. Shapes the grader turns on: highest/lowest/oldest/top N is ORDER BY <col> [DESC] LIMIT N (LIMIT 1 for a superlative), not a MAX/MIN subquery; return only the columns the question asks for (a how-many question returns one COUNT, a percentage one number, 'list the account ID, district name and region' three columns in that order); COUNT(T.col) over the joined rows, COUNT(DISTINCT ...) only when the counted entity is coarser than the row (districts counted across clients); GROUP BY the entity's id when listing per-entity counts; ORDER BY matters only under LIMIT since rows compare as a multiset; one statement, no trailing scratch queries, no ROUND. Under text2sql-strict the one call is the budget; under text2sql the remaining two calls are for a repair only when the run errored.",
   "enforcement": {
@@ -183,22 +183,22 @@
       "verdict": "pending"
     },
     "anchors": [
-      "suite/families/text2sql.py:96",
-      "suite/families/text2sql.py:113",
-      "suite/families/text2sql.py:146",
-      "suite/families/text2sql.py:153"
+      "suite/families/text2sql.py:98",
+      "suite/families/text2sql.py:170",
+      "suite/families/text2sql.py:202",
+      "suite/families/text2sql.py:209"
     ],
     "premises": [
       {
         "falsifier": "a check that compares the query text to the gold, or compares rows in order",
         "id": "p1",
-        "statement": "the check executes the returned string as SQL and compares rows as an order-insensitive multiset (suite/families/text2sql.py:146)",
+        "statement": "the check executes the returned string as SQL and compares rows as an order-insensitive multiset (suite/families/text2sql.py:202)",
         "status": "supported"
       },
       {
         "falsifier": "a task prompt stating a budget below one or a knowing floor above one",
         "id": "p2",
-        "statement": "text2sql-strict budgets one shell call and text2sql three, both with knowing floor one (suite/families/text2sql.py:96)",
+        "statement": "text2sql-strict budgets one shell call and text2sql three, both with knowing floor one (suite/families/text2sql.py:98)",
         "status": "supported"
       },
       {

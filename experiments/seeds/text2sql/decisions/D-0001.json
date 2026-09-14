@@ -12,10 +12,10 @@
     "rung": "new-decision",
     "verdict": "admit"
   },
-  "context": "Every text2sql, text2sql-strict and text2sql-holdout task ships the same database, BIRD's financial.sqlite, and the prompt tells the pass to inspect its schema with the shell tool (suite/families/text2sql.py:112). The schema never changes between tasks, so the card below is what every schema-discovery call returns; carrying it saves the call on every question.",
-  "counterfactual": "The overshoot is spending a call on discovery the card already answers: the prompt at suite/families/text2sql.py:112 invites `sqlite3 financial.sqlite \".schema\"`, and a pass that takes the invitation has used the whole text2sql-strict budget (suite/families/text2sql.py:96) before writing its query. The opposite overshoot is trusting the card over a column the question names that the card lacks - then one call to verify is right, and the card is the thing to amend.",
+  "context": "Every text2sql, text2sql-strict and text2sql-holdout task ships the same database, BIRD's financial.sqlite, and the prompt tells the pass to inspect its schema with the shell tool (suite/families/text2sql.py:169). The schema never changes between tasks, so the card below is what every schema-discovery call returns; carrying it saves the call on every question.",
+  "counterfactual": "The overshoot is spending a call on discovery the card already answers: the prompt at suite/families/text2sql.py:170 invites `sqlite3 financial.sqlite \".schema\"`, and a pass that takes the invitation has used the whole text2sql-strict budget (suite/families/text2sql.py:98) before writing its query. The opposite overshoot is trusting the card over a column the question names that the card lacks - then one call to verify is right, and the card is the thing to amend.",
   "created_at": "2026-09-13T12:00:00-07:00",
-  "decision": "Apply this card at boot instead of spending a shell call on `.schema` or SELECT DISTINCT: financial.sqlite in the working directory is BIRD's `financial` database, eight tables, every date column TEXT 'YYYY-MM-DD', every id INTEGER.\ndistrict(district_id PK; A2 district name TEXT; A3 region TEXT; A4 inhabitants; A5 municipalities under 500; A6 municipalities 500-1999; A7 municipalities 2000-9999; A8 municipalities over 10000; A9 number of cities; A10 ratio of urban inhabitants REAL; A11 average salary INTEGER; A12 unemployment rate 1995 REAL; A13 unemployment rate 1996 REAL; A14 entrepreneurs per 1000 inhabitants; A15 crimes 1995; A16 crimes 1996). A3 holds exactly: 'Prague', 'central Bohemia', 'east Bohemia', 'north Bohemia', 'south Bohemia', 'west Bohemia', 'north Moravia', 'south Moravia' (compass word lowercase; = is case-sensitive). 'Branch location N' or 'district N' is district_id = N.\naccount(account_id PK; district_id -> district; frequency TEXT coded; date = opening date).\nclient(client_id PK; gender 'F'|'M'; birth_date; district_id -> district).\ndisp(disp_id PK; client_id -> client; account_id -> account; type 'OWNER'|'DISPONENT') - the only link between client and account.\nloan(loan_id PK; account_id -> account, at most one loan per account; date = approval date; amount INTEGER; duration INTEGER months in 12|24|36|48|60; payments REAL monthly; status 'A'|'B'|'C'|'D' coded).\ncard(card_id PK; disp_id -> disp; type 'classic'|'gold'|'junior'; issued date).\n`order`(order_id PK; account_id -> account; bank_to TEXT; account_to INTEGER; amount REAL; k_symbol in ''|'LEASING'|'POJISTNE'|'SIPO'|'UVER') - the name is reserved, quote it.\ntrans(trans_id PK; account_id -> account; date; type 'PRIJEM'|'VYBER'|'VYDAJ'; operation; amount; balance; k_symbol; bank; account) - sampled to twenty accounts in this copy; no graded question reads it.\nJoin keys: account.district_id = district.district_id; client.district_id = district.district_id; loan.account_id = account.account_id; disp.client_id = client.client_id AND disp.account_id = account.account_id; card.disp_id = disp.disp_id; `order`.account_id = account.account_id. 'Accounts in region X' is account -> district; 'clients in region X' is client -> district; a loan's district is loan -> account -> district; a client's account is client -> disp -> account.",
+  "decision": "Apply this card at boot instead of spending a shell call on `.schema` or SELECT DISTINCT: financial.sqlite in the working directory is BIRD's `financial` database, eight tables, every date column TEXT 'YYYY-MM-DD', every id INTEGER.\ndistrict(district_id PK; A2 district name TEXT; A3 region TEXT; A4 inhabitants; A5 municipalities under 500; A6 municipalities 500-1999; A7 municipalities 2000-9999; A8 municipalities over 10000; A9 number of cities; A10 ratio of urban inhabitants REAL; A11 average salary INTEGER; A12 unemployment rate 1995 REAL; A13 unemployment rate 1996 REAL; A14 entrepreneurs per 1000 inhabitants; A15 crimes 1995; A16 crimes 1996). A3 holds exactly: 'Prague', 'central Bohemia', 'east Bohemia', 'north Bohemia', 'south Bohemia', 'west Bohemia', 'north Moravia', 'south Moravia' (compass word lowercase; = is case-sensitive). 'Branch location N' or 'district N' is district_id = N.\naccount(account_id PK; district_id -> district; frequency TEXT coded; date = opening date).\nclient(client_id PK; gender 'F'|'M'; birth_date; district_id -> district).\ndisp(disp_id PK; client_id -> client; account_id -> account; type 'OWNER'|'DISPONENT') - the only link between client and account.\nloan(loan_id PK; account_id -> account, at most one loan per account; date = approval date; amount INTEGER; duration INTEGER months in 12|24|36|48|60; payments REAL monthly; status 'A'|'B'|'C'|'D' coded).\ncard(card_id PK; disp_id -> disp; type 'classic'|'gold'|'junior'; issued date).\n`order`(order_id PK; account_id -> account; bank_to TEXT; account_to INTEGER; amount REAL; k_symbol in ''|'LEASING'|'POJISTNE'|'SIPO'|'UVER') - the name is reserved, quote it.\ntrans(trans_id PK; account_id -> account; date; type 'PRIJEM' credit | 'VYDAJ' withdrawal | 'VYBER' cash withdrawal; operation 'VKLAD' credit in cash | 'VYBER' withdrawal in cash | 'VYBER KARTOU' credit card withdrawal | 'PREVOD Z UCTU' collection from another bank | 'PREVOD NA UCET' remittance to another bank | NULL; amount INTEGER; balance INTEGER = account balance after the transaction; k_symbol payment purpose, its own coded set ('SIPO', 'POJISTNE', 'UVER', 'SLUZBY', 'DUCHOD', 'UROK', 'SANKC. UROK', ' ', NULL) distinct from `order`.k_symbol; bank; account) - the full table, 1,056,320 rows; read for credit-card ('VYBER KARTOU'), cash ('VYBER') and non-credit-card ('VYDAJ') transactions and for account-balance growth across two dates. 'VYBER' is both a trans.type and a trans.operation value, so filter the column the question names.\nJoin keys: account.district_id = district.district_id; client.district_id = district.district_id; loan.account_id = account.account_id; disp.client_id = client.client_id AND disp.account_id = account.account_id; card.disp_id = disp.disp_id; `order`.account_id = account.account_id. 'Accounts in region X' is account -> district; 'clients in region X' is client -> district; a loan's district is loan -> account -> district; a client's account is client -> disp -> account.",
   "enforcement": {
     "floor": [
       "schema",
@@ -146,7 +146,7 @@
     {
       "judged": "chosen",
       "name": "A — carry the whole schema card and apply it at boot",
-      "why": "the database is pinned and identical across all sixteen questions, so the card is exact and saves the discovery call the strict budget cannot hold"
+      "why": "the database is pinned and identical across all 32 questions, so the card is exact and saves the discovery call the strict budget cannot hold"
     },
     {
       "judged": "rejected",
@@ -178,22 +178,22 @@
       "verdict": "pending"
     },
     "anchors": [
-      "suite/families/text2sql.py:112",
-      "suite/families/text2sql.py:96",
-      "suite/families/text2sql.py:264",
-      "suite/families/text2sql.py:47"
+      "suite/families/text2sql.py:169",
+      "suite/families/text2sql.py:98",
+      "suite/families/text2sql.py:333",
+      "suite/families/text2sql.py:152"
     ],
     "premises": [
       {
         "falsifier": "a task whose shipped database differs in a table, column or type from this card",
         "id": "p1",
-        "statement": "every task in the three text2sql families ships the same pinned financial.sqlite under the name financial.sqlite (suite/families/text2sql.py:264)",
+        "statement": "every task in the three text2sql families ships the same pinned financial.sqlite under the name financial.sqlite (suite/families/text2sql.py:333)",
         "status": "supported"
       },
       {
         "falsifier": "a strict task whose stated budget exceeds one shell call",
         "id": "p2",
-        "statement": "the strict family budgets exactly one shell call, so a discovery call leaves none for the query (suite/families/text2sql.py:96)",
+        "statement": "the strict family budgets exactly one shell call, so a discovery call leaves none for the query (suite/families/text2sql.py:98)",
         "status": "supported"
       },
       {

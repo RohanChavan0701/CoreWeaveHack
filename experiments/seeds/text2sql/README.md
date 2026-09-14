@@ -48,32 +48,54 @@ crisp. The concrete facts were enumerated from the shipped database, not guessed
 - `card(card_id, disp_id, type 'classic'|'gold'|'junior', issued)`.
 - `` `order`(order_id, account_id, bank_to, account_to, amount REAL, k_symbol) ``,
   `k_symbol` in `''`, `'LEASING'`, `'POJISTNE'`, `'SIPO'`, `'UVER'`.
-- `trans(...)`, sampled to twenty accounts in the pinned copy; no selected question
-  reads it.
+- `trans(trans_id, account_id, date, type, operation, amount INTEGER, balance INTEGER,
+  k_symbol, bank, account)` kept whole (1,056,320 rows); `type` in `'PRIJEM'`, `'VYDAJ'`,
+  `'VYBER'`; `operation` in `'VKLAD'`, `'VYBER'`, `'VYBER KARTOU'`, `'PREVOD Z UCTU'`,
+  `'PREVOD NA UCET'`, NULL; `balance` is the account balance after the transaction.
+  Questions read it for credit-card withdrawals (`operation = 'VYBER KARTOU'`), cash
+  withdrawals (`operation = 'VYBER'`), non-credit-card debits (`type = 'VYDAJ'`) and
+  balance growth across two dates.
 - Every date column is TEXT `'YYYY-MM-DD'`; `SUM(status='A')*100/COUNT(*)` returns
   `29` against `29.77` with the cast; `YEAR(date)` raises; bare `FROM order` raises.
 
-## What the graded questions turn on
+## What the pinned questions turn on
 
-Read from the gold SQL in `suite/data/text2sql.jsonl`, the conventions the sixteen
+Read from the gold SQL in `suite/data/text2sql.jsonl`, the conventions the 32
 questions exercise (the questions themselves are never in the seed):
 
-- STRFTIME year filters on `loan.date` and `account.date` (q98, q99, q119); an ISO
-  `BETWEEN` range (q136); an exact ISO birth date rewritten from `1976/1/29` (q112).
-- `CAST(... AS REAL)` percentages with a boolean-sum numerator (q117, q118, q168) and a
-  rate increment `CAST((A13 - A12) AS REAL) * 100 / A12` (q125).
+- Dates: STRFTIME year filters on `loan.date` and `account.date` (q98, q99, q119, q120,
+  q152, q169) and on `client.birth_date` (q100); an ISO `BETWEEN` range (q136); a
+  `LIKE '1996-01%'` month filter (q129); exact ISO days rewritten from `1976/1/29`,
+  `1993/7/5`, `1998/12/27`, `1993/3/22` (q112, q116); `STRFTIME('%Y', CURRENT_TIMESTAMP)
+  - STRFTIME('%Y', birth_date)` for age (q194).
+- `CAST(... AS REAL)` percentages with a boolean-sum numerator (q117, q118, q168, q115,
+  q186); a rate increment `CAST((A13 - A12) AS REAL) * 100 / A12` (q125); the growth-rate
+  idiom `CAST((SUM(cond_A) - SUM(cond_B)) AS REAL) * 100 / SUM(cond_B)` over two periods,
+  its conditional sums written with `IIF` or `CASE WHEN` (q116, q169); a direct `AVG`
+  where the gold takes one (q192, q152, q145).
 - Coded literals: `status` `'A'`, `'C'`, `IN ('C','D')`, `'D'` (q117, q118, q137, q192,
-  q125); all three `frequency` phrases (q98, q89, q136, q119, q192); `gender` `'F'`/`'M'`
-  (q92, q93, q112, q168, q128, q189); `A3 = 'north Bohemia'` / `'east Bohemia'` with the
-  lowercase compass word (q93, q89); `district_id = 1` for "Branch location 1" (q137).
-- Shapes: superlatives as `ORDER BY ... LIMIT 1` (q98, q99, q189), a top-nine as
-  `GROUP BY ... ORDER BY COUNT DESC LIMIT 9` (q128), `COUNT(DISTINCT district_id)`
-  where districts are counted across clients (q92) against plain `COUNT` elsewhere,
-  the three-column projection in the asked order (q119), the client-to-account walk
-  through `disp` (q189).
+  q125); all three `frequency` phrases (q98, q89, q136, q119, q186, q192); `gender`
+  `'F'`/`'M'` (q92, q93, q100, q112, q115, q128, q168, q186, q189); `disp.type` `'OWNER'`
+  and `!= 'OWNER'` (q149, q194, q169); `card.type = 'gold'` (q194); `A3` region spellings
+  with the lowercase compass word — `'north Bohemia'`, `'east Bohemia'`, `'south Bohemia'`
+  (q93, q89, q115, q120); `district_id = 1` for "Branch location 1" (q137).
+- `trans` codes: `operation = 'VYBER KARTOU'` for a credit-card withdrawal (q145),
+  `operation = 'VYBER'` for a cash withdrawal (q159), `type = 'VYDAJ'` for a
+  non-credit-card debit (q129); `trans.balance` at two exact dates for a growth rate
+  (q116). `'VYBER'` is both a `type` and an `operation` value.
+- Shapes: superlatives as `ORDER BY ... LIMIT 1` (q98, q99, q189, q94); a second-highest
+  as `ORDER BY ... DESC LIMIT 1, 1` (q138); a top-nine as `GROUP BY ... ORDER BY COUNT
+  DESC LIMIT 9` (q128) and a top-ten as `SELECT DISTINCT ... ORDER BY ... LIMIT 10`
+  (q129); a derived table joined back to its parent (q173, `` `order` `` grouped and
+  summed by `k_symbol`); a scalar subquery for a `MAX(A11) - MIN(A11)` gap and for a
+  correlated superlative (q94, q95); `COUNT(DISTINCT district_id)` where districts are
+  counted across clients (q92) against plain `COUNT` elsewhere; the three-column
+  projection in the asked order (q119); the client-to-account walk through `disp`
+  (q189, q159, q169, q194).
 
-No graded or held-out question reads `` `order` ``; D-0005 is cheap insurance whose
-use ratio may stay low, which its own residue notes.
+One graded question, q173, reads the reserved-word `` `order` `` table (a derived table
+over `` `order` `` grouped by `k_symbol`), so D-0005's reserved-word convention fires;
+its use ratio stays low, which the decision's own residue notes.
 
 ## Latches, exclusions, stakes
 
@@ -101,10 +123,10 @@ Counterfactuals name both overshoots — the convention missed, and the conventi
 over-applied (a `.schema` call the card already answers; `DATE()` around an ISO
 literal; `ROUND` that breaks the two-decimal comparison; quoting every identifier;
 re-running a query that already executed) — and anchor into
-`suite/families/text2sql.py` by line: 19 and 22–27 (the docstring's statement of each
-convention), 47 (`trans` sampled), 96 (the knowing floor), 112–116 (the prompt),
-141 (two-decimal rounding), 146 (multiset comparison), 153 and 158 (the check's two
-failure modes), 264 (the task's blob and budget). `warrant.anchors` lists the same.
+`suite/families/text2sql.py` by line: 19 and 22–29 (the docstring's statement of each
+convention), 152 (`trans` kept whole), 98 (the knowing floor), 169–172 (the prompt),
+197 (two-decimal rounding), 202 (multiset comparison), 209 and 214 (the check's two
+failure modes), 333 (the task's blob and budget). `warrant.anchors` lists the same.
 
 ## The compare/contrast expectation
 
@@ -112,7 +134,7 @@ failure modes), 264 (the task's blob and budget). `warrant.anchors` lists the sa
 target the loop is meant to reach, and injecting it against an empty store isolates
 what the six decisions buy:
 
-- **`120b-strict`, seeded attached arm.** Near 1.0 first-sight pass rate and
+- **`120b-strict-seeded`, the seeded strict arm.** Near 1.0 first-sight pass rate and
   `tool_budget_respected` at 1.0: the pass applies the card at boot, writes the query,
   spends its one call running it, returns the statement. The only expected misses are
   judgment residue the floor does not check — which date column a phrase means, whether
@@ -135,10 +157,10 @@ what the six decisions buy:
 
 ## Validation
 
-A scratch store was seeded with `hgi genesis`, the six decisions copied into
-`decisions/`, `registry/ids.json` `D` set to 6, then `hgi index` and `hgi lint`:
-
-    lint: green — 0 failures, 0 warnings
-
-`hgi consult --terms shell-tool,file-tool,tool-budget --problem "<a strict prompt>"`
-reaches all six via the index with no `excluded_by`.
+Injecting the seed into a fresh store — `hgi genesis` then `hgi seed text2sql --model
+gpt-oss-120b` — mints the six decisions past the store's ids, prices them for the arm's
+pass model, and runs the write-seam floor, which they pass. `hgi lint --model
+gpt-oss-120b` over the resulting store is green: no failures, and `model-pricing` is
+quiet on the seed, its decisions priced for the session's model. `hgi consult --terms
+shell-tool,file-tool,tool-budget --problem "<a strict prompt>"` reaches all six via the
+index with no `excluded_by`.
