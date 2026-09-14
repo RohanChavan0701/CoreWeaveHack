@@ -19,7 +19,7 @@ names the domain mapping the question needs (`status = 'A'` means finished with 
 problems; `'POPLATEK TYDNE'` means weekly issuance) but never the dialect, so a
 general model meets each convention cold and either errors (loud) or returns a query
 that runs and is wrong (invisible until the check). A store that has seen enough
-passes and consolidations settles on six decisions.
+passes and consolidations settles on seven decisions.
 
 | id | decision, in one line | what it looks like in the trace without it | floor it saves |
 |---|---|---|---|
@@ -29,6 +29,7 @@ passes and consolidations settles on six decisions.
 | D-0004 | Coded literals, exact and case-sensitive: `status` A/B/C/D and their meanings, `frequency` three Czech phrases, `gender` F/M, `disp.type`, `card.type`, `A3` region spellings with a lowercase compass word. | invisible: `status = 'running'` or `A3 = 'North Bohemia'` runs and returns zero rows or the wrong count | a `SELECT DISTINCT` call |
 | D-0005 | The table `order` is a reserved word: quote it and alias it; nothing else in the schema needs quoting. | loud: `near "order": syntax error` | a repair call |
 | D-0006 | The one-call method: compose the full SELECT from the card, run it exactly once, return the statement; superlatives are `ORDER BY ... LIMIT 1`; only the asked columns; COUNT vs COUNT(DISTINCT); GROUP BY for per-entity lists. | visible: two or three exploratory calls before a query; or loud: rows returned in place of a statement, failed before comparison | the whole slack budget, and the strict call |
+| D-0007 | The `trans` codes: `type` PRIJEM/VYDAJ/VYBER and `operation` VYBER KARTOU/VYBER/VKLAD/PREVOD Z UCTU/PREVOD NA UCET are Czech literals, case-sensitive; `'VYBER'` is both a type and an operation, so a cash withdrawal is `operation = 'VYBER'` and a non-credit-card debit is `type = 'VYDAJ'`. | invisible: `operation = 'cash withdrawal'`, or a cash withdrawal read off `type = 'VYBER'`, runs and returns zero or the wrong rows | a `SELECT DISTINCT` call |
 
 The card (D-0001) is the point of the seed and is long by design; the others are
 crisp. The concrete facts were enumerated from the shipped database, not guessed:
@@ -104,9 +105,9 @@ only, so no `vocabulary.json` is needed:
 
 - D-0001 and D-0006 key on `shell-tool`, `file-tool`, `tool-budget` — the exact
   presentation of every task in the three families.
-- D-0002 through D-0005 key on `shell-tool`, `tool-budget`.
+- D-0002 through D-0005 and D-0007 key on `shell-tool`, `tool-budget`.
 
-All six share the same three exclusions, worded so the boot's guard does not exclude
+All seven share the same three exclusions, worded so the boot's guard does not exclude
 a `financial.sqlite` task and so none of the phrases occurs in the task prompt (the
 consult reading would otherwise flag `excluded_by`):
 
@@ -132,7 +133,7 @@ failure modes), 333 (the task's blob and budget). `warrant.anchors` lists the sa
 
 `experiments/text2sql.toml` has not run; there are no run stores. The seed is the
 target the loop is meant to reach, and injecting it against an empty store isolates
-what the six decisions buy:
+what the seven decisions buy:
 
 - **`120b-strict-seeded`, the seeded strict arm.** Near 1.0 first-sight pass rate and
   `tool_budget_respected` at 1.0: the pass applies the card at boot, writes the query,
@@ -147,7 +148,7 @@ what the six decisions buy:
   hold the knowing floor of one call on both groups, holdout included, since every
   decision is schema-scoped rather than question-scoped; the unseeded arm spends its
   first call on discovery on every batch and re-learns each convention as it meets it,
-  with the loop expected to converge on roughly this six-decision store after the
+  with the loop expected to converge on roughly this seven-decision store after the
   consolidations. The revisit at 1 and 2 after the stream measures whether what the
   loop admitted retained the same conventions the seed carries.
 - **Scorers.** `task_pass_rate` separates the seeded and unseeded arms on strict;
@@ -158,9 +159,9 @@ what the six decisions buy:
 ## Validation
 
 Injecting the seed into a fresh store — `hgi genesis` then `hgi seed text2sql --model
-gpt-oss-120b` — mints the six decisions past the store's ids, prices them for the arm's
+gpt-oss-120b` — mints the seven decisions past the store's ids, prices them for the arm's
 pass model, and runs the write-seam floor, which they pass. `hgi lint --model
 gpt-oss-120b` over the resulting store is green: no failures, and `model-pricing` is
 quiet on the seed, its decisions priced for the session's model. `hgi consult --terms
-shell-tool,file-tool,tool-budget --problem "<a strict prompt>"` reaches all six via the
+shell-tool,file-tool,tool-budget --problem "<a strict prompt>"` reaches all seven via the
 index with no `excluded_by`.

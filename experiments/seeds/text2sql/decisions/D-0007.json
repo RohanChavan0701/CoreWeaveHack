@@ -1,0 +1,199 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T12:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "trans is the full transaction table (1,056,320 rows) and its type and operation columns hold Czech literal codes, not English words: trans.type 'PRIJEM'/'VYDAJ'/'VYBER', trans.operation 'VKLAD'/'VYBER'/'VYBER KARTOU'/'PREVOD Z UCTU'/'PREVOD NA UCET'. BIRD's evidence names the one code a question needs (suite/families/text2sql.py:19); the questions that read trans (suite/families/text2sql.py:57) filter on these codes, and D-0004 covers the other coded columns but not trans.",
+  "counterfactual": "The overshoot is an English or wrong-column literal: operation = 'cash withdrawal' or type = 'credit card' executes and returns zero rows - the valid-but-wrong case at suite/families/text2sql.py:27 the row comparison fails; and reading a cash withdrawal off trans.type = 'VYBER' instead of trans.operation = 'VYBER' silently widens the rows. The opposite overshoot is a SELECT DISTINCT operation call (suite/families/text2sql.py:170) to learn a closed set the card already enumerates.",
+  "created_at": "2026-09-13T12:00:00-07:00",
+  "decision": "Filter trans of financial.sqlite on its exact Czech literal, case-sensitive, never on an English translation: trans.operation 'VYBER KARTOU' = credit card withdrawal, 'VYBER' = withdrawal in cash, 'VKLAD' = credit in cash, 'PREVOD Z UCTU' = collection from another bank, 'PREVOD NA UCET' = remittance to another bank; trans.type 'PRIJEM' = credit, 'VYDAJ' = withdrawal (a non-credit-card debit), 'VYBER' = cash withdrawal. 'VYBER' is both a trans.type and a trans.operation value, so a cash-withdrawal question filters trans.operation = 'VYBER' while a non-credit-card-withdrawal question filters trans.type = 'VYDAJ' - pick the column the question names. Use = or IN with the literal; LIKE and LOWER() are unnecessary. trans.amount and trans.balance are INTEGER, and trans.balance is the account balance after the transaction.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "which trans column a phrase means (type vs operation for 'VYBER') is judgment guided by the evidence; the floor checks shape only"
+    ]
+  },
+  "id": "D-0007",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a question over a database other than financial.sqlite, whose schema this card does not describe",
+          "a task that creates, alters or writes to the database (DDL or DML) rather than reading it with a SELECT",
+          "a shell task with no SQLite database in the working directory"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "shell-tool",
+          "tool-budget"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "task_pass_rate",
+          "value": 0.5
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the database decodes its trans type and operation columns into English text, or drops the trans table from the pinned copy",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A — filter trans on the exact Czech code from the card",
+      "why": "trans.type and trans.operation are closed sets of Czech literals; SQLite = is case-sensitive, so 'VYBER KARTOU' and 'VYDAJ' are the only spellings that match, and the type/operation split decides which column a 'VYBER' means"
+    },
+    {
+      "judged": "rejected",
+      "name": "B — spend a shell call on SELECT DISTINCT to learn the trans codes",
+      "why": "the strict budget has no call to spare and the values never change between tasks; the card already enumerates them"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/text2sql"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a question over financial.sqlite that reads the transactions table - a credit-card, cash or non-credit-card withdrawal, a deposit or transfer, or an account balance over time",
+    "not_this": [
+      "a question over a database other than financial.sqlite, whose schema this card does not describe",
+      "a task that creates, alters or writes to the database (DDL or DML) rather than reading it with a SELECT",
+      "a shell task with no SQLite database in the working directory"
+    ],
+    "stakes": "a trans code written in English, or the right code on the wrong column, matches no row or the wrong rows: the query runs, returns nothing or too much, and fails the row comparison"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/text2sql.py:26",
+      "suite/families/text2sql.py:27",
+      "suite/families/text2sql.py:170",
+      "suite/families/text2sql.py:57"
+    ],
+    "premises": [
+      {
+        "falsifier": "a row in trans whose type or operation falls outside the listed set or differs in case",
+        "id": "p1",
+        "statement": "trans.type holds exactly 'PRIJEM'/'VYDAJ'/'VYBER' and trans.operation exactly 'VKLAD'/'VYBER'/'VYBER KARTOU'/'PREVOD Z UCTU'/'PREVOD NA UCET' (or NULL), and SQLite string equality is case-sensitive (suite/families/text2sql.py:26)",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a trans-reading question whose gold filters on an English phrase, or on trans.type where the answer is a trans.operation value",
+        "id": "p2",
+        "statement": "the questions that read trans filter operation = 'VYBER KARTOU' or 'VYBER', or type = 'VYDAJ', on the exact code (suite/families/text2sql.py:57)",
+        "status": "supported"
+      }
+    ]
+  }
+}
