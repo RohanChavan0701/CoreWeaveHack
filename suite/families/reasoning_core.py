@@ -69,7 +69,11 @@ CFG_N = 12
 """Instances pinned per generator."""
 
 SLACK = {"reasoning-core": 1, "reasoning-core-strict": 0,
-         "reasoning-core-hard": 1, "reasoning-core-hard-strict": 0}
+         "reasoning-core-hard": 1, "reasoning-core-hard-strict": 0,
+         # the calibration candidates: each a cfg-only base (lax, one call to spare) and its strict twin (exactly one call)
+         "reasoning-core-calibA": 1, "reasoning-core-calibA-strict": 0,
+         "reasoning-core-calibB": 1, "reasoning-core-calibB-strict": 0,
+         "reasoning-core-calibC": 1, "reasoning-core-calibC-strict": 0}
 """Calls a family's budgets leave beyond the one verification call a knowing policy needs; a tier's lax/strict pair carry the same slack as the moderate pair."""
 
 KNOWING = {"shell": 1}
@@ -187,3 +191,58 @@ def hard_strict_tasks() -> list[Task]:
     from suite.families import FAMILIES
 
     return [_task(r, "reasoning-core-hard-strict") for r in FAMILIES["reasoning-core-hard"].records()]
+
+
+# --- calibration candidates: cfg-only strict families bracketing a first-sight target ---------------
+#
+# Three cfg-only tiers (:data:`suite.families._reasoning_core.CALIB_A`/``CALIB_B``/``CALIB_C``) bracket a ~0.45
+# first-sight target between MODERATE's too-easy cfg (~0.85) and HARD's too-hard cfg (~0.17), so a chained pilot
+# can pick a cfg difficulty in one sweep. Each candidate pins twelve cfg-generation instances — no regex — into
+# its own file, and registers a single strict family budgeted at exactly the one verification call, exercising
+# the SAME grading path as the real cfg tiers (NLTK Earley membership via ``cfg_ok``, the budget gate). Only cfg
+# is retuned; the settled HARD regex level 5 is untouched. These are calibration scaffolding, not a shipped
+# tier: no lax twin, no seeded or attached arms — the pilot measures unaided first-sight alone.
+
+CALIB_TIERS = {"reasoning-core-calibA": rc.CALIB_A,
+               "reasoning-core-calibB": rc.CALIB_B,
+               "reasoning-core-calibC": rc.CALIB_C}
+"""Base family name → its cfg-only calibration tier; the strict twin ``<name>-strict`` reads the base's pinned instances."""
+
+
+def _calib_source(tier: rc.Tier) -> str:
+    return (f"sileod/reasoning-core ({rc.LICENSE}, rev {rc.REVISION[:7]}, v{rc.VERSION}, {rc.PAPER}); calibration "
+            f"candidate {tier.name} — cfg-generation only, grammar level {tier.cfg_level}, "
+            f"{tier.cfg_tokens[0]}-to-{tier.cfg_tokens[1]}-token members — graded by the generator's own checker "
+            "(NLTK Earley membership)")
+
+
+def _calib_fetch(tier: rc.Tier) -> Callable[[int], list[dict[str, Any]]]:
+    """A cfg-only transcriber for one calibration tier: ``n_regex=0``, at most ``n`` (and at most ``CFG_N``) grammar instances."""
+
+    def fetch_calib(n: int) -> list[dict[str, Any]]:
+        return rc.records(0, min(n, CFG_N), tier=tier)
+
+    return fetch_calib
+
+
+def _register_calib(base: str, tier: rc.Tier) -> None:
+    """Register a cfg-only base family (holding the pinned file) and its strict twin, both carrying the budget gate and preflight."""
+    source = _calib_source(tier)
+
+    @family(base, source=source + "; budgeted with one call to spare", fetch=_calib_fetch(tier), requires=REQUIRES)
+    def _base_tasks(base=base) -> list[Task]:
+        from suite.families import FAMILIES
+
+        return [_task(r, base) for r in FAMILIES[base].records()]
+
+    strict = f"{base}-strict"
+
+    @family(strict, source=source + "; budgeted at exactly the knowing policy's one call", requires=REQUIRES)
+    def _strict_tasks(base=base, strict=strict) -> list[Task]:
+        from suite.families import FAMILIES
+
+        return [_task(r, strict) for r in FAMILIES[base].records()]
+
+
+for _base, _tier in CALIB_TIERS.items():
+    _register_calib(_base, _tier)

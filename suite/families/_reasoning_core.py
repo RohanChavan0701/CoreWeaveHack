@@ -132,6 +132,33 @@ HARD = Tier(name="hard", regex_level=5, cfg_level=3, cfg_tokens=(10, 18),
 backreferences, escaped literals, ``\\B`` anchors) and larger grammars whose members run ten to eighteen
 terminals, on seed bases disjoint from :data:`MODERATE` so the two tiers share no instance."""
 
+# --- calibration candidates: three cfg-only tiers bracketing a first-sight target ---------------------
+#
+# The HARD tier's regex level 5 lands cfg-generation's twin, the grammar generator, at first-sight ~0.17 (cfg
+# level 3, ten-to-eighteen-token window) — too hard — while MODERATE's cfg (level 2, six-to-twelve window)
+# lands ~0.85 — too easy. These three candidates bracket a ~0.45 first-sight target between them by moving the
+# two cfg knobs — ``cfg_level`` (grammar complexity) and ``cfg_tokens`` (the required-derivation-length window)
+# — one step at a time, so a chained one-arm-at-a-time pilot can pick a cfg difficulty in a single sweep rather
+# than iterating. Only cfg is retuned here; the HARD regex level 5 is settled and stays. ``regex_level`` and
+# ``regex_seed_base`` are carried only to satisfy the :class:`Tier` shape — the calibration families generate
+# cfg instances alone (``fetch`` calls :func:`records` with ``n_regex=0``), so no regex instance is ever drawn.
+# The ``cfg_seed_base`` values are disjoint from MODERATE, HARD and each other, so no cfg instance is shared.
+
+CALIB_A = Tier(name="calibA", regex_level=5, cfg_level=3, cfg_tokens=(6, 12),
+               regex_seed_base=60_250_918, cfg_seed_base=61_250_918)
+"""Calibration candidate A: cfg level 3 (HARD's grammar complexity) with MODERATE's short six-to-twelve-token
+window — likely the easiest of the three, isolating the window knob against HARD's cfg."""
+
+CALIB_B = Tier(name="calibB", regex_level=5, cfg_level=3, cfg_tokens=(8, 14),
+               regex_seed_base=62_250_918, cfg_seed_base=63_250_918)
+"""Calibration candidate B: cfg level 3 with an intermediate eight-to-fourteen-token window — between A and
+HARD on the window knob at the same complexity."""
+
+CALIB_C = Tier(name="calibC", regex_level=5, cfg_level=2, cfg_tokens=(10, 18),
+               regex_seed_base=64_250_918, cfg_seed_base=65_250_918)
+"""Calibration candidate C: MODERATE's cfg level 2 (lower complexity) with HARD's long ten-to-eighteen-token
+window — isolates the complexity knob against HARD's cfg while holding the long window."""
+
 FAKER_SEED = 0
 """Seeds Reasoning Core's import-time terminal word lists, so the vocabulary is fixed across regenerations."""
 
