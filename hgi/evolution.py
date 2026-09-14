@@ -47,7 +47,7 @@ from typing import Any
 
 import suite as _suite
 from hgi import registry as _registry
-from hgi.index import row_passed
+from hgi.index import observation_for, row_passed
 from suite import lessons as _lessons
 from suite.stream import key_of
 
@@ -62,6 +62,78 @@ def in_context_records(session, accepted) -> list[str]:
     """The records a pass actually had in context: guard-passed, not the constitution, and still an accepted decision the
     store holds. Empty where retrieval reached nothing — the silent failure a flat pass rate hides (reasoning-core, economy)."""
     return [c.record for c in session.considered if c.guard_passed and c.via != "constitution" and c.record in accepted]
+
+
+# --- mid-run health ---------------------------------------------------------------------------
+
+def _row_error_classes(row: dict[str, Any]) -> list[str]:
+    """The tool/harness error classes a row carries — its final error and every tool error in its trace, by the tool
+    layer's own markers (:func:`suite.lessons.error_class`). A row that recovered from a broken call and answered wrong
+    still shows the call here through ``tool_errors``, which its final symptom does not."""
+    classes = [_lessons.error_class(e) for e in (row.get("tool_errors") or [])]
+    if row.get("error"):
+        classes.append(_lessons.error_class(row["error"]))
+    return classes
+
+
+def _consolidation_disposition(consolidation) -> dict[str, Any]:
+    """A consolidation's drafts by disposition: how many were nominated, how many admitted, and the bucket each
+    nomination's outcome fell in — ``admitted``, ``refused_floor`` (the contract floor refused the draft),
+    ``declined``, ``escalated``, ``deferred`` or ``pending``. ``nominated`` > 0 with ``admitted`` == 0 is the
+    everything-drafted-nothing-admitted failure (text2sql, economy); ``nominated`` == 0 is nothing to learn."""
+    def bucket(outcome: str | None) -> str:
+        o = outcome or "pending"
+        for prefix, name in (("admitted", "admitted"), ("refused by the floor", "refused_floor"),
+                             ("declined", "declined"), ("escalated", "escalated"), ("defer", "deferred")):
+            if o.startswith(prefix):
+                return name
+        return "pending"
+
+    drafts = [n for n in consolidation.nominations if not n.subject.startswith("C-")]
+    return {"id": consolidation.id, "nominated": len(drafts), "admitted": len(consolidation.admitted),
+            "outcomes": dict(Counter(bucket(n.outcome) for n in drafts))}
+
+
+def health(store, mode: str) -> dict[int, dict[str, Any]]:
+    """The arm's per-pass health as it runs, derived from the store on disk — no model call, nothing that slows the arm.
+
+    For each evaluated session of ``mode``, keyed by pass:
+
+    - ``reach``: the records ``considered`` and, of those, the ``in_context`` count and ids a pass actually consulted
+      (:func:`in_context_records`). Empty ``in_context`` on a pass that carries a store is retrieval reaching nothing —
+      the reasoning-core/economy silent failure, and, on a seeded arm, the pass-1 tripwire that the latch scope is wrong.
+    - ``errors``: the ``rows`` scored, the ``tool_error_rows`` that hit a tool or harness error, and the count ``by_class``
+      over every such error (final and in-trace). A spike in a harness class (``endpoint``, ``shell-exit``,
+      ``malformed-tool-call``) is a broken arm; a world-fault class (``http-410``) is the task's own content.
+    - ``coverage``: the ``failed`` rows, how many the pass ``observed`` (filed an observation from), and how many of those
+      are ``shaped`` — whether the close is filing from the failures at all.
+    - ``consolidation``: the round's draft disposition (:func:`_consolidation_disposition`), or ``None`` on a pass that
+      closed no round.
+
+    A detached arm has no store, so its ``reach``, ``coverage`` and ``consolidation`` are empty by construction and only
+    ``errors`` carries signal — the ablation's own bad-call rate."""
+    accepted = {d.id for d in store.all("decision")}
+    obs_by_session: dict[str, list] = {}
+    for o in store.observations(state=None):
+        obs_by_session.setdefault(o.session, []).append(o)
+    consolidations = {k.after_pass: k for k in store.all("consolidation")}
+    out: dict[int, dict[str, Any]] = {}
+    for s in evaluated_sessions(store, mode):
+        rows = s.evaluation.rows
+        session_obs = obs_by_session.get(s.id, [])
+        failed = [(row, observation_for(session_obs, row)) for row in rows if not row_passed(row)]
+        ic = in_context_records(s, accepted)
+        k = consolidations.get(s.pass_)
+        out[s.pass_] = {
+            "pass": s.pass_,
+            "reach": {"considered": len(s.considered), "in_context": len(ic), "records": ic},
+            "errors": {"rows": len(rows), "tool_error_rows": sum(1 for row in rows if _row_error_classes(row)),
+                       "by_class": dict(Counter(c for row in rows for c in _row_error_classes(row)))},
+            "coverage": {"failed": len(failed), "observed": sum(o is not None for _, o in failed),
+                         "shaped": sum(o is not None and bool(o.shape) for _, o in failed)},
+            "consolidation": _consolidation_disposition(k) if k is not None else None,
+        }
+    return out
 
 SYMBOL = {"pass": "✓", "naive": "N", "wrong": "W"}
 """One character per symptom in the lesson grid; an ``error:<class>`` symptom prints as ``E``."""
