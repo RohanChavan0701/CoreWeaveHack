@@ -1,0 +1,61 @@
+# The cfg CALIBRATION SWEEP: one chained pilot to pick a cfg (grammar) difficulty for the reasoning-core hard tier
+# that lands unaided first-sight ~0.45, rather than iterating a level at a time. A calibration pilot already fixed
+# the hard tier's regex at level 5 (first-sight ~0.75, accepted, unchanged); its cfg landed too hard — cfg level 3
+# at the ten-to-eighteen-token window scored ~0.17 first-sight — while the moderate cfg (level 2, six-to-twelve)
+# is ~0.85, too easy. These three arms bracket ~0.45 between them by moving the two cfg knobs one step at a time,
+# so the sweep reads the whole bracket in one pass and the hard tier's cfg can be set from it.
+#
+# Only cfg is measured here — the families are cfg-ONLY (twelve grammar instances each, no regex) — and each arm
+# is strict and detached: the actor alone, budgeted at exactly the one verification call, so a wrong first
+# candidate cannot be repaired. That is unaided first-sight, the number the bracket is read against. No attached,
+# teacher, or seeded arms: this measures difficulty, not what the store buys.
+#
+# The three candidates (suite.families._reasoning_core CALIB_A/B/C, pinned in suite/data/reasoning-core-calib*.jsonl):
+#   calibA — cfg level 3, window (6,12): HARD's complexity, MODERATE's short window     (likely easiest)
+#   calibB — cfg level 3, window (8,14): the same complexity, an intermediate window    (between A and HARD)
+#   calibC — cfg level 2, window (10,18): MODERATE's complexity, HARD's long window      (isolates complexity)
+# Each arm deals its twelve cfg instances into three batches of four, met once — no revisit, no consolidation.
+#
+# I run this chained, one arm at a time against the live endpoint (detached arms drawn serially), e.g.
+#   hgi experiment run experiments/reasoning-core-calib.toml --arm calibA
+#   hgi experiment run experiments/reasoning-core-calib.toml --arm calibB
+#   hgi experiment run experiments/reasoning-core-calib.toml --arm calibC
+#
+# Ids are W&B Inference ids as listed on 2026-09-13; `hgi experiment models` lists today's.
+name = "reasoning-core-calib"
+description = "cfg-only calibration sweep: three bracketing candidates for the hard tier's grammar difficulty, unaided first-sight"
+weave_project = "hgi-experiments"
+
+[models.qwen3-35b]
+id = "Qwen/Qwen3.6-35B-A3B"
+
+[defaults]
+model = "qwen3-35b"
+passes_per_round = 1
+concurrency = 4
+
+[defaults.stream]
+batch = 4
+batches = 3
+seed = 0
+
+[defaults.stream.faults]
+http_fault_fraction = 0.0
+
+[arms.calibA]
+mode = "detached"
+description = "cfg level 3, token window (6,12): HARD complexity with MODERATE's short window — likely easiest of the three"
+[arms.calibA.stream]
+families = ["reasoning-core-calibA-strict"]
+
+[arms.calibB]
+mode = "detached"
+description = "cfg level 3, token window (8,14): the same complexity, an intermediate window"
+[arms.calibB.stream]
+families = ["reasoning-core-calibB-strict"]
+
+[arms.calibC]
+mode = "detached"
+description = "cfg level 2, token window (10,18): MODERATE complexity with HARD's long window — isolates the complexity knob"
+[arms.calibC.stream]
+families = ["reasoning-core-calibC-strict"]
