@@ -8,10 +8,14 @@ makes that curve legible — nothing here is written during the run:
 - per pass: the batch, its tasks and their lessons, each row's **symptom**
   (:func:`suite.lessons.symptom` — ``pass``, ``naive`` when the row
   reproduces the task's naive first-contact outcome, ``wrong``, or
-  ``error:<class>``), the records the pass had in context and which lessons
-  they mention (a keyword heuristic over the record's text, logged as such),
-  the observations it filed, and what the consolidation after it admitted,
-  declined, retired or dismissed;
+  ``error:<class>``), the records the pass had in context, which records
+  **fired** on each lesson's rows and how those rows then turned out (the
+  applied-vs-outcome join, read off ``rows[].applied`` and the row's
+  symptom — the signal the series pivots on), which lessons the in-context
+  records mention (a keyword heuristic over the record's text, kept and
+  logged as a heuristic, not the driving signal), the observations it filed,
+  and what the consolidation after it admitted, declined, retired or
+  dismissed;
 - per pass and per lesson, the **quality** of the solutions beside their
   correctness: ``economy`` (the knowing policy's calls over the calls
   spent, zero on a failed row — derived here from the row's call counts and
@@ -20,15 +24,18 @@ makes that curve legible — nothing here is written during the run:
   ``transfer`` (the last shell command replayed in the task's twin), the
   latter two read off the oracle's scores where the run recorded them;
 - per lesson: the first-sight series over the stream, the naive-shape
-  failures before and after the first pass that had a record mentioning
-  the lesson in context — the same-shape recurrence the memory is supposed
-  to stop — and the revisit outcome where a batch was met again;
+  failures before and after the first pass a record **fired** on the
+  lesson's rows (``first_applied_pass`` — a record appearing in some row's
+  ``applied`` for that lesson, not a keyword mention) — the same-shape
+  recurrence the memory is supposed to stop — and the revisit outcome where
+  a batch was met again;
 - per experiment: the attached arm against the detached arm on the same
   batches, paired per batch and per lesson.
 
 Every count is a floor from one run: a lesson met once a batch is one
-sample a batch, and a record that mentions a lesson is not thereby the
-record that taught it.
+sample a batch, and a record that fired on a lesson's rows is not thereby
+the record that helped — the applied-vs-outcome join is what says whether
+the rows it fired on then passed.
 """
 
 from __future__ import annotations
@@ -109,13 +116,41 @@ def arm_log(exp, arm: str, root: Path | None = None) -> dict[str, Any] | None:
            "stream": spec.stream.model_dump(mode="json"), "passes": passes, "lessons": _lesson_series(passes),
            "records": [{"id": d.id, "admitted_after_pass": _admitted_after(consolidations, d.id), "decision": d.decision, "hook": d.consultation_terms,
                         "mentions": [l for l in _lessons.LESSONS if _lessons.mentions(l, " ".join([d.decision, d.summary.latch, d.context]))],
+                        "fired": _record_fired(passes, d.id),
                         "status": d.lifecycle.status if hasattr(d.lifecycle, "status") else None}
                        for d in sorted(accepted.values(), key=lambda d: d.id)]}
     return log
 
 
+def _record_fired(passes: list[dict[str, Any]], record: str) -> dict[str, Any]:
+    """Where a record actually fired: the rows it was applied on, how many passed, and the lessons and passes touched."""
+    hits = [(p["pass"], r) for p in passes for r in p["rows"] if record in r["applied"]]
+    return {"rows": len(hits), "passed": sum(r["symptom"] == "pass" for _, r in hits),
+            "lessons": sorted({r["lesson"] for _, r in hits}), "passes": sorted({n for n, _ in hits}),
+            "first_pass": min((n for n, _ in hits), default=None)}
+
+
 def _admitted_after(consolidations: dict[int, Any], record: str) -> int | None:
     return next((n for n, k in sorted(consolidations.items()) if record in k.admitted), None)
+
+
+def _applied_join(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Per lesson, the records that fired on its rows this pass and how those fired-on rows turned out.
+
+    The real signal the series pivots on: a record ``fired`` on a row when its id is in ``rows[].applied`` (empty
+    on rows and arms that recorded none — such a lesson simply does not appear here). Only rows a record fired on
+    are counted, so ``passed + naive + other == tasks`` reads as the applied-vs-outcome join for that lesson."""
+    out: dict[str, dict[str, Any]] = {}
+    for lesson in sorted({r["lesson"] for r in rows}):
+        fired_rows = [r for r in rows if r["lesson"] == lesson and r["applied"]]
+        if not fired_rows:
+            continue
+        out[lesson] = {"records": sorted({rid for r in fired_rows for rid in r["applied"]}),
+                       "passed": sum(r["symptom"] == "pass" for r in fired_rows),
+                       "naive": sum(r["symptom"] == "naive" for r in fired_rows),
+                       "other": sum(r["symptom"] not in ("pass", "naive") for r in fired_rows),
+                       "tasks": len(fired_rows)}
+    return out
 
 
 def _pass_entry(store, session, batch: int, suite, revisit: bool, consolidation, accepted: dict[str, Any], bar: int) -> dict[str, Any]:
@@ -126,7 +161,10 @@ def _pass_entry(store, session, batch: int, suite, revisit: bool, consolidation,
             task = suite.by_id.get(row["task"])
             if task is None:
                 continue
-            rows.append({"task": task.id, "lesson": key_of(task), "symptom": _lessons.symptom(task, row), "applied": row.get("applied", []),
+            # only records this arm's store still holds: a retrofit's rows are the source arm's and carry the source's
+            # applied ids, which this store does not know — those did not fire on this arm and must not read as if they did
+            rows.append({"task": task.id, "lesson": key_of(task), "symptom": _lessons.symptom(task, row),
+                         "applied": [rid for rid in row.get("applied", []) if rid in accepted],
                          "error": row.get("error"), "result": row.get("result"), "call": row.get("call"),
                          "economy": economy_of(task, row), "turns": _score(row, "turn_economy"), "transfer": _score(row, "method_transfer"),
                          "calls": {"shell": row.get("shell_calls"), "http": row.get("http_calls"), "turns": row.get("turns")}, "commands": row.get("commands")})
@@ -134,12 +172,13 @@ def _pass_entry(store, session, batch: int, suite, revisit: bool, consolidation,
         _suite.reset(token)
     in_context = [c.record for c in session.considered if c.guard_passed and c.via != "constitution" and c.record in accepted]
     mentions = {l: [r for r in in_context if _lessons.mentions(l, _record_text(store, r))] for l in _lessons.LESSONS}
+    applied = _applied_join(rows)
     scored = [r for r in rows if r["symptom"] != "unevaluable"]
     entry = {"pass": session.pass_, "session": session.id, "batch": batch, "kind": "revisit" if revisit else "stream", "hash": suite.hash,
              "pass_rate": (sum(r["symptom"] == "pass" for r in scored) / len(scored)) if scored else None,
              "quality": {q: _mean([r[q] for r in rows]) for q in ("economy", "turns", "transfer")},
              "symptoms": dict(Counter(r["symptom"] for r in rows)), "rows": rows,
-             "in_context": in_context, "mentions": {l: ids for l, ids in mentions.items() if ids},
+             "in_context": in_context, "mentions": {l: ids for l, ids in mentions.items() if ids}, "applied": applied,
              "work_shape": session.work_shape.terms, "proposals": len(session.proposals),
              "observations": [{"name": o.name, "noticed": o.noticed, "shape": o.shape, "state": o.disposition.state}
                               for o in store.observations(state=None) if o.name in session.observations_filed],
@@ -161,23 +200,36 @@ def _lesson_series(passes: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     for p in passes:
         for lesson in sorted({r["lesson"] for r in p["rows"]}):
             rows = [r for r in p["rows"] if r["lesson"] == lesson]
-            series = out.setdefault(lesson, {"tier": _lessons.tier(lesson), "series": [], "first_mention_pass": None})
+            series = out.setdefault(lesson, {"tier": _lessons.tier(lesson), "series": [], "first_applied_pass": None, "first_mention_pass": None})
             mentioned = bool(p["mentions"].get(lesson))
+            aj = p["applied"].get(lesson)
+            applied = aj is not None
+            if applied and series["first_applied_pass"] is None and p["kind"] == "stream":
+                series["first_applied_pass"] = p["pass"]
             if mentioned and series["first_mention_pass"] is None and p["kind"] == "stream":
                 series["first_mention_pass"] = p["pass"]
             series["series"].append({"pass": p["pass"], "batch": p["batch"], "kind": p["kind"], "tasks": len(rows),
                                      "quality": {q: _mean([r[q] for r in rows]) for q in ("economy", "turns", "transfer")},
                                      "passed": sum(r["symptom"] == "pass" for r in rows), "naive": sum(r["symptom"] == "naive" for r in rows),
                                      "other": sum(r["symptom"] not in ("pass", "naive") for r in rows), "mentioned": mentioned,
+                                     "applied": applied, "applied_records": aj["records"] if aj else [],
+                                     "applied_passed": aj["passed"] if aj else 0, "applied_naive": aj["naive"] if aj else 0,
+                                     "applied_other": aj["other"] if aj else 0, "applied_tasks": aj["tasks"] if aj else 0,
                                      "grid": "".join(_symbol(r["symptom"]) for r in rows)})
     for lesson, series in out.items():
-        first = series["first_mention_pass"]
+        # the driving signal is firing, not keyword mention: before/after split on the first pass a record fired on the lesson's rows
+        first = series["first_applied_pass"]
         stream = [s for s in series["series"] if s["kind"] == "stream"]
         before = [s for s in stream if first is None or s["pass"] < first]
         after = [s for s in stream if first is not None and s["pass"] >= first]
+        fired = [s for s in stream if s["applied"]]
         series["naive_before"] = (sum(s["naive"] for s in before), sum(s["tasks"] for s in before))
         series["naive_after"] = (sum(s["naive"] for s in after), sum(s["tasks"] for s in after))
         series["first_sight"] = (sum(s["passed"] for s in stream), sum(s["tasks"] for s in stream))
+        # applied-vs-outcome over the stream: of the rows a record fired on, how many passed / went naive / went other
+        series["applied_outcome"] = {"records": sorted({r for s in fired for r in s["applied_records"]}),
+                                     "passed": sum(s["applied_passed"] for s in fired), "naive": sum(s["applied_naive"] for s in fired),
+                                     "other": sum(s["applied_other"] for s in fired), "tasks": sum(s["applied_tasks"] for s in fired)}
         series["quality"] = {q: _mean([s["quality"][q] for s in stream]) for q in ("economy", "turns", "transfer")}
         series["revisit"] = [(s["batch"], s["passed"], s["tasks"]) for s in series["series"] if s["kind"] == "revisit"]
     return out
@@ -194,12 +246,27 @@ def _q(quality: dict[str, float | None]) -> str:
     return " / ".join("—" if quality.get(q) is None else f"{quality[q]:.2f}" for q in ("economy", "turns", "transfer"))
 
 
+def _applied_cell(applied: dict[str, dict[str, Any]]) -> str:
+    """``lesson: records → passed/tasks`` per lesson a record fired on this pass — the applied-vs-outcome join."""
+    return ", ".join(f"{l}: {' '.join(a['records'])} → {a['passed']}/{a['tasks']}✓" for l, a in applied.items()) or "—"
+
+
+def _outcome(o: dict[str, Any]) -> str:
+    """The applied-vs-outcome tally ``passed/tasks (✓ N W)`` of the rows a record fired on, ``—`` where none fired."""
+    return f"{o['passed']}/{o['tasks']} ({o['passed']}✓ {o['naive']}N {o['other']}W)" if o["tasks"] else "—"
+
+
+def _fired(f: dict[str, Any]) -> str:
+    """``passed/rows on lessons`` where a record fired over the stream, ``never`` where it fired on nothing."""
+    return f"{f['passed']}/{f['rows']} on {', '.join(f['lessons'])}" if f["rows"] else "never"
+
+
 def arm_markdown(log: dict[str, Any]) -> str:
     st = log["stream"]
     lines = [f"# {log['experiment']}/{log['arm']} — evolution", "",
              f"{log['mode']} on `{log['model']}`; {st['batches']} batches × {st['batch']} tasks from {'+'.join(st['families'])}, seed {st['seed']}"
              + (f"; revisit {st['revisit']}" if st["revisit"] else "") + ".", ""] + ([f"> {log['warning']}", ""] if log.get("warning") else []) + [
-             "## Passes", "", "| pass | batch | first sight | economy / turns / transfer | symptoms | in context | mentions | filed | consolidation after |", "|---|---|---|---|---|---|---|---|---|"]
+             "## Passes", "", "| pass | batch | first sight | economy / turns / transfer | symptoms | in context | applied → outcome | mentions | filed | consolidation after |", "|---|---|---|---|---|---|---|---|---|---|"]
     for p in log["passes"]:
         sym = " ".join(f"{k}={v}" for k, v in sorted(p["symptoms"].items()))
         k = p["consolidation"]
@@ -207,18 +274,21 @@ def arm_markdown(log: dict[str, Any]) -> str:
                                    + (f"; {', '.join(f'{v} {o}' for o, v in sorted(k['outcomes'].items()))}" if k["outcomes"] else "; nothing nominated")
                                    + (f"; retired {' '.join(k['retired'])}" if k["retired"] else "") + (f"; dismissed {len(k['dismissed'])}" if k["dismissed"] else ""))
         lines.append(f"| {p['pass']}{' (revisit)' if p['kind'] == 'revisit' else ''} | {p['batch']} | {'—' if p['pass_rate'] is None else f'{p['pass_rate']:.2f}'} | {_q(p['quality'])} | {sym} | "
-                     f"{' '.join(p['in_context']) or 'none'} | {', '.join(f'{l}: {' '.join(ids)}' for l, ids in p['mentions'].items()) or '—'} | "
+                     f"{' '.join(p['in_context']) or 'none'} | {_applied_cell(p['applied'])} | {', '.join(f'{l}: {' '.join(ids)}' for l, ids in p['mentions'].items()) or '—'} | "
                      f"{len(p['observations'])} obs, {p['proposals']} prop | {kk} |")
     lines += ["", "## Lessons", "", "Each cell is the lesson's rows in that pass: ✓ passed, N the naive first-contact outcome (a same-shape failure), "
-              "W another wrong answer, E a harness or tool error. `mentioned` marks passes with a record in context whose text uses the lesson's words.", "",
+              "W another wrong answer, E a harness or tool error. A trailing `*` marks a pass a record **fired** on the lesson's rows (its id in "
+              "some row's `applied`); `first applied` is the first stream pass that happened, and the naive before / after split turns on it. "
+              "`applied → outcome` is how the rows a record fired on turned out over the stream — a record that fired on every row but did not "
+              "make it pass shows as a low ✓ count here, which keyword mention could not.", "",
               "| lesson | tier | " + " | ".join(f"p{p['pass']}" + ("r" if p["kind"] == "revisit" else "") for p in log["passes"]) +
-              " | first sight | economy / turns / transfer | naive before / after first mention | first mention | revisit |",
-              "|---|---|" + "---|" * len(log["passes"]) + "---|---|---|---|---|"]
+              " | first sight | economy / turns / transfer | naive before / after first applied | first applied | applied → outcome | revisit |",
+              "|---|---|" + "---|" * len(log["passes"]) + "---|---|---|---|---|---|"]
     by_pass = {p["pass"]: p for p in log["passes"]}
     for lesson, s in sorted(log["lessons"].items(), key=lambda kv: (_lessons.TIERS.index(kv[1]["tier"]) if kv[1]["tier"] in _lessons.TIERS else 9, kv[0])):
-        cells = {x["pass"]: x["grid"] + ("*" if x["mentioned"] else "") for x in s["series"]}
+        cells = {x["pass"]: x["grid"] + ("*" if x["applied"] else "") for x in s["series"]}
         lines.append(f"| {lesson} | {s['tier'] or '—'} | " + " | ".join(cells.get(p, "") for p in by_pass) + f" | {_rate(*s['first_sight'])} | {_q(s['quality'])} | "
-                     f"{_rate(*s['naive_before'])} / {_rate(*s['naive_after'])} | {s['first_mention_pass'] or '—'} | "
+                     f"{_rate(*s['naive_before'])} / {_rate(*s['naive_after'])} | {s['first_applied_pass'] or '—'} | {_outcome(s['applied_outcome'])} | "
                      + (", ".join(f"batch {b}: {p}/{n}" for b, p, n in s["revisit"]) or "—") + " |")
     lines += ["", "## What the passes noticed", "", "Each observation as the close filed it, with the shape the blind coder gave it at the next "
               "consolidation (`open` until one has run); a group reaches the bar when its observations come from as many distinct sessions as the bar asks.", ""]
@@ -234,10 +304,11 @@ def arm_markdown(log: dict[str, Any]) -> str:
                 lines.append(f"- {k['id']} nominated {n['subject']} at {n['rung']} → {n['outcome']}")
     if not any(p["observations"] for p in log["passes"]):
         lines.append("Nothing was filed.")
-    lines += ["", "## Records", ""]
+    lines += ["", "## Records", "", "`fired` is where the record was actually applied — rows it fired on, of those how many passed, "
+              "and the lessons touched; `mentions` stays a keyword heuristic over the record's own text.", ""]
     if log["records"]:
-        lines += ["| record | admitted after pass | mentions | decision |", "|---|---|---|---|"]
-        lines += [f"| {r['id']} | {r['admitted_after_pass'] or '—'} | {', '.join(r['mentions']) or '—'} | {r['decision']} |" for r in log["records"]]
+        lines += ["| record | admitted after pass | fired (passed/rows on lessons) | mentions | decision |", "|---|---|---|---|---|"]
+        lines += [f"| {r['id']} | {r['admitted_after_pass'] or '—'} | {_fired(r['fired'])} | {', '.join(r['mentions']) or '—'} | {r['decision']} |" for r in log["records"]]
     else:
         lines.append("No decision was admitted.")
     return "\n".join(lines) + "\n"
@@ -273,16 +344,18 @@ def experiment_markdown(exp, logs: dict[str, dict[str, Any]]) -> str:
         num = sum(r["symptom"] == "pass" for r in rows)
         totals.append(f"{arm} {_rate(num, len(rows))}, quality {_q({q: _mean([r[q] for r in rows]) for q in ('economy', 'turns', 'transfer')})}")
     lines += ["", "Over the stream: " + "; ".join(totals) + ".", ""]
-    lines += ["## First sight, per lesson", "", "Pass rate per arm, then economy / turns / transfer per arm.", "",
-              "| lesson | tier | " + " | ".join(logs) + " | " + " | ".join(f"{a} quality" for a in logs) + " | naive-shape before / after first mention (attached) | first mention |",
-              "|---|---|" + "---|" * (2 * len(logs) + 2)]
+    lines += ["## First sight, per lesson", "", "Pass rate per arm, then economy / turns / transfer per arm. The last columns are the attached arm: "
+              "the naive-shape failures before and after the first pass a record fired on the lesson's rows, that pass, and how the rows a record fired "
+              "on turned out — a record that fired on everything without helping shows a low ✓ here where keyword mention showed nothing.", "",
+              "| lesson | tier | " + " | ".join(logs) + " | " + " | ".join(f"{a} quality" for a in logs) + " | naive-shape before / after first applied (attached) | first applied | applied → outcome |",
+              "|---|---|" + "---|" * (2 * len(logs) + 3)]
     lessons = sorted({l for log in logs.values() for l in log["lessons"]}, key=lambda l: (_lessons.TIERS.index(_lessons.tier(l)) if _lessons.tier(l) else 9, l))
     for lesson in lessons:
         cells = [_rate(*log["lessons"][lesson]["first_sight"]) if lesson in log["lessons"] else "—" for log in logs.values()]
         cells += [_q(log["lessons"][lesson]["quality"]) if lesson in log["lessons"] else "—" for log in logs.values()]
         att = next((log["lessons"].get(lesson) for log in logs.values() if log["mode"] == "attached"), None)
         lines.append(f"| {lesson} | {_lessons.tier(lesson) or '—'} | " + " | ".join(cells) + " | " +
-                     (f"{_rate(*att['naive_before'])} / {_rate(*att['naive_after'])} | {att['first_mention_pass'] or '—'}" if att else "— | —") + " |")
+                     (f"{_rate(*att['naive_before'])} / {_rate(*att['naive_after'])} | {att['first_applied_pass'] or '—'} | {_outcome(att['applied_outcome'])}" if att else "— | — | —") + " |")
     revisits = [(arm, s["batch"], s["passed"], s["tasks"], lesson) for arm, log in logs.items() for lesson, ls in log["lessons"].items() for s in ls["series"] if s["kind"] == "revisit"]
     if revisits:
         lines += ["", "## Revisit", ""]
@@ -298,16 +371,19 @@ def experiment_markdown(exp, logs: dict[str, dict[str, Any]]) -> str:
     for arm, log in logs.items():
         for r in log["records"]:
             any_record = True
-            lines.append(f"- {arm} {r['id']} (after pass {r['admitted_after_pass'] or '?'}; mentions {', '.join(r['mentions']) or 'no lesson'}): {r['decision']}")
+            lines.append(f"- {arm} {r['id']} (after pass {r['admitted_after_pass'] or '?'}; fired {_fired(r['fired'])}): {r['decision']}")
     if not any_record:
         lines.append("None.")
     lines += ["", "## Reading", "",
               "A symptom is derived, not judged: `naive` means the row's result equals what the task's scripted first-contact policy returns "
-              "(or its error is of the same class), so a naive-shape failure after a record for the lesson was in context is the same shape recurring "
-              "with the memory attached. Quality grades a passed solution: `economy` is the knowing policy's calls over the calls spent (zero on a failed row), "
-              "`turns` the same over model turns, `transfer` whether the last shell command replayed in the task's twin world gives the twin's answer — "
-              "a pass that knows a convention spends less and its method carries, where one that discovers it spends the discovery and may not. "
-              "`mentions` is a keyword heuristic over a record's text and is logged as one. Every count is from one run and is a floor."]
+              "(or its error is of the same class), so a naive-shape failure after a record **fired** on the lesson's rows is the same shape recurring "
+              "with the memory applied. The series turns on firing (a record's id in a row's `applied`), not on keyword mention: `first applied` is the "
+              "first stream pass a record fired on the lesson, the naive before / after split turns on it, and `applied → outcome` shows how the rows a "
+              "record fired on then went — a record that fired on every row and made none of them pass reads as a low ✓ count there, which the old keyword "
+              "`mentions` column could not show. Quality grades a passed solution: `economy` is the knowing policy's calls over the calls spent (zero on a "
+              "failed row), `turns` the same over model turns, `transfer` whether the last shell command replayed in the task's twin world gives the twin's "
+              "answer — a pass that knows a convention spends less and its method carries, where one that discovers it spends the discovery and may not. "
+              "`mentions` is kept as a keyword heuristic over a record's text and is logged as one, not the driving signal. Every count is from one run and is a floor."]
     return "\n".join(lines) + "\n"
 
 
