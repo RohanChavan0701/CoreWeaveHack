@@ -40,6 +40,13 @@ OBSERVATION_LENSES = ("L-0004", "L-0009", "L-0010")
 the failed rows; L-0009 reads their complement — the passed rows that recovered from a non-transient fault; L-0010 reads
 the whole pass for the off-map condition, the failure the store had no hook for."""
 
+OFF_MAP_LENS = "L-0010"
+"""The one observation lens whose product is legitimately about the store's coverage — a missing hook for the work. It is
+exempt from the self-reference filter (:func:`hgi.index.self_referential`): its subject is the work that fell off the map,
+not a store record second-guessing which one should have fired (carry-forward item 48). The world-fact lenses (L-0004,
+L-0009) answer about the task's world, so a finding of theirs whose subject is a store record or the loop is drift, and is
+not filed."""
+
 
 def _decision_view(store: Store, record: str) -> dict[str, Any]:
     d: Decision = store.read("decision", record)  # type: ignore[assignment]
@@ -105,15 +112,23 @@ def dispose(store: Store, session: Session) -> list[Disposition]:
 def file_observations(store: Store, session: Session) -> list[Observation]:
     """Step 3a. Each finding from a close observation-producing lens (:data:`OBSERVATION_LENSES`) with an anchor and a
     ``noticed`` becomes an observation; a finding with no anchor, or with nothing noticed (a reply that dropped the field),
-    is not filed — an observation states what happened."""
+    is not filed — an observation states what happened.
+
+    A finding from a world-fact lens (any but :data:`OFF_MAP_LENS`) whose subject is a store record or the loop itself —
+    "no store records consulted", "the check record should have fired" — is store machinery masquerading as a world fact
+    and is not filed either (:func:`hgi.index.self_referential`, carry-forward item 48); a mixed noticing that also states
+    a world convention is kept."""
     out = []
     for answer in session.lens_answers:
         if answer.lens not in OBSERVATION_LENSES:
             continue
         for f in answer.findings:
             anchor = dict(f.get("anchor") or {})
-            if not any(anchor.values()) or not str(f.get("noticed") or "").strip():
+            noticed = str(f.get("noticed") or "").strip()
+            if not any(anchor.values()) or not noticed:
                 continue
+            if answer.lens != OFF_MAP_LENS and _index.self_referential(noticed, anchor):
+                continue  # a world-fact lens answered about the store, not the world; drift, not a world fact
             o = Observation(uid=store.new_uid(), name=store.next_name("O"), noticed_at=now(), session=session.id,
                             noticed=str(f["noticed"]), anchor=anchor, recheck_when=f.get("recheck_when"))
             store.write(o)

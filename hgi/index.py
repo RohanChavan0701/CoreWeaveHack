@@ -45,6 +45,50 @@ def tokens(text: str) -> set[str]:
     return out
 
 
+# --- self-reference: a finding about the store's own machinery, not the task's world (carry-forward item 48) --------
+
+_LOOP_SUBJECT_CUES = (
+    "no rule matched", "no rule applied", "no applicable rule", "no record matched",
+    "no store record", "no store records", "no records consulted", "no record consulted",
+    "no records were consulted", "no record was consulted", "nothing was consulted",
+    "records consulted", "record consulted", "record should have fired", "record should have matched",
+    "rule should have fired", "should have been consulted", "which record should", "which record fired",
+    "consult the store", "the store's rule", "the store's rules", "the check record", "no records applied",
+)
+"""Phrases whose grammatical subject is a store record or the loop's own consultation/routing machinery — a finding about
+*which record should have fired* rather than about the task's world. The stream-run artifact ("no store records consulted",
+"the check record should have fired", "no rule matched") is exactly this class. It is deliberately narrow: it matches a
+store *record* or the *consultation* act as the subject, never the bare word "rule"/"hook"/"store", so L-0010's off-map
+coverage signal ("work failed and matched no hook") — whose subject is the work — is not swept in even before its call
+site exempts it."""
+
+_QUOTED = re.compile(r"""(['"`])[^'"`]+\1""")
+_COMPARISON = re.compile(r"(==|!=|<=|>=|(?<![<>=!])=(?!=))")
+
+
+def _has_world_content(noticed: str) -> bool:
+    """Whether a noticing states a checkable task-world fact — a quoted literal or an explicit comparison. A finding that
+    names a store record *beside* a world convention ("D-0004 should have fired because status is 'A' not 'approved'") is
+    mixed, and mixed findings are kept: the self-reference filter drops only a finding that is *purely* store-machinery."""
+    return bool(_QUOTED.search(noticed or "") or _COMPARISON.search(noticed or ""))
+
+
+def self_referential(noticed: str, anchor: Any) -> bool:
+    """Whether a finding's subject is a store record or the loop, not the task's world (carry-forward item 48).
+
+    Two derivable signals: the anchor names a store *record* (a finding pointing at a record, not a task row/artifact),
+    or the noticing's subject is the loop's own consultation/routing machinery (:data:`_LOOP_SUBJECT_CUES`). Conservative
+    in two ways: a mixed noticing that also states a world convention is kept (:func:`_has_world_content`), and the caller
+    decides scope — the off-map coverage lens (L-0010), whose product is legitimately about missing coverage, is exempt.
+    """
+    rec = anchor.get("record") if isinstance(anchor, dict) else getattr(anchor, "record", None)
+    text = (noticed or "").lower()
+    loop_subject = bool(rec) or any(cue in text for cue in _LOOP_SUBJECT_CUES)
+    if not loop_subject:
+        return False
+    return not _has_world_content(noticed)
+
+
 # --- projections --------------------------------------------------------------
 
 def hooks(store: Store) -> dict[str, list[dict[str, Any]]]:

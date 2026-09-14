@@ -290,11 +290,31 @@ def triage(store: Store, record: Consolidation, brief: dict[str, Any]) -> list[d
     irreducible group is dismissed with a pointer to its reality entry and leaves the brief, so no slot updates on it;
     its recurrence tunes detection, never authoring. The verdict is the adjudicator's, never the consolidator's, and the
     entry is the reality species: the observations' passes proposed the lesson, the oracle's rows contradict or bear it.
+
+    Ahead of the adjudicated triage, a mechanical drop: a group whose *every* observation is self-referential — anchored
+    on a store record, or noticing the loop's own consultation machinery rather than the task's world
+    (:func:`hgi.index.self_referential`) — is dismissed here and never nominated, because a store-machinery recurrence is
+    not a world fact to author on (carry-forward item 48b). It is the noise filter's, not the adjudicator's: the reading is
+    the code's and needs no context. Conservative — only when every anchor is self-referential, so a mixed group is kept.
     """
     bar = store.registry.bars["decision"]["independent_observations"]
     rows = []
     kept = []
     for group in brief.get("groups", []):
+        obs_objs = [o for name in group.get("observations", [])
+                    if (o := store.observation(name["name"] if isinstance(name, dict) else name)) is not None]
+        if obs_objs and all(_index.self_referential(o.noticed, o.anchor) for o in obs_objs):
+            names = [o.name for o in obs_objs]
+            for o in obs_objs:
+                if o.disposition.state == "open":
+                    o.disposition.state = "dismissed"
+                    o.disposition.pointer = record.id
+                    o.disposition.at = now()
+                    store.write(o)
+            record.dismissed += names
+            rows.append({"shape": group.get("shape"), "observations": names, "verdict": "self-referential",
+                         "ledger_entry": record.id, "act": "dropped-self-referential"})
+            continue  # a nomination whose every anchor is store machinery, not the task's world (carry-forward item 48b)
         sessions = group.get("sessions") or sorted({o.get("session") for o in group.get("observations", []) if isinstance(o, dict)})
         if len(sessions) < bar:
             kept.append(group)

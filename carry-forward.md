@@ -719,6 +719,24 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     subject is a store record or the loop, and the noise filter (decision 42)
     should drop a nomination whose every anchor is self-referential. Until
     then any retrofit reproduces the artifact.
+    **Built:** a `self_referential(noticed, anchor)` predicate in
+    `hgi/index.py` (a finding is self-referential when its anchor names a store
+    *record*, or its noticing's subject is the loop's own consultation/routing
+    machinery — a narrow cue set matching a *record* or *consultation* as
+    subject, not the bare word "rule"/"hook"/"store"). (a) `hgi/close.py`
+    `file_observations` drops a self-referential finding from a world-fact lens
+    (L-0004/L-0009); the off-map coverage lens L-0010 is exempt (`OFF_MAP_LENS`)
+    because its legitimate subject *is* missing coverage. (b) `hgi/consolidate.py`
+    `triage` mechanically drops a group whose *every* observation is
+    self-referential before the adjudicated triage, dismissing its observations
+    with the consolidation as their pointer (no model call — the reading is the
+    code's). **Risk:** the predicate is prose-cue-based, so a novel phrasing of
+    a store-machinery finding could slip through (kept), and a world finding that
+    happens to quote a loop cue with no world literal could be dropped — both are
+    conservative failures (err toward keeping): a mixed noticing (a store cue
+    *and* a quoted literal or comparison) is always kept, and only a group whose
+    every anchor is self-referential is dropped, so one genuine world observation
+    saves the group. New tests: `tests/test_self_referential.py`.
 49. **The teacher abstracts a real miss into an instruction** (text2sql run).
     The anchors were right — EXISTS where every transaction had to match,
     a district column read as a client average, the 2015 unemployment
