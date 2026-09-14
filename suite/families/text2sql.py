@@ -1,7 +1,7 @@
 """The text-to-SQL family: BIRD mini-dev's ``financial`` questions over one pinned SQLite database.
 
 Each task states one question in natural language, carries BIRD's own
-evidence as hints, and ships ``financial.sqlite`` into the working directory
+evidence as hints, and ships the database into the working directory
 (a :class:`suite.tasks.Task` binary blob). The agent inspects the schema and
 values with the shell tool and returns, as ``result``, the single SQLite
 ``SELECT`` that answers the question. The hidden check EXECUTES that query
@@ -28,28 +28,38 @@ reserved word needing quoting. A query that omits the CAST executes cleanly
 and returns the wrong rows — the exact "valid but semantically wrong" case the
 credit correction in :func:`hgi.consolidate.row_passed` grades as a failure.
 
-Two families share the pinned questions and database and differ only in slack,
-mirroring ``curriculum`` vs ``curriculum-strict``: ``text2sql`` budgets three
-shell calls, so a pass may spend calls inspecting the schema and iterating on
-the query; ``text2sql-strict`` budgets exactly the knowing floor of one, so a
-pass that must discover the schema convention cannot fit and only a pass that
-already knows it — from the store, or from the model — stays within budget.
-A third family, ``text2sql-holdout``, carries a disjoint group of questions
-over the same database at the slack budget: the held-out generalization set,
-its templates disjoint from the graded set's, its schema conventions shared,
-so it measures whether an admitted record transfers rather than being re-learned.
+Three families share the pinned questions and database. Two differ only in
+slack, mirroring ``curriculum`` vs ``curriculum-strict``: ``text2sql`` budgets
+three shell calls, so a pass may spend calls inspecting the schema and
+iterating on the query; ``text2sql-strict`` budgets exactly the knowing floor
+of one, so a pass that must discover the schema convention cannot fit and only
+a pass that already knows it — from the store, or from the model — stays within
+budget. Both draw the ``graded`` group, the adaptation set. The third family,
+``text2sql-holdout``, carries the ``holdout`` group at the slack budget: the
+held-out generalization set, its templates disjoint from the graded set's, its
+schema conventions shared, so it measures whether an admitted record transfers
+rather than being re-learned.
+
+The database layer is injectable: everything that is specific to one BIRD
+database — its ``db_id``, the pinned basename, the name the agent sees, the
+source SHA pin, the path inside BIRD's dev bundle, the selected questions with
+their groups, and any schema-specific size reduction — is one
+:class:`DbConfig`, and :func:`_register` turns a config into the three
+families. Only ``financial`` is registered today; a second BIRD database is a
+second :class:`DbConfig` plus one :func:`_register` call, no code fork.
 
 Dataset ``birdsql/bird_mini_dev``, ``data/mini_dev_sqlite`` (500 rows, of
 which 32 are the ``financial`` database), CC-BY-SA-4.0, pinned at revision
 ``f65faf4ae3b638c1fa6df1d3370c8d92c8366301``; the database is BIRD's dev
-``financial.sqlite`` (SHA-256 :data:`ORIG_SHA`), transcribed on 2026-09-13.
-The pinned ``text2sql.sqlite`` is that database reduced to a committable size:
-every table is kept whole except ``trans`` (1,056,320 rows, 70 MB), which is
-sampled to the accounts numbered at most :data:`TRANS_ACCOUNT_CAP` for schema
-fidelity. No selected question reads ``trans`` (:func:`fetch` guards this by
-never selecting a trans-touching id), so every gold query returns exactly the
-rows it returns against the full database — the transcriber verifies each gold
-runs on the reduced database before pinning it.
+``financial.sqlite`` (SHA-256 :data:`FINANCIAL.orig_sha`), transcribed on
+2026-09-13. All 32 ``financial`` questions are pinned, including the four that
+read ``trans`` (116, 129, 145, 159). The pinned database is therefore the full
+``financial.sqlite`` with every table kept whole — ``trans`` (1,056,320 rows)
+included, since on-disk size is not a constraint here and every gold must
+execute against the shipped copy. :func:`fetch` re-executes each gold against
+both the full source database and the pinned copy and pins the question only
+when their rows match, so a reduction that changed any answer would fail loudly
+rather than silently grade against a different world.
 """
 
 from __future__ import annotations
@@ -62,8 +72,9 @@ import sqlite3
 import tempfile
 import zipfile
 from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import requests
 
@@ -76,21 +87,12 @@ SQLITE_ROWS = "data/mini_dev_sqlite-00000-of-00001.json"
 LICENSE = "CC-BY-SA-4.0"
 HF_REVISION = "f65faf4ae3b638c1fa6df1d3370c8d92c8366301"
 QUESTIONS_URL = f"https://huggingface.co/datasets/{DATASET}/resolve/{HF_REVISION}/{SQLITE_ROWS}"
+"""The BIRD mini-dev questions file; every database's questions live here and are selected by ``db_id``."""
 FETCHED = "2026-09-13"
 
 DEV_ZIP_URL = "https://bird-bench.oss-cn-beijing.aliyuncs.com/dev.zip"
-"""Where the databases live: BIRD's dev bundle, whose ``financial.sqlite`` this family reduces and pins. ``fetch``
-verifies the extracted database against :data:`ORIG_SHA`; set ``$HGI_BIRD_DEV_ZIP`` to a local copy to skip the download."""
-ORIG_SHA = "d15d89cdb068a202b6f2b99342af44dffc1d52545b39ceaf62efdc0ba570101e"
-"""SHA-256 of the downloaded ``financial.sqlite`` (the leakage rule's pinned digest); ``fetch`` refuses a source that moved."""
-
-DB_ID = "financial"
-DB_BASENAME = "text2sql.sqlite"
-"""The reduced database as pinned under ``suite/data/``."""
-DB_FILENAME = "financial.sqlite"
-"""The database as the agent sees it in the working directory."""
-TRANS_ACCOUNT_CAP = 20
-"""``trans`` is sampled to accounts numbered at most this, for schema fidelity; no selected question reads ``trans``."""
+"""Where the databases live: BIRD's dev bundle, whose ``financial.sqlite`` this family pins. :func:`fetch`
+verifies the extracted database against the config's ``orig_sha``; set ``$HGI_BIRD_DEV_ZIP`` to a local copy to skip the download."""
 
 SHELL_BUDGET = 3
 KNOWING_SHELL = 1
@@ -100,22 +102,76 @@ KNOWING_SHELL = 1
 CHECK_TIMEOUT = 30
 """Seconds a query gets against the database before the check counts it failed."""
 
-# (question_id, group). The graded group is the adaptation set; the holdout group is disjoint in template and
-# selected so no near-duplicate question straddles the two — the schema conventions are shared, the questions are not.
-# Every id here reads only the tables kept whole, never `trans`, so its gold returns identical rows on the reduced DB.
-SELECTED: tuple[tuple[int, str], ...] = (
-    (117, "graded"), (118, "graded"), (92, "graded"), (93, "graded"), (98, "graded"),
-    (99, "graded"), (89, "graded"), (136, "graded"), (112, "graded"), (119, "graded"),
-    (137, "holdout"), (192, "holdout"), (168, "holdout"), (128, "holdout"), (189, "holdout"), (125, "holdout"),
+
+# --- the injectable database layer -------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class DbConfig:
+    """One BIRD database and its pinned questions — everything the three families need that is DB-specific.
+
+    A second BIRD database is a second instance of this plus one :func:`_register` call: parameterize the
+    ``db_id`` (which selects its questions from the shared BIRD file), the pinned ``basename`` and the
+    ``filename`` the agent sees, the source ``orig_sha`` pin, the ``inner_path`` inside the dev bundle,
+    the ``selected`` questions with their groups, and — only if its largest table must be shrunk to a
+    committable size — a ``reduce`` step. ``financial`` keeps every table whole (``reduce`` is ``None``)."""
+
+    id: str
+    """BIRD ``db_id``; selects this database's questions from the shared BIRD mini-dev file."""
+    fam_base: str
+    """Base family name; the strict and holdout families append ``-strict`` / ``-holdout``."""
+    basename: str
+    """The pinned database as committed under ``suite/data/``."""
+    filename: str
+    """The database as the agent sees it in the working directory (the leakage-safe name from the prompt)."""
+    orig_sha: str
+    """SHA-256 of the source database (the leakage rule's pinned digest); :func:`fetch` refuses a source that moved."""
+    inner_path: str
+    """Path to the ``.sqlite`` inside ``dev_databases.zip`` within the dev bundle."""
+    selected: tuple[tuple[int, str], ...]
+    """``(question_id, group)`` pins. ``graded`` is the adaptation set; ``holdout`` is disjoint in template,
+    selected so no near-duplicate question straddles the two — the schema conventions are shared, the questions are not."""
+    questions_url: str = QUESTIONS_URL
+    dev_zip_url: str = DEV_ZIP_URL
+    reduce: Callable[[sqlite3.Connection], None] | None = None
+    """A schema-specific reduction of the source database to a committable size, or ``None`` to keep every table whole.
+    Whatever it does, :func:`fetch` re-executes every gold against both the source and the reduced copy and refuses to
+    pin a question whose rows the reduction changed, so a reduction can never silently grade against a different world."""
+
+
+# The `financial` database: all 32 BIRD `financial` questions over the full financial.sqlite (every table whole,
+# `trans` included). The graded group is the adaptation set (18 questions); the holdout group is the held-out
+# generalization set (14 questions), its gold-SQL templates disjoint from the graded set's — no near-duplicate
+# straddles the split. The four trans-reading questions (116, 129, 145, 159) are split two per group.
+FINANCIAL = DbConfig(
+    id="financial",
+    fam_base="text2sql",
+    basename="text2sql.sqlite",
+    filename="financial.sqlite",
+    orig_sha="d15d89cdb068a202b6f2b99342af44dffc1d52545b39ceaf62efdc0ba570101e",
+    inner_path="dev_databases/financial/financial.sqlite",
+    reduce=None,  # every table kept whole, `trans` included; on-disk size is not a constraint here
+    selected=(
+        # graded — the adaptation set (18)
+        (117, "graded"), (118, "graded"), (92, "graded"), (93, "graded"), (98, "graded"),
+        (99, "graded"), (89, "graded"), (136, "graded"), (112, "graded"), (119, "graded"),
+        (100, "graded"), (120, "graded"), (138, "graded"), (145, "graded"), (149, "graded"),
+        (159, "graded"), (173, "graded"), (194, "graded"),
+        # holdout — the held-out generalization set (14), templates disjoint from graded
+        (137, "holdout"), (192, "holdout"), (168, "holdout"), (128, "holdout"), (189, "holdout"),
+        (125, "holdout"), (94, "holdout"), (95, "holdout"), (115, "holdout"), (186, "holdout"),
+        (116, "holdout"), (169, "holdout"), (129, "holdout"), (152, "holdout"),
+    ),
 )
 
-INSTRUCTION = (
-    f"{DB_FILENAME} in the working directory is a SQLite database. Inspect its schema and values with the shell tool "
-    f"(for example `sqlite3 {DB_FILENAME} \".schema\"`, or a SELECT DISTINCT on a column), then return result: the "
-    "single SQLite SELECT statement that answers the question. The hidden check runs your statement against the "
-    "database and compares the rows it returns to a reference query's rows, so return the query text itself, not a "
-    "computed value."
-)
+
+def _instruction(filename: str) -> str:
+    return (
+        f"{filename} in the working directory is a SQLite database. Inspect its schema and values with the shell tool "
+        f"(for example `sqlite3 {filename} \".schema\"`, or a SELECT DISTINCT on a column), then return result: the "
+        "single SQLite SELECT statement that answers the question. The hidden check runs your statement against the "
+        "database and compares the rows it returns to a reference query's rows, so return the query text itself, not a "
+        "computed value."
+    )
 
 
 # --- SQL execution and row comparison, shared by the check and the fetch sanity pass -----------------
@@ -146,13 +202,13 @@ def rows_match(agent: list[tuple[Any, ...]], gold: list[tuple[Any, ...]]) -> boo
     return Counter(_norm_row(r) for r in agent) == Counter(_norm_row(r) for r in gold)
 
 
-def check_for(gold: str) -> Check:
+def check_for(gold: str, filename: str) -> Check:
     """The hidden test for one question: execute the agent's SQL and the gold SQL against the shipped database, compare rows."""
 
     def check(result: Any, workdir: Path) -> bool:
         if not isinstance(result, str) or not result.strip():
             return False
-        db = workdir / DB_FILENAME
+        db = workdir / filename
         try:
             agent_rows = run_sql(db, result)
         except Exception:  # a query that will not run — a syntax error, an unknown column — is a failed task, never a raise
@@ -178,65 +234,76 @@ def _download(url: str, suffix: str) -> Path:
     return tmp
 
 
-def _source_db() -> Path:
-    """The full ``financial.sqlite`` from BIRD's dev bundle, verified against :data:`ORIG_SHA`; ``$HGI_BIRD_DEV_ZIP`` caches the download."""
+def _source_db(db: DbConfig) -> Path:
+    """The full source database from BIRD's dev bundle, verified against ``db.orig_sha``; ``$HGI_BIRD_DEV_ZIP`` caches the download."""
     cache = os.environ.get("HGI_BIRD_DEV_ZIP")
-    zpath = Path(cache) if cache else _download(DEV_ZIP_URL, ".zip")
+    zpath = Path(cache) if cache else _download(db.dev_zip_url, ".zip")
     with zipfile.ZipFile(zpath) as z:
         inner = z.read("dev_20240627/dev_databases.zip")
     with zipfile.ZipFile(io.BytesIO(inner)) as z2:
-        db_bytes = z2.read("dev_databases/financial/financial.sqlite")
+        db_bytes = z2.read(db.inner_path)
     sha = hashlib.sha256(db_bytes).hexdigest()
-    if sha != ORIG_SHA:
-        raise SystemExit(f"financial.sqlite sha256 {sha} != pinned {ORIG_SHA}; the source moved — re-verify before re-pinning")
+    if sha != db.orig_sha:
+        raise SystemExit(f"{db.inner_path} sha256 {sha} != pinned {db.orig_sha}; the source moved — re-verify before re-pinning")
     out = Path(tempfile.mkstemp(suffix=".sqlite")[1])
     out.write_bytes(db_bytes)
     return out
 
 
-def _build_reduced(src: Path) -> Path:
-    """The source database with ``trans`` sampled to :data:`TRANS_ACCOUNT_CAP` accounts and vacuumed to a committable size."""
+def _build_reduced(db: DbConfig, src: Path) -> Path:
+    """A committable copy of the source: ``db.reduce`` applied (a no-op when ``None``), then vacuumed. Content, not bytes."""
     dst = Path(tempfile.mkstemp(suffix=".sqlite")[1])
     dst.write_bytes(src.read_bytes())
     con = sqlite3.connect(dst)
     try:
-        con.execute(f"DELETE FROM trans WHERE account_id > {TRANS_ACCOUNT_CAP}")
-        con.commit()
+        if db.reduce is not None:
+            db.reduce(con)
+            con.commit()
         con.execute("VACUUM")
     finally:
         con.close()
     return dst
 
 
-def fetch(n: int) -> list[dict[str, Any]]:
-    """Transcribe the selected ``financial`` questions into pinned records and write the reduced database beside them.
+def _make_fetch(db: DbConfig) -> Callable[[int], list[dict[str, Any]]]:
+    """Bind :func:`fetch` to one :class:`DbConfig`, so ``hgi suite fetch <family>`` transcribes that database."""
 
-    Side effect: writes ``suite/data/text2sql.sqlite``, the pinned database ``tasks`` ships. Each gold query is run
-    against that reduced database before it is pinned, so a question whose rows the reduction changed would fail here
-    rather than silently grade against a different world.
+    def fetch(n: int) -> list[dict[str, Any]]:
+        return _fetch(db, n)
+
+    return fetch
+
+
+def _fetch(db: DbConfig, n: int) -> list[dict[str, Any]]:
+    """Transcribe the selected questions into pinned records and write the pinned database beside them.
+
+    Side effect: writes ``suite/data/<db.basename>``, the database ``tasks`` ships. Each gold is run against BOTH the
+    full source database and the pinned copy, and a question is pinned only when the two return matching rows — so a
+    ``reduce`` that changed any answer fails here rather than silently grading against a different world.
     """
-    page = requests.get(QUESTIONS_URL, timeout=120)
+    page = requests.get(db.questions_url, timeout=120)
     page.raise_for_status()
-    by_id = {r["question_id"]: r for r in page.json() if r["db_id"] == DB_ID}
+    by_id = {r["question_id"]: r for r in page.json() if r["db_id"] == db.id}
 
-    reduced = _build_reduced(_source_db())
+    source = _source_db(db)
+    reduced = _build_reduced(db, source)
     DATA.mkdir(parents=True, exist_ok=True)
-    (DATA / DB_BASENAME).write_bytes(reduced.read_bytes())
+    (DATA / db.basename).write_bytes(reduced.read_bytes())
 
     out: list[dict[str, Any]] = []
-    con = sqlite3.connect(f"file:{DATA / DB_BASENAME}?mode=ro", uri=True)
-    try:
-        for qid, group in SELECTED:
-            if len(out) >= n:
-                break
-            r = by_id[qid]
-            gold = " ".join(r["SQL"].split())
-            con.execute("PRAGMA query_only = ON")
-            con.execute(last_statement(gold)).fetchall()  # sanity: the gold runs on the reduced DB, else the id must not be selected
-            out.append({"id": qid, "group": group, "difficulty": r["difficulty"],
-                        "question": r["question"].strip(), "evidence": r["evidence"].strip(), "gold": gold})
-    finally:
-        con.close()
+    for qid, group in db.selected:
+        if len(out) >= n:
+            break
+        r = by_id[qid]
+        gold = " ".join(r["SQL"].split())
+        # The pinned world must answer every gold exactly as the full source does, or the question cannot be pinned.
+        full_rows = run_sql(source, gold)
+        pinned_rows = run_sql(DATA / db.basename, gold)
+        if not rows_match(full_rows, pinned_rows):
+            raise SystemExit(f"gold for q{qid} returns different rows on the pinned {db.basename} than on the source "
+                             f"{db.id}.sqlite; the reduction changed its answer — do not pin it")
+        out.append({"id": qid, "group": group, "difficulty": r["difficulty"],
+                    "question": r["question"].strip(), "evidence": r["evidence"].strip(), "gold": gold})
     return out
 
 
@@ -246,41 +313,42 @@ def _budget(n: int) -> str:
     return f"You have a budget of {n} shell call{'s' if n != 1 else ''}."
 
 
-def _db_blob() -> str | None:
+def _db_blob(db: DbConfig) -> str | None:
     """The pinned database as base64, or ``None`` when it has not been fetched yet."""
-    path = DATA / DB_BASENAME
+    path = DATA / db.basename
     return base64.b64encode(path.read_bytes()).decode() if path.exists() else None
 
 
-def _tasks(fam: str, group: str, shell_budget: int) -> list[Task]:
+def _tasks(db: DbConfig, fam: str, group: str, shell_budget: int) -> list[Task]:
     """The tasks of one family: its ``group`` of the pinned questions, id-prefixed by ``fam`` so the slack, strict and
     held-out families never collide when a suite composes more than one of them (as ``curriculum`` and its strict twin do)."""
     from suite.families import FAMILIES
 
-    records = [r for r in FAMILIES["text2sql"].records() if r.get("group") == group]
-    blob = _db_blob()
+    records = [r for r in FAMILIES[db.fam_base].records() if r.get("group") == group]
+    blob = _db_blob(db)
     if not records or blob is None:
         return []
-    return [Task(f"{fam}/q{r['id']}", f"{r['question']} Hints: {r['evidence']} {INSTRUCTION} {_budget(shell_budget)}",
-                 ("shell-tool", "file-tool", "tool-budget"), RESULT_STR, check_for(r["gold"]),
-                 shell_budget=shell_budget, blobs={DB_FILENAME: blob}, knowing={"shell": KNOWING_SHELL})
+    return [Task(f"{fam}/q{r['id']}", f"{r['question']} Hints: {r['evidence']} {_instruction(db.filename)} {_budget(shell_budget)}",
+                 ("shell-tool", "file-tool", "tool-budget"), RESULT_STR, check_for(r["gold"], db.filename),
+                 shell_budget=shell_budget, blobs={db.filename: blob}, knowing={"shell": KNOWING_SHELL})
             for r in records]
 
 
-_SOURCE = (f"{DATASET} [{SQLITE_ROWS}] {DB_ID} subset ({LICENSE}, rev {HF_REVISION[:8]}) over a pinned reduced "
-           f"financial.sqlite (orig sha {ORIG_SHA[:8]}); the gold SQL is re-executed as the hidden test, never shown")
+def _source(db: DbConfig) -> str:
+    return (f"{DATASET} [{SQLITE_ROWS}] {db.id} subset ({LICENSE}, rev {HF_REVISION[:8]}) over a pinned "
+            f"{db.basename} (orig sha {db.orig_sha[:8]}); the gold SQL is re-executed as the hidden test, never shown")
 
 
-@family("text2sql", source=f"{_SOURCE}; the graded group, three shell calls of slack", fetch=fetch)
-def tasks() -> list[Task]:
-    return _tasks("text2sql", "graded", SHELL_BUDGET)
+def _register(db: DbConfig) -> None:
+    """Register the three families of one database: the slack graded pool, its strict twin, and the held-out group."""
+    src = _source(db)
+    base = db.fam_base
+    family(base, source=f"{src}; the graded group, three shell calls of slack", fetch=_make_fetch(db))(
+        lambda: _tasks(db, base, "graded", SHELL_BUDGET))
+    family(f"{base}-strict", source=f"{src}; the graded group, budgeted at exactly the knowing floor of one shell call")(
+        lambda: _tasks(db, f"{base}-strict", "graded", KNOWING_SHELL))
+    family(f"{base}-holdout", source=f"{src}; the disjoint held-out group over the same schema, three shell calls of slack")(
+        lambda: _tasks(db, f"{base}-holdout", "holdout", SHELL_BUDGET))
 
 
-@family("text2sql-strict", source=f"{_SOURCE}; the graded group, budgeted at exactly the knowing floor of one shell call")
-def strict_tasks() -> list[Task]:
-    return _tasks("text2sql-strict", "graded", KNOWING_SHELL)
-
-
-@family("text2sql-holdout", source=f"{_SOURCE}; the disjoint held-out group over the same schema, three shell calls of slack")
-def holdout_tasks() -> list[Task]:
-    return _tasks("text2sql-holdout", "holdout", SHELL_BUDGET)
+_register(FINANCIAL)
