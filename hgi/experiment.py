@@ -66,6 +66,15 @@ resolved to, the code tree's commit at the moment it started (``null``
 outside a checkout — a running arm outlives a commit that lands on the tree
 under it, item 35), and, at the end, its curve; the report reads every
 arm's curve back from its store.
+
+Every pass also writes a **health** block into ``arm.json`` — a pure read of
+the store the arm already has (:func:`hgi.evolution.health`), so a failing
+arm is diagnosable while it runs and not only once the curve is in: per pass,
+what retrieval reached (the records considered and the accepted
+non-constitution ones a pass had in context), the tool and harness error
+classes its rows carried, the failed rows against the observations filed from
+them, and the disposition of the round's drafts. The field is additive; a
+reading of an older ``arm.json`` that predates it is unaffected.
 """
 
 from __future__ import annotations

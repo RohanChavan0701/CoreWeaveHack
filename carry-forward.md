@@ -780,6 +780,37 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     next step and costs about eighty minutes of endpoint for the five arms
     in three waves; the `*-seeded` twins should join it, since the seed's
     derive-then-verify method needs the same shell.
+54. **Mid-run health telemetry in the arm runner** (wired). The
+    reasoning-core and text2sql runs (items 47–53) were wasted invisibly
+    because `progress()` wrote only `sessions` and `curve` to `arm.json`, so
+    an arm whose retrieval reached nothing (empty `in_context`, items 39,
+    48, 50) or whose every draft died at the contract floor (items 32, 41,
+    49) produced a normal-looking curve and could not be told from a healthy
+    arm until it finished. `hgi.evolution.health(store, mode)` now derives,
+    from the store already on disk (no model call), a per-pass block that
+    `progress()` writes into `record["health"]` on the attached loop and the
+    detached draw both — tail-able as the arm runs. Per pass: `reach`
+    (records considered and the accepted non-constitution ones in context —
+    empty is the silent failure, and on a seeded arm the pass-1 tripwire that
+    the latch scope is wrong), `errors` (rows, tool-error rows, and the count
+    by class over each row's final error and its whole `tool_errors` trace,
+    so the nltk `shell-exit` and the malformed-tool-call spikes both show and
+    a world-fault class like `http-410` reads apart from harness breakage),
+    `coverage` (failed rows, how many filed an observation, how many shaped),
+    and `consolidation` (the round's drafts: `nominated`, `admitted`, and
+    each nomination's bucket — `refused_floor` kept apart from `declined`, so
+    the text2sql/economy floor-refusal reads distinctly). The reach and
+    coverage logic is factored, not duplicated: `evaluated_sessions` and
+    `in_context_records` in `hgi/evolution.py` (shared with `arm_log`/
+    `_pass_entry`) and `observation_for` in `hgi/index.py` (shared with
+    `observed_from`). Deferred: a pre-nomination parse-refusal count — drafts
+    dropped as malformed in `roles.drafts_in` before they become nominations
+    are not persisted to disk, so a pure read cannot see them; the
+    floor-refusal that text2sql/economy actually hit *is* captured, since it
+    lands as a nomination outcome (`refused by the floor: …`). Also deferred:
+    surfacing the block in the dashboard and a `--tail`/`hgi experiment
+    watch` reader — the field is written and readable, but nothing yet
+    renders it live.
 
 ## Decisions taken, and their risk
 
