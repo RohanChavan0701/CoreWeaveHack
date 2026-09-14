@@ -1,0 +1,90 @@
+# The reasoning-core HARDER stream: the same produce-and-verify method on a harder tier of Reasoning Core's
+# regex-following and cfg-generation instances — 24 tasks, twelve of each generator — dealt into six batches of
+# four, balanced over the two generators; pass k meets batch k at first sight, closes on it, and consolidates
+# every two batches. The detached arm meets the same batches with no store, so the comparison is paired per
+# batch. Batches 1 and 2 are met again after the stream by the attached arm, which measures retention against
+# transfer.
+#
+# This mirrors experiments/reasoning-core.toml arm for arm, on the `-hard` families instead. The harder tier
+# raises difficulty on both generators — regex level 5 (deeper nesting, backreferences, escaped literals, `\B`
+# anchors), grammar level 3 with a ten-to-eighteen-token member floor (longer valid derivations) — so the
+# unaided first-sight ceiling drops toward the ~0.5 band the strict pool needs to separate. The instances are
+# pinned in suite/data/reasoning-core-hard.jsonl on seed bases disjoint from the moderate tier.
+#
+# The lesson is the same method: verify a candidate with the checker before answering (`re.fullmatch`; NLTK's
+# Earley membership), and pick a candidate the grammar or pattern provably admits. The lax pool budgets one
+# call beyond the knowing policy's single verification, so a wrong first candidate may be repaired; the strict
+# pool budgets exactly that one call.
+#
+# The roles are split, as in the moderate run: only the forward pass runs on the actor, a mid-sized open model;
+# every other role — consolidator, examiner, adjudicator, blind coder, re-author — runs on a strong teacher, so
+# what the store admits is the teacher's reading of the actor's misses. A second actor, gpt-oss-20b, meets the
+# same stream under the same teacher; the detached arms are the actor alone.
+#
+# No seeded arms: the seed store experiments/seeds/reasoning-core encodes the moderate tier's method decisions
+# (level-3 regex / level-2 grammar specifics); a harder-tier seed would be authored separately once the
+# calibration pilot fixes the level. The calibration pilot itself — which level lands first-sight ~0.5 — is
+# paid endpoint spend and has NOT been run.
+#
+# Ids are W&B Inference ids as listed on 2026-09-13; `hgi experiment models` lists today's.
+name = "reasoning-core-hard"
+description = "first-sight produce-and-verify on a harder tier of unseen regexes and grammars, a strong teacher over a mid-sized actor"
+weave_project = "hgi-experiments"
+
+[models.qwen3-35b]
+id = "Qwen/Qwen3.6-35B-A3B"
+
+[models.gpt-oss-20b]
+id = "openai/gpt-oss-20b"
+
+[models.deepseek-pro]
+id = "deepseek-ai/DeepSeek-V4-Pro"
+
+[defaults]
+model = "qwen3-35b"
+passes_per_round = 2
+concurrency = 4
+
+[defaults.roles]
+consolidator = "deepseek-pro"
+examiner = "deepseek-pro"
+adjudicator = "deepseek-pro"
+coder = "deepseek-pro"
+reauthor = "deepseek-pro"
+
+[defaults.stream]
+families = ["reasoning-core-hard"]
+batch = 4
+batches = 6
+seed = 0
+revisit = [1, 2]
+
+[defaults.stream.faults]
+http_fault_fraction = 0.0
+
+[arms.qwen-attached]
+mode = "attached"
+description = "Qwen3.6-35B-A3B acting, DeepSeek-V4-Pro on every other role"
+
+[arms.qwen-detached]
+mode = "detached"
+description = "the ablation on the same batches: the actor alone, one run is the whole record"
+
+[arms.20b-attached]
+model = "gpt-oss-20b"
+description = "a weaker actor on the same harder stream under the same teacher"
+
+# The strict pool: the same harder instances budgeted at exactly the one verification call, so a wrong first
+# candidate cannot be repaired within budget. Only a pass that already produces a member first time — from the
+# store's method, or from the model — passes. This is where the harder tier is meant to bite hardest.
+[arms.qwen-strict]
+mode = "attached"
+description = "the strict pool on the harder tier: does the store's method save the repair call"
+[arms.qwen-strict.stream]
+families = ["reasoning-core-hard-strict"]
+
+[arms.qwen-strict-detached]
+mode = "detached"
+description = "the harder strict pool's ablation"
+[arms.qwen-strict-detached.stream]
+families = ["reasoning-core-hard-strict"]
