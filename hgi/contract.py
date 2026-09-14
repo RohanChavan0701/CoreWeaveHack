@@ -32,6 +32,7 @@ from hgi import index as _index
 from hgi import lint as _lint
 from hgi import model as _model
 from hgi import registry as _registry
+from hgi import reviews as _reviews
 from hgi import roles
 from hgi.store import Store, now
 from hgi.types import Consolidation, Decision, Draft, Session
@@ -186,6 +187,31 @@ def _currency(store, args):
                                         moot_when=d.lifecycle.moot_when, moot_evidence=row["considered"] > 0 and row["applied"] == 0)
 
 
+@builder("triage")
+def _triage(store, args):
+    """The noise filter over a recurrence at the bar: the group with the most sessions, its observations and the rows they anchor."""
+    _, brief, _ = _brief(store)
+    groups = brief.get("groups", [])
+    if not groups:
+        raise SystemExit("the brief carries no group; triage has nothing to read")
+    group = max(groups, key=lambda g: len(g.get("sessions") or [o.get("session") for o in g.get("observations", []) if isinstance(o, dict)]))
+    evidence = _consolidate.group_evidence(store, group)
+    return "adjudicator", roles.request("triage", shape=group.get("shape"), observations=evidence["observations"], rows=evidence["rows"],
+                                        vocabulary=store.registry.terms("reality-verdict"))
+
+
+@builder("ports")
+def _ports(store, args):
+    """One off-declaration channel of the port-miss stream: the cluster over the most independent records, its occasions."""
+    clusters = _reviews.port_clusters(store)
+    if not clusters:
+        raise SystemExit("no live latch is admitted off its port declaration; ports has nothing to read")
+    cluster = max(clusters, key=lambda c: len(c["records"]))
+    bar = store.registry.bars.get("vocabulary", {}).get("independent_escapes", 2)
+    return "adjudicator", roles.request("ports", kind=cluster["kind"], status=cluster["status"], latch_type=cluster["latch_type"],
+                                        mark="forbidden", occasions=cluster["occasions"], bar=bar)
+
+
 # --- reading the reply ------------------------------------------------------------------------
 
 def parse_report(store: Store, name: str, out: Any) -> list[str]:
@@ -218,6 +244,14 @@ def parse_report(store: Store, name: str, out: Any) -> list[str]:
         lines.append(f"{len(out.get('steers', [])) if isinstance(out, dict) else 0} steers")
     elif name == "currency":
         lines.append(f"verdict {out.get('verdict') if isinstance(out, dict) else None!r}")
+    elif name in ("triage", "ports"):
+        vocab = "reality-verdict" if name == "triage" else "adjudicator-verdict"
+        v = out.get("verdict") if isinstance(out, dict) else None
+        try:
+            store.registry.check(vocab, str(v))
+            lines.append(f"verdict {v!r} is in the {vocab} vocabulary; why {str(out.get('why', ''))[:160]!r}")
+        except ValueError as e:
+            lines.append(f"verdict {v!r} refused: {e}")
     elif name == "lens":
         lines.append(f"{len(out.get('findings', [])) if isinstance(out, dict) else 0} findings; answer {str(out.get('answer', ''))[:100]!r}" if isinstance(out, dict) else "reply is not an object")
     else:
