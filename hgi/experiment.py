@@ -381,7 +381,7 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         "seed": _registry.read_json(store_root / "seed.json") if (store_root / "seed.json").exists() else None,
         "stream": {"batches": [_stream.batch_record(n, b) for n, b in enumerate(batches, 1)], "revisit": spec.revisits,
                    "passes": {n: n for n in range(1, spec.passes + 1)} | {spec.passes + k: r for k, r in enumerate(spec.revisits, 1)}} if batches else None,
-        "weave_project": tracing.project_name(), "started_at": _now(), "finished_at": None, "sessions": [], "curve": {},
+        "weave_project": tracing.project_name(), "started_at": _now(), "finished_at": None, "sessions": [], "curve": {}, "health": {},
         "commit": _tree_commit(),
     }
     _write(where / "arm.json", record)
@@ -405,6 +405,7 @@ def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool
         # session ids are minted in lock-acquisition order — the set is stable, the order is not.
         record["sessions"] = sorted(s.id for s in _sessions(store, spec.mode))
         record["curve"] = curve(store, spec.mode)
+        record["health"] = evolution.health(store, spec.mode)
         _write(where / "arm.json", record)
 
     try:
