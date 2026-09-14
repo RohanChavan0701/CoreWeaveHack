@@ -20,11 +20,11 @@ from __future__ import annotations
 
 import re
 from collections import defaultdict
-from typing import Any, Callable
+from typing import Any, Callable, Iterable
 
 from hgi.registry import is_escape, read_json, write_json
 from hgi.store import Store
-from hgi.types import MECHANICAL, Decision, Disposition, Draft, Fire, Session
+from hgi.types import MECHANICAL, Decision, Disposition, Draft, Fire, Observation, Session
 
 FORBIDDEN_CELL_KEYS = frozenset({"decision", "duty", "then", "article", "context", "options"})
 """Fields whose content a reader could obey directly from a cell; the settlement test evicts them."""
@@ -392,16 +392,21 @@ def row_passed(row: dict[str, Any]) -> bool:
     return score.get("value") == 1.0 if "value" in score else not row.get("error")
 
 
+def observation_for(observations: Iterable[Observation], row: dict[str, Any]) -> Observation | None:
+    """The observation a row was noticed as, among ``observations``: one anchored on the row's call, or naming its
+    task when the row carries no call — ``None`` where the row was not noticed. The caller scopes ``observations``
+    to the session it asks about."""
+    for o in observations:
+        if row.get("call") and o.anchor.call == row["call"]:
+            return o
+        if not row.get("call") and str(row.get("task")) in o.noticed:
+            return o
+    return None
+
+
 def observed_from(store: Store, session: Session, row: dict[str, Any]) -> bool:
     """Whether the session filed an observation from this row: one anchored on the row's call, or naming its task when the row carries no call."""
-    for o in store.observations(state=None):
-        if o.session != session.id:
-            continue
-        if row.get("call") and o.anchor.call == row["call"]:
-            return True
-        if not row.get("call") and str(row.get("task")) in o.noticed:
-            return True
-    return False
+    return observation_for((o for o in store.observations(state=None) if o.session == session.id), row) is not None
 
 
 def true_misses(store: Store) -> list[str]:
