@@ -16,9 +16,10 @@ draft. A sketch is not a record: it has no envelope and is never stored.
 from __future__ import annotations
 
 import operator
+import re
 from typing import Any, Literal
 
-from pydantic import Field
+from pydantic import Field, ValidationInfo, model_validator
 
 from hgi import registry as _registry
 from hgi.types import Option, Strict, Term
@@ -63,6 +64,50 @@ def revisit_watch(body: dict[str, Any]) -> dict[str, Any] | None:
     return None
 
 
+# --- falsifiability: a decision must name a checkable fact about the world, not an instruction (carry-forward item 49a) ---
+
+_GENERIC_FRAGMENTS = frozenset({"task", "test", "output", "plan", "planning"})
+"""Work-shape term fragments too generic to be falsifiable world-content on their own: a decision naming only these ("the
+task's requirements", "the output") still names no concrete value, column or command. The specific fragments (tool, call,
+budget, retry, error, schema, http, shell, file, failure, triage, wrapping) stay — a decision naming one names a
+world-mechanism the lesson is about."""
+
+_GENERIC_ACRONYMS = frozenset({"SQL", "HTTP", "API", "JSON", "CSV", "XML", "URL", "URI", "HTML", "REST", "SQLITE", "DB", "ID"})
+"""All-caps category names that are not, by themselves, falsifiable content: "a SQL solution" names a category, where
+"STRFTIME", "EXISTS" or a status code names a checkable token."""
+
+_QUOTED = re.compile(r"""(['"`])[^'"`]+\1""")
+_OPERATOR = re.compile(r"(==|!=|<=|>=|(?<![<>=!])=(?!=))")
+_CALL = re.compile(r"[A-Za-z_][\w.]*\s*\(")
+_PATH = re.compile(r"[\w.*-]*/[\w./*-]+")
+_IDENTIFIER = re.compile(r"[A-Za-z]\w*[._]\w+")
+_ALLCAPS = re.compile(r"\b[A-Z][A-Z0-9]{2,}\b")
+
+
+def _content_fragments(registry: _registry.Registry) -> set[str]:
+    """The world-mechanism words a decision may name, derived from the registered work-shape vocabulary (not a hand list):
+    each term's fragments, minus the generic ones. So the predicate tracks the vocabulary the store actually carries."""
+    frags: set[str] = set()
+    for term in registry.terms("work-shape"):
+        frags |= {f for f in re.split(r"[-_]", term) if f}
+    return frags - _GENERIC_FRAGMENTS
+
+
+def names_world_content(decision: str, registry: _registry.Registry | None) -> bool:
+    """Whether a decision sentence names a falsifiable fact about the world — a quoted literal, a path/route, a comparison,
+    a command/call token, a code identifier, an all-caps code, or a registered world-mechanism term — rather than a bare
+    instruction to do the task right. A decision with none ("correctly translate the logical requirements", "consult the
+    store's rules first") is an instruction, not a lesson (carry-forward item 49a). The check errs toward admitting: any one
+    concrete signal passes it, so a borderline sketch is kept — a false refusal costs a lesson."""
+    text = decision or ""
+    if _QUOTED.search(text) or _OPERATOR.search(text) or _CALL.search(text) or _PATH.search(text) or _IDENTIFIER.search(text):
+        return True
+    if any(tok not in _GENERIC_ACRONYMS for tok in _ALLCAPS.findall(text)):
+        return True
+    words = set(re.findall(r"[a-z]+", text.lower()))
+    return bool(words & _content_fragments(registry)) if registry is not None else False
+
+
 class PremiseSketch(Strict):
     id: str
     statement: str
@@ -102,6 +147,17 @@ class Sketch(Strict):
     """What no floor checks; judgment the record leaves to its reader."""
     moot_when: str
     scopes: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _decision_names_world_content(self, info: ValidationInfo):
+        """The payload must name a falsifiable fact about the world (:func:`names_world_content`); a decision that names none
+        is an instruction, not a lesson, and the sketch is refused (carry-forward item 49a)."""
+        registry = (info.context or {}).get("registry")
+        if not names_world_content(self.decision, registry):
+            raise ValueError("decision: names no falsifiable world-content — no value, column, dialect token, command, path "
+                             f"or world-mechanism term; a decision with no checkable fact about the world is an instruction, "
+                             f"not a lesson: {self.decision!r}")
+        return self
 
 
 def body(sketch: Sketch, anchors: list[str], bars: dict[str, Any], model_id: str | None) -> dict[str, Any]:

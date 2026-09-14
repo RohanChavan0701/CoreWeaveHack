@@ -762,6 +762,26 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     contracts are priced for `gpt-oss-120b`, DeepSeek-V4-Pro parsed on every
     request but wrote the same generic drafts, so the fix is in the request,
     not the model.
+    **Built (a):** `hgi/drafting.py` `names_world_content(decision, registry)` —
+    a decision passes when it carries any concrete signal (a quoted literal, a
+    path/route, a comparison, a call/command token, a code identifier, an
+    all-caps code, or a registered work-shape mechanism term derived from the
+    vocabulary), and a `Sketch` model-validator refuses one that carries none, so
+    both `propose` (close) and `nominate` (consolidate) refuse a content-free
+    sketch at parse. Adjudicator guidance in `hgi/roles/adjudicator.md` names the
+    same class as a decline (defensive — the floor refuses it first). The
+    elicitation side, per a live DeepSeek-V4-Pro teacher preflight, is in
+    `hgi/roles/consolidator.md`: the drafter is told to carry the concrete
+    convention token into the decision (GOOD/BAD pair) and to cite *all* the
+    group's independent sessions so a real recurrence is not floor-dropped for
+    under-citation — the prompt asks for exactly what the floor requires. The
+    independence bar (two sessions, item 32) is untouched. **Why it will not
+    over-refuse:** the predicate admits on any one signal (errs toward keeping),
+    and it tracks the store's own work-shape vocabulary, so the three stub
+    lessons and every existing test admit unchanged; the risk it carries is the
+    mirror — a genuinely concrete decision phrased without any of these tokens
+    would be refused, which is why the consolidator prompt now steers the drafter
+    to include one. New tests: `tests/test_falsifiable_decision.py`.
 50. **Supersession by latch widening** (text2sql run). Three of the seven
     decisions are copies of the other three whose only change is the latch
     terms — `output-schema` widened to `shell-tool, tool-budget`, and so on —
