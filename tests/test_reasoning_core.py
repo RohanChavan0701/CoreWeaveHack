@@ -4,9 +4,14 @@ never by a comparison against a stored answer, and the strict twin carries the s
 
 from __future__ import annotations
 
+import pytest
+
+from suite.faults import FaultProfile
 from suite.families import FAMILIES
 from suite.families import _reasoning_core as rc
+from suite.families import reasoning_core as rcf
 from suite.tasks import SuiteSpec, build
+from suite.tools import BUDGET_SENTINEL, ToolError, Tools
 
 INSTANCES = 24
 """Pinned instances: twelve regex-following and twelve cfg-generation."""
@@ -81,3 +86,45 @@ def test_a_cfg_task_grades_by_grammar_membership_over_the_token_floor(tmp_path):
 def test_the_regex_checker_is_reasoning_cores_full_match_verdict():
     assert rc.regex_ok(r"(?:((F)Y)+)", "FYFY") and not rc.regex_ok(r"(?:((F)Y)+)", "FYF")
     assert not rc.regex_ok(r"a(", "a")  # an invalid pattern is a failed task, not a raise from the grader
+
+
+# --- the budget gate: an answer bought past budget fails, so the strict pool bites (carry-forward item 47) ---
+
+def test_the_tool_layer_marks_an_over_budget_call_in_the_workdir(tmp_path):
+    tools = Tools(task="t", workdir=tmp_path, profile=FaultProfile(), shell_budget=1)
+    assert tools.shell("echo one").strip() == "one"  # the one verification call, within budget
+    assert not (tmp_path / BUDGET_SENTINEL).exists(), "a within-budget run leaves no marker"
+    with pytest.raises(ToolError, match="refused"):
+        tools.shell("echo two")  # the repair call, refused past the budget of one
+    assert (tmp_path / BUDGET_SENTINEL).exists(), "the refused over-budget call is marked in the workdir"
+
+
+def test_a_within_budget_verified_pass_is_unaffected_by_the_gate(tmp_path):
+    # No over-budget marker: the answer alone decides, and a matching witness / grammar member still passes both pools.
+    assert _by_id("reasoning-core")[REGEX_ID].check(REGEX_MATCHES[1], tmp_path)
+    assert _by_id("reasoning-core")[CFG_ID].check(CFG_MEMBER, tmp_path)
+    assert _by_id("reasoning-core-strict")["reasoning-core-strict/regex_04"].check(REGEX_MATCHES[1], tmp_path)
+
+
+def test_each_pool_gates_the_pass_at_its_own_budget(tmp_path):
+    # The lax pool leaves the repair call within budget and fails only its successor; the strict pool fails the repair
+    # call itself. A matching answer passes up to the pool's budget and fails the moment a call is refused past it.
+    for fam, limit in (("reasoning-core", 2), ("reasoning-core-strict", 1)):
+        spec = _by_id(fam)[f"{fam}/regex_04"]
+        assert spec.shell_budget == limit  # derived from KNOWING + SLACK, not hardcoded here
+        wd = tmp_path / fam
+        wd.mkdir()
+        tools = Tools(task=spec.id, workdir=wd, profile=FaultProfile(), shell_budget=spec.shell_budget)
+        for _ in range(limit):
+            tools.shell("echo ok")  # spend the whole budget, each call within it
+        assert spec.check(REGEX_MATCHES[1], wd), f"{fam}: within budget, the matching answer passes"
+        tools.dispatch("shell", '{"command": "echo over"}')  # one call past the budget, refused and marked
+        assert not spec.check(REGEX_MATCHES[1], wd), f"{fam}: past budget, the matching answer no longer passes"
+
+
+def test_the_budget_gate_is_reversible(tmp_path, monkeypatch):
+    spec = _by_id("reasoning-core-strict")["reasoning-core-strict/regex_04"]
+    (tmp_path / BUDGET_SENTINEL).write_text("call budget of 1 exceeded at call 2\n")
+    assert not spec.check(REGEX_MATCHES[1], tmp_path), "gate on by default: an over-budget row fails despite a matching answer"
+    monkeypatch.setenv(rcf.BUDGET_GATE_ENV, "0")
+    assert spec.check(REGEX_MATCHES[1], tmp_path), "gate lifted: answer-only grading is restored"

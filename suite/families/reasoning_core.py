@@ -28,17 +28,32 @@ spend a call iterating on a candidate; ``reasoning-core-strict`` budgets at
 exactly that one call, so a wrong first candidate cannot be repaired within
 budget. The instances are disjoint from every other family's — a regex or a
 grammar, under ids no other family uses.
+
+Because a witness — a matching string, a grammar member — is something the
+actor can often produce unaided, the hidden check grades the answer and the
+answer would pass whether or not the call budget was respected; the budget
+would then reach only the economy series and never pass or fail a row, and the
+strict pool would not bite. So the check gates on the budget: the tool layer
+marks a working directory over budget when it refuses a call past the pool's
+limit (:data:`suite.tools.BUDGET_SENTINEL`), and a marked row fails
+``task_pass_rate`` regardless of the answer, the way ``curriculum`` fails in
+effect because its answer needs the call. The gate is on by default and is
+lifted by setting :data:`BUDGET_GATE_ENV` to ``0``, which restores answer-only
+grading. Each pool gates at its own budget: the strict pool fails the moment a
+second call is refused, the lax pool only when the repair call's successor is.
 """
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from suite.families import family
 from suite.families import _reasoning_core as rc
 from suite.families.genesis import RESULT_STR
-from suite.tasks import Task
+from suite.tasks import Check, Task
+from suite.tools import BUDGET_SENTINEL
 
 REGEX_N = 12
 CFG_N = 12
@@ -49,6 +64,25 @@ SLACK = {"reasoning-core": 1, "reasoning-core-strict": 0}
 
 KNOWING = {"shell": 1}
 """The floor the economy scorers grade against: a policy that knows the answer verifies it once."""
+
+BUDGET_GATE_ENV = "HGI_REASONING_CORE_BUDGET_GATE"
+"""The environment flag that lifts the budget gate: set it to ``0`` to grade the answer alone (the pre-gate behaviour)."""
+
+
+def _budget_gates_pass() -> bool:
+    """Whether an over-budget row fails ``task_pass_rate``. On by default; ``HGI_REASONING_CORE_BUDGET_GATE=0`` lifts it."""
+    return os.environ.get(BUDGET_GATE_ENV, "1") != "0"
+
+
+def _gated(answer_ok: Callable[[Any], bool]) -> Check:
+    """Wrap a bare answer check so a row the tool layer marked over budget fails, unless the gate is lifted."""
+
+    def check(result: Any, workdir: Path) -> bool:
+        if _budget_gates_pass() and (Path(workdir) / BUDGET_SENTINEL).exists():
+            return False
+        return answer_ok(result)
+
+    return check
 
 SOURCE = (f"sileod/reasoning-core ({rc.LICENSE}, rev {rc.REVISION[:7]}, v{rc.VERSION}, {rc.PAPER}); "
           "regex-following and cfg-generation instances graded by the generator's own checker "
@@ -85,11 +119,11 @@ def _task(record: dict[str, Any], fam: str) -> Task:
     if record["kind"] == "regex-following":
         pattern = record["pattern"]
         return Task(tid, _regex_prompt(pattern, budget), ("shell-tool", "tool-budget"), RESULT_STR,
-                    lambda result, w, p=pattern: rc.regex_ok(p, result),
+                    _gated(lambda result, p=pattern: rc.regex_ok(p, result)),
                     shell_budget=budget, knowing=dict(KNOWING))
     grammar, start, min_tokens = record["grammar"], record["start"], record["min_tokens"]
     return Task(tid, _cfg_prompt(grammar, start, min_tokens, budget), ("shell-tool", "tool-budget"), RESULT_STR,
-                lambda result, w, g=grammar, s=start, m=min_tokens: rc.cfg_ok(g, s, m, result),
+                _gated(lambda result, g=grammar, s=start, m=min_tokens: rc.cfg_ok(g, s, m, result)),
                 shell_budget=budget, knowing=dict(KNOWING))
 
 
