@@ -173,7 +173,8 @@ def test_the_stream_smoke_runs_each_pass_on_its_own_batch_and_writes_the_evoluti
     assert [p["kind"] for p in log["passes"]] == ["stream"] * 4 + ["revisit"]
     assert all(p["symptoms"] == {"naive": 4} for p in log["passes"]), "the stub is the naive policy: every failure is naive-shape"
     assert all(p["quality"]["economy"] == 0.0 and p["quality"]["transfer"] is None for p in log["passes"]), "quality is zero on failed rows and transfer unevaluable"
-    assert set(log["lessons"]) == CURRICULUM_LESSONS and all(s["first_mention_pass"] is None for s in log["lessons"].values())
+    assert set(log["lessons"]) == CURRICULUM_LESSONS and all(s["first_applied_pass"] is None for s in log["lessons"].values()), "the stub applies no record, so nothing fired"
+    assert all(p["applied"] == {} for p in log["passes"]), "the stub arm records no applied ids, so the join is empty"
     md = (where / "evolution.md").read_text()
     assert "| 5 (revisit) | 1 |" in md and "| trailing-newline | invisible |" in md
 
@@ -185,6 +186,44 @@ def test_the_stream_smoke_runs_each_pass_on_its_own_batch_and_writes_the_evoluti
     assert (tmp_path / "stream-smoke" / "evolution.md").exists()
     table = _experiment.report(exp, tmp_path)
     assert "| attached | stub | attached | 2×2 stream ×4 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | nothing |" in table
+
+
+def test_the_lesson_series_pivots_on_firing_not_on_keyword_mention():
+    """`first_applied` is the first stream pass a record fired on a lesson's rows; a record whose text mentions the
+    lesson but never fires does not drive it, and the applied-vs-outcome join reads whether the fired-on rows passed."""
+    def _pass(pass_, rows, mentions):
+        applied = _evolution._applied_join(rows)
+        return {"pass": pass_, "batch": pass_, "kind": "stream", "rows": rows, "mentions": mentions, "applied": applied}
+
+    def _row(lesson, symptom, applied):
+        return {"lesson": lesson, "symptom": symptom, "applied": applied, "economy": None, "turns": None, "transfer": None}
+
+    passes = [
+        # pass 1: a record whose text mentions the lesson is in context but fires on nothing (empty applied)
+        _pass(1, [_row("moved-v2", "naive", [])], {"moved-v2": ["D-0001"]}),
+        # pass 2: D-0002 fires on both rows; one passes, one recurs naive — mention says nothing here
+        _pass(2, [_row("moved-v2", "pass", ["D-0002"]), _row("moved-v2", "naive", ["D-0002"])], {}),
+        # pass 3: fires again, still one naive
+        _pass(3, [_row("moved-v2", "naive", ["D-0002"])], {}),
+    ]
+    series = _evolution._lesson_series(passes)["moved-v2"]
+    assert series["first_applied_pass"] == 2, "the mention at pass 1 did not fire, so firing starts at pass 2"
+    assert series["first_mention_pass"] == 1, "the keyword heuristic is kept, but is not the driving signal"
+    # naive before/after split on first_applied (pass 2), not on first_mention (pass 1)
+    assert series["naive_before"] == (1, 1) and series["naive_after"] == (2, 3)
+    # of the three rows a record fired on (passes 2-3), one passed and two recurred naive
+    assert series["applied_outcome"] == {"records": ["D-0002"], "passed": 1, "naive": 2, "other": 0, "tasks": 3}
+    assert _evolution._outcome(series["applied_outcome"]) == "1/3 (1✓ 2N 0W)"
+
+
+def test_an_applied_id_absent_from_every_row_leaves_the_series_unfired():
+    """Back-compat: rows that carry no applied ids (old arms) never fire, so the join is empty and nothing drives it."""
+    rows = [{"lesson": "bom", "symptom": "naive", "applied": [], "economy": None, "turns": None, "transfer": None}]
+    passes = [{"pass": 1, "batch": 1, "kind": "stream", "rows": rows, "mentions": {"bom": ["D-0009"]}, "applied": _evolution._applied_join(rows)}]
+    assert passes[0]["applied"] == {}
+    series = _evolution._lesson_series(passes)["bom"]
+    assert series["first_applied_pass"] is None and series["applied_outcome"]["tasks"] == 0
+    assert _evolution._outcome(series["applied_outcome"]) == "—"
 
 
 def test_every_clothing_declares_its_knowing_floor_and_carries_a_twin(tmp_path):
