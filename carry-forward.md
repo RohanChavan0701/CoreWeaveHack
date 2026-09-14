@@ -782,6 +782,16 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     mirror — a genuinely concrete decision phrased without any of these tokens
     would be refused, which is why the consolidator prompt now steers the drafter
     to include one. New tests: `tests/test_falsifiable_decision.py`.
+    **Built (b):** `hgi/coder.py` `code(..., rows=...)` enriches each observation
+    with its anchored row's `result` and `commands` (`coding_observations`), and
+    `hgi/consolidate.py` `group_observations` builds the call→row map and passes
+    it, so the blind coder reads the query text where the wrong literal lives, not
+    only the noticing prose; `hgi/roles/coder.md` tells the coder to read them.
+    The anchor is dropped from the payload (a resolution key, not evidence), so
+    the blindness guard is unchanged. The `hgi try coding` preview builder in
+    `contract.py` (owned elsewhere) still shows the base shape; only the live
+    consolidation path is enriched. New tests:
+    `tests/test_coder_reads_result_commands.py`.
 50. **Supersession by latch widening** (text2sql run). Three of the seven
     decisions are copies of the other three whose only change is the latch
     terms — `output-schema` widened to `shell-tool, tool-budget`, and so on —

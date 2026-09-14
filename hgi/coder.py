@@ -50,8 +50,24 @@ def guard(work_shape: dict[str, Any], hook: dict[str, Any], presentations: list[
     return bool(out.get("passed")), str(out.get("why", "")), c.call
 
 
-def code(observations: list[dict[str, Any]], terms: list[str], **trace) -> tuple[dict[str, list[str]], str | None]:
-    """Blind coding: ``{observation name: [terms]}`` from the noticing text alone."""
-    c = _ask("coding", observations=observations, terms=terms, **trace)
+def coding_observations(observations: list[dict[str, Any]], rows: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+    """Each observation enriched with its anchored row's ``result`` and ``commands`` — the query text and output where the
+    wrong literal actually appears — so the blind coder reads the world the attempt produced, not only the noticing prose
+    (carry-forward item 49b). ``rows`` maps a trace call URI to its evaluation row; the anchor is dropped from the payload
+    (it is the resolution key, never the coder's evidence)."""
+    out = []
+    for o in observations:
+        anchor = o.get("anchor") if isinstance(o.get("anchor"), dict) else {}
+        row = (rows.get(anchor.get("call")) if anchor else None) or {}
+        out.append({k: v for k, v in o.items() if k != "anchor"} | {"result": row.get("result"), "commands": row.get("commands") or []})
+    return out
+
+
+def code(observations: list[dict[str, Any]], terms: list[str], *, rows: dict[str, dict[str, Any]] | None = None, **trace) -> tuple[dict[str, list[str]], str | None]:
+    """Blind coding: ``{observation name: [terms]}``. The coverage question is put to the anchored row's ``result`` and
+    ``commands`` (the query text) as well as the noticing prose when ``rows`` is given (:func:`coding_observations`) — the
+    wrong literal lives in the query, not always in the prose; without ``rows`` the noticing text stands alone."""
+    payload = coding_observations(observations, rows) if rows is not None else observations
+    c = _ask("coding", observations=payload, terms=terms, **trace)
     out = c.json()
     return {k: list(v) for k, v in out.items()}, c.call

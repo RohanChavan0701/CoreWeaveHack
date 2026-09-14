@@ -82,8 +82,10 @@ def group_observations(store: Store, record: Consolidation) -> list[dict[str, An
     open_obs = [o for o in store.observations("open") if o.name not in claimed and o.uid not in claimed]
     if not open_obs:
         return []
-    shapes, call = _coder.code([{"name": o.name, "noticed": o.noticed} for o in open_obs], store.registry.terms("work-shape"),
-                               session=record.id, records_in_context=[])
+    rows_by_call = {row.get("call"): row for s in store.all("session") if s.attached and s.evaluation  # type: ignore[attr-defined]
+                    for row in s.evaluation.rows if row.get("call")}  # type: ignore[attr-defined]
+    shapes, call = _coder.code([{"name": o.name, "noticed": o.noticed, "anchor": o.anchor.model_dump(exclude_none=True)} for o in open_obs],
+                               store.registry.terms("work-shape"), rows=rows_by_call, session=record.id, records_in_context=[])
     groups: dict[tuple[str, ...], list[Observation]] = defaultdict(list)
     for o in open_obs:
         o.shape = sorted(shapes.get(o.name, ["other(uncoded)"]))
