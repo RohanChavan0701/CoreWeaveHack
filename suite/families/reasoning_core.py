@@ -152,28 +152,37 @@ def fetch_hard(n: int) -> list[dict[str, Any]]:
     return rc.records(min(n, REGEX_N), min(n, CFG_N), tier=rc.HARD)
 
 
-@family("reasoning-core", source=SOURCE + "; budgeted with one call to spare", fetch=fetch)
+# Every reasoning-core task asks the actor to verify its candidate under the shell tool — a regex `fullmatch`
+# or an NLTK Earley membership check — so a shell call's `python3` must be able to import `regex` and `nltk`.
+# An arm whose shell python cannot is refused before pass 1 (item 53); the moderate and hard tiers, lax and
+# strict, share the same requirement.
+REQUIRES = ("nltk", "regex")
+
+
+@family("reasoning-core", source=SOURCE + "; budgeted with one call to spare", fetch=fetch, requires=REQUIRES)
 def tasks() -> list[Task]:
     from suite.families import FAMILIES
 
     return [_task(r, "reasoning-core") for r in FAMILIES["reasoning-core"].records()]
 
 
-@family("reasoning-core-strict", source=SOURCE + "; the same instances, budgeted at exactly the knowing policy's one call")
+@family("reasoning-core-strict", source=SOURCE + "; the same instances, budgeted at exactly the knowing policy's one call",
+        requires=REQUIRES)
 def strict_tasks() -> list[Task]:
     from suite.families import FAMILIES
 
     return [_task(r, "reasoning-core-strict") for r in FAMILIES["reasoning-core"].records()]
 
 
-@family("reasoning-core-hard", source=HARD_SOURCE + "; budgeted with one call to spare", fetch=fetch_hard)
+@family("reasoning-core-hard", source=HARD_SOURCE + "; budgeted with one call to spare", fetch=fetch_hard, requires=REQUIRES)
 def hard_tasks() -> list[Task]:
     from suite.families import FAMILIES
 
     return [_task(r, "reasoning-core-hard") for r in FAMILIES["reasoning-core-hard"].records()]
 
 
-@family("reasoning-core-hard-strict", source=HARD_SOURCE + "; the same instances, budgeted at exactly the knowing policy's one call")
+@family("reasoning-core-hard-strict", source=HARD_SOURCE + "; the same instances, budgeted at exactly the knowing policy's one call",
+        requires=REQUIRES)
 def hard_strict_tasks() -> list[Task]:
     from suite.families import FAMILIES
 

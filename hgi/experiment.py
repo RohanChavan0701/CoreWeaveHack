@@ -358,12 +358,44 @@ def seed_arm(exp: Experiment, arm: str, spec: ArmSpec, root: Path, roster: dict[
     return _registry.load(root)
 
 
+def _preflight_shell(spec: ArmSpec) -> None:
+    """Item 53: before an arm runs a single pass, verify the shell tool's own ``python3`` can import every module
+    the arm's families declare they need (:attr:`suite.families.Family.requires`). A reasoning-core arm whose shell
+    ``python3`` is a system interpreter without ``nltk`` would spend every row discovering the library is missing —
+    ``pip install`` as the next call, the budget then refused, the answer given unverified — and file
+    library-availability decisions instead of world decisions. The check runs in the same environment the shell
+    tool runs under (:func:`suite.tools.can_import`), so it exercises the python a shell call actually resolves to,
+    not the runner's own interpreter; it refuses to start the arm with a clear error when that python cannot import
+    the requirements."""
+    from suite import tools as _tools
+    from suite.families import FAMILIES
+
+    fams = spec.stream.families if spec.stream is not None else spec.suite.families
+    modules: list[str] = []
+    for name in fams:
+        fam = FAMILIES.get(name)
+        if fam is None:
+            continue
+        for m in fam.requires:
+            if m not in modules:
+                modules.append(m)
+    error = _tools.can_import(modules)
+    if error:
+        raise SystemExit(
+            f"arm cannot start: its families {sorted(set(fams))} need {modules} importable by the shell tool's "
+            f"python, but that python cannot import them: {error}. The shell tool runs `python3` from PATH — put "
+            f"the tree's venv on PATH (export PATH=<tree>/.venv/bin:$PATH) so a shell call's python has the "
+            f"family's requirements, then rerun the arm."
+        )
+
+
 def run_arm(exp: Experiment, arm: str, root: Path | None = None, *, commit: bool = True, force: bool = False) -> dict[str, Any]:
     """Run one arm to completion in its own store; return the ``arm.json`` record."""
     from hgi import cli
     from hgi.store import Store, git
 
     spec = exp.resolve(arm)
+    _preflight_shell(spec)  # item 53: refuse before touching disk if the shell python can't import the families' requirements
     where = arm_dir(exp, arm, root)
     if where.exists():
         if not force:

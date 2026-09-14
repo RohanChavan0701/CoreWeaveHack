@@ -11,7 +11,11 @@ may answer with an error of its own — the world's conventions live there.
 from __future__ import annotations
 
 import json
+import os
+import shlex
 import subprocess
+import sys
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -19,6 +23,42 @@ from typing import Any
 import weave
 
 from suite.faults import FaultProfile
+
+
+def shell_env() -> dict[str, str]:
+    """The environment a shell tool call runs under: the process environment with the running interpreter's own
+    ``bin`` directory ahead on ``PATH``, so a shell command's ``python3`` is the interpreter driving the suite —
+    the venv, when the suite runs from one — and not whatever ``python3`` the ambient ``PATH`` finds first.
+
+    Item 53: a launcher that put ``.venv/bin/python`` in-process but left ``.venv/bin`` off ``PATH`` made the shell
+    tool's ``python3`` the system python, and a reasoning-core arm then found it had no ``nltk`` — every row spent
+    its budget on the missing library instead of the world. Prefixing ``PATH`` with ``dirname(sys.executable)``
+    aligns a shell call's ``python3`` with the interpreter running the suite; when that is not a venv it is a no-op."""
+    env = dict(os.environ)
+    bindir = os.path.dirname(os.path.abspath(sys.executable)) if sys.executable else ""
+    if bindir:
+        env["PATH"] = bindir + os.pathsep + env.get("PATH", "")
+    return env
+
+
+def can_import(modules: Iterable[str]) -> str | None:
+    """Whether the shell tool's own ``python3`` can import each of ``modules``. Runs ``python3 -c "import ..."``
+    the same way :meth:`Tools.shell` runs a command — ``shell=True`` under :func:`shell_env` — so it verifies the
+    interpreter a shell call's ``python3`` actually resolves to (the venv when the suite runs from one), not the
+    runner's own in-process interpreter, which is the whole point of the item-53 preflight. Returns ``None`` when
+    every module imports, else the interpreter's own error line."""
+    mods = list(modules)
+    if not mods:
+        return None
+    command = "python3 -c " + shlex.quote("import " + ", ".join(mods))
+    try:
+        proc = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=30, env=shell_env())
+    except (OSError, subprocess.SubprocessError) as e:
+        return f"could not run the shell tool's python3: {e}"
+    if proc.returncode != 0:
+        detail = (proc.stderr.strip() or proc.stdout.strip() or f"python3 exited {proc.returncode}")
+        return detail.splitlines()[-1]
+    return None
 
 CAUSE_MARKERS = ("HTTP ", "call budget", "exited", "[truncated]")
 """Every cause the tool layer raises opens with one of these; the oracle's cause scorer reads them."""
@@ -104,7 +144,9 @@ class Tools:
             self._mark_over_budget(cause)
             self._raise("shell call refused", cause=cause)
         try:
-            proc = subprocess.run(command, shell=True, cwd=self.workdir, capture_output=True, text=True, timeout=30)
+            # run under shell_env() so a `python3` in the command is the interpreter driving the suite (the venv),
+            # not whatever the ambient PATH finds first (item 53)
+            proc = subprocess.run(command, shell=True, cwd=self.workdir, capture_output=True, text=True, timeout=30, env=shell_env())
         except subprocess.TimeoutExpired:
             self._raise("shell timed out", cause="exited by timeout after 30s")
         if proc.returncode != 0:

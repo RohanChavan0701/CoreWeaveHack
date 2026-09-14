@@ -150,6 +150,35 @@ def test_a_full_report_notes_an_unresolvable_arm_instead_of_crashing(tmp_path, m
     assert "| appended |" in full and "cannot resolve" in full and "no model 'nowhere'" in full
 
 
+def test_a_reasoning_core_arm_refuses_to_start_when_the_shell_python_lacks_its_requirements(tmp_path, monkeypatch):
+    """Item 53: a reasoning-core arm whose shell tool's python cannot import a required module is refused before
+    pass 1, and before the arm's directory is created — so it never runs its whole suite against a python missing
+    nltk and files library-availability decisions instead of world decisions. The check exercises the shell tool's
+    own python; here it is made to fail to prove the arm is refused rather than started."""
+    monkeypatch.delenv("HGI_WEAVE_PROJECT", raising=False)
+    monkeypatch.setattr("suite.tools.can_import", lambda mods: f"No module named {list(mods)[0]!r}" if mods else None)
+    exp = _experiment.Experiment(name="rc", defaults={"rounds": 1, "passes_per_round": 1,
+                                                       "suite": {"families": ["reasoning-core"]}},
+                                 arms={"a": {}})
+    with pytest.raises(SystemExit, match="arm cannot start"):
+        _experiment.run_arm(exp, "a", tmp_path, commit=False)
+    assert not (tmp_path / "rc").exists(), "a refused arm is not created on disk"
+
+
+def test_the_preflight_passes_when_the_shell_python_has_the_requirements():
+    """The other side of item 53: a reasoning-core arm launched in a tree whose shell python does import the
+    family's requirements preflights cleanly. Run in this repo's venv, nltk and regex import, so the preflight is a
+    no-op and the arm would proceed to pass 1."""
+    exp = _experiment.Experiment(name="rc", defaults={"suite": {"families": ["reasoning-core"]}}, arms={"a": {}})
+    _experiment._preflight_shell(exp.resolve("a"))  # nltk+regex import under the shell tool's python → no raise
+
+
+def test_the_preflight_is_a_no_op_for_a_family_that_declares_nothing():
+    """A family with no shell requirements (genesis) never triggers the preflight, so the smoke arms are unaffected."""
+    exp = _experiment.load(EXPERIMENTS / "smoke.toml")
+    _experiment._preflight_shell(exp.resolve("attached"))  # genesis/conventions declare no requires → no raise
+
+
 def test_progress_writes_a_per_pass_health_block(tmp_path, monkeypatch):
     """Each pass writes a health block into arm.json from the store already on disk — no model call — so a failing
     arm is diagnosable while it runs: what retrieval reached, the tool/harness errors its rows carried, the failed

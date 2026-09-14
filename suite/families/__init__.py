@@ -31,6 +31,14 @@ class Family:
     """Where the tasks come from, for the reader."""
     fetch: Callable[[int], list[dict[str, Any]]] | None = None
     """The transcriber: dataset rows → pinned records, at most ``n``; ``None`` for a hand-written family."""
+    requires: tuple[str, ...] = ()
+    """Modules a shell call in this family's tasks must be able to import — the shell requirements the arm's
+    preflight checks before pass 1 (:func:`hgi.experiment.run_arm`, item 53). A reasoning-core task tells the
+    actor to verify its candidate with ``nltk``/``regex`` under the shell tool; if the shell tool's ``python3``
+    is a system interpreter without them, every row spends its budget discovering the library is missing and the
+    arm files library-availability decisions instead of world decisions. The preflight exercises the same python
+    the shell tool invokes and refuses to start the arm when it cannot import these. Empty for a family whose
+    shell calls need only the standard library (or none)."""
 
     @property
     def data_path(self) -> Path:
@@ -55,11 +63,13 @@ class Family:
 FAMILIES: dict[str, Family] = {}
 
 
-def family(name: str, source: str, fetch: Callable[[int], list[dict[str, Any]]] | None = None):
-    """Register the decorated ``tasks`` loader as family ``name``."""
+def family(name: str, source: str, fetch: Callable[[int], list[dict[str, Any]]] | None = None,
+           requires: tuple[str, ...] = ()):
+    """Register the decorated ``tasks`` loader as family ``name``; ``requires`` names the modules its shell calls
+    need importable, checked by the arm's preflight (item 53)."""
 
     def deco(tasks: Callable[[], list[Task]]):
-        FAMILIES[name] = Family(name=name, tasks=tasks, source=source, fetch=fetch)
+        FAMILIES[name] = Family(name=name, tasks=tasks, source=source, fetch=fetch, requires=tuple(requires))
         return tasks
 
     return deco

@@ -11,7 +11,7 @@ from suite.families import FAMILIES
 from suite.families import _reasoning_core as rc
 from suite.families import reasoning_core as rcf
 from suite.tasks import SuiteSpec, build
-from suite.tools import BUDGET_SENTINEL, ToolError, Tools
+from suite.tools import BUDGET_SENTINEL, ToolError, Tools, can_import
 
 INSTANCES = 24
 """Pinned instances: twelve regex-following and twelve cfg-generation."""
@@ -229,6 +229,32 @@ def test_the_hard_tier_carries_the_budget_gate_at_each_pool(tmp_path):
         assert spec.check(HARD_REGEX_MATCHES[0], wd), f"{fam}: within budget, the matching answer passes"
         tools.dispatch("shell", '{"command": "echo over"}')  # one call past budget, refused and marked
         assert not spec.check(HARD_REGEX_MATCHES[0], wd), f"{fam}: past budget, the matching answer no longer passes"
+
+
+# --- item 53: the shell tool's python must satisfy the family's declared requirements ---
+
+def test_every_reasoning_core_family_declares_its_shell_requirements():
+    """A reasoning-core task tells the actor to verify with regex.fullmatch / NLTK, so the family declares those
+    modules as shell requirements; the arm's preflight (hgi.experiment) checks them before pass 1."""
+    for name in ("reasoning-core", "reasoning-core-strict", "reasoning-core-hard", "reasoning-core-hard-strict"):
+        assert FAMILIES[name].requires == ("nltk", "regex"), f"{name} must declare nltk+regex"
+
+
+def test_can_import_checks_the_shell_tools_python():
+    """The check runs through the shell tool's own environment, so it reads the interpreter a shell call resolves
+    to. In this tree's venv nltk and regex are importable; a module that is not installed comes back as an error."""
+    assert can_import(["nltk", "regex"]) is None, "the family's requirements import under the shell tool's python"
+    assert can_import([]) is None, "no requirement is vacuously satisfiable"
+    missing = can_import(["a_module_that_is_not_installed_zzz"])
+    assert missing is not None and "No module named" in missing
+
+
+def test_the_shell_tools_python_resolves_the_family_requirements(tmp_path):
+    """The environment fix (item 53a): a `python3` invoked through the shell tool imports nltk and regex — the same
+    call a reasoning-core task asks the actor to make — because the shell runs with the venv's bin ahead on PATH."""
+    tools = Tools(task="t", workdir=tmp_path, profile=FaultProfile())
+    out = tools.shell('python3 -c "import nltk, regex; print(42)"').strip()
+    assert out == "42", "a shell call's python3 has the family's requirements"
 
 
 def test_both_tiers_regenerate_identically_from_their_seeds():
