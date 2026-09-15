@@ -1339,6 +1339,51 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     - **The other `-hard` arms remain unrun.** `20b-attached`, the strict and
       seeded twins, and the detached-strict control of
       `experiments/reasoning-core-hard.toml` were not run at item 60.
+    - *(Item 62 records which of these are now fixed — the dedup gap, the
+      label instability and the series-name chore — and lifts the two still
+      open — the F1/F3 abstract-keying question and the unrun arms — forward.)*
+62. **The item-61 experiment-correctness fixes — what landed, what is still
+    open** (2026-09-15). The three code bullets item 61 raised are fixed and
+    the reasoning recorded as decision 97; regression + a two-round dedup repro
+    live in `tests/test_dedup_corroboration.py` (full suite 742 green). One
+    canonical world-content key (`hgi.index.world_content_key`) now feeds the
+    grouping variance, the happenstance series name, the escape-label
+    canonicalization and the dedup guard, so a world-fact is grouped, named and
+    de-duplicated the same way everywhere.
+    - **Done — the dedup/corroboration gap.** A fresh `new-decision` draft whose
+      evidence rests entirely on world-facts an accepted decision already
+      anchors is routed to corroboration (a `still-holds` currency entry, the
+      evidence consumed pointing at the standing record, the twin dropped),
+      never minted (`corroborates`/`corroborate`, `hgi/consolidate.py`; the pass
+      record grows a `corroborated` leg). The guard keys on the world-content
+      key, not the coder label, so it survives the label drift that fed the
+      item-60 twin.
+    - **Done — the convention-label instability.** `group_observations`
+      canonicalizes a recurring *escape* label to the one the same world-fact
+      first carried (`_canonical_label`, escape→escape only, first-seen wins),
+      so the axis no longer forks across rounds. This also credits the
+      *drifting-label* half of the recurrence question: a method restated under
+      a drifting escape keeps one label and accumulates independence.
+    - **Done — the `happenstance/…` series-name chore.** `_happenstance_series`
+      now uses the canonical key, so a world-fact transcribed across rounds
+      lands one series rather than a fresh name cut from a noisy `happened`
+      fragment.
+    - **Open — the F1/F3 residue (the abstract-keying design question).** A
+      method that manifests as per-task *singletons over distinct world-facts*
+      (`other(module-not-found)` on one module, another on the next) still never
+      recurs, because those are genuinely different keys — canonicalization
+      merges a drifting label for *one* world-fact, never *distinct* world-facts.
+      Whether the recurrence bar / cross-session keying should abstract a method
+      across distinct world-facts is unresolved and was left unforced: an
+      over-eager abstraction would merge distinct conventions. Needs evidence (a
+      repro that a genuine method recurs under distinct literals) before a keying
+      change, not a speculative one.
+    - **Open — the unrun `-hard` arms (billed, out of this session's scope).**
+      `20b-attached`, the strict and seeded twins, and the detached-strict
+      control of `experiments/reasoning-core-hard.toml` remain unrun; they are
+      endpoint runs (load the **experiment-runner** skill), not a code fix. A
+      re-run of `qwen-attached` would also be the live confirmation that the two
+      guards close the item-60 twin on the endpoint, not only on the stub.
 
 ## Housekeeping
 

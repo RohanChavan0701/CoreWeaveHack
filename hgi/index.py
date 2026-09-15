@@ -89,6 +89,22 @@ def world_content_tokens(text: str) -> list[str]:
     return [m.group(0) for m in _QUOTED.finditer(text or "")]
 
 
+def world_content_key(text: str) -> str:
+    """The canonical grouping key for a settled ``happened``: its quoted world-content literals
+    (:func:`world_content_tokens`) lowercased, de-duplicated and sorted, joined by ``|`` — with the lowercased,
+    whitespace-normalized whole sentence as the fallback token when it quotes none. Two ``happened`` naming the same
+    concrete world-fact share a key, whatever prose surrounds it and however the coder labels the convention.
+
+    This is the one key the world-content axis is read on, so a world-fact is grouped, named and de-duplicated the same
+    way everywhere: :func:`hgi.consolidate.world_content_variance` measures the modal-token fraction over it, the
+    price-zero happenstance series (:func:`hgi.consolidate._happenstance_series`) names a fact by it so one world-fact
+    transcribed across rounds lands one series, the grouping pass canonicalizes a recurring escape label to the one the
+    same world-fact first carried, and the dedup guard routes a nomination resting only on already-anchored world-facts to
+    corroboration rather than a twin decision (carry-forward item 61)."""
+    lits = sorted({t.lower() for t in world_content_tokens(text or "")})
+    return "|".join(lits) if lits else " ".join((text or "").lower().split())
+
+
 def self_referential(noticed: str, anchor: Any) -> bool:
     """Whether a finding's subject is a store record or the loop, not the task's world (carry-forward item 48).
 

@@ -1260,3 +1260,41 @@ number); it is kept as authored so the cross-references stay valid.
     text2sql pool consolidates every pass because five batches do not
     divide into rounds of two, so its cadence differs from its lax sibling's
     and the two are not paired on consolidation points.
+97. **The dedup/corroboration gap and its convention-label cause are closed
+    mechanically, both keyed on one world-content key** (item-61 experiment
+    correctness, 2026-09-15). Item 60 confirmed the item-56 pathology on the
+    endpoint: the consolidator, holding D-0001 in context, minted the twin
+    D-0002 from the same budget happenstance because the coder had named the
+    one world-fact two ways across rounds (`other(call-budget-exceeded)` then
+    `pool-exhausted`), forking the axis into two clusters. One canonical key —
+    `hgi.index.world_content_key`, the quoted literals lowercased, sorted and
+    `|`-joined, else the normalized sentence, already the token
+    `world_content_variance` groups on — now feeds four call sites so a
+    world-fact is grouped, named and de-duplicated the same way everywhere:
+    (a) `world_content_variance` reads it; (b) `_happenstance_series` names a
+    price-zero fact by it, so one world-fact transcribed across rounds lands
+    one series rather than a fresh name cut from a noisy `happened` fragment
+    (the item-61 chore); (c) `group_observations` canonicalizes a recurring
+    *escape* label to the one the same world-fact first carried
+    (`_canonical_label`, escape→escape only, first-seen wins); (d) the
+    consolidate loop routes a fresh `new-decision` draft whose evidence rests
+    *entirely* on world-facts an accepted decision already anchors to
+    corroboration of that decision — a `still-holds` currency entry, the
+    evidence consumed pointing at the standing record, the twin dropped —
+    rather than minting (`corroborates`/`corroborate`, a new `corroborated`
+    leg on the pass record). *Right if:* the world-content literal is the
+    stable identity of a happenstance the coder's prose only labels, so keying
+    the axis on it (not on the label) is the honest grouping, and the subset
+    test — the draft brings *no* new world-fact — makes the dedup guard
+    conservative, a false mint (a standing tax, I5) being the lesser cost than
+    a suppressed genuine decision. It also credits the *drifting-label* half of
+    the item-61 recurrence question: a method restated under a drifting escape
+    now keeps one label and accumulates independence. *Wrong if:* two genuinely
+    distinct escapes quote the same literal and are wrongly merged (mitigated —
+    escape→escape only, registered terms untouched, and the no-literal fallback
+    keys on the whole sentence, which rarely collides); or the coder's label,
+    however it drifts, still carried information the canonical key discards. It
+    does *not* touch the F1/F3 residue — a method manifesting as per-task
+    *singletons over distinct world-facts* still never recurs, because those
+    are different keys; whether cross-session keying should abstract across
+    distinct world-facts is the still-open design question, left unforced.

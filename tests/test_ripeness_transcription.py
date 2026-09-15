@@ -96,7 +96,8 @@ def test_transcription_writes_mechanical_happened_and_surfaces_the_ambiguous(sto
     transcribed, surfaced = _consolidate.transcribe_happenstance(store, brief)
     assert len(transcribed) == 1 and isinstance(transcribed[0], Fact)
     fact = transcribed[0]
-    assert fact.series.startswith("happenstance/") and "'A'" in fact.series and fact.value == 1.0
+    # the series is the canonical world-content key world_content_variance groups on: lowercased, sorted, |-joined literals
+    assert fact.series == "happenstance/'a'|'approved'" and fact.value == 1.0
     assert fact.source == "weave:///c/1"
     # the ambiguous happened is surfaced to the human, not written; its `turned_on` (which names 'COUNT(*)') is never read
     assert [s["origin"] for s in surfaced] == ["O-2"]

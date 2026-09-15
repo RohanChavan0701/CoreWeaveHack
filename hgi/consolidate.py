@@ -43,7 +43,7 @@ from hgi import reviews as _reviews
 from hgi import roles
 from hgi import tracing
 import suite as _suite
-from hgi.registry import route_table, term_head
+from hgi.registry import is_escape, route_table, term_head
 from hgi.store import Store, now
 from suite.scorers import SERIES
 from hgi.types import (
@@ -106,6 +106,36 @@ def _demote_pool_universal(resolved: list[tuple[str, list[Observation]]], total:
     return out
 
 
+def _prior_escape_labels(store: Store, exclude: set[str]) -> dict[str, str]:
+    """The escape label each world-fact was *first* shaped with in an earlier pass, keyed by :func:`hgi.index.world_content_key`.
+
+    Only escapes (``other(<what>)``) are collected: a registered ``convention`` term is already stable by construction and
+    is never rewritten. First-seen wins (ordered by ``noticed_at``), so a world-fact keeps the one escape name it first
+    carried. ``exclude`` is the current open pool — unshaped this pass, so never a prior labeling of itself."""
+    prior: dict[str, str] = {}
+    for o in sorted(store.all("observation"), key=lambda o: (o.noticed_at, o.name)):  # type: ignore[attr-defined]
+        if o.name in exclude or not o.shape or not is_escape(o.shape[0]):  # type: ignore[attr-defined]
+            continue
+        prior.setdefault(_index.world_content_key(o.happened), o.shape[0])  # type: ignore[attr-defined]
+    return prior
+
+
+def _canonical_label(label: str, members: list[Observation], prior: dict[str, str]) -> str:
+    """A cluster's label canonicalized to the escape the same world-fact first carried, so one world-fact keeps one label
+    across rounds (carry-forward item 61: the coder naming one happenstance ``other(call-budget-exceeded)`` one round and
+    ``other(pool-exhausted)`` the next forked the axis and let the consolidator mint a twin).
+
+    Fires only escape→escape: the cluster's label is an escape, its members' *modal* world-content key was first shaped
+    with a *different* escape, and that prior escape is adopted. A registered term — the coder's or the prior's — is left
+    untouched; a world-fact that quotes no literal keys on its normalized sentence, so distinct sentences never merge."""
+    if not is_escape(label):
+        return label
+    keys = Counter(_index.world_content_key(o.happened) for o in members)
+    modal = keys.most_common(1)[0][0] if keys else ""
+    canonical = prior.get(modal)
+    return canonical if canonical and canonical != label and is_escape(canonical) else label
+
+
 def group_observations(store: Store, record: Consolidation) -> list[dict[str, Any]]:
     """The blind coder clusters the open observations by the convention each turned on; each cluster's ``shape`` is a minted
     ``convention`` label (a registered term or an ``other(<what>)`` escape) ratified against the raw ``happened``, never a
@@ -133,6 +163,7 @@ def group_observations(store: Store, record: Consolidation) -> list[dict[str, An
     clusters, call = _coder.cluster([{"name": o.name, "happened": o.happened, "anchor": o.anchor.model_dump(exclude_none=True)} for o in open_obs],
                                     store.registry.terms("convention"), rows=rows_by_call, session=record.id, records_in_context=[])
     by_name = {o.name: o for o in open_obs}
+    prior = _prior_escape_labels(store, exclude={o.name for o in open_obs})
     resolved: list[tuple[str, list[Observation]]] = []
     assigned: set[str] = set()
     for cl in clusters:
@@ -140,7 +171,7 @@ def group_observations(store: Store, record: Consolidation) -> list[dict[str, An
         if not members:
             continue
         assigned.update(o.name for o in members)
-        resolved.append((_convention_label(store, cl["shape"]), members))
+        resolved.append((_canonical_label(_convention_label(store, cl["shape"]), members, prior), members))
     for o in open_obs:  # an observation the coder placed in no cluster stands as its own singleton
         if o.name not in assigned:
             resolved.append(("other(uncoded)", [o]))
@@ -199,11 +230,11 @@ def world_content_variance(happeneds: list[str]) -> float:
 
     Categorical by construction: ``happened`` is a token, not a measurement. This is deliberately **not**
     :func:`hgi.lens_battery._variance`, the population variance of boolean battery flags — that scores on/off lens filings,
-    a different axis; variance here is measured on the world-content the members share (§11.1: never on presentation)."""
-    tokens = []
-    for h in happeneds:
-        lits = sorted(t.lower() for t in _index.world_content_tokens(h or ""))
-        tokens.append("|".join(lits) if lits else " ".join((h or "").lower().split()))
+    a different axis; variance here is measured on the world-content the members share (§11.1: never on presentation).
+
+    The token is the canonical :func:`hgi.index.world_content_key` — the one key the grouping, the happenstance series and
+    the dedup guard all read a world-fact on, so the axis is grouped one way everywhere."""
+    tokens = [_index.world_content_key(h) for h in happeneds]
     if not tokens:
         return 0.0
     modal = Counter(tokens).most_common(1)[0][1]
@@ -748,6 +779,57 @@ CURRENCY = route_table("currency", "currency-verdict", {"still-holds": "stand", 
 """A warrant re-checked: ``retire`` flips the record moot, ``dispute`` flips the premise the reading reversed (every premise when none is named), ``stand`` leaves it."""
 
 
+def _decision_world_keys(store: Store, d: Decision) -> set[str]:
+    """The world-content keys the accepted decision ``d`` rests on: the :func:`hgi.index.world_content_key` of every
+    warrant anchor the store still holds as an observation."""
+    return {_index.world_content_key(o.happened) for a in d.warrant.anchors if (o := store.observation(a)) is not None}
+
+
+def corroborates(store: Store, draft: Draft) -> Decision | None:
+    """The accepted decision a fresh ``new-decision`` draft merely corroborates — every world-fact it rests on already
+    anchors that decision — or ``None`` (carry-forward item 61: the consolidator, with the prior decision in context,
+    mints a twin rather than corroborating; the drift in the coder's convention label across rounds is why it sees two
+    clusters, so the guard keys on the label-robust :func:`hgi.index.world_content_key`, never on the fickle label).
+
+    Conservative: it fires only when the draft's evidence carries at least one world-content key and *every* such key is
+    already anchored by the matched decision — the draft brings no new world-fact, so it is a duplicate, not an extension.
+    A draft resting on even one unanchored world-fact is genuinely new (or an edit the consolidator should have named) and
+    is left to adjudication; the earliest matching decision is returned so the choice is deterministic."""
+    keys = {_index.world_content_key(o.happened) for e in draft.evidence if (o := store.observation(e)) is not None}
+    keys.discard("")
+    if not keys:
+        return None
+    for d in sorted(store.decisions("accepted"), key=lambda d: d.created_at):
+        if d.id not in draft.retires and keys <= _decision_world_keys(store, d):
+            return d
+    return None
+
+
+def corroborate(store: Store, record: Consolidation, draft: Draft, d: Decision) -> str:
+    """Record the dedup guard's corroboration: the draft's world-facts already anchor ``d``, so ``d`` stands corroborated
+    and no twin is minted. A ``still-holds`` currency entry lands on the ledger (the committer's mechanical act, not an
+    adjudicated verdict), the draft's open evidence is consumed pointing at ``d``, and the draft is dropped."""
+    shared = sorted({_index.world_content_key(o.happened) for e in draft.evidence if (o := store.observation(e)) is not None} - {""})
+    claim = f"{draft.name} rests only on world-facts already anchoring {d.id}; corroboration, not a new decision"
+    entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="currency", subject=d.id, claim=claim,
+                        proposer=RoleCall(role="committer", model_id=None, call=None),
+                        contradiction={"source": {"role": "committer", "model_id": None, "call": None},
+                                       "coding": {"dedup": draft.uid, "shared_keys": shared, "evidence": list(draft.evidence)}},
+                        verdict="still-holds", outcome=f"corroborated {d.id}: the dedup guard routed a duplicate mint to corroboration")
+    store.append(entry)
+    for e in draft.evidence:
+        o = store.observation(e)
+        if o is not None and o.disposition.state == "open":
+            o.disposition.state = "promoted"
+            o.disposition.pointer = d.id
+            o.disposition.at = now()
+            store.write(o)
+    store.drop_draft(draft.uid)
+    if draft.uid not in record.corroborated:
+        record.corroborated.append(draft.uid)
+    return f"corroborated {d.id} ({entry.id}): every world-fact already anchored; twin mint refused"
+
+
 def adjudicate(store: Store, record: Consolidation, nomination: Nomination, draft: Draft, brief: dict[str, Any]) -> LedgerEntry:
     """Proposal → attack → verdict → commit, each role in its own context; the entry is appended once, with the verdict.
 
@@ -1208,12 +1290,13 @@ def propagate(store: Store, record: Consolidation) -> list[Fire]:
 # --- lever B: price-zero transcription of the happenstance floor -----------------------------
 
 def _happenstance_series(happened: str) -> str:
-    """A legible, symbolic fact key for a settled ``happened`` (doctrine §2/§4.1: keys are words): the world-content token
-    the anchor checks, prefixed ``happenstance/``. Its quoted literals when the ``happened`` names them, else the
-    normalized sentence, trimmed — the same token :func:`world_content_variance` groups on."""
-    lits = _index.world_content_tokens(happened or "")
-    token = " ".join(lits) if lits else " ".join((happened or "").split())
-    return "happenstance/" + (token[:120] or "world-content")
+    """A legible, symbolic fact key for a settled ``happened`` (doctrine §2/§4.1: keys are words): the canonical
+    world-content key the anchor checks (:func:`hgi.index.world_content_key`), prefixed ``happenstance/`` and trimmed.
+
+    It is the *same* key :func:`world_content_variance` groups on — lowercased, de-duplicated, ``|``-joined literals, or
+    the normalized whole sentence when the ``happened`` quotes none — so a world-fact transcribed across rounds lands one
+    series rather than a fresh name cut from a noisy ``happened`` fragment (carry-forward item 61 chore)."""
+    return "happenstance/" + (_index.world_content_key(happened or "")[:120] or "world-content")
 
 
 def transcribe_happenstance(store: Store, brief: dict[str, Any], as_of: Any = None) -> tuple[list[Fact], list[dict[str, Any]]]:
@@ -1298,6 +1381,10 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
                     continue
                 store.write_draft(draft)
             nomination.draft = draft.uid
+            if adopted is None and nomination.rung == "new-decision" and not draft.retires and (dup := corroborates(store, draft)) is not None:
+                nomination.outcome = corroborate(store, record, draft, dup)  # a duplicate mint the consolidator should have corroborated (item 61)
+                record.nominations.append(nomination)
+                continue
             adjudicate(store, record, nomination, draft, brief)
             record.nominations.append(nomination)
     discharge_fires(store, record, brief)
@@ -1328,6 +1415,7 @@ def report(record: Consolidation, steers: list[Steer]) -> str:
                  f"minted: {', '.join(record.minted) or 'none'}"
                  + (f"; proposals expired: {', '.join(record.expired)}" if record.expired else "")
                  + (f"; dismissed as irreducible: {', '.join(record.dismissed)}" if record.dismissed else "")
+                 + (f"; corroborated (twin mint refused): {', '.join(record.corroborated)}" if record.corroborated else "")
                  + (f"; lenses retired: {', '.join(record.retired)}" if record.retired else ""))
     surfaced = record.brief.get("transcription", {}).get("surfaced", [])
     if record.transcribed or surfaced:

@@ -772,6 +772,10 @@ class Consolidation(Strict):
     """Pass proposals dropped unadopted at the bar ``proposal_ttl_consolidations``."""
     dismissed: list[str] = Field(default_factory=list)
     """Observations the noise filter dismissed as irreducible, each pointing at its reality entry (§ 10.2)."""
+    corroborated: list[str] = Field(default_factory=list)
+    """Draft uids the dedup guard routed to corroboration of an already-accepted decision instead of minting a twin
+    (carry-forward item 61): the draft rested only on world-facts that decision already anchors, so a ``still-holds``
+    currency entry corroborated the standing record and the duplicate mint was refused."""
     retired: list[str] = Field(default_factory=list)
     """Lenses retired in this pass through a crystallization door or the genesis deadline."""
     transcribed: list[Fact] = Field(default_factory=list)
