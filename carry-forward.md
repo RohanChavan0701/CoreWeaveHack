@@ -1294,6 +1294,47 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
       happenstance) is a coder-stability problem feeding the dedup gap. The other
       `-hard` arms (`20b-attached`, the strict and seeded twins) and the
       detached-strict control remain unrun.
+61. **What the item-60 run leaves broken — the two reds and the chores, lifted
+    out of the run report into their own work item.** Items 57/58 did what they
+    were built to do — budget escapes the grouping axis to `other(<way of
+    working>)`, its false ripeness is refused, and the catastrophic negative
+    transfer is gone (item 60). What the endpoint still refuses is orthogonal to
+    the axis and is the next work:
+    - **The consolidator mints twins across rounds — the dedup gap (item 56,
+      now confirmed on the endpoint).** K-0003 admitted D-0002 as
+      `rung: new-decision` from the `pool-exhausted` cluster with D-0001 already
+      in the accepted set shown to the consolidator, its `rung_why` restating
+      D-0001 almost verbatim; D-0002 then never fired (a standing tax with no
+      consumer, I5). A consolidator holding the prior decision in context still
+      mints a duplicate rather than corroborating. Next: a focused two-round repro
+      against the dedup/corroboration path — feed a fresh observation of an
+      already-admitted claim and assert it corroborates (a `counterfactual-edit` /
+      `hook-edit`, or nothing), never a new decision. This is the open item-56
+      gap, independent of the axis rework.
+    - **A method that manifests as per-task singletons never recurs into a
+      decision (item 60, the F1/F3 residue).** Every method convention this run —
+      `other(module-not-found)` (the real `nltk.parse.earley` vs `earleychart`
+      fix), `other(grammar-parsing-attempt)`, `other(invalid-json-reply)` — is an
+      `indep=1` singleton that never clears the recurrence bar, while budget is
+      the one convention that recurs cross-session (`indep≥2`). So budget is still
+      what admission sees, and ripeness (which correctly sinks both budget
+      clusters to `ripeness=0.0`) has no recurring method to float. Items 57/58
+      stopped budget drowning the axis; they cannot make a singleton method recur.
+      Open question: whether the recurrence bar / cross-session keying should
+      credit a method restated under drifting labels as the same convention.
+    - **Convention-label instability across rounds may feed the dedup gap.** The
+      one budget happenstance was coded `other(call-budget-exceeded)` in round 2
+      and `pool-exhausted` in round 3; that drift is what let the consolidator see
+      two clusters and mint the twin above. Investigate whether this is a
+      coder-stability problem (the coder naming one happenstance two ways)
+      upstream of the corroboration gap.
+    - **Chore: normalize the `happenstance/…` series names.** Lever-B
+      transcription runs (K-0002 transcribed 2/8, K-0003 3/3), but the series
+      names are cut from noisy `happened` fragments (`world_content_token`,
+      `hgi/consolidate.py:1203`) — a normalization owed.
+    - **The other `-hard` arms remain unrun.** `20b-attached`, the strict and
+      seeded twins, and the detached-strict control of
+      `experiments/reasoning-core-hard.toml` were not run at item 60.
 
 ## Decisions taken, and their risk
 
