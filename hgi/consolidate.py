@@ -710,15 +710,16 @@ def orphaned_edit(store: Store, rung: str, raw: dict[str, Any]) -> bool:
 
 
 def anchor_terms(store: Store, evidence: list[str]) -> list[str]:
-    """The task-declared work-shape terms of the tasks the evidence observations were noticed on.
+    """The task-declared work-shape terms of the tasks the evidence observations were noticed on — the **floor** on a
+    record's reach, never its ceiling (carry-forward item 57 part 4, demoting economy-run item 39).
 
-    A record's hook is the drafter's reading of the group's coded shape — the blind coder's coding of how the work
-    presented (``test-failure-triage``), which need not name what the task is about (``http-tool``). The boot index
-    matches a record to a task only where their work-shape terms intersect, so a record learned from an http-tool task
-    but hooked on the coder's shape never fires on the next http-tool task. The task's own terms are its declared
-    ``shapes`` (``suite.Task.shapes``); an observation's anchor call resolves to the evaluation row it was noticed on,
-    and that row names the task. Seed the hook with those shapes so a record is retrievable for the tasks it was
-    learned from (economy-run item 39). Only registered work-shape terms are returned, so the derived body still parses."""
+    A record's hook is the consolidator's applies-when judgment (:func:`applies_when`) — the shapes the lesson fires on,
+    biased broad — and these origin terms are the lower bound under it: a record learned from an http-tool task must at
+    least be retrievable for the next http-tool task, so the hook is seeded with the tasks' own declared ``shapes``
+    (``suite.Task.shapes``) whatever the applies-when lens answers. They are a floor, not the whole hook: the lens sets
+    the reach and this only guarantees the origin is inside it, so a hook that once pinned reach to where the lesson was
+    learned no longer defeats transfer by construction. An observation's anchor call resolves to the evaluation row it
+    was noticed on, and that row names the task. Only registered work-shape terms are returned, so the body still parses."""
     calls = {o.anchor.call for e in evidence if (o := store.observation(e)) is not None and o.anchor.call}
     if not calls:
         return []
@@ -729,15 +730,44 @@ def anchor_terms(store: Store, evidence: list[str]) -> list[str]:
     return sorted({sh for tid in tasks for sh in getattr(by_id.get(tid), "shapes", ()) if sh in registered})
 
 
-def sketch_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
+def applies_when(store: Store, sketch: Any, evidence: list[str], *, session: str | None = None) -> tuple[list[str], list[str]]:
+    """The cross-shape applicability lens at consolidation (doctrine § 7.4/§ 8, carry-forward item 57 part 4): the
+    consolidator draws the applies-when edges — the work-shape shapes the lesson fires on, and the ``not_this`` it must
+    not fire on. Reach is a judgment set at consolidation, not seeded from the origin: the origin tasks
+    (:func:`anchor_terms`) are the floor on reach, the lens biases the hook broad, and precision is recovered through
+    ``not_this``, never by shaving the hook (the authoring register in ``hgi/roles/consolidator.md``).
+
+    The origin floor is always inside the hook, whatever the lens answers. A broadening onto a pool-universal term — one
+    (essentially) every presentation carries (:func:`pool_universal_terms`) — is refused: it would fire on every task and
+    select nothing (the item-56 false-ripeness trap); the floor and the sketch's own terms are kept even if universal.
+    Returns ``(terms, not_this)`` for the consultation hook.
+    """
+    floor = anchor_terms(store, evidence)
+    registered = set(store.registry.terms("work-shape"))
+    c = _model.complete("consolidator", roles.request("applies_when", decision=sketch.decision, proposed_terms=list(sketch.terms),
+                                                      floor=floor, not_this=list(sketch.not_this), vocabulary=sorted(registered),
+                                                      pool_universal=sorted(pool_universal_terms())), session=session)
+    out = c.json() if isinstance(c.json(), dict) else {}
+    fires_on = [t for t in out.get("fires_on", []) if isinstance(t, str) and t in registered] or list(sketch.terms)
+    lens_not_this = [n for n in out.get("not_this", []) if isinstance(n, str)]
+    kept = set(sketch.terms) | set(floor)  # the sketch's own terms and the origin floor stand even where universal
+    universal_widening = (set(fires_on) - kept) & pool_universal_terms()
+    reach = [t for t in fires_on if t not in universal_widening]
+    terms = list(dict.fromkeys([*reach, *floor]))
+    not_this = list(dict.fromkeys([*sketch.not_this, *lens_not_this]))
+    return terms, not_this
+
+
+def sketch_body(store: Store, raw: dict[str, Any], *, session: str | None = None) -> dict[str, Any]:
     """A draft's body derived from the consolidator's sketch under the store's bars.
 
     A lineage move (split or fold) instead carries a body derived mechanically from the records it
     leaves — that derived body is used as given; it is the code's, not a role writing mechanism by hand.
     A nomination with neither a sketch nor a derived body is a failing field, never a placeholder.
 
-    The consultation hook is seeded with the tasks' own declared work-shape terms (:func:`anchor_terms`), on top of the
-    terms the drafter chose, so the record is retrievable for the tasks it was learned from.
+    The consultation hook's reach is the consolidator's applies-when judgment (:func:`applies_when`) — the shapes the
+    lesson fires on, biased broad, with the origin tasks (:func:`anchor_terms`) as the floor and the ``not_this`` the
+    lens draws for precision — so the record is retrievable for the shapes it transfers to, not pinned to where it was learned.
     """
     from hgi.drafting import body as _body_from_sketch
     from hgi.drafting import sketch_of
@@ -745,9 +775,9 @@ def sketch_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
     if raw.get("sketch") is not None:
         sketch = sketch_of(raw.get("sketch"), store.registry)
         evidence = [e for e in raw.get("evidence", []) if isinstance(e, str)]
-        seeded = list(dict.fromkeys([*sketch.terms, *anchor_terms(store, evidence)]))
-        if seeded != list(sketch.terms):
-            sketch = sketch.model_copy(update={"terms": seeded})
+        terms, not_this = applies_when(store, sketch, evidence, session=session)
+        if terms != list(sketch.terms) or not_this != list(sketch.not_this):
+            sketch = sketch.model_copy(update={"terms": terms, "not_this": not_this})
         return _body_from_sketch(sketch, evidence, store.registry.bars, _model.model_id("pass"))
     if raw.get("split_from") or raw.get("folded_from"):  # a lineage move derives its body from the records it leaves, not from a sketch
         derived = raw.get("body")
@@ -778,10 +808,11 @@ def pool_universal_terms(*, fraction: float = POOL_UNIVERSAL_FRACTION) -> set[st
     return {term for term, n in counts.items() if n / len(tasks) >= fraction}
 
 
-def edited_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
+def edited_body(store: Store, raw: dict[str, Any], *, session: str | None = None) -> dict[str, Any]:
     """A successor's body for an edit rung: the one superseded record's body with the rung's fields replaced — a refinement is a successor record, never a rewrite.
 
-    A non-edit rung's body is derived from the sketch instead; the record's mechanism is the code's to derive, never the role's to write.
+    A non-edit rung's body is derived from the sketch instead (:func:`sketch_body`, which draws the applies-when reach);
+    the record's mechanism is the code's to derive, never the role's to write.
 
     A ``hook-edit`` that *widens* the consultation latch onto a pool-universal term — one (essentially) every presentation
     carries (:func:`pool_universal_terms`) — is refused: the record would then fire on every task and select nothing, the
@@ -790,7 +821,7 @@ def edited_body(store: Store, raw: dict[str, Any]) -> dict[str, Any]:
     """
     rung, edit = raw.get("rung"), raw.get("edit") or {}
     if rung not in EDIT_RUNGS:
-        return sketch_body(store, raw)
+        return sketch_body(store, raw, session=session)
     if len(raw.get("supersedes") or []) != 1:
         raise ValueError(f"a {rung} supersedes exactly one record; got {raw.get('supersedes')}")
     body = store.read("decision", raw["supersedes"][0]).body().model_dump(by_alias=True, mode="json")  # type: ignore[attr-defined]
@@ -844,7 +875,7 @@ def draft_from(store: Store, record: Consolidation, raw: dict[str, Any]) -> Draf
     retires = [*(raw.get("supersedes") or []), *(raw.get("folded_from") or []), *([raw["split_from"]] if raw.get("split_from") else [])]
     return store.parse_as(Draft, {"uid": store.new_uid(), "name": store.next_name("P"), "kind": "decision", "drafted_at": now().isoformat(),
                                   "proposed_by": record.id, "rung": raw.get("rung"), "rung_why": raw.get("rung_why") or "", "displaced_from": raw.get("displaced_from"),
-                                  "body": edited_body(store, raw),
+                                  "body": edited_body(store, raw, session=record.id),
                                   "evidence": list(raw.get("evidence") or []) or inherited_evidence(store, retires),
                                   "supersedes": list(raw.get("supersedes") or []),
                                   "split_from": raw.get("split_from") or None, "folded_from": list(raw.get("folded_from") or [])})

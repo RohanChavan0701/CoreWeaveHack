@@ -56,6 +56,8 @@ REPLIES: dict[str, Any] = {
                                   "adopts": "<the uid of a proposal from the brief's `proposals` whose draft this nomination adopts as its own, else null>",
                                   "sketch": SKETCH_REPLY}]},
     "promote": {"decision": "<the payload restated at the transferable altitude: the shape the anchored instances share, never the task, file, path or tool it was seen in; one or two sentences; the instances stay as anchors>"},
+    "applies_when": {"fires_on": ["<a registered work-shape term from `vocabulary` the lesson fires on; name every shape it applies to, biased broad — the origin tasks in `floor` are the lower bound on reach, never the ceiling; do not name a term in `pool_universal`>"],
+                     "not_this": ["<a presentation the hook must not fire on; recover precision here, never by shaving `fires_on`>"]},
     "attack": {"claims": [{"target": "<a target in the `lens.claims` classes when a lens is named — premise:<id> | payload:abstraction; any of them when none is>",
                            "refutation": "<what reading of the evidence would show it false>",
                            "reading_taken": "<true if you took that reading>", "landed": "<true if the reading showed it false>", "evidence": ["<what you read>"]}]},

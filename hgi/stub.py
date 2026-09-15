@@ -421,6 +421,14 @@ def _promote(req):
     return {"decision": promoted(req["decision"], req.get("task_ids", []))}
 
 
+@handles("applies_when")
+def _applies_when(req):
+    # the cross-shape applicability lens: the consolidator draws the applies-when edges. The stub is conservative — the
+    # lesson fires on the terms the sketch proposed and keeps its not_this; broadening the reach beyond them is the model's
+    # judgment, and the origin tasks (`floor`) are unioned in by the caller as the lower bound whatever the stub answers.
+    return {"fires_on": req.get("proposed_terms", []), "not_this": req.get("not_this", [])}
+
+
 @handles("anchor")
 def _anchor(req):
     out = []
