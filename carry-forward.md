@@ -1056,6 +1056,83 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
       focused repro is two rounds of same-shape observations. The other item-55
       arms (`qwen-detached`, `20b-attached`, the strict and seeded twins) and the
       text2sql rerun remain unrun.
+57. **The observation-grouping axis is conflated with the consultation-hook
+    vocabulary, and that is the root of the budget over-keying (items 47, 56).**
+    A review against the GCE doctrine v2 (`WorldVue/docs/research/gce-doctrine/`,
+    §§ 7.4–7.5, 8, 10.3, 11.1, 12.6) and its latch walks found HGI's observation
+    *stratum* already doctrine-correct — `Observation.shape` is empty at intake
+    and filled only at the owner-gated backward pass (`hgi/types.py:368`,
+    `hgi/consolidate.py:87`) — but the *vocabulary* it is filled from is wrong.
+    `work-shape` (the 9-term closed set, `store/registry/vocabulary.json`) does
+    two incompatible jobs: decision consultation-hook routing (legitimate — it is
+    minted from known task presentations, which exist ahead of the instances) and
+    observation grouping (illegitimate — the lesson-convention axis cannot be
+    known ahead of the instances; §7.5 "classes minted ahead of instances are
+    priming"; §11.1 orthogonal-axes). Of the nine terms, seven are
+    tool/way-of-working, so the palette pushes the blind coder toward tool-major
+    shapes — the exact failure `hgi/roles/coder.md` warns against (item 87).
+    Mechanism of the budget over-keying: `tool-budget` is declared by nearly
+    every family, so budget noticings cluster across sessions and clear
+    `decision.independent_observations`, while the real conventions (the
+    produce-and-verify *method*) have no term, fall to `other(<convention>)`, and
+    never group by tuple-equality (`hgi/consolidate.py:93`), so they never reach
+    the bar. `pool_universal_terms` (`hgi/consolidate.py:686`) guards *hooks*
+    against this, not observation grouping — the leak. The fix is a six-part
+    contract evolution; parts (1)(4)(5) are the ones that would have moved the
+    reasoning-core-hard run, (2)(3)(6) the structural cleanup that stops it
+    recurring:
+    1. **Separate the axes.** A distinct, open, instance-grown *convention*
+       vocabulary (a new key-space) for observation grouping; keep `work-shape`
+       for decision hooks only. Legible symbolic keys stay on the decision side
+       (§2 position 1); grouping moves to an open axis.
+    2. **Group on raw anchors, derive the label.** The blind coder proposes
+       clusters over raw anchors (it is already blind — the coding species done
+       right) rather than picking from a closed enum and joining on tuple
+       equality; the shape is a label minted from the cluster, closed-with-escape
+       (§7.3, §7.4 "ratified against the raw anchors, never the labels").
+    3. **Give both vocabularies an escape→mint lifecycle** so they are
+       dynamically expandable — a recurring `other(X)` across independent
+       sessions nominates `X` at the owner-gated pass. Extend the existing mint
+       ladder (decision 94) and `reviews.escape_events` (item 12), do not
+       rebuild; the gap is that the ladder does not yet feed the new convention
+       axis.
+    4. **Cross-shape applicability as a consolidation lens.** Today the payload
+       is abstracted (`hgi/roles/consolidator.md`) but the hook is dragged back
+       to the origin tasks by `anchor_terms` (`hgi/consolidate.py:631`, item 79),
+       defeating transfer by construction. Demote `anchor_terms` to a floor and
+       add a generative lens asking which shapes the lesson fires on + the
+       `not_this` (§7.4/§8: the consolidator sets the applies-when edges).
+    5. **Typed `failure-unelicited` markers.** L-0004 walks every failed row
+       (`hgi/close.py:234`) but `file_observations` mints nothing on an empty
+       reply ("empty is legal", `hgi/roles/pass.md`), so a failure with no
+       elicited convention vanishes — it never forms a group, never reaches
+       `triage`'s reducible/irreducible split, never becomes a reality entry.
+       Do **not** force a substantive observation (§7.5: a forced pick
+       manufactures noise); instead file a typed marker so non-elicitation is
+       visible telemetry — the lens miss stream / recall floor (§12.6; the
+       WorldVue `11a-bg` "unknown IS a finding" shape). A failed run is the world
+       voting (reality species, §7.3); it must leave a record either way.
+    6. **Split `noticed` into `happened` / `turned_on`.** The record blends the
+       settled world-fact (price-zero, transcribable, §10.3 "knowledge of
+       happenstance") with the model's inference (the convention/fix,
+       lower-trust) in one field, though `pass.md` insists suspected and verified
+       never share a register. Split them; group on `happened`. Also apply the
+       elicitation score-strip (`hgi/close.py:200` `_world_facts`) to the coder's
+       rows — the coder is currently passed the full evaluation row, scores
+       included (`hgi/consolidate.py:85`), so the anti-over-keying discipline is
+       dropped at coding.
+    *Why it may be right:* it removes the structural selection-for-budget at its
+    source (the palette), makes transfer and non-elicitation first-class instead
+    of silent, and each part maps to a named doctrine law. *Why it may not:*
+    parts 1–3 and 6 are a schema change to the observation record and the
+    registry, so the seed stores under `experiments/seeds/` need migration and
+    the committed `store/` re-reads; grouping on raw anchors (2) trades a
+    deterministic join for a model judgment (guard it with the blind-coder
+    agreement control, decision 59); and an open convention axis without the
+    pool-universal guard extended to it (part 1 must carry the guard across)
+    could regrow a different over-broad shape. Sequence: the schema/axis seam
+    (1, 2, 6) is a contract change and ships serial-first; the consumers (3, 4, 5)
+    build on it. Migration note owed for `experiments/seeds/`.
 
 ## Decisions taken, and their risk
 
