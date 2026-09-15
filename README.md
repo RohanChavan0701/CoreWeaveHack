@@ -736,7 +736,7 @@ were launched with the venv's interpreter directly rather than through `uv
 run`, so the shell tool's `python3` was the system interpreter and every
 `import nltk` in a grammar row failed — the Qwen arms hit `No module named
 'nltk'` on twelve of twelve cfg rows apiece, spent their spare call on `pip
-install`, and answered without a verified candidate (carry-forward decision
+install`, and answered without a verified candidate (decision-log decision
 95(d) names this dependency; a launcher must put `.venv/bin` first on PATH).
 Every decision the three attached arms admitted — verify a library before
 importing it, install it or fall back to the standard library, plan the
@@ -953,7 +953,7 @@ over files with no trailing newline; `versioned_status`, an API moved under
 were coded into shapes the consolidator did not nominate on, or nominated
 and declined. The record that would have taught them is one the ladder's
 `hook-edit` and `counterfactual-edit` rungs would carry, and those rungs
-have no operator yet (carry-forward, decision 21). What the run does show
+have no operator yet (decision-log, decision 21). What the run does show
 is the mechanism at breadth on a real model: observations from every
 failure, grouping, four-role adjudication with declines, adoption, expiry,
 fires discharged and retirement — each of which the six-task baseline

@@ -180,7 +180,7 @@ and scores 0 on the first two with the third unevaluable-or-zero. The seeded
 arm's ceiling on `api` is therefore 7/12, and the family's contribution to
 the suite mean is capped at about 0.58 regardless of the store. (This is the
 same shape as the world run's `versioned_status` in `conventions`: two
-faulted calls under a budget that allowed one; carry-forward decision 64.)
+faulted calls under a budget that allowed one; decision-log decision 64.)
 
 ## The compare/contrast expectation on `world`
 

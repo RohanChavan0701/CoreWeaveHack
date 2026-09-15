@@ -34,9 +34,11 @@ Operational procedure lives in skills (see the end).
   a PR unless asked. One commit per logical step; branch off `main` for PRs.
 - **Docs are standing, present-tense descriptions of what *is*.** READMEs,
   docstrings, and seed schema cards describe the current state, not "changed from
-  X". Temporal notes — what a run showed, what's left, why a choice was made —
-  go in `carry-forward.md` (its "Leftover work" to-do list and decision log),
-  not into the durable docs.
+  X". Temporal notes stay out of the durable docs, split by kind: what's left to
+  do and where the build stands go in `carry-forward.md` (its "Leftover work"
+  to-do list); the decisions made and why each may be right or wrong go in
+  `decision-log.md` (the decision log). `carry-forward.md` stays future-facing —
+  a decision, once taken, moves to the log rather than bloating the to-do surface.
 - Derive, don't duplicate: reuse existing helpers and registries rather than
   copying vocab lists or logic.
 
