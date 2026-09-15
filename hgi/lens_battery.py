@@ -378,7 +378,7 @@ class CoderControlModel(weave.Model):
     @weave.op
     def predict(self, item: str, lens: str, name: str, noticed: str, term: str | None, is_decoy: bool, kind: str) -> dict[str, Any]:
         store: Store = self._store
-        coded, call = _coder.code([{"name": name, "noticed": noticed}], store.registry.terms("work-shape"), session=LENS_BATTERY, records_in_context=[])
+        coded, call = _coder.code([{"name": name, "noticed": noticed}], store.registry.terms("convention"), session=LENS_BATTERY, records_in_context=[])
         terms = coded.get(name, [])
         registered = [t for t in terms if not is_escape(t)]
         escaped = [t for t in terms if is_escape(t)]

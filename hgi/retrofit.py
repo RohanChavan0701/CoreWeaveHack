@@ -196,7 +196,7 @@ def snapshot(store: Store) -> dict[str, Any]:
                        "rung": d.admission.rung, "displaced_from": d.admission.displaced_from, "supersedes": list(d.lineage.supersedes),
                        "superseded_by": list(d.lineage.superseded_by), "anchors": list(d.warrant.anchors),
                        "premises": {p.id: p.status for p in d.warrant.premises}} for d in store.all("decision")],  # type: ignore[attr-defined]
-        "observations": {"open": [{"name": o.name, "session": o.session, "shape": list(o.shape), "noticed": o.noticed}
+        "observations": {"open": [{"name": o.name, "session": o.session, "shape": list(o.shape), "happened": o.happened}
                                   for o in observations if o.disposition.state == "open"],  # type: ignore[attr-defined]
                          "by_state": dict(Counter(o.disposition.state for o in observations)),  # type: ignore[attr-defined]
                          "by_shape": by_shape(observations)},

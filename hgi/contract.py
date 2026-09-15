@@ -113,7 +113,7 @@ def _propose(store, args):
 @builder("coding")
 def _coding(store, args):
     obs = store.observations("open") or store.observations(None)
-    return "coder", roles.request("coding", observations=[{"name": o.name, "noticed": o.noticed} for o in obs], terms=store.registry.terms("work-shape"))
+    return "coder", roles.request("coding", observations=[{"name": o.name, "noticed": o.happened} for o in obs], terms=store.registry.terms("convention"))
 
 
 def _brief(store: Store) -> tuple[Consolidation, dict[str, Any], list[Session]]:

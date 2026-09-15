@@ -331,7 +331,7 @@ def read_store(store_dir: Path, arm_label: str, labels: dict[str, str],
         counts = {"observations": 0, "no_shape": 0, "no_label": 0, "kept": 0}
         for o in store.observations(state=None):
             counts["observations"] += 1
-            shape = _shape(o.noticed, recode_terms or [], recode) if recode else list(o.shape)
+            shape = _shape(o.happened, recode_terms or [], recode) if recode else list(o.shape)
             if recode and shape == ["other(unclassified)"]:
                 shape = []  # a noticing the re-coding placed nowhere is a no-shape drop, as an empty stored shape is
             if not shape:
@@ -643,7 +643,7 @@ def _cmd_shaping(args) -> int:
         reg = seed(Path(tmp) / "store", model_id="stub")
         token = _registry.use(reg)
         try:
-            terms = reg.terms("work-shape")
+            terms = reg.terms("work-shape") + reg.terms("convention")
             cmp = compare_shapings(SYNTHETIC_NOTICINGS, terms, bar)
             if args.run:
                 run_root = Path(args.run)

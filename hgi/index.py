@@ -443,7 +443,7 @@ def observation_for(observations: Iterable[Observation], row: dict[str, Any]) ->
     for o in observations:
         if row.get("call") and o.anchor.call == row["call"]:
             return o
-        if not row.get("call") and str(row.get("task")) in o.noticed:
+        if not row.get("call") and str(row.get("task")) in o.happened:
             return o
     return None
 

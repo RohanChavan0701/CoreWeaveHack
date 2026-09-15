@@ -130,13 +130,16 @@ def _noticings(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         transient = next((e for e in tool_errors if e.get("transient")), None)
         anchor = {"call": row.get("call"), "path": "suite/tools.py:54"}
         if transient and not err.get("cause"):
-            out.append({"noticed": f"task {row['task']} failed on a transient fault ({transient['cause']}) and the reported error named no cause",
+            out.append({"happened": f"task {row['task']} failed on a transient fault ({transient['cause']}) and the reported error named no cause",
+                        "turned_on": "an error that wraps a failed tool call must carry the underlying cause",
                         "anchor": anchor, "recheck_when": "any tool call that can fail transiently"})
         elif transient and err.get("cause"):
-            out.append({"noticed": f"task {row['task']} named the transient cause ({transient['cause']}) and still failed: the call was not retried",
+            out.append({"happened": f"task {row['task']} named the transient cause ({transient['cause']}) and still failed: the call was not retried",
+                        "turned_on": "a transient fault is retried once before it is reported",
                         "anchor": anchor, "recheck_when": "a transient fault reported without a retry"})
         elif any("budget" in (e.get("cause") or "") for e in tool_errors):
-            out.append({"noticed": f"task {row['task']} exceeded its shell budget: independent calls were issued one per input instead of batched",
+            out.append({"happened": f"task {row['task']} exceeded its shell budget: independent calls were issued one per input instead of batched",
+                        "turned_on": "independent calls under a budget are issued as one batched call",
                         "anchor": anchor, "recheck_when": "a budgeted tool over several independent inputs"})
     return out
 
@@ -151,7 +154,8 @@ def _recovered_misses(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if nontransient is None:
             continue
         cause = nontransient.get("cause") or nontransient.get("message") or "an unstated fault"
-        out.append({"noticed": f"task {row['task']} passed only after its first attempt failed on {cause} — the convention the pass corrected on, not a transient it retried past",
+        out.append({"happened": f"task {row['task']} passed only after its first attempt failed on {cause}",
+                    "turned_on": "the convention the pass corrected on, not a transient it retried past",
                     "anchor": {"call": row.get("call"), "path": "suite/tools.py:54"}, "recheck_when": "a passed task whose first attempt hit a non-transient fault"})
     return out
 
@@ -164,7 +168,7 @@ def _off_map_noticings(subject: dict[str, Any]) -> list[dict[str, Any]]:
     failed = subject.get("failed", [])
     call = next((f["row"].get("call") for f in failed if isinstance(f.get("row"), dict) and f["row"].get("call")), None)
     tasks = ", ".join(f.get("task", "?") for f in failed) or "this pass"
-    return [{"noticed": f"work failed and matched no hook: the store holds no rule for {tasks}",
+    return [{"happened": f"work failed and matched no hook: the store holds no rule for {tasks}",
              "anchor": {"call": call, "path": None}, "recheck_when": "work that fails and consults nothing"}]
 
 
@@ -191,13 +195,32 @@ def _propose(req):
 
 @handles("coding")
 def _coding(req):
-    # Shape on the convention the noticing names when a registered convention term fits; fall back to the tool-major cue
-    # (or an escape) only when no world-convention is behind the miss — the same order the coder prompt states.
+    # Classify each observation against `terms` on the convention its text names; fall back to a tool-major cue present in
+    # `terms`, else an escape, only when no listed convention is behind the miss — the same order the coder prompt states.
     out = {}
     for o in req["observations"]:
-        conv = conventions_for(o["noticed"], req["terms"])
-        out[o["name"]] = sorted(conv) if conv else (terms_for(o["noticed"], req["terms"]) or ["other(unclassified)"])
+        text = o.get("noticed") or o.get("happened") or ""
+        conv = conventions_for(text, req["terms"])
+        out[o["name"]] = sorted(conv) if conv else (terms_for(text, req["terms"]) or ["other(unclassified)"])
     return out
+
+
+@handles("cluster")
+def _cluster(req):
+    # Group observations by the convention their `happened` names: a registered convention term when one fits, else the
+    # way-of-working lesson the text turns on (other(<lesson>)), else other(unclassified). Distinct conventions fall in
+    # distinct clusters even when the same tool is behind them — the shape is the convention, never the tool.
+    groups: dict[str, list[str]] = {}
+    for o in req["observations"]:
+        text = o.get("happened") or o.get("noticed") or ""
+        conv = conventions_for(text, req["terms"])
+        if conv:
+            label = sorted(conv)[0]
+        else:
+            key = lesson_key([text])
+            label = f"other({key})" if key else "other(unclassified)"
+        groups.setdefault(label, []).append(o["name"])
+    return {"clusters": [{"convention": label, "observations": names} for label, names in groups.items()]}
 
 
 # --- the consolidator ---------------------------------------------------------------------
@@ -347,7 +370,7 @@ def _nominate(req):
         sessions = {o["session"] for o in obs}
         if len(sessions) < bars["decision"]["independent_observations"]:
             continue
-        key = lesson_key([o["noticed"] for o in obs])
+        key = lesson_key([o.get("happened") or o.get("noticed") or "" for o in obs])
         if key is None:
             continue
         covered = [d for d in accepted if key in d["decision"].lower() or (key == "batch" and "batched" in d["decision"].lower())]
@@ -424,7 +447,7 @@ IRREDUCIBLE = ("model call failed", "endpoint ", "turn limit", "hidden test rais
 
 @handles("triage")
 def _triage(req):
-    texts = [str(o.get("noticed", "")).lower() for o in req.get("observations", [])]
+    texts = [str(o.get("happened") or o.get("noticed") or "").lower() for o in req.get("observations", [])]
     texts += [str((r.get("error") or {}).get("message", "")).lower() + " " + str((r.get("error") or {}).get("cause", "")).lower() for r in req.get("rows", [])]
     texts = [t for t in texts if t.strip()]
     if texts and all(any(m in t for m in IRREDUCIBLE) for t in texts):

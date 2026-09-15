@@ -36,7 +36,7 @@ NO_HOOK = "none"
 """The record a fired-off-map disposition names when the work matched no hook at all."""
 
 OBSERVATION_LENSES = ("L-0004", "L-0009", "L-0010")
-"""The close generative lenses whose product is observations: each finding's {noticed, anchor} files as one. L-0004 reads
+"""The close generative lenses whose product is observations: each finding's {happened, turned_on, anchor} files as one. L-0004 reads
 the failed rows; L-0009 reads their complement — the passed rows that recovered from a non-transient fault; L-0010 reads
 the whole pass for the off-map condition, the failure the store had no hook for."""
 
@@ -111,8 +111,10 @@ def dispose(store: Store, session: Session) -> list[Disposition]:
 
 def file_observations(store: Store, session: Session) -> list[Observation]:
     """Step 3a. Each finding from a close observation-producing lens (:data:`OBSERVATION_LENSES`) with an anchor and a
-    ``noticed`` becomes an observation; a finding with no anchor, or with nothing noticed (a reply that dropped the field),
-    is not filed — an observation states what happened.
+    non-empty ``happened`` becomes an observation; a finding with no anchor, or with nothing in ``happened`` (a reply that
+    dropped the field), is not filed — an observation states the settled world-fact that happened. The optional
+    ``turned_on`` carries the convention the attempt met or missed, the model's inference, kept out of the ``happened``
+    register.
 
     A finding from a world-fact lens (any but :data:`OFF_MAP_LENS`) whose subject is a store record or the loop itself —
     "no store records consulted", "the check record should have fired" — is store machinery masquerading as a world fact
@@ -124,13 +126,14 @@ def file_observations(store: Store, session: Session) -> list[Observation]:
             continue
         for f in answer.findings:
             anchor = dict(f.get("anchor") or {})
-            noticed = str(f.get("noticed") or "").strip()
-            if not any(anchor.values()) or not noticed:
+            happened = str(f.get("happened") or "").strip()
+            turned_on = str(f.get("turned_on") or "").strip() or None
+            if not any(anchor.values()) or not happened:
                 continue
-            if answer.lens != OFF_MAP_LENS and _index.self_referential(noticed, anchor):
+            if answer.lens != OFF_MAP_LENS and _index.self_referential(happened, anchor):
                 continue  # a world-fact lens answered about the store, not the world; drift, not a world fact
             o = Observation(uid=store.new_uid(), name=store.next_name("O"), noticed_at=now(), session=session.id,
-                            noticed=str(f["noticed"]), anchor=anchor, recheck_when=f.get("recheck_when"))
+                            happened=happened, turned_on=turned_on, anchor=anchor, recheck_when=f.get("recheck_when"))
             store.write(o)
             session.observations_filed.append(o.name)
             out.append(o)

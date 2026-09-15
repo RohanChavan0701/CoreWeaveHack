@@ -264,7 +264,7 @@ def _pass_entry(store, session, batch: int, suite, revisit: bool, consolidation,
              "symptoms": dict(Counter(r["symptom"] for r in rows)), "rows": rows,
              "in_context": in_context, "mentions": {l: ids for l, ids in mentions.items() if ids}, "applied": applied,
              "work_shape": session.work_shape.terms, "proposals": len(session.proposals),
-             "observations": [{"name": o.name, "noticed": o.noticed, "shape": o.shape, "state": o.disposition.state}
+             "observations": [{"name": o.name, "happened": o.happened, "turned_on": o.turned_on, "shape": o.shape, "state": o.disposition.state}
                               for o in store.observations(state=None) if o.name in session.observations_filed],
              "consolidation": None}
     if consolidation is not None:
@@ -378,7 +378,7 @@ def arm_markdown(log: dict[str, Any]) -> str:
               "consolidation (`open` until one has run); a group reaches the bar when its observations come from as many distinct sessions as the bar asks.", ""]
     for p in log["passes"]:
         for o in p["observations"]:
-            lines.append(f"- pass {p['pass']} {o['name']} [{', '.join(o['shape'] or []) or o['state']}]: {o['noticed']}")
+            lines.append(f"- pass {p['pass']} {o['name']} [{', '.join(o['shape'] or []) or o['state']}]: {o['happened']}")
         k = p["consolidation"]
         if k is not None:
             for g in k["groups"]:

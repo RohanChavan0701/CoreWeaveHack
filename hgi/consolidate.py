@@ -15,7 +15,7 @@ The brief the consolidator reads is the analyst's (ARIA's) report when its URI
 is recorded on the pass (the programmatic surface: :func:`consolidation_brief`
 resolves the URI through :func:`hgi.mirror.read_report`), and otherwise it is
 derived here from the ledgers (applied ÷ considered per record, observations
-grouped by the blind coder's shapes under the independence qualifier,
+grouped by the blind coder's convention clusters under the independence qualifier,
 task-level credit for every applied record, escape clusters). Either way the
 report is the nominator's rows only — the machine enumerates, proposes and
 audits over the store's live records; it never authors a verdict or a fact.
@@ -70,31 +70,112 @@ def sessions_since_last(store: Store) -> tuple[list[Session], int]:
     return sessions, last
 
 
+def _convention_label(store: Store, label: str) -> str:
+    """A cluster's minted shape as a valid ``convention`` Term: the coder's label when it is a registered convention term
+    or an ``other(<what>)`` escape, else wrapped as ``other(<label>)`` so the observation record parses."""
+    label = str(label or "other(uncoded)")
+    try:
+        return store.registry.check("convention", label)
+    except ValueError:
+        return f"other({label})"
+
+
+def _demote_pool_universal(resolved: list[tuple[str, list[Observation]]], total: int) -> list[tuple[str, list[Observation]]]:
+    """A convention carried by at least :data:`POOL_UNIVERSAL_FRACTION` of the grouped instances *while distinct
+    conventions exist beside it* is pool-universal: it means nothing and must not dominate grouping, so its cluster is
+    broken back into singletons (carry-forward item 57 — the guard the ``work-shape`` hooks carry, :func:`pool_universal_terms`,
+    extended to the open grouping axis).
+
+    Conservative in two ways: it fires only over a pool of two or more instances, and only when the pool holds more than
+    one cluster — a pool whose every instance genuinely shares one convention is one real recurrence, not a shape drowning
+    others, so it is kept."""
+    if total < 2 or len(resolved) < 2:
+        return resolved
+    out: list[tuple[str, list[Observation]]] = []
+    for label, members in resolved:
+        if len(members) > 1 and len(members) / total >= POOL_UNIVERSAL_FRACTION:
+            out.extend((label, [o]) for o in members)
+        else:
+            out.append((label, members))
+    return out
+
+
 def group_observations(store: Store, record: Consolidation) -> list[dict[str, Any]]:
-    """Blind coding fills each open observation's ``shape``; equal shapes group, with the independence qualifier applied later.
+    """The blind coder clusters the open observations by the convention each turned on; each cluster's ``shape`` is a minted
+    ``convention`` label (a registered term or an ``other(<what>)`` escape) ratified against the raw ``happened``, never a
+    pre-picked enum joined by string equality. Same-convention observations group, with the independence qualifier applied
+    later; an observation the coder places in no cluster stands as its own singleton.
 
     An observation a deferred draft already rests on is claimed until that
     draft is disposed — a deferred draft is not nominated twice from the same
     instances. A pass proposal is left unclaimed: its instances still group,
     which is how a nomination comes to adopt it.
+
+    The rows the coder reads are score-stripped exactly as the eliciting brief is (:func:`hgi.close._world_facts`), so no
+    series name reaches coding and the anti-over-keying discipline holds here too (carry-forward item 57, part 6). A
+    convention carried by (essentially) every grouped instance is pool-universal and cannot dominate grouping
+    (:func:`_demote_pool_universal`).
     """
+    from hgi.close import _world_facts  # the same score-strip the elicitation applies, reused here for the coder's rows
+
     claimed = {e for p in store.drafts() if p.deferral for e in p.evidence}
     open_obs = [o for o in store.observations("open") if o.name not in claimed and o.uid not in claimed]
     if not open_obs:
         return []
-    rows_by_call = {row.get("call"): row for s in store.all("session") if s.attached and s.evaluation  # type: ignore[attr-defined]
-                    for row in s.evaluation.rows if row.get("call")}  # type: ignore[attr-defined]
-    shapes, call = _coder.code([{"name": o.name, "noticed": o.noticed, "anchor": o.anchor.model_dump(exclude_none=True)} for o in open_obs],
-                               store.registry.terms("work-shape"), rows=rows_by_call, session=record.id, records_in_context=[])
-    groups: dict[tuple[str, ...], list[Observation]] = defaultdict(list)
-    for o in open_obs:
-        o.shape = sorted(shapes.get(o.name, ["other(uncoded)"]))
-        store.write(o)
-        groups[tuple(o.shape)].append(o)
-    return [{"shape": list(shape), "coder_call": call,
-             "observations": [{"name": o.name, "uid": o.uid, "session": o.session, "noticed": o.noticed, "anchor": o.anchor.model_dump()} for o in obs],
-             "sessions": sorted({o.session for o in obs})}
-            for shape, obs in sorted(groups.items())]
+    rows_by_call = {call: _world_facts(row) for s in store.all("session") if s.attached and s.evaluation  # type: ignore[attr-defined]
+                    for row in s.evaluation.rows if (call := row.get("call"))}  # type: ignore[attr-defined]
+    clusters, call = _coder.cluster([{"name": o.name, "happened": o.happened, "anchor": o.anchor.model_dump(exclude_none=True)} for o in open_obs],
+                                    store.registry.terms("convention"), rows=rows_by_call, session=record.id, records_in_context=[])
+    by_name = {o.name: o for o in open_obs}
+    resolved: list[tuple[str, list[Observation]]] = []
+    assigned: set[str] = set()
+    for cl in clusters:
+        members = [by_name[n] for n in cl["observations"] if n in by_name and n not in assigned]
+        if not members:
+            continue
+        assigned.update(o.name for o in members)
+        resolved.append((_convention_label(store, cl["shape"]), members))
+    for o in open_obs:  # an observation the coder placed in no cluster stands as its own singleton
+        if o.name not in assigned:
+            resolved.append(("other(uncoded)", [o]))
+    resolved = _demote_pool_universal(resolved, len(open_obs))
+    resolved.sort(key=lambda lm: (lm[0], sorted(o.name for o in lm[1])))
+    out = []
+    for label, members in resolved:
+        for o in members:
+            o.shape = [label]
+            store.write(o)
+        sessions = sorted({o.session for o in members})
+        out.append(_grouped_cluster(label, call, members, sessions))
+    return out
+
+
+def _grouped_cluster(convention: str, coder_call: str | None, members: list[Observation], sessions: list[str]) -> dict[str, Any]:
+    """The frozen grouped-cluster contract the brief hands the consolidator (carry-forward items 57, 58). Three orthogonal
+    cuts, kept distinct — never collapsed into one token:
+
+    - **Cut A — truth-maker** (``convention``): the world-fact the members share, ratified against the raw anchors, from
+      the open ``convention`` axis (a registered term or ``other(<what>)``), distinct from the ``work-shape`` hook
+      vocabulary. Grouping keys on this alone, never on presentation or on ``turned_on``. ``shape`` is its legacy list
+      alias (``[convention]``) the brief consumers still read.
+    - **Cut B — provenance** (per member): ``happened``, the settled world-fact (the grouping evidence, price-zero and
+      transcribable), against ``turned_on``, the model's inferred lesson (optional, never the grouping key).
+    - **Cut C — altitude/ripeness** (per cluster): ``world_content_variance`` over the members' ``happened`` and
+      ``presentation_universality`` over their presentation/work-shape terms. Left ``None`` here; item 58 computes and
+      uses them, so the slots are frozen into the contract without reopening it.
+
+    ``independence`` is the distinct-session count; each member carries its ``anchor`` and ``session``."""
+    return {
+        "convention": convention,
+        "shape": [convention],
+        "coder_call": coder_call,
+        "independence": len(sessions),
+        "world_content_variance": None,
+        "presentation_universality": None,
+        "observations": [{"name": o.name, "uid": o.uid, "session": o.session, "happened": o.happened,
+                          "turned_on": o.turned_on, "anchor": o.anchor.model_dump()} for o in members],
+        "sessions": sessions,
+    }
 
 
 def credit_table(store: Store, sessions: list[Session]) -> list[dict[str, Any]]:
@@ -279,7 +360,7 @@ def group_evidence(store: Store, group: dict[str, Any]) -> dict[str, Any]:
     rows = [{"session": s.id, "task": row.get("task"), "error": row.get("error"), "tool_errors": row.get("tool_errors", []), "call": row.get("call")}
             for s in store.all("session") if s.attached and s.evaluation  # type: ignore[attr-defined]
             for row in s.evaluation.rows if row.get("call") in calls]  # type: ignore[attr-defined]
-    return {"rows": rows, "anchors": sorted(calls), "observations": [{"name": o.name, "session": o.session, "noticed": o.noticed, "anchor": o.anchor.model_dump(exclude_none=True)}
+    return {"rows": rows, "anchors": sorted(calls), "observations": [{"name": o.name, "session": o.session, "happened": o.happened, "anchor": o.anchor.model_dump(exclude_none=True)}
                                                                     for o in obs if o is not None]}
 
 
@@ -305,7 +386,7 @@ def triage(store: Store, record: Consolidation, brief: dict[str, Any]) -> list[d
     for group in brief.get("groups", []):
         obs_objs = [o for name in group.get("observations", [])
                     if (o := store.observation(name["name"] if isinstance(name, dict) else name)) is not None]
-        if obs_objs and all(_index.self_referential(o.noticed, o.anchor) for o in obs_objs):
+        if obs_objs and all(_index.self_referential(o.happened, o.anchor) for o in obs_objs):
             names = [o.name for o in obs_objs]
             for o in obs_objs:
                 if o.disposition.state == "open":
@@ -492,7 +573,7 @@ def promote(store: Store, record: Consolidation, draft: Draft, evidence: dict[st
     payload at the transferable shape and keep the instances as anchors. The revised draft replaces the one on disk and
     is what the attack's abstraction angle re-walks and the adjudicator judges; ``None`` when the reply carries no new
     payload, in which case the adjudicator amends the payload itself."""
-    instances = [o.noticed for e in draft.evidence if (o := store.observation(e)) is not None]
+    instances = [o.happened for e in draft.evidence if (o := store.observation(e)) is not None]
     c = _model.complete("consolidator", roles.request("promote", decision=draft.body.decision, refutations=[{"refutation": x.get("refutation"), "evidence": x.get("evidence", [])} for x in landed],
                                                       task_ids=evidence["task_ids"], instances=instances,
                                                       instruction="promote the payload to the transferable shape; keep the instances as anchors"), session=record.id)

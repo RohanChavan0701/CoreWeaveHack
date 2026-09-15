@@ -3,8 +3,12 @@
 Two roles that want a deterministic, non-narrative answer, kept out of the
 context that would otherwise decide for itself:
 
-- ``code`` classifies raw anchored observations against the registry's
-  work-shape terms *without seeing* the consolidator's candidate labels;
+- ``cluster`` groups raw anchored observations by the convention each turned
+  on — the backward pass's grouping axis — proposing clusters over the raw
+  ``happened`` rather than picking from a closed enum, *without seeing* the
+  consolidator's candidate labels;
+- ``code`` classifies raw anchored observations against a registry vocabulary
+  (the escape reviews, the lens battery) *without seeing* any candidate label;
 - ``guard`` returns a hook's guard result for a work-shape classification,
   so the context that will apply the payload does not decide whether it fires.
 
@@ -71,3 +75,25 @@ def code(observations: list[dict[str, Any]], terms: list[str], *, rows: dict[str
     c = _ask("coding", observations=payload, terms=terms, **trace)
     out = c.json()
     return {k: list(v) for k, v in out.items()}, c.call
+
+
+def cluster(observations: list[dict[str, Any]], terms: list[str], *, rows: dict[str, dict[str, Any]] | None = None, **trace) -> tuple[list[dict[str, Any]], str | None]:
+    """Blind clustering: the coder proposes clusters over the raw anchored observations, each a convention it judges them
+    to share. Returns ``([{shape, observations}], call)`` — the shape a convention label minted from the cluster (a
+    registered ``convention`` term when one fits, else ``other(<what>)``), the observations the names it groups.
+
+    Two observations group when the coder judges the same convention, ratified against the raw ``happened`` (and the
+    anchored row's ``result``/``commands`` when ``rows`` is given, :func:`coding_observations`), never against a pre-minted
+    term joined by string equality. An observation the coder places in no cluster is absent from the result; the caller
+    makes it its own singleton."""
+    payload = coding_observations(observations, rows) if rows is not None else observations
+    c = _ask("cluster", observations=payload, terms=terms, **trace)
+    out = c.json()
+    clusters = []
+    for cl in (out.get("clusters", []) if isinstance(out, dict) else []):
+        if not isinstance(cl, dict):
+            continue
+        names = [n for n in cl.get("observations", []) if isinstance(n, str)]
+        if names:
+            clusters.append({"shape": str(cl.get("convention") or "other(uncoded)"), "observations": names})
+    return clusters, c.call
