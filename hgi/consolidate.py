@@ -243,6 +243,27 @@ def local_analysis(store: Store, record: Consolidation, sessions: list[Session])
     }
 
 
+def unelicited_failures(store: Store, sessions: list[Session]) -> list[dict[str, Any]]:
+    """The window's ``failure-unelicited`` markers (:func:`hgi.close.file_unelicited_markers`): a failed row that elicited
+    no observation, surfaced as the lens miss stream / recall floor for the human (carry-forward item 57 part 5).
+
+    Read off the reality-species ledger the passes wrote at close, scoped to the sessions this consolidation reads. Each
+    row carries the settled world-fact (``happened``, price-zero) and the row's anchor, so it reaches the backward pass as
+    telemetry — never a group to nominate on (it filed no observation, so grouping and triage never read it) and never an
+    elicited lesson. Item 58 transcribes the ``happened`` floor from the marker entries; this is only their projection.
+    """
+    from hgi.close import FAILURE_UNELICITED
+
+    window = {s.id for s in sessions}
+    out = []
+    for e in store.all("hypothesis"):
+        coding = e.contradiction.coding  # type: ignore[attr-defined]
+        if e.species == "reality" and isinstance(coding, dict) and coding.get("marker") == FAILURE_UNELICITED and coding.get("session") in window:  # type: ignore[attr-defined]
+            out.append({"session": coding.get("session"), "task": coding.get("task"), "happened": coding.get("happened"),
+                        "anchor": coding.get("anchor"), "ledger_entry": e.id})
+    return sorted(out, key=lambda r: r["ledger_entry"])
+
+
 def assemble_brief(store: Store, record: Consolidation, sessions: list[Session], analysis: dict[str, Any]) -> dict[str, Any]:
     """The whole brief around a set of analytical rows — the analyst's or the local pass's — over the store's live state.
 
@@ -273,6 +294,7 @@ def assemble_brief(store: Store, record: Consolidation, sessions: list[Session],
                      for d in store.decisions("accepted")],
         "proposals": proposals(store),
         "steers": [t.id for t in store.all("steer")],
+        "unelicited": unelicited_failures(store, sessions),
         "fires_owed": [f for f in _index.undischarged_fires(store) if f["disposer"] == BACKWARD_PASS],
         "attacker": _index.attacker(store),
     }

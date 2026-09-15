@@ -751,7 +751,9 @@ class Consolidation(Strict):
     after_pass: int
     sessions_read: list[str]
     brief: dict[str, Any] = Field(default_factory=dict)
-    """The consolidation brief: applied ÷ considered per record, observation groups by convention cluster, escape clusters."""
+    """The consolidation brief: applied ÷ considered per record, observation groups by convention cluster, escape clusters,
+    and the ``unelicited`` recall-floor telemetry — the window's ``failure-unelicited`` markers (a failed row that elicited
+    no observation), surfaced for the human, never a group to nominate on."""
     analyst_report: str | None = None
     """The ARIA report URI, when the brief was drafted by the analyst."""
     nominations: list[Nomination] = Field(default_factory=list)

@@ -140,6 +140,49 @@ def file_observations(store: Store, session: Session) -> list[Observation]:
     return out
 
 
+FAILURE_UNELICITED = "failure-unelicited"
+"""The marker kind on a reality-species entry a failed row files when it elicited no observation (carry-forward item 57
+part 5): non-elicitation made visible telemetry — the lens miss stream, the recall floor of the elicitation."""
+
+
+def file_unelicited_markers(store: Store, session: Session) -> list[LedgerEntry]:
+    """Step 3c. A failed row that produced no observation files a typed ``failure-unelicited`` marker so non-elicitation
+    does not vanish silently (carry-forward item 57 part 5; doctrine "A failed run is the world voting", §7.1/§7.3).
+
+    L-0004 walks once per failed row, but ``file_observations`` mints nothing on an empty reply ("empty is legal"), so a
+    failed row that elicits no convention would never form a cluster, never reach ``triage``'s reducible/irreducible split,
+    never become a reality entry — it would be a silent recall-floor miss. A substantive observation is **not** forced (a
+    forced pick manufactures noise, §7.5); instead the world's vote is recorded as a reality-species marker carrying the
+    settled world-fact (``happened``, price-zero and transcribable) and the row's anchor, so the backward pass surfaces it
+    in the consolidation brief (:func:`hgi.consolidate.unelicited_failures`) as telemetry for the human. It is never an
+    elicited lesson: it files no observation, so grouping and nomination never read it, and it carries no ``turned_on``.
+
+    A failed row the pass *did* notice — an observation anchored on it (:func:`hgi.index.observed_from`) — is elicited and
+    files no marker; a passed row is not the world voting against the loop and files none either.
+    """
+    rows = session.evaluation.rows if session.evaluation else []
+    out = []
+    for row in rows:
+        if _index.row_passed(row) or _index.observed_from(store, session, row):
+            continue
+        task = row.get("task")
+        err = row.get("error")
+        cause = (err.get("cause") or err.get("message")) if isinstance(err, dict) else (err if isinstance(err, str) else None)
+        happened = f"task {task} failed and elicited no convention" + (f": {cause}" if cause else "")
+        anchor = {k: v for k, v in {"call": row.get("call")}.items() if v}
+        entry = LedgerEntry(id=store.mint("hypothesis"), at=now(), species="reality", subject=f"unelicited/{session.id}/{task}",
+                            claim=f"a failed row of task {task} elicited no convention: the world voted and the elicitation missed",
+                            proposer=RoleCall(role="pass", model_id=None, call=None),
+                            contradiction={"source": {"role": "oracle", "model_id": None, "call": row.get("call")},
+                                           "coding": {"marker": FAILURE_UNELICITED, "happened": happened, "anchor": anchor,
+                                                      "task": task, "session": session.id, "row": _world_facts(row)}},
+                            verdict="pending")
+        store.append(entry)
+        session.ledger_entries.append(entry.id)
+        out.append(entry)
+    return out
+
+
 def proposer_of(store: Store, record: Any) -> RoleCall:
     """The party that put a record's claim forward: the proposer on its admission's ledger entry, else the role that admitted it."""
     entry_id = getattr(getattr(record, "admission", None), "ledger_entry", None)
@@ -270,6 +313,7 @@ def close(store: Store, session_id: str) -> Session:
     if undischarged:
         raise SystemExit(f"close refused [fire-completeness]: fires owed to the working pass left undischarged: {', '.join(undischarged)}")
     file_observations(store, session)
+    file_unelicited_markers(store, session)
     file_contradictions(store, session)
     _steers.capture(store, session)
     propose(store, session)
