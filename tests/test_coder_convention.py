@@ -18,19 +18,21 @@ from hgi import roles
 
 # --- the convention vocabulary is registered ---------------------------------------------------
 
-def test_the_seed_registers_convention_major_work_shape_terms(store):
-    terms = set(store.registry.terms("work-shape"))
-    # the tool-major cues stay — the boot classify still keys hooks on them
-    assert {"http-tool", "shell-tool", "tool-budget"} <= terms
-    # and the convention-major shapes the coder groups observations by are there too
+def test_the_axes_are_split_work_shape_hooks_convention_grouping(store):
+    work_shape = set(store.registry.terms("work-shape"))
+    convention = set(store.registry.terms("convention"))
+    # the tool-major cues stay on work-shape — the boot classify keys hooks on them
+    assert {"http-tool", "shell-tool", "tool-budget"} <= work_shape
+    # the convention-major shapes the coder groups observations by live on the separate convention axis, not work-shape
     assert {"route-versioned", "listing-paged", "route-guarded", "field-quoted",
-            "summary-row", "line-unterminated", "byte-order-mark", "schema-coded-value"} <= terms
+            "summary-row", "line-unterminated", "byte-order-mark", "schema-coded-value"} <= convention
+    assert not (convention & work_shape), "the two axes share no term: grouping and hooks are separated (item 57)"
 
 
 # --- one tool, two conventions, two shapes -----------------------------------------------------
 
 def _code(store, observations):
-    coded, _ = _coder.code(observations, store.registry.terms("work-shape"), session="K-test", records_in_context=[])
+    coded, _ = _coder.code(observations, store.registry.terms("convention"), session="K-test", records_in_context=[])
     return coded
 
 
@@ -104,13 +106,14 @@ def test_a_shell_footer_and_a_shell_newline_do_not_share_a_shape(store):
     assert coded["o-footer"] != coded["o-newline"]  # the shell tool no longer collapses them into one shape
 
 
-def test_a_way_of_working_with_no_convention_keeps_a_tool_major_shape(store):
-    """A budget miss turns on the way of working itself, not a world-convention — the tool-major term is the honest shape."""
+def test_a_way_of_working_with_no_convention_escapes_on_the_convention_axis(store):
+    """A budget miss turns on the way of working itself, not a world-convention — the convention axis has no term for it,
+    so it escapes rather than borrowing a tool term (which now lives only on the separate work-shape hook axis)."""
     coded = _code(store, [
         {"name": "o-budget", "noticed": "task fan_out exceeded its shell budget: independent calls were issued one per input instead of batched"},
     ])
     shape = coded["o-budget"]
-    assert "tool-budget" in shape  # a tool-major shape, since no world-convention is behind the miss
+    assert all(t.startswith("other(") for t in shape)  # no convention covers a bare way of working; it escapes
     conventions = {"route-versioned", "listing-paged", "route-guarded", "field-quoted", "summary-row", "line-unterminated", "byte-order-mark"}
     assert not (conventions & set(shape))
 
@@ -137,7 +140,7 @@ def test_the_coding_request_carries_the_noticing_and_no_lesson_label(store):
     from hgi.types import Observation
 
     store.write(Observation(uid=store.new_uid(), name="O-0001", noticed_at=now(), session="S-0001",
-                            noticed="the route answered 410 and named its /v2 successor", anchor={"call": "weave:///t/c"}))
+                            happened="the route answered 410 and named its /v2 successor", anchor={"call": "weave:///t/c"}))
     role, payload = BUILDERS["coding"](store, None)  # the coding builder assembles the request the coder answers
     obj = json.loads(payload)
     assert role == "coder" and obj["request"] == "coding"

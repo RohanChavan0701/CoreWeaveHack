@@ -31,7 +31,7 @@ def _session(store, pass_: int) -> Session:
 
 
 def _observe(store, session: Session) -> Observation:
-    o = Observation(uid=store.new_uid(), name=store.next_name("O"), noticed_at=now(), session=session.id, noticed=NO_CAUSE,
+    o = Observation(uid=store.new_uid(), name=store.next_name("O"), noticed_at=now(), session=session.id, happened=NO_CAUSE,
                     anchor={"path": "suite/tools.py:54"})
     store.write(o)
     return o
@@ -75,14 +75,14 @@ def test_read_report_returns_none_when_the_uri_resolves_to_no_report(tmp_path):
 def test_the_analyst_report_is_the_primary_input_and_drives_the_nomination(tmp_path, store):
     """The analyst's groups — not the local coder — become the nominator's rows, and admit the decision they carry."""
     o1, o2 = _two_independent(store)
-    report = {"groups": [{"shape": ["error-wrapping"],
-                          "observations": [{"name": o1.name, "session": o1.session, "noticed": NO_CAUSE},
-                                           {"name": o2.name, "session": o2.session, "noticed": NO_CAUSE}]}]}
+    report = {"groups": [{"shape": ["other(no-cause)"],
+                          "observations": [{"name": o1.name, "session": o1.session, "happened": NO_CAUSE},
+                                           {"name": o2.name, "session": o2.session, "happened": NO_CAUSE}]}]}
     record = _consolidate.consolidate(store, analyst_report=_report_path(tmp_path, report))
     assert record.admitted == ["D-0001"]
     assert record.analyst_report and record.analyst_report.endswith("aria-report.json")
     promoted = {o.name: o for o in store.observations(state=None)}
-    assert promoted[o1.name].shape == ["error-wrapping"], "the analyst's coding was stamped onto the observation"
+    assert promoted[o1.name].shape == ["other(no-cause)"], "the analyst's coding was stamped onto the observation"
 
 
 def test_an_empty_analyst_report_replaces_the_local_derivation_and_nominates_nothing(tmp_path, store):

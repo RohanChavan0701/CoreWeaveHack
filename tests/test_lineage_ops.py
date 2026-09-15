@@ -14,7 +14,7 @@ from tests.conftest import NOW, adjudicated_entry, adjudicator, decision_body, d
 
 def _observe(store, name: str, session: str):
     store.write(Observation(uid=store.new_uid(), name=name, noticed_at=NOW, session=session,
-                            noticed="the http tool's retry wrapper drops the 502 body", anchor={"path": "suite/tools.py:41"}))
+                            happened="the http tool's retry wrapper drops the 502 body", anchor={"path": "suite/tools.py:41"}))
 
 
 def _admit(store, name: str, **overrides):

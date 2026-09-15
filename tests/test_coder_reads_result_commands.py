@@ -36,7 +36,7 @@ def test_group_observations_puts_result_and_commands_to_the_coder(store, monkeyp
                                  "rows": [row]}})
     store.write(s)
     store.write(Observation(uid=store.new_uid(), name=store.next_name("O"), noticed_at=now(), session=s.id,
-                            noticed="the query matched nothing", anchor={"call": call}))
+                            happened="the query matched nothing", anchor={"call": call}))
 
     seen = {}
 

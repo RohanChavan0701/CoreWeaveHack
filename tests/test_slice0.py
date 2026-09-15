@@ -19,7 +19,7 @@ from tests.conftest import NOW, adjudicator, adjudicated_entry, decision_body, d
 def _write_observation(store, name: str, session: str):
     from hgi.types import Observation
     store.write(Observation(uid=store.new_uid(), name=name, noticed_at=NOW, session=session,
-                            noticed="the http tool's retry wrapper drops the 502 body", anchor={"path": "suite/tools.py:41"}))
+                            happened="the http tool's retry wrapper drops the 502 body", anchor={"path": "suite/tools.py:41"}))
 
 
 def test_decision_admits_through_committer(store):

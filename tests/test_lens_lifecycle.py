@@ -27,7 +27,7 @@ def test_a_close_lens_is_anchored_to_the_observation_it_filed_once_the_backward_
     s2 = _session(store, 2, [FAULTED], {"task_pass_rate": 0.5, "error_cause_present": 0.0})
     for s in (s1, s2):
         o = _observe(store, s, NO_CAUSE)
-        _walk(store, s, "L-0004", [{"noticed": o.noticed, "anchor": {"path": "suite/tools.py:54"}}])
+        _walk(store, s, "L-0004", [{"happened": o.happened, "anchor": {"path": "suite/tools.py:54"}}])
     assert _lens_of(store, "L-0004").warrant.anchors == []
     record = _consolidate.consolidate(store)
     assert record.admitted == ["D-0001"] and "L-0004" in record.anchored

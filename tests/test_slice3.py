@@ -25,7 +25,7 @@ def _session(store, pass_: int, rows: list[dict], scores: dict[str, float | None
 
 
 def _observe(store, session: Session, noticed: str) -> Observation:
-    o = Observation(uid=store.new_uid(), name=store.next_name("O"), noticed_at=now(), session=session.id, noticed=noticed,
+    o = Observation(uid=store.new_uid(), name=store.next_name("O"), noticed_at=now(), session=session.id, happened=noticed,
                     anchor={"path": "suite/tools.py:54"})
     store.write(o)
     return o

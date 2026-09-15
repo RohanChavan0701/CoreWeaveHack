@@ -12,7 +12,9 @@ from hgi import grouping_sweep as gs
 
 
 def _compare(store):
-    return gs.compare_shapings(gs.SYNTHETIC_NOTICINGS, store.registry.terms("work-shape"), bar=2)
+    # the coder shapes observations on the convention axis; the tool-major arm strips the convention terms internally
+    terms = store.registry.terms("work-shape") + store.registry.terms("convention")
+    return gs.compare_shapings(gs.SYNTHETIC_NOTICINGS, terms, bar=2)
 
 
 def test_tool_major_shaping_leaves_exact_match_impure(store):

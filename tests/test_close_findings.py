@@ -31,13 +31,13 @@ def _admit(store, name="D-0001"):
 def test_a_finding_with_no_noticed_is_not_filed_and_does_not_stop_the_close(store):
     s = _session(store, 1, [FAULTED], {"task_pass_rate": 0.5, "error_cause_present": 0.0})
     s.lens_answers.append(LensAnswer(lens="L-0004", answer="", findings=[
-        {"noticed": "the retry was not attempted", "anchor": {"path": "suite/tools.py:54"}},
+        {"happened": "the retry was not attempted", "anchor": {"path": "suite/tools.py:54"}},
         {"anchor": {"path": "suite/tools.py:54"}},
-        {"noticed": "  ", "anchor": {"path": "suite/tools.py:54"}},
-        {"noticed": "no anchor, not filed either"},
+        {"happened": "  ", "anchor": {"path": "suite/tools.py:54"}},
+        {"happened": "no anchor, not filed either"},
     ]))
     filed = _close.file_observations(store, s)
-    assert [o.noticed for o in filed] == ["the retry was not attempted"]
+    assert [o.happened for o in filed] == ["the retry was not attempted"]
     assert s.observations_filed == [filed[0].name]
 
 
@@ -47,7 +47,7 @@ def test_l0009_files_a_recovered_nontransient_miss_from_a_passed_row(store):
     filed = _close.file_observations(store, s)
     # the passed row's non-transient recovery files as one observation, anchored on the row's call
     assert len(filed) == 1 and filed[0].anchor.call == "weave:///t/call/recovered"
-    assert "401" in filed[0].noticed or "token" in filed[0].noticed
+    assert "401" in filed[0].happened or "token" in filed[0].happened
     assert s.observations_filed == [filed[0].name]
     assert [a.lens for a in s.lens_answers if a.findings] == ["L-0009"], "L-0004 sees no failed row; only L-0009 fires"
 
@@ -65,7 +65,7 @@ def test_l0010_files_a_missing_rule_noticing_on_an_off_map_session(store):
     filed = _close.file_observations(store, s)
     # the off-map condition files as one observation, anchored on the failed row's call
     assert len(filed) == 1 and filed[0].anchor.call == "weave:///t/call/offmap"
-    assert "no hook" in filed[0].noticed or "no rule" in filed[0].noticed
+    assert "no hook" in filed[0].happened or "no rule" in filed[0].happened
     assert [a.lens for a in s.lens_answers if a.findings] == ["L-0010"], "an unmatched failure, nothing consulted — only L-0010 fires"
 
 

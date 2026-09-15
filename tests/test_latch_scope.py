@@ -24,7 +24,7 @@ def _session_with_call(store, pass_: int, call: str, task: str = "genesis/sum_nu
 
 
 def _observe_call(store, session: Session, call: str, noticed: str) -> Observation:
-    o = Observation(uid=store.new_uid(), name=store.next_name("O"), noticed_at=now(), session=session.id, noticed=noticed, anchor={"call": call})
+    o = Observation(uid=store.new_uid(), name=store.next_name("O"), noticed_at=now(), session=session.id, happened=noticed, anchor={"call": call})
     store.write(o)
     return o
 

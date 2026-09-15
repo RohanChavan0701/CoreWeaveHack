@@ -34,7 +34,7 @@ def test_self_referential_predicate():
 # --- the close filter (item 48a) -------------------------------------------------------------
 
 def _finding(noticed, **anchor):
-    return {"noticed": noticed, "anchor": anchor}
+    return {"happened": noticed, "anchor": anchor}
 
 
 def test_close_excludes_a_self_referential_finding_and_keeps_a_mixed_one(store):
@@ -45,7 +45,7 @@ def test_close_excludes_a_self_referential_finding_and_keeps_a_mixed_one(store):
         _finding("D-0004 should have fired because status is 'A' not 'approved'", record="D-0004", call="weave:///t/call/c"),
     ]))
     filed = _close.file_observations(store, s)
-    kept = [o.noticed for o in filed]
+    kept = [o.happened for o in filed]
     assert "status is coded 'A' not 'approved'" in kept
     assert any(n.startswith("D-0004 should have fired") for n in kept), "a mixed finding is kept"
     assert not any("no store records consulted" in n for n in kept), "the purely self-referential finding is excluded"
@@ -59,13 +59,13 @@ def test_close_does_not_filter_the_off_map_lens(store):
         _finding("work failed and matched no hook: the store holds no rule for sum_numbers", call="weave:///t/call/off"),
     ]))
     filed = _close.file_observations(store, s)
-    assert len(filed) == 1 and "no hook" in filed[0].noticed
+    assert len(filed) == 1 and "no hook" in filed[0].happened
 
 
 # --- the noise filter (item 48b) -------------------------------------------------------------
 
 def _obs(store, session, noticed, **anchor):
-    o = Observation(uid=store.new_uid(), name=store.next_name("O"), noticed_at=now(), session=session, noticed=noticed, anchor=anchor)
+    o = Observation(uid=store.new_uid(), name=store.next_name("O"), noticed_at=now(), session=session, happened=noticed, anchor=anchor)
     store.write(o)
     return o
 
