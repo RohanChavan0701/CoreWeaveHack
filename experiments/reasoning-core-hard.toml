@@ -6,10 +6,13 @@
 # transfer.
 #
 # This mirrors experiments/reasoning-core.toml arm for arm, on the `-hard` families instead. The harder tier
-# raises difficulty on both generators — regex level 5 (deeper nesting, backreferences, escaped literals, `\B`
-# anchors), grammar level 3 with a ten-to-eighteen-token member floor (longer valid derivations) — so the
-# unaided first-sight ceiling drops toward the ~0.5 band the strict pool needs to separate. The instances are
-# pinned in suite/data/reasoning-core-hard.jsonl on seed bases disjoint from the moderate tier.
+# raises difficulty on both generators — regex level 5 (deeper nesting of capturing and non-capturing groups,
+# escaped metacharacter and literal classes, `\B` anchors, and patterns whose whole body is optional) and grammar
+# level 3 with an eight-to-fourteen-token required derivation (longer valid members) — so the unaided first-sight
+# ceiling sits below the moderate tier's, which is where the strict pool separates. The tier is
+# `HARD = Tier(regex_level=5, cfg_level=3, cfg_tokens=(8, 14), …)` (suite/families/_reasoning_core.py); its
+# instances are pinned in suite/data/reasoning-core-hard.jsonl (twelve regex, twelve cfg) on seed bases disjoint
+# from the moderate tier.
 #
 # The lesson is the same method: verify a candidate with the checker before answering (`re.fullmatch`; NLTK's
 # Earley membership), and pick a candidate the grammar or pattern provably admits. The lax pool budgets one
@@ -21,10 +24,9 @@
 # what the store admits is the teacher's reading of the actor's misses. A second actor, gpt-oss-20b, meets the
 # same stream under the same teacher; the detached arms are the actor alone.
 #
-# No seeded arms: the seed store experiments/seeds/reasoning-core encodes the moderate tier's method decisions
-# (level-3 regex / level-2 grammar specifics); a harder-tier seed would be authored separately once the
-# calibration pilot fixes the level. The calibration pilot itself — which level lands first-sight ~0.5 — is
-# paid endpoint spend and has NOT been run.
+# The seed store experiments/seeds/reasoning-core-hard encodes the harder tier's method decisions — the same
+# produce-and-verify method as the moderate seed, with the level-specific facts rewritten for regex level 5 and
+# grammar level 3 at the eight-to-fourteen-token window. Its seeded twins are wired below.
 #
 # Ids are W&B Inference ids as listed on 2026-09-13; `hgi experiment models` lists today's.
 name = "reasoning-core-hard"
@@ -87,4 +89,19 @@ families = ["reasoning-core-hard-strict"]
 mode = "detached"
 description = "the harder strict pool's ablation"
 [arms.qwen-strict-detached.stream]
+families = ["reasoning-core-hard-strict"]
+
+# The seeded twins: the same arms started from experiments/seeds/reasoning-core-hard — the produce-and-verify
+# method already admitted, rewritten for the harder tier — against the unseeded arms above on the same batches.
+# What the injected method buys, paired per batch.
+[arms.qwen-seeded]
+mode = "attached"
+seed = "reasoning-core-hard"
+description = "Qwen3.6-35B-A3B from the harder-tier seed store: the verify-before-answering method already admitted"
+
+[arms.qwen-strict-seeded]
+mode = "attached"
+seed = "reasoning-core-hard"
+description = "the harder strict pool from the seed store: does the injected method save the repair call"
+[arms.qwen-strict-seeded.stream]
 families = ["reasoning-core-hard-strict"]
