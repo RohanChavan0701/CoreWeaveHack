@@ -1384,6 +1384,83 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
       endpoint runs (load the **experiment-runner** skill), not a code fix. A
       re-run of `qwen-attached` would also be the live confirmation that the two
       guards close the item-60 twin on the endpoint, not only on the stub.
+63. **The `qwen-attached` restart, stopped at pass 5 — the guards hold, but the
+    coding step reads budget and harness errors off the rows, not the method; fix
+    before spending the rest of the sweep** (2026-09-15, fresh `--force` run on
+    tree `f052e28`, stopped after 2 of 3 rounds because the defects were already
+    unambiguous; store discarded, not committed). Curve `1.0 1.0 1.0 0.75 0.75`;
+    5 observations, 1 decision (D-0001, budget), 2 consolidations (K-0001 admit,
+    K-0002 refused). The item-61/62 guards are structurally sound on the endpoint
+    — budget escapes to `other(budget-exceeded)` on the open convention axis (no
+    `tool-budget` shape), the `happened`/`turned_on` split is populated, D-0001 is
+    retrieved and fires (competence 2/2), and no pass-4 crash. What the run shows
+    is that the *coding* step, upstream of every guard, is the binding defect:
+    - **(A) The coder codes the method failure as budget — the core relevance
+      miss, caught on the one genuine failure.** Pass 4's only failed row is
+      `regex_10` (failed `final reply was not JSON`; it over-verified, made a third
+      call, was budget-refused). The observation filed on it (O-0003) reads
+      "exceeded the 2-shell-call budget" — the *budget refusal*, not the method
+      failure (no valid regex member produced). Its sibling O-0004 is on
+      `regex_06`, which **passed**. So of the four shaped observations, all four
+      are budget and one sits on a real method failure it mis-reads, while the
+      pass-5 failure `cfg_05` — whose `happened` does name the method ("verify a
+      candidate string … final reply was not JSON") — was filed as O-0005 but not
+      yet coded (`shape=[]` is normal at intake; the coder assigns shape at the
+      next consolidation, round 3, which was cut). What round 3 would have shaped
+      O-0005 as — method or budget — is the unresolved question. Net: the store's
+      only decision so far is
+      budget discipline; nothing about produce-and-verify. This is item-60 F1 /
+      item-57 parts 2+6 confirmed live on a guarded run — the axis rework stops
+      budget *drowning* the axis but cannot make the coder read the method.
+    - **(B) Observations track budget refusals, not task outcomes, and fire on
+      passing rows.** Passes 1–3 had zero failed tasks yet minted four budget
+      observations, all on rows that passed after over-verifying. A budget refusal
+      on a *passing* row is economy telemetry (it already feeds
+      `tool_budget_respected`), not a world-fact failure, but it reaches the
+      observation/grouping axis and is the only thing that recurs cross-session.
+      Also: the health `coverage` block counts only failed-row observations, so it
+      read `observed=0` on passes 1–3 while budget observations were filed through
+      the tool-error path — the two intake streams diverge and the telemetry
+      undercounts.
+    - **(C) The `not-json` final-reply failure masks the method outcome.** Both
+      real failures (`regex_10` p4, `cfg_05` p5) are "final reply was not JSON"
+      after the actor over-verified into a budget refusal — so the recorded
+      symptom is the format/harness error, not "the produced string was not a
+      member." A repair turn on a non-JSON final reply (sibling of item 42's
+      malformed-args fix, but for the final answer) would let the true method
+      outcome surface; at minimum the close must elicit the world-fact (did the
+      candidate match?) rather than the harness error.
+    - **(D) Label drift across rounds, unmerged** (the known item-62 F1/F3
+      residue, confirmed to bite): `other(budget-exceeded)` round 1 vs
+      `other(shell-call-budget-exceeded)` round 2 — canonicalization is per
+      world-content key and these are distinct tasks, so it does not merge.
+    - **(E) The dedup/corroboration guard was never exercised** — the round-2
+      budget nomination died at the independence floor (1 session S-0004 vs bar 2;
+      ledger H-0010), so the item-61/62 corroboration path never got a
+      cross-session budget group to act on. Round 3 (cut) was the next chance; the
+      item-62 live confirmation of the twin-close is still owed.
+    - **(F) Over-verification is the actor's dominant failure mode** — it applies
+      "verify before answering" until the budget refuses, then emits non-JSON. The
+      lesson worth teaching is "one verification suffices," which D-0001 gestures
+      at as budget arithmetic rather than method.
+    **Fix before rerunning (the point of stopping early):** in order of leverage —
+    (1) the close's failed-row observation request and the coder must elicit and
+    shape the **world-fact** for reasoning-core (did the candidate match the
+    pattern / belong to the grammar, and what about it failed), not the budget or
+    the not-json error — items 40 and 49(a) applied to this family, a
+    request/prompt change in `hgi/roles/pass.md` and `hgi/roles/coder.md`; (2)
+    keep a budget refusal on an otherwise-passing row out of the observation axis
+    (it is economy telemetry) so it stops being the only cross-session recurrence;
+    (3) a repair turn on a non-JSON final reply, and split the symptom. *Why this
+    is right:* every guard downstream is working, so the ceiling on relevance is
+    set entirely by what the coder reads off the row — fixing intake is the
+    highest-leverage change and it is offline-testable on the stub before spending
+    the endpoint again. *Why it may not be enough:* the hard tier is still near
+    saturation for the actor (only 2 of 20 rows failed), so even a perfect coder
+    has thin method signal to group; issue (C)'s repair turn and a harder floor
+    may be needed for the method to fail often enough to recur. The other `-hard`
+    arms and the `qwen-detached` control were not started (resources held for the
+    fixes).
 
 ## Housekeeping
 
