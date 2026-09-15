@@ -1,0 +1,218 @@
+{
+  "admission": {
+    "adjudicator": {
+      "call": null,
+      "model_id": "seed",
+      "role": "adjudicator"
+    },
+    "committed_at": "2026-09-13T12:00:00-07:00",
+    "displaced_from": null,
+    "ledger_entry": null,
+    "proposed_by": "seed",
+    "rung": "new-decision",
+    "verdict": "admit"
+  },
+  "context": "seed: what a mature store for the reasoning-core HARD tier holds \u2014 no observation behind it; the fork is read off the family's prompt (suite/families/reasoning_core.py:106, suite/families/reasoning_core.py:115), its budgets (suite/families/reasoning_core.py:72, suite/families/reasoning_core.py:127) and the checkers (suite/families/_reasoning_core.py:67, suite/families/_reasoning_core.py:82); the method is the lesson of the stream, not a convention of one instance, and it transfers from the moderate tier unchanged; the harder tier is regex level 5 and grammar level 3 with an eight-to-fourteen-token required derivation (suite/families/_reasoning_core.py:129)",
+  "counterfactual": "The overshoot is a pass that treats the checker as the search: it proposes a candidate, runs the call the prompt suggests (suite/families/reasoning_core.py:111), reads False, edits, runs again, and at a budget of two (suite/families/reasoning_core.py:72, suite/families/reasoning_core.py:127) the third call is refused and still counted (suite/tools.py:140, suite/tools.py:145). The opposite overshoot is a pass so sure of its derivation that it skips the call and answers from reasoning, which is the unverified band the harder tier is meant to widen. The harder tier bites the same way as the moderate one: level 5 patterns nest deeper and many match the empty string the checker refuses (suite/families/_reasoning_core.py:62), and level-3 grammars need a longer derivation, so an unverified candidate is likelier wrong \u2014 the verifying call is worth more, not less.",
+  "created_at": "2026-09-13T12:00:00-07:00",
+  "decision": "Derive the candidate from the pattern or the grammar before you touch the shell (the regex witness rule and the grammar derivation rule say how), then spend the shell call on the checker's own verdict over that exact candidate, and return as `result` the exact string the call printed True for \u2014 not a retyped or 'improved' one. The verifying call is the first call. For a regex: python3 -c \"import re,sys; print(bool(re.fullmatch(sys.argv[1], sys.argv[2])))\" '<pattern>' '<candidate>' \u2014 both arguments in single quotes, because the pattern carries `$`, `\\`, `|`, `?`, `*` and escaped metacharacters like `\\W` and `\\B`. For a grammar: one heredoc call `python3 - <<'EOF' \u2026 EOF` that builds the grammar with the start symbol set explicitly and prints the token count and the Earley verdict (the grammar rule gives the body). python3, `re` and `nltk` are present on the shell's PATH; a call to find that out is a call lost. If the verdict is False, re-derive from the structure; verify the re-derived candidate only where the budget still leaves a call, otherwise return it without a further call.",
+  "enforcement": {
+    "floor": [
+      "schema",
+      "complement-law",
+      "ports"
+    ],
+    "residue": [
+      "whether the derivation was right is judgment; the floor checks that a verifying call was made and the verified string returned"
+    ]
+  },
+  "id": "D-0001",
+  "kind": "decision",
+  "latches": [
+    {
+      "consumer": "the working pass",
+      "edge": {
+        "at": "boot",
+        "kind": "level",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [
+          "a task whose answer is a program, a file or a number rather than a string a stated checker accepts",
+          "a task with no checker reachable from the shell \u2014 no pattern and no grammar in the prompt",
+          "a shell task whose calls are the work itself (running tests, listing files, reading output) rather than a verification of an answer already derived"
+        ],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": [
+          "shell-tool",
+          "tool-budget"
+        ]
+      },
+      "key_space": "work-shape",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "apply",
+        "role": "dispositive"
+      },
+      "slot": "payload",
+      "type": "consultation",
+      "warrant": null
+    },
+    {
+      "consumer": "the backward pass",
+      "edge": {
+        "at": null,
+        "kind": "edge",
+        "predicate": {
+          "comparator": "<",
+          "evaluation": "suite-v1",
+          "persistence": 2,
+          "scorer": "solution_economy",
+          "value": 0.9
+        }
+      },
+      "guard": {
+        "applied_over_considered_below": null,
+        "not_this": [],
+        "over_passes": null,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "world-state",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "re-adjudicate",
+        "role": "dispositive"
+      },
+      "slot": "warrant",
+      "type": "revisit",
+      "warrant": null
+    }
+  ],
+  "lifecycle": {
+    "consumer": "the working pass, at boot, on a matching work-shape",
+    "moot_when": "the family stops stating a checker in the prompt, or the shell tool loses python3 with re and nltk",
+    "retirement": {
+      "consumer": "the lifecycle review",
+      "edge": {
+        "at": "consolidation",
+        "kind": "schedule",
+        "predicate": null
+      },
+      "guard": {
+        "applied_over_considered_below": 0.1,
+        "not_this": [],
+        "over_passes": 6,
+        "records": [],
+        "statuses": {},
+        "terms": []
+      },
+      "key_space": "competence",
+      "lifecycle": {
+        "settled_at": null,
+        "settled_by": null,
+        "status": "live"
+      },
+      "owed_act": {
+        "class": "retire",
+        "role": "corroborating"
+      },
+      "slot": "lifecycle",
+      "type": "retirement",
+      "warrant": null
+    }
+  },
+  "lineage": {
+    "folded_from": [],
+    "split_from": null,
+    "superseded_by": [],
+    "supersedes": []
+  },
+  "options": [
+    {
+      "judged": "chosen",
+      "name": "A \u2014 derive the candidate from the structure, verify it with the checker's own verdict in one shell call, return the verified string",
+      "why": "the hidden check is the same verdict the shell call prints (suite/families/_reasoning_core.py:77, suite/families/_reasoning_core.py:96); a string the call printed True for passes, and one call is the knowing floor (suite/families/reasoning_core.py:75)"
+    },
+    {
+      "judged": "rejected",
+      "name": "B \u2014 guess a candidate, verify, repair in a loop until True",
+      "why": "the lax pool leaves one repair call and the strict pool none (suite/families/reasoning_core.py:72); the third call is refused and still counted (suite/tools.py:145)"
+    },
+    {
+      "judged": "rejected",
+      "name": "C \u2014 answer from reasoning alone without a call",
+      "why": "an unverified candidate fails the hidden checker on the harder tier more often than on the moderate one; the one call is priced in as the knowing floor (suite/families/reasoning_core.py:75)"
+    }
+  ],
+  "priced_for": {
+    "authored_for": null,
+    "model_id": null
+  },
+  "scopes": [
+    "suite/families/reasoning_core"
+  ],
+  "status": "accepted",
+  "summary": {
+    "latch": "a task that states a regular expression or a context-free grammar, asks for a string the checker accepts, tells you to check a candidate with the shell tool, and gives a shell call budget",
+    "not_this": [
+      "a task whose answer is a program, a file or a number rather than a string a stated checker accepts",
+      "a task with no checker reachable from the shell \u2014 no pattern and no grammar in the prompt",
+      "a shell task whose calls are the work itself (running tests, listing files, reading output) rather than a verification of an answer already derived"
+    ],
+    "stakes": "an unverified candidate fails the hidden checker on a large share of first sights, more on this harder tier than on the moderate one; a candidate derived from the structure and verified in the first call passes first time at the knowing floor of one shell call \u2014 solution_economy 1.0 instead of 0.5 or a refused third call"
+  },
+  "warrant": {
+    "adjudication": {
+      "ledger_entry": null,
+      "species": "attack",
+      "verdict": "pending"
+    },
+    "anchors": [
+      "suite/families/reasoning_core.py:72",
+      "suite/families/reasoning_core.py:75",
+      "suite/families/reasoning_core.py:111",
+      "suite/families/reasoning_core.py:121",
+      "suite/families/reasoning_core.py:127",
+      "suite/families/reasoning_core.py:132",
+      "suite/families/reasoning_core.py:136",
+      "suite/families/_reasoning_core.py:77",
+      "suite/families/_reasoning_core.py:96",
+      "suite/families/_reasoning_core.py:129",
+      "suite/tools.py:140",
+      "suite/tools.py:145"
+    ],
+    "premises": [
+      {
+        "falsifier": "a shell call that prints ModuleNotFoundError for nltk or regex \u2014 the runner launched outside the venv, or a tool layer that scrubs PATH",
+        "id": "p1",
+        "statement": "the shell tool's python3 imports re and nltk: the runner is launched under uv, whose venv is first on the PATH the subprocess inherits (suite/tools.py:28)",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a task whose candidate printed True in the shell and failed the hidden check \u2014 a construct on which `re` and `regex` disagree, or a result the checker's strip of backticks and blanks changes",
+        "id": "p2",
+        "statement": "the hidden check is the checker's own verdict over the returned string (suite/families/_reasoning_core.py:77, suite/families/_reasoning_core.py:96), so a candidate the call printed True for passes",
+        "status": "supported"
+      },
+      {
+        "falsifier": "a family that declares a knowing floor above one, or a prompt whose budget prices an exploration call in",
+        "id": "p3",
+        "statement": "the knowing floor is one shell call (suite/families/reasoning_core.py:75) and the economy scorers grade calls over that floor; the harder tier keeps the same lax/strict slack (suite/families/reasoning_core.py:72)",
+        "status": "supported"
+      }
+    ]
+  }
+}
