@@ -1146,8 +1146,10 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     - **(A) Ripeness auto-nomination + brief ordering.** Per grouped cluster,
       score independence × (low variance over the cluster's `happened` tokens) ×
       (1 − pool-universality); float ripe clusters (low-variance, non-universal,
-      multi-session) to the head of the consolidation brief with a pre-built
-      sketch. Pure projection/ordering — no new store, no new gate. The
+      multi-session) to the head of the consolidation brief, annotated with the
+      score, so the consolidator authors the ripe ones first — the machine ranks
+      and annotates, it never authors the sketch (I2). Pure projection/ordering —
+      no new store, no new gate. The
       universality penalty is what refuses the budget false-ripeness (high
       independence but universal presentation — the exact item-56 trap).
     - **(B) Price-zero transcription of the happenstance floor.** The `happened`
