@@ -1210,6 +1210,90 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     affordable. A green run commits its result files under `runs/` and a
     carry-forward note; a red falsifier is the more valuable outcome — it names
     which of items 57/58 the endpoint refuses.
+60. **The item-59 run — the axis rework holds where item 56 broke, and two reds
+    name what 57/58 do *not* reach** (2026-09-15, `qwen-attached` complete over
+    8 passes + `qwen-detached` 6-pass control; result files under
+    `experiments/results/reasoning-core-hard/`, arm stores under gitignored
+    `runs/reasoning-core-hard/`). Attached curve `1.0 1.0 0.75 0.75 1.0 1.0 |
+    0.75 0.75` (revisit), stream 0.92 (22/24); detached `0.75 1.0 0.75 0.75 0.75
+    1.0`, 0.83 (20/24), no store. Two admitted decisions, both budget: D-0001
+    (after pass 4, fired 1/1) "the shell budget is a hard limit; exceeding it is
+    a non-transient error"; D-0002 (after pass 6, **fired never**) "once a budget
+    refusal lands it is non-transient — stop and submit". The five falsifiers:
+    - **A precondition red, found and fixed first: the endpoint crashed the
+      pass-4 consolidation.** DeepSeek coded the bare convention label
+      `call-budget-exceeded` onto the grouping axis; item 57's escape→mint wrap
+      (`_convention_label`) was wired on the local coder path
+      (`group_observations`) but **not** on the analyst/ARIA path
+      (`adopt_shapes`), so `Term("convention")` refused the bare term and the run
+      died mid-stream (first two attempts: one API timeout, one this crash). Fixed
+      `9d0c1c8` — `adopt_shapes` routes through `_convention_label`, the label
+      lands as `other(call-budget-exceeded)`, regression test pins the exact
+      term. This is itself an item-57 finding: the escape ladder was half-wired.
+    - **Method over environment — RED, but the keying pathology is gone.** The
+      two admitted decisions are budget, not the produce-and-verify method — so
+      the store is still budget-keyed at *admission*. **But** budget no longer
+      mints a `tool-budget` shape: it lands as `other(call-budget-exceeded)` (×9)
+      and `pool-exhausted` (×3) on the open `convention` axis, exactly as item 57
+      intends, and the method conventions *do* land on the axis
+      (`other(module-not-found)` — the real `nltk.parse.earley` vs `earleychart`
+      fix — `other(grammar-parsing-attempt)`, `other(invalid-json-reply)`). The
+      residue is not over-keying but recurrence: budget is the only convention
+      that recurs cross-session (indep≥2), while every method convention is a
+      per-task singleton (indep=1) that never clears the bar. Items 57/58 stopped
+      budget from *drowning the axis*; they cannot make a singleton method recur.
+    - **Negative transfer — GREEN.** Batch 1/2 re-meets fell only 1.0 → 0.75
+      (item 56 fell 1.0 → 0.25), and both drops are `final reply was not JSON`
+      rows with `applied=[]` — no budget decision fired on them (D-0001 fired
+      once, on a *passing* row; D-0002 never fired). The detached control scores
+      batch 1 at 0.75 at first sight with no store at all, so the attached 0.75
+      re-meet sits inside actor-alone variance, not a store-steered regression.
+      The sharp negative transfer item 56 named is not reproduced.
+    - **Ripeness surfaces the method — RED, but the refusal half works.** Both
+      Cut-C slots are populated on every cluster (`world_content_variance`,
+      `presentation_universality` computed), and the universality penalty
+      **correctly sinks both budget clusters to `ripeness=0.0`** (pu=1.0) — the
+      item-56 false-ripeness trap is refused. But no method cluster ranks ahead:
+      the method conventions are `ripeness=None` singletons (indep=1), so there is
+      nothing ripe to float. Ripeness worked as a refusal; it had no recurring
+      method to surface, because the method did not recur (same cause as the F1
+      residue).
+    - **Non-elicitation visible — GREEN (path present, not exercised).** Zero
+      `failure-unelicited` markers, correctly: every failed row elicited an
+      observation (cfg_07 → O-0007/8/9, cfg_06 → O-0016/17, cfg_08 → O-0019). The
+      marker fires only on an *empty* reply, which never occurred this run, so 0
+      is right — the path is wired (`hgi/close.py:148`), just not triggered.
+    - **Corroboration, not mint — RED (item 56 round-3 gap recurs).** K-0003
+      admitted D-0002 as `rung: new-decision` from the `pool-exhausted` cluster
+      **with D-0001 already in the accepted set shown to the consolidator**; the
+      nomination's `rung_why` claims "the loop has no record that teaches the
+      shell budget is a hard limit whose exhaustion is non-transient" — which
+      D-0001 states almost verbatim. The same budget happenstance was coded under
+      two different convention labels across rounds (`other(call-budget-exceeded)`
+      round 2, `pool-exhausted` round 3), and the consolidator minted a twin
+      rather than corroborating. Nuance: D-0002 adds recovery guidance
+      ("stop and submit"), so it is not a verbatim duplicate — but it never fired,
+      a standing tax with no consumer (I5). This is the consolidator dedup gap
+      item 56 flagged as independent of the experiment, confirmed on the endpoint.
+    - **Net.** Items 57/58 fix what they were built to fix: budget no longer
+      over-keys the grouping axis (it escapes to `other(<way of working>)`), its
+      false ripeness is refused, and the catastrophic negative transfer is gone.
+      What they do not reach is orthogonal: (a) a method that manifests as
+      per-task singletons never recurs into a decision, so budget — the one
+      genuinely recurring convention — is still what admission sees; (b) the
+      consolidator's corroboration-vs-mint judgment (item 56's open dedup gap)
+      still mints twins across rounds under drifting labels. Neither is an axis
+      defect; both are the next work. Minor: lever-B transcription runs
+      (K-0002 transcribed 2 / surfaced 8; K-0003 3 / 3) but the `happenstance/…`
+      series names are cut from noisy `happened` fragments
+      (`world_content_token`, `hgi/consolidate.py:1203`) — a normalization owed.
+    - **Leftover.** Chase the round-N corroboration gap (why a consolidator with
+      the prior decision in context mints a twin — a focused two-round repro
+      against the dedup path); consider whether the convention-label instability
+      across rounds (`other(call-budget-exceeded)` vs `pool-exhausted` for one
+      happenstance) is a coder-stability problem feeding the dedup gap. The other
+      `-hard` arms (`20b-attached`, the strict and seeded twins) and the
+      detached-strict control remain unrun.
 
 ## Decisions taken, and their risk
 

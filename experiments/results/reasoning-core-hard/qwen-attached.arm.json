@@ -1,0 +1,391 @@
+{
+  "arm": "qwen-attached",
+  "commit": "9d0c1c895b67c180328a10260ffa87dac0a9e5ef",
+  "curve": {
+    "1": 1.0,
+    "2": 1.0,
+    "3": 0.75,
+    "4": 0.75,
+    "5": 1.0,
+    "6": 1.0,
+    "7": 0.75,
+    "8": 0.75
+  },
+  "experiment": "reasoning-core-hard",
+  "finished_at": "2026-09-15T07:27:16.134752+00:00",
+  "health": {
+    "1": {
+      "consolidation": null,
+      "coverage": {
+        "failed": 0,
+        "observed": 0,
+        "shaped": 0
+      },
+      "errors": {
+        "by_class": {
+          "budget": 1
+        },
+        "rows": 4,
+        "tool_error_rows": 1
+      },
+      "pass": 1,
+      "reach": {
+        "considered": 7,
+        "in_context": 0,
+        "records": []
+      }
+    },
+    "2": {
+      "consolidation": {
+        "admitted": 0,
+        "id": "K-0001",
+        "nominated": 1,
+        "outcomes": {
+          "refused_floor": 1
+        }
+      },
+      "coverage": {
+        "failed": 0,
+        "observed": 0,
+        "shaped": 0
+      },
+      "errors": {
+        "by_class": {
+          "budget": 3,
+          "shell-exit": 1
+        },
+        "rows": 4,
+        "tool_error_rows": 2
+      },
+      "pass": 2,
+      "reach": {
+        "considered": 7,
+        "in_context": 0,
+        "records": []
+      }
+    },
+    "3": {
+      "consolidation": null,
+      "coverage": {
+        "failed": 1,
+        "observed": 1,
+        "shaped": 1
+      },
+      "errors": {
+        "by_class": {
+          "budget": 5,
+          "not-json": 1
+        },
+        "rows": 4,
+        "tool_error_rows": 3
+      },
+      "pass": 3,
+      "reach": {
+        "considered": 7,
+        "in_context": 0,
+        "records": []
+      }
+    },
+    "4": {
+      "consolidation": {
+        "admitted": 1,
+        "id": "K-0002",
+        "nominated": 1,
+        "outcomes": {
+          "admitted": 1
+        }
+      },
+      "coverage": {
+        "failed": 1,
+        "observed": 1,
+        "shaped": 1
+      },
+      "errors": {
+        "by_class": {
+          "budget": 3,
+          "shell-exit": 2
+        },
+        "rows": 4,
+        "tool_error_rows": 3
+      },
+      "pass": 4,
+      "reach": {
+        "considered": 7,
+        "in_context": 0,
+        "records": []
+      }
+    },
+    "5": {
+      "consolidation": null,
+      "coverage": {
+        "failed": 0,
+        "observed": 0,
+        "shaped": 0
+      },
+      "errors": {
+        "by_class": {
+          "budget": 1
+        },
+        "rows": 4,
+        "tool_error_rows": 1
+      },
+      "pass": 5,
+      "reach": {
+        "considered": 8,
+        "in_context": 1,
+        "records": [
+          "D-0001"
+        ]
+      }
+    },
+    "6": {
+      "consolidation": {
+        "admitted": 1,
+        "id": "K-0003",
+        "nominated": 1,
+        "outcomes": {
+          "admitted": 1
+        }
+      },
+      "coverage": {
+        "failed": 0,
+        "observed": 0,
+        "shaped": 0
+      },
+      "errors": {
+        "by_class": {
+          "budget": 3,
+          "shell-exit": 1
+        },
+        "rows": 4,
+        "tool_error_rows": 2
+      },
+      "pass": 6,
+      "reach": {
+        "considered": 8,
+        "in_context": 1,
+        "records": [
+          "D-0001"
+        ]
+      }
+    },
+    "7": {
+      "consolidation": null,
+      "coverage": {
+        "failed": 1,
+        "observed": 1,
+        "shaped": 0
+      },
+      "errors": {
+        "by_class": {
+          "not-json": 1
+        },
+        "rows": 4,
+        "tool_error_rows": 1
+      },
+      "pass": 7,
+      "reach": {
+        "considered": 9,
+        "in_context": 2,
+        "records": [
+          "D-0001",
+          "D-0002"
+        ]
+      }
+    },
+    "8": {
+      "consolidation": null,
+      "coverage": {
+        "failed": 1,
+        "observed": 1,
+        "shaped": 0
+      },
+      "errors": {
+        "by_class": {
+          "budget": 1,
+          "not-json": 1,
+          "shell-exit": 2
+        },
+        "rows": 4,
+        "tool_error_rows": 2
+      },
+      "pass": 8,
+      "reach": {
+        "considered": 9,
+        "in_context": 2,
+        "records": [
+          "D-0001",
+          "D-0002"
+        ]
+      }
+    }
+  },
+  "passes": 6,
+  "roster": {
+    "adjudicator": "deepseek-ai/DeepSeek-V4-Pro",
+    "coder": "deepseek-ai/DeepSeek-V4-Pro",
+    "consolidator": "deepseek-ai/DeepSeek-V4-Pro",
+    "examiner": "deepseek-ai/DeepSeek-V4-Pro",
+    "pass": "Qwen/Qwen3.6-35B-A3B",
+    "reauthor": "deepseek-ai/DeepSeek-V4-Pro"
+  },
+  "seed": null,
+  "sessions": [
+    "S-0001",
+    "S-0002",
+    "S-0003",
+    "S-0004",
+    "S-0005",
+    "S-0006",
+    "S-0007",
+    "S-0008"
+  ],
+  "spec": {
+    "bars": {},
+    "concurrency": 4,
+    "description": "Qwen3.6-35B-A3B acting, DeepSeek-V4-Pro on every other role",
+    "mode": "attached",
+    "model": "qwen3-35b",
+    "passes_per_round": 2,
+    "roles": {
+      "adjudicator": "deepseek-pro",
+      "coder": "deepseek-pro",
+      "consolidator": "deepseek-pro",
+      "examiner": "deepseek-pro",
+      "reauthor": "deepseek-pro"
+    },
+    "rounds": 3,
+    "seed": null,
+    "serial_detached": true,
+    "stream": {
+      "batch": 4,
+      "batches": 6,
+      "families": [
+        "reasoning-core-hard"
+      ],
+      "faults": {
+        "http_budget": null,
+        "http_fault_calls": 1,
+        "http_fault_fraction": 0.0,
+        "shell_output_limit": null
+      },
+      "revisit": [
+        1,
+        2
+      ],
+      "seed": 0
+    },
+    "suite": {
+      "families": [
+        "genesis"
+      ],
+      "faults": {
+        "http_budget": null,
+        "http_fault_calls": 1,
+        "http_fault_fraction": 0.5,
+        "shell_output_limit": null
+      },
+      "seed": 0,
+      "size": null
+    }
+  },
+  "started_at": "2026-09-15T06:48:28.484856+00:00",
+  "stream": {
+    "batches": [
+      {
+        "batch": 1,
+        "hash": "ccc6166cc06c",
+        "lessons": {
+          "reasoning-core-hard": 4
+        },
+        "tasks": [
+          "reasoning-core-hard/cfg_06",
+          "reasoning-core-hard/cfg_10",
+          "reasoning-core-hard/regex_00",
+          "reasoning-core-hard/regex_04"
+        ]
+      },
+      {
+        "batch": 2,
+        "hash": "a1276f7716cb",
+        "lessons": {
+          "reasoning-core-hard": 4
+        },
+        "tasks": [
+          "reasoning-core-hard/cfg_08",
+          "reasoning-core-hard/cfg_09",
+          "reasoning-core-hard/cfg_11",
+          "reasoning-core-hard/regex_07"
+        ]
+      },
+      {
+        "batch": 3,
+        "hash": "52f85ebd2dec",
+        "lessons": {
+          "reasoning-core-hard": 4
+        },
+        "tasks": [
+          "reasoning-core-hard/cfg_07",
+          "reasoning-core-hard/regex_03",
+          "reasoning-core-hard/regex_08",
+          "reasoning-core-hard/regex_09"
+        ]
+      },
+      {
+        "batch": 4,
+        "hash": "e2a8651d4de3",
+        "lessons": {
+          "reasoning-core-hard": 4
+        },
+        "tasks": [
+          "reasoning-core-hard/cfg_02",
+          "reasoning-core-hard/regex_06",
+          "reasoning-core-hard/regex_10",
+          "reasoning-core-hard/regex_11"
+        ]
+      },
+      {
+        "batch": 5,
+        "hash": "09b03756e7d5",
+        "lessons": {
+          "reasoning-core-hard": 4
+        },
+        "tasks": [
+          "reasoning-core-hard/cfg_03",
+          "reasoning-core-hard/cfg_05",
+          "reasoning-core-hard/regex_01",
+          "reasoning-core-hard/regex_05"
+        ]
+      },
+      {
+        "batch": 6,
+        "hash": "c359f7c66e6d",
+        "lessons": {
+          "reasoning-core-hard": 4
+        },
+        "tasks": [
+          "reasoning-core-hard/cfg_00",
+          "reasoning-core-hard/cfg_01",
+          "reasoning-core-hard/cfg_04",
+          "reasoning-core-hard/regex_02"
+        ]
+      }
+    ],
+    "passes": {
+      "1": 1,
+      "2": 2,
+      "3": 3,
+      "4": 4,
+      "5": 5,
+      "6": 6,
+      "7": 1,
+      "8": 2
+    },
+    "revisit": [
+      1,
+      2
+    ]
+  },
+  "suite": null,
+  "weave_project": "slavazinevich-worldvue/hgi-experiments"
+}
