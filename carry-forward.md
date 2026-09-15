@@ -1176,6 +1176,40 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     fact floor, mechanical-eval only, or it becomes the loophole §10.3 warns
     against. Depends on item 57 parts 1, 2, 6; sequenced after the seam and after
     item 57 parts 3–5 (all share `hgi/consolidate.py` and `hgi/close.py`).
+59. **Validate items 57 and 58 on the reasoning-core-hard endpoint — the empirical
+    test the stub cannot run.** Items 57/58 ship proven on the stub and 732 tests;
+    whether they fix the item-56 pathology is a real-model claim, unrun. Run the
+    attached arm of `experiments/reasoning-core-hard.toml` (`arms.qwen-attached` —
+    the arm that consolidates and re-meets batches 1–2 for retention; the strong
+    teacher over the mid-sized actor). Load the **experiment-runner** skill first
+    (the W&B `WANDB_ENTITY`/weave-project 401 trap, the 429 concurrency ceiling so
+    arms run sequentially, the reasoning-core generator stack, reading a run back).
+    Falsifiers, each read from the arm store (`runs/reasoning-core-hard/qwen-attached/`)
+    and its consolidations:
+    - **Method over environment (items 56, 57).** Admitted decisions name the
+      produce-and-verify *method* / world-conventions (regex-level-5, grammar
+      facts) — not nine `tool-budget` duplicates. Budget lands as
+      `other(<way of working>)` on the `convention` axis and does not dominate
+      grouping. The failure is a store still keyed on budget.
+    - **Negative transfer gone (item 56).** The batch-1/2 re-meet after the stream
+      does not regress (item 56 saw batch 1 fall 1.0 → 0.25 once both budget
+      decisions were in context). The failure is a re-meet that drops with the
+      store in context.
+    - **Ripeness surfaces the method (item 58 lever A).** The two Cut-C slots are
+      populated on the brief's clusters, and the method clusters — low
+      world-content variance, non-universal presentation, multi-session — rank
+      ahead of any budget cluster (which sinks on the universality factor).
+    - **Non-elicitation is visible (item 57 part 5).** Failed rows that elicit no
+      convention appear as `failure-unelicited` markers in `brief["unelicited"]`,
+      not silently absent.
+    - **Corroboration, not mint (item 56 round-3 gap).** Fresh observations of an
+      already-admitted claim corroborate it (a `counterfactual-edit`/`hook-edit`
+      or nothing), never mint a duplicate decision across rounds.
+    Runs sequentially on the endpoint (billed); the detached twin
+    (`arms.qwen-detached`) is the paired no-store control if a second run is
+    affordable. A green run commits its result files under `runs/` and a
+    carry-forward note; a red falsifier is the more valuable outcome — it names
+    which of items 57/58 the endpoint refuses.
 
 ## Decisions taken, and their risk
 
