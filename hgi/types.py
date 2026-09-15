@@ -751,9 +751,11 @@ class Consolidation(Strict):
     after_pass: int
     sessions_read: list[str]
     brief: dict[str, Any] = Field(default_factory=dict)
-    """The consolidation brief: applied ÷ considered per record, observation groups by convention cluster, escape clusters,
-    and the ``unelicited`` recall-floor telemetry — the window's ``failure-unelicited`` markers (a failed row that elicited
-    no observation), surfaced for the human, never a group to nominate on."""
+    """The consolidation brief: applied ÷ considered per record, observation groups by convention cluster (ordered ripe-first
+    and annotated with each cluster's ``ripeness``, item 58 lever A), escape clusters, the ``unelicited`` recall-floor
+    telemetry — the window's ``failure-unelicited`` markers (a failed row that elicited no observation), surfaced for the
+    human, never a group to nominate on — and the ``transcription`` block (item 58 lever B: the price-zero facts written and
+    the ambiguities surfaced for the human)."""
     analyst_report: str | None = None
     """The ARIA report URI, when the brief was drafted by the analyst."""
     nominations: list[Nomination] = Field(default_factory=list)
@@ -772,6 +774,12 @@ class Consolidation(Strict):
     """Observations the noise filter dismissed as irreducible, each pointing at its reality entry (§ 10.2)."""
     retired: list[str] = Field(default_factory=list)
     """Lenses retired in this pass through a crystallization door or the genesis deadline."""
+    transcribed: list[Fact] = Field(default_factory=list)
+    """The price-zero happenstance facts this pass transcribed without adjudication (carry-forward item 58 lever B): each a
+    settled ``happened`` world-content, mechanically evaluable through its anchor, keyed by the world-content token. The one
+    machine-write §10.3 permits past the owner gate, legal exactly because the price was zero and evaluation is mechanical;
+    a ``happened`` that is not mechanically evaluable is surfaced to the human in the brief instead, never written here. The
+    inference (``turned_on``) is never transcribed — it crosses the gate as a decision payload, adjudicated, or not at all."""
 
 
 # --- kind table ---------------------------------------------------------------

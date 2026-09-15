@@ -16,15 +16,20 @@ is recorded on the pass (the programmatic surface: :func:`consolidation_brief`
 resolves the URI through :func:`hgi.mirror.read_report`), and otherwise it is
 derived here from the ledgers (applied ÷ considered per record, observations
 grouped by the blind coder's convention clusters under the independence qualifier,
-task-level credit for every applied record, escape clusters). Either way the
-report is the nominator's rows only — the machine enumerates, proposes and
-audits over the store's live records; it never authors a verdict or a fact.
+ranked variance-ripe-first and annotated, task-level credit for every applied
+record, escape clusters). The pass also transcribes the price-zero happenstance
+floor — the mechanically-evaluable ``happened`` of the window — straight to the
+fact layer, and surfaces the ambiguous rest to the human (item 58 lever B). Either
+way the report is the nominator's rows only — the machine enumerates, proposes,
+ranks, audits, and transcribes the price-zero fact over the store's live records;
+it never authors a verdict, and it adjudicates no inference.
 """
 
 from __future__ import annotations
 
 import json
-from collections import defaultdict
+import re
+from collections import Counter, defaultdict
 from typing import Any
 
 from hgi import coder as _coder
@@ -46,6 +51,7 @@ from hgi.types import (
     Consolidation,
     Decision,
     Draft,
+    Fact,
     Fire,
     LedgerEntry,
     Nomination,
@@ -164,7 +170,9 @@ def _grouped_cluster(convention: str, coder_call: str | None, members: list[Obse
       ``presentation_universality`` over their presentation/work-shape terms. Left ``None`` here; item 58 computes and
       uses them, so the slots are frozen into the contract without reopening it.
 
-    ``independence`` is the distinct-session count; each member carries its ``anchor`` and ``session``."""
+    ``independence`` is the distinct-session count; each member carries its ``anchor`` and ``session``. The Cut-C slots are
+    filled downstream by :func:`rank_groups` at brief assembly (they need the pool and the presentation index), so the
+    frozen contract keeps them ``None`` here and item 58 populates them without reopening the shape."""
     return {
         "convention": convention,
         "shape": [convention],
@@ -176,6 +184,102 @@ def _grouped_cluster(convention: str, coder_call: str | None, members: list[Obse
                           "turned_on": o.turned_on, "anchor": o.anchor.model_dump()} for o in members],
         "sessions": sessions,
     }
+
+
+# --- lever A: variance-ripeness ranking (the machine ranks and annotates; it never authors) -----
+
+def world_content_variance(happeneds: list[str]) -> float:
+    """Cut C, the world-content axis: ``1 − modal-token fraction`` over the members' settled ``happened`` tokens.
+
+    The token of a ``happened`` is its quoted world-content literals (:func:`hgi.index.world_content_tokens`), lowercased
+    and joined — so two members naming the same concrete world-fact (a status literal, a column, a route) share a token —
+    with the normalized whole ``happened`` as the fallback token when it quotes none. The measure is zero when every member
+    states the same world-content (one concrete token, recurrent — the crystallization signal that a lesson is ripe to
+    materialize) and approaches one when each states a distinct one (no single token a payload could name).
+
+    Categorical by construction: ``happened`` is a token, not a measurement. This is deliberately **not**
+    :func:`hgi.lens_battery._variance`, the population variance of boolean battery flags — that scores on/off lens filings,
+    a different axis; variance here is measured on the world-content the members share (§11.1: never on presentation)."""
+    tokens = []
+    for h in happeneds:
+        lits = sorted(t.lower() for t in _index.world_content_tokens(h or ""))
+        tokens.append("|".join(lits) if lits else " ".join((h or "").lower().split()))
+    if not tokens:
+        return 0.0
+    modal = Counter(tokens).most_common(1)[0][1]
+    return 1.0 - modal / len(tokens)
+
+
+def _call_to_shapes(store: Store) -> dict[str, set[str]]:
+    """Each evaluation call → the registered ``work-shape`` shapes of the task it ran, read off the sessions' rows and the
+    live suite — the presentation index :func:`presentation_universality` resolves a member's anchor to."""
+    registered = set(store.registry.terms("work-shape"))
+    by_id = {t.id: t for t in _suite.current().tasks}
+    out: dict[str, set[str]] = {}
+    for s in store.all("session"):
+        if not (s.attached and s.evaluation):  # type: ignore[attr-defined]
+            continue
+        for row in s.evaluation.rows:  # type: ignore[attr-defined]
+            call, task = row.get("call"), row.get("task")
+            if call and task in by_id:
+                out[call] = {sh for sh in getattr(by_id[task], "shapes", ()) if sh in registered}
+    return out
+
+
+def presentation_universality(members: list[dict[str, Any]], call_shapes: dict[str, set[str]]) -> float:
+    """Cut C, the presentation axis: the fraction of the cluster's *shared* presentation terms that are pool-universal.
+
+    A member's presentation terms are the registered ``work-shape`` shapes of the task it was noticed on (its anchor call,
+    resolved through :func:`_call_to_shapes`); the cluster's shared presentation is the intersection across its members,
+    and universality is ``|shared ∩ pool_universal| / |shared|`` (:func:`pool_universal_terms`). One when the members'
+    common presentation is entirely pool-universal — a cluster keyed on what (essentially) every task carries, the item-56
+    false-ripeness trap that high independence alone cannot see — zero when the shared presentation carries no universal
+    term, or when the members share no resolvable presentation at all. It is the refusal factor in :func:`ripeness`."""
+    resolved = [call_shapes.get((m.get("anchor") or {}).get("call")) for m in members if isinstance(m, dict)]
+    resolved = [r for r in resolved if r]
+    if not resolved:
+        return 0.0
+    shared = set.intersection(*resolved) if len(resolved) > 1 else set(resolved[0])
+    if not shared:
+        return 0.0
+    return len(shared & pool_universal_terms()) / len(shared)
+
+
+def ripeness(independence: int, wcv: float, pu: float) -> float:
+    """The variance-ripeness score: ``independence × (1 − world_content_variance) × (1 − presentation_universality)``.
+
+    The mechanization of the crystallization discriminator (doctrine §7.4, §8): a cluster naming one concrete world-token
+    (low ``wcv``), recurrently across independent passes (high ``independence``), on a presentation that is *not* pool-
+    universal (low ``pu``) is ripe to materialize — floated to the head of the brief so the consolidator authors it first.
+    The universality factor is the refusal that keeps this from re-creating the budget bug: a high-independence cluster on
+    a universal presentation (the item-56 ``tool-budget`` trap) scores ``× (1 − 1) = 0`` and does not rise."""
+    return independence * (1.0 - wcv) * (1.0 - pu)
+
+
+def rank_groups(store: Store, groups: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Lever A (carry-forward item 58): populate each cluster's two Cut-C slots, score its ripeness, and order the groups
+    ripe-first — pure projection and annotation, no new store, no new gate, and no sketch authored (I2). The consolidator
+    still writes every sketch; this only ranks and annotates what it reads, so the ripe recurrences are authored first.
+
+    Both levers are floored below the independence bar (item 58's noise caveat: a small or low-independence pile makes
+    variance and universality noisy). A cluster under the bar — or one whose members carry no ``happened`` to measure, the
+    analyst-report shape — is left ``ripeness = None`` (unranked, neutral, kept in place among its peers), never given a
+    fabricated signal. The two slots are still filled where the data allows, as telemetry."""
+    bar = store.registry.bars["decision"]["independent_observations"]
+    call_shapes = _call_to_shapes(store)
+    for g in groups:
+        members = [o for o in g.get("observations", []) if isinstance(o, dict)]
+        if not any(m.get("happened") for m in members):
+            g.setdefault("ripeness", None)
+            continue
+        wcv = world_content_variance([m.get("happened") for m in members])
+        pu = presentation_universality(members, call_shapes)
+        indep = g.get("independence")
+        if indep is None:
+            indep = len(g.get("sessions") or sorted({m.get("session") for m in members}))
+        g["world_content_variance"], g["presentation_universality"] = wcv, pu
+        g["ripeness"] = ripeness(indep, wcv, pu) if indep >= bar and len(members) >= bar else None
+    return sorted(groups, key=lambda g: (g.get("ripeness") is None, -(g.get("ripeness") or 0.0)))
 
 
 def credit_table(store: Store, sessions: list[Session]) -> list[dict[str, Any]]:
@@ -282,7 +386,7 @@ def assemble_brief(store: Store, record: Consolidation, sessions: list[Session],
         "scores": {s.id: {k: f.value for k, f in s.evaluation.scores.items()} for s in sessions if s.evaluation},
         "competence": analysis.get("competence") or [],
         "precision": analysis.get("precision") or [],
-        "groups": analysis.get("groups") or [],
+        "groups": rank_groups(store, analysis.get("groups") or []),  # lever A: ripe clusters float to the head, annotated
         "credit": analysis.get("credit") or [],
         "fusion": fusion,
         "convergence": convergence,
@@ -1091,6 +1195,57 @@ def propagate(store: Store, record: Consolidation) -> list[Fire]:
     return fires
 
 
+# --- lever B: price-zero transcription of the happenstance floor -----------------------------
+
+def _happenstance_series(happened: str) -> str:
+    """A legible, symbolic fact key for a settled ``happened`` (doctrine §2/§4.1: keys are words): the world-content token
+    the anchor checks, prefixed ``happenstance/``. Its quoted literals when the ``happened`` names them, else the
+    normalized sentence, trimmed — the same token :func:`world_content_variance` groups on."""
+    lits = _index.world_content_tokens(happened or "")
+    token = " ".join(lits) if lits else " ".join((happened or "").split())
+    return "happenstance/" + (token[:120] or "world-content")
+
+
+def transcribe_happenstance(store: Store, brief: dict[str, Any], as_of: Any = None) -> tuple[list[Fact], list[dict[str, Any]]]:
+    """Lever B (carry-forward item 58): the price-zero happenstance floor transcribed to the fact layer without adjudication.
+
+    ``happened`` is settled world-fact — price zero at entry (§3.2, §10.3), the grouping evidence — so where it is
+    *mechanically evaluable* (:func:`hgi.index.has_world_content`: it quotes a literal or states an explicit comparison, a
+    token the anchor checks) it is transcribed to a :class:`hgi.types.Fact` with no verdict. This is the single machine-write
+    §10.3 permits past the owner gate, legal exactly because the price was zero and evaluation is mechanical, and it is kept
+    strictly to that floor. A ``happened`` that is *not* mechanically evaluable is **surfaced** to the human in the brief
+    instead of auto-written — every ambiguity crosses the gate, never the machine, so transcription never widens into the
+    ungoverned auto-write §10.3 warns against.
+
+    Sources (all price-zero happenstance): the window's grouped observations' ``happened``, and the ``failure-unelicited``
+    markers' ``happened`` (:func:`unelicited_failures`; the marker's ``row`` is its anchor evidence). ``turned_on``, the
+    inference, is never a source — it is lower-trust and crosses the gate as a decision payload, adjudicated, or not at all.
+    Returns ``(transcribed, surfaced)``; the facts land on the pass record, the surfaced ambiguities ride the brief.
+    """
+    stamp = as_of or now()
+    transcribed: list[Fact] = []
+    surfaced: list[dict[str, Any]] = []
+    seen: set[tuple[str, str | None]] = set()
+    candidates: list[tuple[str, str | None, str | None]] = []
+    for g in brief.get("groups", []):
+        for o in g.get("observations", []):
+            if isinstance(o, dict) and o.get("happened"):
+                candidates.append((o["happened"], (o.get("anchor") or {}).get("call"), o.get("name")))
+    for m in brief.get("unelicited", []):
+        if isinstance(m, dict) and m.get("happened"):
+            candidates.append((m["happened"], (m.get("anchor") or {}).get("call"), m.get("ledger_entry")))
+    for happened, call, origin in candidates:
+        key = (happened, call)
+        if key in seen:
+            continue
+        seen.add(key)
+        if _index.has_world_content(happened):
+            transcribed.append(Fact(series=_happenstance_series(happened), value=1.0, as_of=stamp, source=call or origin))
+        else:
+            surfaced.append({"happened": happened, "anchor": {"call": call} if call else {}, "origin": origin})
+    return transcribed, surfaced
+
+
 # --- the pass -------------------------------------------------------------------------------
 
 def consolidate(store: Store, analyst_report: str | None = None, force: bool = False) -> Consolidation:
@@ -1104,6 +1259,9 @@ def consolidate(store: Store, analyst_report: str | None = None, force: bool = F
                            sessions_read=[s.id for s in sessions], analyst_report=analyst_report)
     brief = consolidation_brief(store, record, sessions, analyst_report)
     brief["triage"] = triage(store, record, brief)
+    transcribed, surfaced = transcribe_happenstance(store, brief)  # lever B: price-zero facts written; ambiguities surfaced
+    record.transcribed = transcribed
+    brief["transcription"] = {"transcribed": [f.model_dump(mode="json") for f in transcribed], "surfaced": surfaced}
     record.brief = {k: v for k, v in brief.items() if k != "groups"} | {"groups": [{k: v for k, v in g.items() if k != "observations"} | {"observations": [o["name"] if isinstance(o, dict) else o for o in g.get("observations", [])]} for g in brief["groups"]]}
 
     with tracing.attributes(session=record.id, role="consolidator"):
@@ -1161,6 +1319,10 @@ def report(record: Consolidation, steers: list[Steer]) -> str:
                  + (f"; proposals expired: {', '.join(record.expired)}" if record.expired else "")
                  + (f"; dismissed as irreducible: {', '.join(record.dismissed)}" if record.dismissed else "")
                  + (f"; lenses retired: {', '.join(record.retired)}" if record.retired else ""))
+    surfaced = record.brief.get("transcription", {}).get("surfaced", [])
+    if record.transcribed or surfaced:
+        lines.append(f"happenstance: transcribed {len(record.transcribed)} price-zero fact(s) past the gate; "
+                     f"surfaced {len(surfaced)} ambiguous to the human")
     if record.analyst_report:
         lines.append(f"analyst report: {record.analyst_report}")
     return "\n".join(lines)

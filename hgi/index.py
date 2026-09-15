@@ -66,11 +66,27 @@ _QUOTED = re.compile(r"""(['"`])[^'"`]+\1""")
 _COMPARISON = re.compile(r"(==|!=|<=|>=|(?<![<>=!])=(?!=))")
 
 
-def _has_world_content(noticed: str) -> bool:
+def has_world_content(noticed: str) -> bool:
     """Whether a noticing states a checkable task-world fact — a quoted literal or an explicit comparison. A finding that
     names a store record *beside* a world convention ("D-0004 should have fired because status is 'A' not 'approved'") is
-    mixed, and mixed findings are kept: the self-reference filter drops only a finding that is *purely* store-machinery."""
+    mixed, and mixed findings are kept: the self-reference filter drops only a finding that is *purely* store-machinery.
+
+    This is the mechanical-evaluability test the price-zero transcription reads (carry-forward item 58 lever B): a
+    ``happened`` naming a checkable token settles mechanically through its anchor and may transcribe to the fact layer with
+    no adjudication; one naming none is ambiguous and surfaces to the human instead."""
     return bool(_QUOTED.search(noticed or "") or _COMPARISON.search(noticed or ""))
+
+
+_has_world_content = has_world_content  # the self-reference filter's earlier private name
+
+
+def world_content_tokens(text: str) -> list[str]:
+    """The quoted literals of a noticing — the canonical, mechanically-extractable world-content tokens (a status literal,
+    a column, a route, a keyword). Empty when the text quotes none. The variance/ripeness measure groups a cluster's
+    members by these (carry-forward item 58 lever A): members naming the same concrete world-fact share a token and the
+    cluster reads low world-content variance. The broader mechanical-checkability test :func:`has_world_content` also
+    counts a bare comparison; this returns only the strong, canonical tokens."""
+    return [m.group(0) for m in _QUOTED.finditer(text or "")]
 
 
 def self_referential(noticed: str, anchor: Any) -> bool:
