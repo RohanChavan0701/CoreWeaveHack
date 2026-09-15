@@ -706,6 +706,26 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     ~0.5 first-sight band the run wants can be reached another way (a harder
     level, a longer floor) — this fix removes the confound, it does not lower
     the ceiling.
+    **Hard tier added and calibrated (commits `e1ad5cf`, `18f0518`, `4fc2909`,
+    `a6c7427`, `5b22eca`; 2026-09-14):** the harder level the caveat asked for.
+    Difficulty was parameterized into a `Tier`
+    (`suite/families/_reasoning_core.py`) and a harder tier added — regex level 5,
+    cfg level 3 over an 8–14 token derivation window — with `-hard` /
+    `-hard-strict` families and `experiments/reasoning-core-hard.toml`, the budget
+    gate and grading unchanged. A single strict-detached calibration pilot on
+    Qwen3.6-35B-A3B (no store) set the cfg level. The finding: cfg difficulty
+    saturates to ~0.17 the moment it hits *either* level 3 *or* the long (10,18)
+    window, and only L2-with-short-window is easy (~0.85), so L3 @ (8,14) is the
+    usable middle — cfg first-sight ~0.33, regex L5 ~0.75 (L5 barely moved off
+    moderate, left as is; the initial pilot's 0.46 average hid this 0.75/0.17
+    split, caught by reading the per-generator rows). The *config* was calibrated,
+    not the instances: the shipped hard cfg is a fresh unbiased draw at L3/(8,14),
+    not the pilot's pins. A hard-tier seed
+    (`experiments/seeds/reasoning-core-hard/`, commits `c4c0422`/`15960e1`) carries
+    the level-independent produce-and-verify method rewritten for L5/L3, and the
+    `qwen-seeded`/`qwen-strict-seeded` twins are wired. **Left:** the hard rerun is
+    unrun (item 55); ~0.33 cfg is on the harder side, so watch for a floor effect
+    where even the store cannot lift it.
 48. **Lens answers about the store's own machinery become observations of
     the world** (text2sql run). Seven of the attached arm's twenty-one
     observations read "no rule matched", "no store records consulted", "the
@@ -828,23 +848,26 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     reversible; the deal was verified (three lax batches carry two graded and
     two held-out, the fourth the four leftover graded; both strict batches
     five graded) and a test in `tests/test_experiment.py` pins the shape.
-    *Not yet done — a data + curation decision for the user:* the fuller fix
-    of **28 tasks** at batch 4. The trans-free pool is confirmed 28 (a
-    network probe of the pinned BIRD questions JSON on 2026-09-14 found 32
-    `financial` questions, 4 reading `trans` — ids 116, 129, 145, 159 — so
-    28 remain), but only the 16 in `suite/data/text2sql.jsonl` are pinned;
-    the other 12 need a re-run of `text2sql.fetch` (downloads BIRD's 70 MB
-    `dev.zip` to rebuild and re-verify the reduced DB, re-pins the questions
-    file) **and** a hand assignment of each new id to the graded or held-out
-    group keeping the two template-disjoint — the transcriber's judgment, not
-    a mechanical fill, so it was not done unilaterally. `fetch` re-executes
-    every gold on the reduced DB before pinning, so gold cannot be
-    fabricated; the open question is only the group split. The alternative,
-    a second BIRD database over the same SQLite dialect, doubles the pool
-    without that curation but needs a fresh transcription and is worth
-    raising with the user. Either way, read the decision content beside the
-    curve as the primary evidence — here the content decided the question the
-    curve could not.
+    *Superseded — the full expansion is built (2026-09-14, commits `34bc0cc`,
+    `549323d`, `0725ebf`, `f520eb2`, `5e784ad`, `0e39655`):* the pool is now
+    **all 32 `financial` questions**. The whole `financial.sqlite` is pinned —
+    the `trans` table kept whole (1,056,320 rows; ~53 MB after VACUUM) rather
+    than sampled — and every one of the 32 golds was re-executed against both the
+    source and the pinned copy and pinned only on row-equality, none fabricated.
+    18 graded + 14 held-out, template-disjoint. The stream **samples** by seed
+    rather than dealing the whole set (`suite/stream.partition` already did this
+    when the pool exceeds `batch × batches`): lax batch 6 × 4 = 24 of 32 (each
+    batch 3 graded + 3 held-out), strict 6 × 2 = 12 of 18, the remainder left as
+    headroom. The DB layer is parameterized behind a `DbConfig`
+    (`suite/families/text2sql.py`) so a second BIRD database is config + data with
+    no code fork (the multi-DB to-do, item 55). The seed was refreshed for the
+    whole-`trans` schema (D-0001 card rewritten; D-0007 added for the `trans`
+    coded values `type`/`operation`; README and line anchors re-pinned) and the
+    tests followed the enlarged pool. **Watch in the rerun:** q194's gold uses
+    `STRFTIME(CURRENT_TIMESTAMP)`, so its expected rows are calendar-dependent —
+    grading is sound (the gold is re-executed at check time) but the pinned answer
+    is time-varying; and read the decision content beside the curve as the primary
+    evidence — here the content decided the question the curve could not.
 52. **Follow-ups on the runs themselves.** (a) The wave-2 and wave-3 arms
     exit 1 after writing their store, `arm.json` and evolution log: commit
     a04d9e8 appended `seed`-keyed arms to both TOMLs while the arms ran from
@@ -861,6 +884,14 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     The retrofit (`hgi experiment retrofit`, running on the stream and
     economy arms) reproduces item 48's artifact by construction, since it
     re-runs the same close; read its stores with that in mind.
+    **Built (a) (commit `9847d1b`):** `hgi experiment`'s finish path resolves only
+    the arm(s) actually run (`report(exp, root, arms=…)` with `ran = args.arm or
+    list(exp.arms)`), and `report` wraps per-arm resolution in try/except so an
+    unconstructable sibling becomes a "cannot resolve" note row, not a crash — a
+    TOML that later gains an arm no longer exit-1s a finished arm's report.
+    (b) is item 55 (the reruns and their result files are unwritten because the
+    reruns are unrun). (c) the seeded twins now exist for both experiments (items
+    47, 51) but neither rerun has been executed (item 55). (d) stands.
 53. **The reasoning-core arms ran with the system `python3` in the shell,
     so every grammar verification failed** (reasoning-core run). The
     launcher started each arm as `.venv/bin/python -c "from hgi.cli import
@@ -884,6 +915,16 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     next step and costs about eighty minutes of endpoint for the five arms
     in three waves; the `*-seeded` twins should join it, since the seed's
     derive-then-verify method needs the same shell.
+    **Built (commit `1c21b0e`):** both fixes. (a) `suite/tools.py` `shell_env()`
+    prepends the running interpreter's directory to `PATH` and every shell call
+    runs under it, so a shell `python3` resolves to the venv's, not the system
+    one. (b) a general `requires` field on `Family` (the four reasoning-core
+    families declare `("nltk","regex")`); `run_arm` preflights it before pass 1 by
+    importing through the *shell tool's* python (`can_import`, the same
+    `shell=True` path a command runs under), and refuses to start with a clear
+    message otherwise — verified a reasoning-core arm preflight-passes in this
+    repo's venv and would refuse where the shell python lacks the modules. (c) the
+    rerun is still unrun (item 55).
 54. **Mid-run health telemetry in the arm runner** (wired). The
     reasoning-core and text2sql runs (items 47–53) were wasted invisibly
     because `progress()` wrote only `sessions` and `curve` to `arm.json`, so
@@ -915,6 +956,36 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     surfacing the block in the dashboard and a `--tail`/`hgi experiment
     watch` reader — the field is written and readable, but nothing yet
     renders it live.
+55. **The reruns are prepared and unrun; session housekeeping** (2026-09-14).
+    Everything items 47–54 name is built and on `main` (33 commits from
+    `4ee3142`), and both experiments are ready but have **not** been executed —
+    running them is the next action:
+    - **reasoning-core**: run `experiments/reasoning-core-hard.toml` (the
+      calibrated hard tier — regex L5 / cfg L3 @ (8,14) — with the
+      `qwen-seeded`/`qwen-strict-seeded` twins). This is the rerun, not the
+      saturated moderate `reasoning-core.toml`. The item-53 shell preflight now
+      guards the `nltk` trap before pass 1.
+    - **text2sql**: run `experiments/text2sql.toml` (the 32-question pool,
+      sampled, with the seeded twins). The DeepSeek teacher was verified live to
+      draft token-anchored, adequately-cited records under the item-49 elicitation
+      fix (it declines honestly rather than writing generic drafts) — but
+      **coverage is now the binding constraint**: records are earned only where the
+      stream forms ≥2-session groups on one convention, so where it doesn't,
+      expect principled declines, not fills. Watch the mid-run `health` block
+      (item 54): empty `reach` on a seeded arm's pass 1 means the latch scope is
+      wrong and the seeded run is moot before endpoint is spent.
+    - The seeds' compare/contrast expectations (both experiments) are projections,
+      not measured; the runs confirm or refute them.
+    - **Multi-DB injection for text2sql** (optional, deferred): `DbConfig` is
+      parameterized, so a second BIRD database is verify-SHA + select/group its
+      questions template-disjoint + add a `DbConfig` + `_register` + `hgi suite
+      fetch` — config and data, no code fork.
+    - **Housekeeping shipped:** the role prompts were restamped for the split
+      rosters (`3c43b73`; the teacher roles carry `deepseek-ai/DeepSeek-V4-Pro`,
+      the pass carries the reasoning-core actors — quiets `role-pricing` at boot),
+      and `CLAUDE.md` was added as the always-loaded constitution with the
+      operational procedure moved into the `experiment-runner` skill (`4fe9376`,
+      `a2c7740`), so agents stop re-deriving the venv/endpoint/concurrency setup.
 
 ## Decisions taken, and their risk
 
