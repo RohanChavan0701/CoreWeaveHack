@@ -418,11 +418,21 @@ def adopt_shapes(store: Store, groups: list[dict[str, Any]]) -> None:
 
     So a promotion pointer and the projections agree with what the analyst nominated on, exactly as they would with
     the local coder's shapes. An observation the report names that no longer exists, or is already disposed, is left.
+
+    The analyst's proposed label runs through the same escape→mint wrap the local coder's does
+    (:func:`_convention_label`): a label outside the closed ``convention`` vocabulary lands as an ``other(<what>)``
+    escape rather than a bare term the observation record cannot parse — a way of working the analyst codes onto the
+    convention axis (a call budget, a retry) becomes ``other(<way of working>)``, never a raw enum member. The wrapped
+    label is reflected back onto the group dict (``shape``/``convention``) so the brief the consolidator reads carries
+    the same label the observations do.
     """
     for g in groups if isinstance(groups, list) else []:
         if not isinstance(g, dict):
             continue
-        shape = sorted(t for t in (g.get("shape") or []) if isinstance(t, str))
+        shape = sorted({_convention_label(store, t) for t in (g.get("shape") or []) if isinstance(t, str)})
+        g["shape"] = shape
+        if isinstance(g.get("convention"), str):
+            g["convention"] = _convention_label(store, g["convention"])
         for o in g.get("observations") or []:
             name = o.get("name") if isinstance(o, dict) else o
             obs = store.observation(name) if isinstance(name, str) else None

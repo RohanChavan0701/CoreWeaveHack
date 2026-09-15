@@ -85,6 +85,24 @@ def test_the_analyst_report_is_the_primary_input_and_drives_the_nomination(tmp_p
     assert promoted[o1.name].shape == ["other(no-cause)"], "the analyst's coding was stamped onto the observation"
 
 
+def test_the_analyst_bare_out_of_vocab_label_lands_as_an_escape_not_a_crash(tmp_path, store):
+    """A convention label the analyst proposes outside the closed ``convention`` vocabulary — a way of working it coded
+    onto the grouping axis, e.g. ``call-budget-exceeded`` — runs through the same escape→mint wrap the local coder's does,
+    landing as ``other(<what>)`` on both the observation and the brief group. Without the wrap the ``Term('convention')``
+    validator refuses the bare term and the whole consolidation crashes (carry-forward item 59: the reasoning-core-hard
+    endpoint's DeepSeek consolidator proposed exactly this bare term)."""
+    o1, o2 = _two_independent(store)
+    report = {"groups": [{"shape": ["call-budget-exceeded"], "convention": "call-budget-exceeded",
+                          "observations": [{"name": o1.name, "session": o1.session, "happened": NO_CAUSE},
+                                           {"name": o2.name, "session": o2.session, "happened": NO_CAUSE}]}]}
+    record = _consolidate.consolidate(store, analyst_report=_report_path(tmp_path, report))
+    promoted = {o.name: o for o in store.observations(state=None)}
+    assert promoted[o1.name].shape == ["other(call-budget-exceeded)"], "the bare label was escape-wrapped onto the observation"
+    group = record.brief["groups"][0]
+    assert group["shape"] == ["other(call-budget-exceeded)"] and group["convention"] == "other(call-budget-exceeded)", \
+        "the brief group carries the same wrapped label the observation does"
+
+
 def test_an_empty_analyst_report_replaces_the_local_derivation_and_nominates_nothing(tmp_path, store):
     """With the analyst report as primary input, its empty groups mean no nomination — the local coder never runs."""
     o1, o2 = _two_independent(store)
