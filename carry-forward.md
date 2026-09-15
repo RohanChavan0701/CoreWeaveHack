@@ -986,6 +986,55 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
       and `CLAUDE.md` was added as the always-loaded constitution with the
       operational procedure moved into the `experiment-runner` skill (`4fe9376`,
       `a2c7740`), so agents stop re-deriving the venv/endpoint/concurrency setup.
+56. **reasoning-core-hard `qwen-attached` — the budget mechanic confounds the
+    hard tier, again; and round 3 minted a duplicate instead of corroborating**
+    (2026-09-14, run dropped early at pass 7 of 8, not committed; store lived
+    under gitignored `runs/`). The item-53 fixes held at launch — nltk/regex
+    import in the shell, preflight passed, and passes 1–6 carried zero
+    `shell-exit`. The curve read 1.0, 0.5, 0.25, 0.5, 0.75, 0.75, then 0.25 on
+    the batch-1 revisit. The health telemetry (item 54) was healthy throughout
+    (backward pass covering, store growing), so the findings are in the decision
+    *content*, not the curve (item 51's warning):
+    - **Environment, not world (item 53 recurring on the hard tier).** All 11
+      observations and both admitted decisions (D-0001, D-0002) are about the
+      **shell-call budget** or the reply format (`tool-budget` shape ×9, two
+      `other(non-JSON …)`); none is about the produce-and-verify *method* the
+      world is designed to teach. The actor keeps failing by exhausting its call
+      budget (over-verifying — O-0007 found the right answer `'12'` then
+      re-verified until the third call was refused), so budget-discipline is all
+      the teacher can distill. The "halt before exceeding, submit best-so-far"
+      lesson plausibly *lifts* the lax curve (the recovery to 0.75), which is why
+      the drift is invisible in the pass rate. The hard tier's difficulty is
+      confounded by the budget mechanic — the same defect item 47 named for the
+      moderate tier's strict pool, still unfixed for the harder run.
+    - **Duplication: round 3 minted a twin instead of corroborating.** D-0001
+      (round 2, K-0002) and D-0002 (round 3, K-0003) are the same claim ("a tool
+      call budget is a hard limit: halt before exceeding it, even if a candidate
+      is unverified"), same latch terms (`tool-budget`, `shell-tool`), same
+      work-shape, same enforcement floor. Corroboration *worked within* round 2
+      (D-0001 aggregated 7 observations across S-0002/3/4), but in round 3 the
+      two new budget observations (O-0010, O-0011) minted D-0002 as a fresh
+      `rung: new-decision` (`lineage.supersedes=[]`, `folded_from=[]`) rather
+      than corroborating D-0001. This is a consolidator dedup/folding gap
+      independent of this experiment — cf. item 33 (the strict arm not folding
+      restatements). Both twins then fired together (pass 7 `reach.in_context=2,
+      [D-0001, D-0002]`).
+    - **Negative transfer on revisit.** Batch 1 scored 1.0 at first sight
+      (pass 1, empty store); re-met at pass 7 with both budget decisions in
+      context it dropped to **0.25**, `errors.budget=4` and a lone `shell-exit`
+      (uninvestigated — the run was dropped mid-check; likely a transient
+      non-zero shell exit, not the nltk import trap, since preflight passed and
+      1–6 were clean). The injected budget lessons correlate with a regression
+      on already-solved tasks — the sharpest single reading that the store is
+      steering the actor wrong here.
+    - **Next.** Fix item 47 (make the budget fail no task, or price the pool so
+      producing-and-verifying is what separates) before rerunning the hard tier,
+      or the run measures budget arithmetic, not method transfer. Separately,
+      chase the round-N corroboration-vs-mint gap in the consolidator (why fresh
+      observations of an existing claim mint a new decision across rounds); a
+      focused repro is two rounds of same-shape observations. The other item-55
+      arms (`qwen-detached`, `20b-attached`, the strict and seeded twins) and the
+      text2sql rerun remain unrun.
 
 ## Decisions taken, and their risk
 
