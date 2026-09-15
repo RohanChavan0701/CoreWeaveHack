@@ -63,13 +63,6 @@ def can_import(modules: Iterable[str]) -> str | None:
 CAUSE_MARKERS = ("HTTP ", "call budget", "exited", "[truncated]")
 """Every cause the tool layer raises opens with one of these; the oracle's cause scorer reads them."""
 
-BUDGET_SENTINEL = ".hgi_budget_exceeded"
-"""A refused over-budget call drops this marker in the working directory, naming the overage. A hidden check that
-grades the answer alone — as :mod:`suite.families.reasoning_core` does, where a witness can be produced unaided — reads
-it to fail a row whose answer was bought past budget; a check that grades data (mbpp, curriculum) never looks and the
-marker is inert."""
-
-
 class ToolError(Exception):
     def __init__(self, message: str, cause: str | None = None, transient: bool = False):
         super().__init__(message)
@@ -99,14 +92,6 @@ class Tools:
         self.errors.append({"message": message, "cause": cause, "transient": transient})
         raise ToolError(message, cause=cause, transient=transient)
 
-    def _mark_over_budget(self, cause: str) -> None:
-        """Record an over-budget refusal in the working directory (:data:`BUDGET_SENTINEL`), so a hidden check that
-        grades the answer alone can still fail a row whose answer was bought past budget."""
-        try:
-            (self.workdir / BUDGET_SENTINEL).write_text(cause + "\n")
-        except OSError:  # a working directory that cannot be written is the task's failure to report, not the marker's
-            pass
-
     @property
     def total_calls(self) -> int:
         return sum(self.calls.values())
@@ -123,7 +108,6 @@ class Tools:
         self.calls["http"] += 1
         if self.http_budget is not None and self.calls["http"] > self.http_budget:
             cause = f"call budget of {self.http_budget} exceeded at call {self.calls['http']}"
-            self._mark_over_budget(cause)
             self._raise("http call refused", cause=cause)
         if self.calls["http"] <= self.profile.http_fault_calls and self.profile.faulted(self.task):
             self._raise(f"GET {path} failed", cause=f"HTTP 502 Bad Gateway from {path} (transient)", transient=True)
@@ -141,7 +125,6 @@ class Tools:
         self.commands.append(command)
         if self.shell_budget is not None and self.calls["shell"] > self.shell_budget:
             cause = f"call budget of {self.shell_budget} exceeded at call {self.calls['shell']}"
-            self._mark_over_budget(cause)
             self._raise("shell call refused", cause=cause)
         try:
             # run under shell_env() so a `python3` in the command is the interpreter driving the suite (the venv),

@@ -726,6 +726,24 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     `qwen-seeded`/`qwen-strict-seeded` twins are wired. **Left:** the hard rerun is
     unrun (item 55); ~0.33 cfg is on the harder side, so watch for a floor effect
     where even the store cannot lift it.
+    **Superseded — the gate is removed; the budget fails no task** (2026-09-14,
+    item 56, commit pending): fix (b) is reverted. The item-56 dropped run showed
+    the gate re-created the very confound it was meant to fix — it failed an actor
+    that verified a *correct* answer but over-spent (O-0007 found `'12'`, re-verified,
+    and the third call was refused), so every observation and both decisions were
+    about budget arithmetic, not the produce-and-verify method. The reasoning-core
+    check now grades the answer alone (`_answer` in `suite/families/reasoning_core.py`);
+    `_gated`/`_budget_gates_pass`/`BUDGET_GATE_ENV` and the `BUDGET_SENTINEL`
+    machinery in `suite/tools.py` are gone. The budget is still a real tool-call
+    limit — the tool layer refuses a call past it and the economy series measures
+    adherence (`tool_budget_respected`) — but it fails no task. The strict pool now
+    bites *through the answer*: a wrong first candidate it cannot repair within one
+    call is submitted and fails on the answer, which is a genuine method failure the
+    teacher can distill. The caveat's premise ("the gate is necessary for the strict
+    pool to mean anything") is retired — on the hard tier, where a first candidate is
+    often wrong, the answer carries the strict/lax separation; on the near-saturated
+    moderate tier the pools stay close, as they already did. Fix (a) (a
+    `commands`-verified candidate check) remains unbuilt and is now unnecessary.
 48. **Lens answers about the store's own machinery become observations of
     the world** (text2sql run). Seven of the attached arm's twenty-one
     observations read "no rule matched", "no store records consulted", "the
@@ -1027,9 +1045,12 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
       1–6 were clean). The injected budget lessons correlate with a regression
       on already-solved tasks — the sharpest single reading that the store is
       steering the actor wrong here.
-    - **Next.** Fix item 47 (make the budget fail no task, or price the pool so
+    - **Next.** ~~Fix item 47 (make the budget fail no task, or price the pool so
       producing-and-verifying is what separates) before rerunning the hard tier,
-      or the run measures budget arithmetic, not method transfer. Separately,
+      or the run measures budget arithmetic, not method transfer.~~ **Done**
+      (2026-09-14): the budget gate is removed, the check grades the answer alone,
+      so the strict pool bites through the answer and the teacher sees method
+      failures, not budget overruns (item 47, superseded note). Separately,
       chase the round-N corroboration-vs-mint gap in the consolidator (why fresh
       observations of an existing claim mint a new decision across rounds); a
       focused repro is two rounds of same-shape observations. The other item-55
