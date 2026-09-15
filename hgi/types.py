@@ -362,11 +362,17 @@ class Observation(Strict):
     kind: Literal["observation"] = "observation"
     noticed_at: datetime
     session: str
-    noticed: str
+    happened: str = Field(min_length=1)
+    """The settled world-fact the attempt met: the row output, the tool error, the query text — price-zero, transcribable.
+    The grouping keys on it. Non-empty by construction: an observation states what happened."""
+    turned_on: str | None = None
+    """The convention the attempt met or missed — the model's inference, lower-trust; optional, never grouped on.
+    Kept out of the ``happened`` register so suspected and verified never share one field."""
     anchor: Anchor
     recheck_when: str | None = None
-    shape: list[str] = Field(default_factory=list)
-    """Empty at intake; filled by the consolidation pass's grouping, never by the noticing session."""
+    shape: list[Term("convention")] = Field(default_factory=list)
+    """Empty at intake; filled by the consolidation pass's grouping into the open ``convention`` axis (a minted
+    ``other(<what>)`` label per cluster), never by the noticing session and never from the ``work-shape`` hook vocabulary."""
     disposition: ObservationDisposition = Field(default_factory=ObservationDisposition)
 
 
@@ -745,7 +751,7 @@ class Consolidation(Strict):
     after_pass: int
     sessions_read: list[str]
     brief: dict[str, Any] = Field(default_factory=dict)
-    """The consolidation brief: applied ÷ considered per record, groups by shape, escape clusters."""
+    """The consolidation brief: applied ÷ considered per record, observation groups by convention cluster, escape clusters."""
     analyst_report: str | None = None
     """The ARIA report URI, when the brief was drafted by the analyst."""
     nominations: list[Nomination] = Field(default_factory=list)

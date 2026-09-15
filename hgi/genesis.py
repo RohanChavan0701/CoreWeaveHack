@@ -30,13 +30,11 @@ def _terms(*pairs: tuple[str, str]) -> dict[str, dict[str, str]]:
 
 VOCABULARY: dict[str, dict] = {
     "work-shape": {
-        "means": "the closed vocabulary of task presentations a consultation hook keys on; minted from the task suite's known presentations. "
-                 "Two granularities live here and neither displaces the other: the tool-major terms, coarse cues a consultation hook keys on "
-                 "at boot (a task that calls the HTTP tool), and the convention-major terms, the world-fact an attempt turns on (a route the "
-                 "world has retired to a versioned successor). The blind coder shapes an observation on the finer of the two the noticing names, "
-                 "so two misses of one convention share a shape and two of different conventions differ even when both called the same tool",
+        "means": "the closed vocabulary of task presentations a consultation hook keys on; minted from the task suite's "
+                 "known presentations, which exist ahead of the instances. These are the tool-major cues a boot classify "
+                 "keys a hook on (a task that calls the HTTP tool), coarse by design. This axis routes decision consultation "
+                 "hooks only; observation grouping keys on the separate, instance-grown `convention` axis",
         "terms": _terms(
-            # the tool-major cues: what a boot classify keys a consultation hook on, coarse by design
             ("tool-call-retry", "the task involves retrying a tool call that failed transiently"),
             ("http-tool", "the task calls the HTTP tool"),
             ("shell-tool", "the task calls the shell tool"),
@@ -46,9 +44,16 @@ VOCABULARY: dict[str, dict] = {
             ("tool-budget", "the task runs under a call budget"),
             ("error-wrapping", "the task wraps, rethrows or reports an error"),
             ("task-planning", "the task requires a plan before action"),
-            # the convention-major shapes: the world-fact the attempt turned on, the granularity the blind coder groups observations by.
-            # One tool carries many of these, which is why the tool cue alone conflated distinct lessons (shape-radius sweep, decision 77);
-            # a convention term names the presentation the world exhibits, read from the noticing, never from the task's held-out lesson label.
+        ),
+    },
+    "convention": {
+        "means": "the open, instance-grown vocabulary the blind coder groups observations by: the world-fact an attempt "
+                 "turned on, the granularity a lesson recurs at (a route the world has retired to a versioned successor). "
+                 "It cannot be known ahead of the instances, so it grows by the escape→mint ladder rather than being minted "
+                 "at genesis like the tool-major hook axis; the seed terms below are the conventions the suite already knows. "
+                 "Two misses of one convention share a shape and two of different conventions differ even when both called "
+                 "the same tool — which the tool cue alone conflated (shape-radius sweep, decision 77; carry-forward item 57)",
+        "terms": _terms(
             ("route-versioned", "a route the world has retired, answering with the versioned successor it moved to"),
             ("listing-paged", "a listing the world returns one page at a time, each page naming the next or its end"),
             ("route-guarded", "a route the world answers only when a held token authorizes the call"),
@@ -219,18 +224,18 @@ LENSES = [
      "angle": "The first attempt in this pass was wrong somewhere — where, and which record should have fired?",
      "counterfactual": "The overshoot: grading the pass's own lesson as settled — the answer is an observation at the floor, never a rule.",
      "externality": {"contact": "artifact", "terminates_in": "the trace: a call URI per finding"},
-     "product": "for the failed task in the subject, at most one {noticed, anchor, recheck_when}: `noticed` names the task, what its first attempt did, and what would have passed — the convention of this world it missed — in one or two sentences; `anchor` is {call: the row's call URI, path: null}; `recheck_when` says when to look for the same miss again; empty when the failure was not the pass's to avoid",
+     "product": "for the failed task in the subject, at most one {happened, turned_on, anchor, recheck_when}: `happened` names the task and the settled world-fact its first attempt met — the output, the tool error, the query text — in one or two sentences; `turned_on` names the convention it missed and what would have passed (optional, null when you cannot name one); `anchor` is {call: the row's call URI, path: null}; `recheck_when` says when to look for the same miss again; empty when the failure was not the pass's to avoid",
      "consumer": "the observation ledger; the backward pass"},
     {"id": "L-0009", "host": "close", "purpose": "generative",
      "angle": "A row passed, but its first attempt was wrong — a non-transient fault the pass corrected on the way to the score. Name the convention that first attempt missed.",
      "counterfactual": "The overshoot: filing the transient fault that cleared on retry — a recovered 502 is loud but non-causal; file only a non-transient miss the pass corrected.",
      "externality": {"contact": "artifact", "terminates_in": "the trace: a call URI per finding"},
-     "product": "a list of {noticed, anchor}; each becomes an observation", "consumer": "the observation ledger; the backward pass"},
+     "product": "a list of {happened, turned_on, anchor}; each becomes an observation: `happened` the settled world-fact, `turned_on` the convention it turned on (optional)", "consumer": "the observation ledger; the backward pass"},
     {"id": "L-0010", "host": "close", "purpose": "generative",
      "angle": "This pass failed and matched no hook — the store held no rule for this work. Name the shape of work the store has no coverage for.",
      "counterfactual": "The overshoot: crying 'a rule is missing' on a pass that did consult a record — that is not off-map; fire only when nothing was consulted and the work failed; empty is legal.",
      "externality": {"contact": "record", "terminates_in": "the pass's off-map disposition and its failed rows' calls in the trace"},
-     "product": "a list of {noticed, anchor}; each becomes an observation", "consumer": "the observation ledger; the backward pass"},
+     "product": "a list of {happened, turned_on, anchor}; each becomes an observation: `happened` the settled world-fact, `turned_on` the convention it turned on (optional)", "consumer": "the observation ledger; the backward pass"},
     # the examiner fan: the attack's angles, one context each (the fan law), hosted where independence is structural (the host law).
     # L-0005 and L-0008 are seeded retired through the crystallization door: their questions became gates the code reads
     # (hgi.lint.independence, hgi.consolidate.drop_success_watch), and the register keeps them as the evidence of that.

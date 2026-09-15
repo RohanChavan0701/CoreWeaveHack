@@ -10,16 +10,13 @@
     "pointer": "D-0001",
     "state": "promoted"
   },
+  "happened": "task sum_numbers failed on a transient fault (HTTP 502 Bad Gateway from /numbers (transient)) and the reported error named no cause",
   "kind": "observation",
   "name": "O-0001",
-  "noticed": "task sum_numbers failed on a transient fault (HTTP 502 Bad Gateway from /numbers (transient)) and the reported error named no cause",
   "noticed_at": "2026-09-12T15:19:07.099501-07:00",
   "recheck_when": "any tool call that can fail transiently",
   "session": "S-0001",
-  "shape": [
-    "error-wrapping",
-    "http-tool",
-    "tool-call-retry"
-  ],
+  "shape": [],
+  "turned_on": null,
   "uid": "01a097b3-efdb-71d2-ae7f-6e1d21a50011"
 }

@@ -12,10 +12,10 @@
     "rung": "new-decision",
     "verdict": "admit"
   },
-  "context": "The description at the table route names the columns, the row count and the first page path; each page carries at most eight rows and names the next page or null (suite/families/api.py:26; suite/families/api.py:50); the budget is the page count plus two (suite/families/api.py:28; suite/families/api.py:57) and the prompt states it. The pages carry rows only — no header — aligned by position to the description's columns. The shell is not budgeted on this family.",
-  "counterfactual": "The overshoot is a walk that fetches the description a second time to reread the columns, or page one again after a failure elsewhere, and is refused on the last page (suite/tools.py:70) — the pass then answers a total over all but the last page, which the 1% tolerance (suite/families/tables.py:58) does not forgive. The opposite overshoot gives up on a clean task: a pass that reads the budget as the pages alone stops one page short of a walk that fit (suite/families/api.py:28 allows two calls beyond the pages).",
+  "context": "The description at the table route names the columns, the row count and the first page path; each page carries at most eight rows and names the next page or null (suite/families/api.py:26; suite/families/api.py:50); the budget is the page count plus two (suite/families/api.py:28; suite/families/api.py:57) and the prompt states it. The pages carry rows only \u2014 no header \u2014 aligned by position to the description's columns. The shell is not budgeted on this family.",
+  "counterfactual": "The overshoot is a walk that fetches the description a second time to reread the columns, or page one again after a failure elsewhere, and is refused on the last page (suite/tools.py:70) \u2014 the pass then answers a total over all but the last page, which the 1% tolerance (suite/families/tables.py:58) does not forgive. The opposite overshoot gives up on a clean task: a pass that reads the budget as the pages alone stops one page short of a walk that fit (suite/families/api.py:28 allows two calls beyond the pages).",
   "created_at": "2026-09-13T00:00:00-07:00",
-  "decision": "Walk a paged table in a fixed order and count as you go: the description once (columns, row count, first page path), then each page once, following each page's `next` until it is null, keeping every row. After the first page the page size is known: compute the pages remaining (the row count over the page size, rounded up, minus one) and compare it with the calls remaining under the stated budget after every call already spent, failed calls included. If the walk fits, finish it and compute the answer over the complete rows with the description's columns as the header — paste the rows into an unbudgeted shell script rather than sum in the head. If it does not fit, do not start a walk that cannot complete and do not answer from a partial walk: stop within the budget and report error with the cause the tool gave — the transient failures and the budget — verbatim. Never refetch a page or the description.",
+  "decision": "Walk a paged table in a fixed order and count as you go: the description once (columns, row count, first page path), then each page once, following each page's `next` until it is null, keeping every row. After the first page the page size is known: compute the pages remaining (the row count over the page size, rounded up, minus one) and compare it with the calls remaining under the stated budget after every call already spent, failed calls included. If the walk fits, finish it and compute the answer over the complete rows with the description's columns as the header \u2014 paste the rows into an unbudgeted shell script rather than sum in the head. If it does not fit, do not start a walk that cannot complete and do not answer from a partial walk: stop within the budget and report error with the cause the tool gave \u2014 the transient failures and the budget \u2014 verbatim. Never refetch a page or the description.",
   "enforcement": {
     "floor": [
       "schema",
@@ -47,8 +47,7 @@
         "statuses": {},
         "terms": [
           "http-tool",
-          "tool-budget",
-          "listing-paged"
+          "tool-budget"
         ]
       },
       "key_space": "work-shape",
@@ -143,17 +142,17 @@
   "options": [
     {
       "judged": "chosen",
-      "name": "A — description once, each page once following next to null, the remaining calls checked after the first page; stop within the budget when the walk cannot fit",
+      "name": "A \u2014 description once, each page once following next to null, the remaining calls checked after the first page; stop within the budget when the walk cannot fit",
       "why": "it is the only order that fits the budget, and a partial walk answers nothing the check accepts"
     },
     {
       "judged": "rejected",
-      "name": "B — fetch the description again whenever the columns are needed",
+      "name": "B \u2014 fetch the description again whenever the columns are needed",
       "why": "the second fetch is the spare call; the last page is then refused"
     },
     {
       "judged": "rejected",
-      "name": "C — answer from the pages fetched when the budget refuses the next",
+      "name": "C \u2014 answer from the pages fetched when the budget refuses the next",
       "why": "a total over all but the last page is wrong, and the row fails on the budget as well"
     }
   ],

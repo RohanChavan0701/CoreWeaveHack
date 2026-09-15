@@ -10,16 +10,13 @@
     "pointer": "D-0003",
     "state": "promoted"
   },
+  "happened": "task fetch_user_name named the transient cause (HTTP 502 Bad Gateway from /users/7 (transient)) and still failed: the call was not retried",
   "kind": "observation",
   "name": "O-0007",
-  "noticed": "task fetch_user_name named the transient cause (HTTP 502 Bad Gateway from /users/7 (transient)) and still failed: the call was not retried",
   "noticed_at": "2026-09-12T15:19:32.332761-07:00",
   "recheck_when": "a transient fault reported without a retry",
   "session": "S-0003",
-  "shape": [
-    "error-wrapping",
-    "http-tool",
-    "tool-call-retry"
-  ],
+  "shape": [],
+  "turned_on": null,
   "uid": "01a097b4-526c-706e-a38f-99569c8b80d3"
 }

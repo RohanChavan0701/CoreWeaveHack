@@ -10,15 +10,13 @@
     "pointer": "D-0002",
     "state": "promoted"
   },
+  "happened": "task count_lines exceeded its shell budget: independent calls were issued one per input instead of batched",
   "kind": "observation",
   "name": "O-0003",
-  "noticed": "task count_lines exceeded its shell budget: independent calls were issued one per input instead of batched",
   "noticed_at": "2026-09-12T15:19:07.099855-07:00",
   "recheck_when": "a budgeted tool over several independent inputs",
   "session": "S-0001",
-  "shape": [
-    "shell-tool",
-    "tool-budget"
-  ],
+  "shape": [],
+  "turned_on": null,
   "uid": "01a097b3-efdb-71d2-ae7f-6e1fa7828152"
 }

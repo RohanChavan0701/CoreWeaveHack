@@ -121,6 +121,55 @@
       }
     }
   },
+  "convention": {
+    "means": "the open, instance-grown vocabulary the blind coder groups observations by: the world-fact an attempt turned on, the granularity a lesson recurs at. It grows by the escape→mint ladder rather than being minted at genesis like the tool-major hook axis; observation grouping keys on it, decision consultation hooks on work-shape (carry-forward item 57).",
+    "terms": {
+      "byte-order-mark": {
+        "means": "a text file the world opens with a byte-order mark a strict parser refuses",
+        "since": "2026-09-12"
+      },
+      "dependency-stalled": {
+        "means": "a dependency the world slows or fails, holding the caller's connections so a healthy pool fills as a consequence — queries fast, backends idle in transaction, the provider's status or latency carries the onset",
+        "since": "2026-09-12"
+      },
+      "field-quoted": {
+        "means": "a delimited field the world quotes so it may carry the delimiter inside it",
+        "since": "2026-09-12"
+      },
+      "line-unterminated": {
+        "means": "a text file whose last line the world leaves with no terminating newline",
+        "since": "2026-09-12"
+      },
+      "listing-paged": {
+        "means": "a listing the world returns one page at a time, each page naming the next or its end",
+        "since": "2026-09-12"
+      },
+      "pool-exhausted": {
+        "means": "a datastore pool the world saturates under its own load — backends busy, queries slow, waiters queued — the local capacity fault the pool readings show and the dependency readings do not",
+        "since": "2026-09-12"
+      },
+      "release-regressed": {
+        "means": "an error or latency spike the world starts at a deploy with the data unchanged — the release history carries the onset, the payload samples do not",
+        "since": "2026-09-12"
+      },
+      "route-guarded": {
+        "means": "a route the world answers only when a held token authorizes the call",
+        "since": "2026-09-12"
+      },
+      "route-versioned": {
+        "means": "a route the world has retired, answering with the versioned successor it moved to",
+        "since": "2026-09-12"
+      },
+      "schema-coded-value": {
+        "means": "a fixed database whose schema stores a value in an encoded form a plain query gets wrong — a status or category kept as a coded literal to match on its stored form not a natural word, a date kept as text and reached with STRFTIME not a date function, a ratio the dialect integer-divides unless it is cast — the schema convention a query over it must know",
+        "since": "2026-09-12"
+      },
+      "summary-row": {
+        "means": "a tabular export the world ends with a total or summary row that is not a data record",
+        "since": "2026-09-12"
+      }
+    }
+  },
   "currency-verdict": {
     "means": "",
     "terms": {

@@ -29,13 +29,15 @@ Rules a seed decision must satisfy (`hgi lint` in a seeded scratch store is gree
   `admission.rung` is `"new-decision"`.
 - `status` is `"accepted"`; `priced_for.model_id` is `null` (the injector prices
   it for the arm's pass model).
-- Every consultation latch keys on registered work-shape terms — the
-  seventeen a fresh genesis registers (`hgi genesis` then
-  `registry/vocabulary.json`: the nine tool-major terms `error-wrapping
-  file-tool http-tool output-schema shell-tool task-planning
-  test-failure-triage tool-budget tool-call-retry` and the convention-major
-  ones such as `listing-paged`) — or on terms declared in `vocabulary.json`,
-  and carries `not_this` exclusions. The pass sees only the decision's id,
+- Every consultation latch keys on registered work-shape terms — the nine
+  tool-major terms a fresh genesis registers (`hgi genesis` then
+  `registry/vocabulary.json`: `error-wrapping file-tool http-tool
+  output-schema shell-tool task-planning test-failure-triage tool-budget
+  tool-call-retry`) — or on terms declared in `vocabulary.json`, and carries
+  `not_this` exclusions. Consultation hooks key on the `work-shape` axis only;
+  the convention-major terms (`listing-paged`, `route-versioned`, …) live on
+  the separate `convention` axis the backward pass groups observations by
+  (carry-forward item 57), not on a hook. The pass sees only the decision's id,
   terms, stakes and decision text at boot (`suite/agent.py`), so the symptom
   signature and the exclusions must live in the decision sentence too.
 - The counterfactual cites an anchor. A seed has no observations, so the
