@@ -1461,6 +1461,72 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     may be needed for the method to fail often enough to recur. The other `-hard`
     arms and the `qwen-detached` control were not started (resources held for the
     fixes).
+64. **Multi-shape observation coding to defeat vocabulary drift — one label per
+    axis is the wrong model; induce a *set* of labels per observation, and demote
+    on presentation-universality, not raw frequency** (2026-09-15, design from the
+    item-63 reading). The item-63 run showed the grouping axis drifts: the same
+    world-fact coded `other(budget-exceeded)` (cfg_10) one round and
+    `other(shell-call-budget-exceeded)` (regex_10) the next never merged, so a
+    recurrence read as two singletons. The cause is structural, not L-0009-only:
+    the coder assigns **exactly one** convention label per observation
+    (`group_observations`, `o.shape = [label]`, `hgi/consolidate.py:183`), grouping
+    keys on that one token, and `_canonical_label` (`hgi/consolidate.py:123`) only
+    rescues a drifting label when the modal `world_content_key` — a normalized
+    `happened` sentence — matches a prior escape. A narrowly-worded token has no
+    coarser sibling to fall back on, so distinct task literals fork the axis. This
+    is the item-62 F1/F3 residue's root, and L-0004 drifts the same way; L-0009
+    only makes it worse because a passing row's "convention missed" is incidental
+    and its wording varies most.
+    **The design (multi-select with escape, no typed axes):**
+    - **Each observation carries a *set* of shapes, not one.** The coder
+      multi-selects from the open `convention` vocabulary plus an `other(<what>)`
+      escape — closed-with-escape multi-label. `shape` is already a list field, so
+      this is **no schema migration**: a coder-contract change (`_coder.cluster`
+      returns a label set per observation), `group_observations`, the guard, and
+      relaxing `_canonical_label`. Do **not** pre-type the axes (granularity,
+      workflow, …): minting classes ahead of the instances is priming (doctrine
+      §7.5). The redundancy is the fix — a coarse shared label catches what a fine
+      label's drift misses, and it largely retires `_canonical_label` because the
+      coarse label does the cross-round merging by construction.
+    - **Group per label, not by transitive overlap.** A candidate cluster is *all
+      observations carrying label L*; an observation lives in several candidate
+      clusters, each nominating on its own label's distinct-session independence.
+      Transitive union-find (A~B on X, B~C on Y ⇒ A,B,C) would collapse the pool
+      through a chain and must be avoided. Per-label grouping makes the item-61/62
+      **dedup guard more load-bearing**: one observation feeding two near-duplicate
+      nominations must route to corroboration, not two decisions.
+    - **The crux — demote a grouping label on *presentation*-universality (item
+      58's `presentation_universality`), never on raw frequency.** With free
+      multi-select the coder attaches coarse labels liberally, so a coarse label is
+      carried by most of the pool. `_demote_pool_universal`
+      (`hgi/consolidate.py:89`) demotes any label over 95% of a multi-cluster pool
+      — but in a homogeneous stream like reasoning-core, the coarse label we *want*
+      (a `produce-and-verify-method` unifying the distinct fine facts
+      `module-not-found` / `grammar-parse` / `invalid-json`) is near-universal by
+      frequency, so the raw-frequency guard would demote exactly the method label
+      back to singletons — the F1/F3 residue re-created under a new mechanism.
+      Budget is universal *on presentation* (every task presents a shell-call
+      budget; item 60 saw it sink to `pu=1.0`); a method label is *frequent but not
+      a presentation term*. So demoting on presentation-universality sinks budget
+      while keeping the coarse method label — this is the difference between
+      multi-shape amplifying budget and finally letting the method group.
+    - **Soft coder discipline:** ask for at least one coarse and one specific label
+      per observation, without naming the axes, so the redundant coarse key is
+      guaranteed to exist; otherwise multi-select degenerates back to a single
+      narrow label.
+    *Drift is not relevance — keep them separate.* Better grouping makes budget
+    group *more* robustly too, so this composes with item 63(2): keep a
+    budget-refusal-on-a-passing-row (L-0009) out of the convention axis at intake
+    (it is economy telemetry), or the presentation-universality guard is left doing
+    all the work alone. *Why it may be right:* it makes a coarse recurrence
+    survive fine-wording drift, retires the hand-crafted canonicalization, and maps
+    universality to the presentation axis where §11.1 says it belongs. *Why it may
+    not:* per-label grouping multiplies candidate nominations (the dedup guard must
+    hold), and the coder judging multiple labels per observation trades one model
+    call's precision for coverage (guard with the blind-coder agreement control,
+    decision 59). All of it is offline/stub-testable — no endpoint, no migration —
+    and is the natural companion to item 63's intake fix; sequence it after, since
+    both touch `group_observations` and the coder contract.
 
 ## Housekeeping
 
