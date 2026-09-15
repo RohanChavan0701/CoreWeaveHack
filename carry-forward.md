@@ -1133,6 +1133,47 @@ grouping decision 87 shows on the stub holds on `openai/gpt-oss-120b`.
     could regrow a different over-broad shape. Sequence: the schema/axis seam
     (1, 2, 6) is a contract change and ships serial-first; the consumers (3, 4, 5)
     build on it. Migration note owed for `experiments/seeds/`.
+58. **Variance-driven ripeness: mechanize the fast-tracking of materialization,
+    up to — never past — the human gate.** Builds on item 57 (needs the
+    `happened`/`turned_on` split and the open convention axis). The
+    crystallization law (doctrine §7.4), the leafing law (§8) and the price-zero
+    limit (§10.3, §3.2) are one skeleton: a latent lesson materializes on a
+    mechanical settlement/falsification signal, lazily. Variance is that signal
+    for the observation/lens tier, and both halves are already computed
+    (`_variance` `hgi/lens_battery.py:394`; `pool_universal_terms`
+    `hgi/consolidate.py:686`), so this is composition, not new machinery. Two
+    composed levers:
+    - **(A) Ripeness auto-nomination + brief ordering.** Per grouped cluster,
+      score independence × (low variance over the cluster's `happened` tokens) ×
+      (1 − pool-universality); float ripe clusters (low-variance, non-universal,
+      multi-session) to the head of the consolidation brief with a pre-built
+      sketch. Pure projection/ordering — no new store, no new gate. The
+      universality penalty is what refuses the budget false-ripeness (high
+      independence but universal presentation — the exact item-56 trap).
+    - **(B) Price-zero transcription of the happenstance floor.** The `happened`
+      half is settled happenstance — price zero, mechanically evaluable through
+      the anchor — so it transcribes to the fact layer with no adjudication
+      (§10.3: "transcription is legal exactly where the claim's price was zero at
+      entry AND evaluation is mechanical"); only `turned_on → decision payload`
+      crosses the gate. Reuse the existing fact kind; do not add one.
+    **The refinement that keeps it from re-creating the budget bug:** variance is
+    measured on the world-content axis (the concrete token), never on the
+    presentation/environment axis — §11.1's lint in mechanical form; the
+    `names_world_content` floor (`hgi/drafting.py:96`) already refuses a payload
+    naming no checkable token. **The boundary:** nothing auto-admits — I2 / §7.2
+    make the permanent-write gate non-collapsible (a security control, post-§15
+    poisoning). The machine enumerates, pre-computes the ripe nomination, and
+    transcribes price-zero facts; the owner commits. *Why it may be right:* it is
+    the direct test of the doctrine's claim that variance is the observation/lens
+    materialization signal, and it optimizes throughput-into-the-gate rather than
+    catch-count (I9). *Why it may not:* the variance stream is design-stage in the
+    doctrine (§12.6, §17), so this promotes an unvalidated instrument to a live
+    nominator; a small or low-independence pile makes variance and universality
+    both noisy (floor both levers below a minimum cluster size); and transcription
+    (B) widens the machine-writes surface — keep it strictly to the price-zero
+    fact floor, mechanical-eval only, or it becomes the loophole §10.3 warns
+    against. Depends on item 57 parts 1, 2, 6; sequenced after the seam and after
+    item 57 parts 3–5 (all share `hgi/consolidate.py` and `hgi/close.py`).
 
 ## Decisions taken, and their risk
 
