@@ -452,11 +452,20 @@ def escape_events(store: Store, vocab: str) -> list[tuple[str, int, str]]:
     """Every ``other(<what>)`` kept for ``vocab``, as ``(occasion, pass, escape)`` — the independent occurrences the recurrence counts.
 
     The escapes of a closed vocabulary are kept wherever that vocabulary is
-    written: a ``work-shape`` on the pass that named it, a ``key-space`` on
-    the latch that carries it, a ``<species>-verdict`` on the ledger entry
-    that carries it. The occasion is the session, the record-and-latch, or
-    the entry the escape was written on; two escapes on one occasion are one
-    datum, as two on one pass always were.
+    written: a ``work-shape`` on the pass that named it, a ``convention`` on
+    the open observation the backward pass's grouping shaped, a ``key-space``
+    on the latch that carries it, a ``<species>-verdict`` on the ledger entry
+    that carries it. The occasion is the session, the record-and-latch, or the
+    entry the escape was written on; two escapes on one occasion are one datum,
+    as two on one pass always were.
+
+    The ``convention`` axis grows the same way the ``work-shape`` axis does, but
+    it is written on the observation the grouping shaped rather than on the
+    session: an open observation whose minted ``shape`` is an ``other(<what>)``
+    label (the grouping escape) is a convention the axis lacks a term for. The
+    occasion is the session it was noticed in, so a convention noticed twice in
+    one pass is one datum; an observation already consumed into a decision or
+    dismissed has left the open pool and is not re-counted here.
     """
     of = _pass_of(store)
     events: list[tuple[str, int, str]] = []
@@ -464,6 +473,9 @@ def escape_events(store: Store, vocab: str) -> list[tuple[str, int, str]]:
         for s in store.all("session"):
             if s.attached and s.closed_at is not None:  # type: ignore[attr-defined]
                 events += [(s.id, s.pass_, escape) for escape in s.work_shape.escapes]  # type: ignore[attr-defined]
+    elif vocab == "convention":
+        for o in store.observations("open"):
+            events += [(o.session, of.get(o.session, 0), escape) for escape in o.shape if is_escape(escape)]
     elif vocab == "key-space":
         for host in [*store.decisions(), *store.drafts()]:
             hid = host.id if isinstance(host, Decision) else host.uid
@@ -517,6 +529,11 @@ def _members_of(store: Store, vocab: str) -> dict[str, list[str]]:
         for s in store.all("session"):
             if s.attached and s.closed_at is not None:  # type: ignore[attr-defined]
                 members[s.id] = sorted(set(s.work_shape.terms) & registered)  # type: ignore[attr-defined]
+    elif vocab == "convention":
+        by_session: dict[str, set[str]] = defaultdict(set)
+        for o in store.observations("open"):
+            by_session[o.session] |= {t for t in o.shape if t in registered}
+        members = {sid: sorted(terms) for sid, terms in by_session.items()}
     elif vocab == "key-space":
         for host in [*store.decisions(), *store.drafts()]:
             hid = host.id if isinstance(host, Decision) else host.uid
@@ -568,10 +585,15 @@ def revision_route(store: Store, vocab: str, cluster: dict[str, Any]) -> dict[st
 
 
 def reviewable_vocabularies(store: Store) -> list[str]:
-    """The closed vocabularies whose escapes the loop keeps and this review clusters: the pass's work-shape,
-    a latch's key-space, and every species' verdict — the sources :func:`escape_events` reads."""
+    """The closed vocabularies whose escapes the loop keeps and this review clusters: the pass's work-shape, the grouping
+    axis's convention, a latch's key-space, and every species' verdict — the sources :func:`escape_events` reads.
+
+    The ``convention`` axis is open and instance-grown (carry-forward item 57 part 3): a recurring ``other(<what>)`` the
+    backward pass's grouping stamped on independent sessions' observations nominates ``<what>`` as a registered convention
+    term through the same owner-gated ladder the ``work-shape`` escapes climb — the blind coder contradicts, the
+    adjudicator verdicts, and the registry grows in place. Nothing auto-admits (I2)."""
     verdicts = [f"{sp}-verdict" for sp in store.registry.terms("species") if f"{sp}-verdict" in store.registry.vocabularies]
-    return ["work-shape", "key-space", *verdicts]
+    return ["work-shape", "convention", "key-space", *verdicts]
 
 
 def _routed(vocab: str) -> bool:
